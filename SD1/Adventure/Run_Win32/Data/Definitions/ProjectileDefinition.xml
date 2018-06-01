@@ -1,0 +1,27 @@
+<ProjectileDefinitions>
+
+  <ProjectileDefinition name="Arrow">
+    <Size physicsRadius="0.2" localDrawBounds="-0.3,-0.12,0.3,0.12"/>
+    <Movement>
+      <Fly speed="5.0"/>
+    </Movement>
+    <SpriteAnimSet spriteSheet="Arrow.png" spriteLayout="1,1">
+      <SpriteAnim name="WorldSprite" spriteIndexes="0" autoOrient="true"/>
+    </SpriteAnimSet>
+    <Stats>
+      <Minimum attack="10"/>
+      <Maximum attack="10"/>
+    </Stats>
+  </ProjectileDefinition>
+
+  <ProjectileDefinition name="Melee" timeToLive="0.5">
+    <Size physicsRadius="0.2" localDrawBounds="-0.3,-0.12,0.3,0.12"/>
+    <Movement>
+      <Fly speed="0.0"/>
+    </Movement>
+    <SpriteAnimSet spriteSheet="Terrain_32x32.png" spriteLayout="32,32">
+      <SpriteAnim name="WorldSprite" spriteIndexes="0" autoOrient="true"/>
+    </SpriteAnimSet>
+  </ProjectileDefinition>
+
+</ProjectileDefinitions>

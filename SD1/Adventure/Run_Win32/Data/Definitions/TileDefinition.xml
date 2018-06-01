@@ -1,0 +1,173 @@
+<TileDefinitions spriteSheet="Terrain_32x32.png" spriteLayout="32,32">
+
+  
+  <TileDefinition
+		name="Grass"
+		baseSpriteCoords="22,0"
+    overlaySpriteCoords="0,0"
+		baseSpriteTint="255,255,255"
+    overlaySpriteTint="255,255,255"
+    chromaKey="0,255,0"
+		allowsSight="true"
+		allowsWalking="true"
+		allowsFlying="true"
+		allowsSwimming="false"
+	/>
+
+  <TileDefinition
+   name="Tree"
+   baseSpriteCoords="16,0"
+   overlaySpriteCoords= "0,0"
+   baseSpriteTint="255,255,255"
+   overlaySpriteTint="255,255,255"
+   chromaKey="0,255,0"
+   allowsSight="false"
+   allowsWalking="false"
+   allowsFlying="false"
+   allowsSwimming="false"
+	/>
+
+  <TileDefinition
+  name="Water"
+  baseSpriteCoords="0,22"
+  overlaySpriteCoords= "0,0"
+  baseSpriteTint="255,255,255"
+  overlaySpriteTint="255,255,255"
+  chromaKey="0,255,0"
+  allowsSight="true"
+  allowsWalking="false"
+  allowsFlying="true"
+  allowsSwimming="false"
+	/>
+
+  <TileDefinition
+ name="WoodFloor"
+ baseSpriteCoords="29,1"
+ overlaySpriteCoords= "0,0"
+ baseSpriteTint="255,255,255"
+ overlaySpriteTint="255,255,255"
+ chromaKey="0,255,0"
+ allowsSight="true"
+ allowsWalking="true"
+ allowsFlying="true"
+ allowsSwimming="false"
+	/>
+
+  <TileDefinition
+ name="StoneWall"
+ baseSpriteCoords="0,5"
+ overlaySpriteCoords= "0,0"
+ baseSpriteTint="255,255,255"
+ overlaySpriteTint="255,255,255"
+ chromaKey="0,255,0"
+ allowsSight="false"
+ allowsWalking="false"
+ allowsFlying="false"
+ allowsSwimming="false"
+	/>
+
+  <TileDefinition
+ name="DirtPath"
+ baseSpriteCoords="12,1"
+ overlaySpriteCoords= "0,0"
+ baseSpriteTint="255,255,255"
+ overlaySpriteTint="255,255,255"
+ chromaKey="0,255,0"
+ allowsSight="true"
+ allowsWalking="true"
+ allowsFlying="true"
+ allowsSwimming="false"
+	/>
+
+  <TileDefinition
+ name="CellarFloor"
+ baseSpriteCoords="13,5"
+ overlaySpriteCoords= "0,0"
+ baseSpriteTint="255,255,255"
+ overlaySpriteTint="255,255,255"
+ chromaKey="0,255,0"
+ allowsSight="true"
+ allowsWalking="true"
+ allowsFlying="true"
+ allowsSwimming="false"
+	/>
+
+  <TileDefinition
+ name="CellarWall"
+ baseSpriteCoords="1,5"
+ overlaySpriteCoords= "0,0"
+ baseSpriteTint="255,255,255"
+ overlaySpriteTint="255,255,255"
+ chromaKey="0,255,0"
+ allowsSight="false"
+ allowsWalking="false"
+ allowsFlying="false"
+ allowsSwimming="false"
+	/>
+
+  <TileDefinition
+ name="CellarBackground"
+ baseSpriteCoords="9,4"
+ overlaySpriteCoords= "0,0"
+ baseSpriteTint="255,255,255"
+ overlaySpriteTint="255,255,255"
+ chromaKey="0,255,0"
+ allowsSight="false"
+ allowsWalking="false"
+ allowsFlying="false"
+ allowsSwimming="false"
+	/>
+
+  <TileDefinition
+ name="DungeonFloor"
+ baseSpriteCoords="14,5"
+ overlaySpriteCoords= "0,0"
+ baseSpriteTint="255,255,255"
+ overlaySpriteTint="255,255,255"
+ chromaKey="200,200,200"
+ allowsSight="true"
+ allowsWalking="true"
+ allowsFlying="true"
+ allowsSwimming="false"
+	/>
+
+  <TileDefinition
+ name="Lava"
+ baseSpriteCoords="19,3"
+ overlaySpriteCoords= "0,0"
+ baseSpriteTint="255,255,255"
+ overlaySpriteTint="255,255,255"
+ chromaKey="255,0,0"
+ allowsSight="true"
+ allowsWalking="false"
+ allowsFlying="true"
+ allowsSwimming="false"
+	/>
+
+  <TileDefinition
+ name="DungeonBoundary"
+ baseSpriteCoords="1,5"
+ overlaySpriteCoords= "0,15"
+ baseSpriteTint="255,255,255"
+ overlaySpriteTint="255,0,0"
+ chromaKey="0,0,0"
+ allowsSight="true"
+ allowsWalking="false"
+ allowsFlying="true"
+ allowsSwimming="false"
+	/>
+
+  <TileDefinition
+ name="DungeonWall"
+ baseSpriteCoords="2,5"
+ overlaySpriteCoords= "27,16"
+ baseSpriteTint="255,255,255"
+ overlaySpriteTint="255,255,255"
+ chromaKey="100,100,100"
+ allowsSight="true"
+ allowsWalking="false"
+ allowsFlying="true"
+ allowsSwimming="false"
+	/>
+ 
+</TileDefinitions>

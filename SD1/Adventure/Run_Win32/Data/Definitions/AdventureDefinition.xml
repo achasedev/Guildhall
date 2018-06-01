@@ -1,0 +1,21 @@
+<AdventureDefinitions>
+
+  <AdventureDefinition name="Marcus" title="Kill Marcus">
+    <StartConditions startMap="Map1" startTileType="WoodFloor"/>
+    <VictoryConditions haveDied="Marcus"/>
+    
+    <Map name="Map1" mapDefinition="Village">
+      <Portal type="StairsDown" onTileType="WoodFloor" toMap="Map2" toTileType="CellarFloor" reciprocalType="StairsUp"/> 
+    </Map>
+    
+    
+    <Map name="Map2" mapDefinition="Cellar">
+      <Portal type="StairsDown" onTileType="CellarFloor" toMap="Map3" toTileType="DungeonFloor" reciprocalType="StairsUp"/>
+    </Map>
+
+    <Map name="Map3" mapDefinition="Dungeon">
+      <Actor name="Marcus" type="Marcus" spawnTileType="DungeonFloor"/>
+    </Map>
+    
+  </AdventureDefinition>
+</AdventureDefinitions>

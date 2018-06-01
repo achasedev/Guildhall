@@ -1,0 +1,46 @@
+<MapDefinitions>
+
+
+  <MapDefinition name="Village" defaultTile="Grass" width="32" height="32">
+    <GenerationSteps>
+      <FillAndEdge fillType="Grass" edgeType="Tree"/>
+      <Mutate ifType="Grass" toType="Water" chanceToMutate="0.05"/>
+      <CellularAutomata ifType="Grass" toType="Water" ifNeighborType="Water" ifNeighborCount="1~8" iterations="4" chanceToMutate="0.1"/>
+      <RoomsAndPaths>
+        <Rooms roomCount="5" width="3~7" height="3~7" floorType="WoodFloor" wallType="StoneWall" numOverlaps="0"/>
+        <Paths pathType="DirtPath" loop="false"/>
+      </RoomsAndPaths>
+     
+      <SpawnItem type="Leather Chest" spawnTile="WoodFloor" iterations="2"/>
+      <SpawnItem type="Leather Arms" spawnTile="WoodFloor" iterations="2"/>
+      
+      <SpawnActor iterations="5" type="Spearman_Enemy" spawnTile="Grass" name="Spearman"/>
+      <SpawnActor iterations="5" type="Archer_Enemy" spawnTile="Grass" name="Archer"/>
+      <SpawnActor iterations="5" type="Archer_Ally" spawnTile="Grass" name="Villager"/>
+      <SpawnActor iterations="5" type="Spearman_Ally" spawnTile="Grass" name="Villager"/>
+      
+    </GenerationSteps>
+  </MapDefinition>
+  
+  <MapDefinition name="Cellar" defaultTile="CellarBackground" width="32" height="32">
+    <GenerationSteps>
+      <RoomsAndPaths>
+        <Rooms roomCount="10~12" width="5~8" height="5~8" floorType="CellarFloor" wallType="CellarWall" numOverlaps="4"/>
+        <Paths pathType="CellarFloor" loop="false"/>
+      </RoomsAndPaths>
+      <SpawnActor iterations="3" type="Spearman_Enemy"  spawnTile="CellarFloor" name="Bandit"/>
+      <SpawnActor iterations="3" type="Archer_Enemy"    spawnTile="CellarFloor" name="Bandit"/>
+      <SpawnActor iterations="3" type="Spearman_Ally" spawnTile="CellarFloor" name="Villager"/>
+    </GenerationSteps>
+  </MapDefinition>
+
+  <MapDefinition name="Dungeon" defaultTile="Lava" width="32" height="32">
+    <GenerationSteps>
+      <FromFile fileName="Dungeon.png"/>
+      <SpawnActor iterations="2" type="Archer_Enemy" spawnTile="DungeonFloor" name="Archer"/>
+      <SpawnActor iterations="2" type="Spearman_Enemy" spawnTile="DungeonFloor" name="Spearman"/>
+    </GenerationSteps>
+  </MapDefinition>
+
+
+</MapDefinitions>

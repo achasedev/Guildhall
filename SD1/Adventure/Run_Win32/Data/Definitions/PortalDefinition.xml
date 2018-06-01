@@ -1,0 +1,23 @@
+<PortalDefinitions>
+
+  <PortalDefinition name="StairsUp">
+    <Size physicsRadius="0.5" localDrawBounds="-0.5,-0.5,0.5,0.5"/>
+    <Movement>
+      <Fly speed="0.0"/>
+    </Movement>
+    <SpriteAnimSet spriteSheet="Terrain_32x32.png" spriteLayout="32,32">
+      <SpriteAnim name="WorldSprite" spriteIndexes="478"/>
+    </SpriteAnimSet>
+  </PortalDefinition>
+
+  <PortalDefinition name="StairsDown">
+    <Size physicsRadius="0.5" localDrawBounds="-0.5,-0.5,0.5,0.5"/>
+    <Movement>
+      <Fly speed="0.0"/>
+    </Movement>
+    <SpriteAnimSet spriteSheet="Terrain_32x32.png" spriteLayout="32,32">
+      <SpriteAnim name="WorldSprite" spriteIndexes="446"/>
+    </SpriteAnimSet>
+  </PortalDefinition>
+
+</PortalDefinitions>

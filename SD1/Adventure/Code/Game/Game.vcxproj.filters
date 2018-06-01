@@ -1,0 +1,285 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Data">
+      <UniqueIdentifier>{18e8065c-cc9d-485a-b694-a4877f137d46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Environment">
+      <UniqueIdentifier>{c72b7470-7960-4f82-a71a-974adfc6fdae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity">
+      <UniqueIdentifier>{4eedb471-8b4a-4eff-9606-95097f1ff89e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\Actor">
+      <UniqueIdentifier>{a5563c68-7d5a-4ad1-b7e2-87f78c320b7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\Projectile">
+      <UniqueIdentifier>{b7c27ffb-0f97-4528-98f5-3ac39049d3c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Entity\Portal">
+      <UniqueIdentifier>{001153fc-8a47-49f3-a2d7-b3c69c4c8326}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\Item">
+      <UniqueIdentifier>{c0e6f66b-2720-4047-99c4-8bb192a7c3f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\Actor\Behaviors">
+      <UniqueIdentifier>{389264e6-bd56-42b3-85ef-4a572dbc2a81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Environment\GenerationSteps">
+      <UniqueIdentifier>{fd78598d-ed5d-41e5-931f-b749a5fbf153}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main_Win32.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="App.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCommon.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Tile.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityDefinition.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="MapDefinition.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="TileDefinition.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>Entity\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorDefinition.cpp">
+      <Filter>Entity\Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileDefinition.cpp">
+      <Filter>Entity\Projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="Projectile.cpp">
+      <Filter>Entity\Projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="Adventure.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="AdventureDefinition.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Portal.cpp">
+      <Filter>Entity\Portal</Filter>
+    </ClCompile>
+    <ClCompile Include="PortalDefinition.cpp">
+      <Filter>Entity\Portal</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemDefinition.cpp">
+      <Filter>Entity\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Entity\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Behavior.cpp">
+      <Filter>Entity\Actor\Behaviors</Filter>
+    </ClCompile>
+    <ClCompile Include="Behavior_Flee.cpp">
+      <Filter>Entity\Actor\Behaviors</Filter>
+    </ClCompile>
+    <ClCompile Include="Behavior_RangedAttack.cpp">
+      <Filter>Entity\Actor\Behaviors</Filter>
+    </ClCompile>
+    <ClCompile Include="Behavior_MeleeAttack.cpp">
+      <Filter>Entity\Actor\Behaviors</Filter>
+    </ClCompile>
+    <ClCompile Include="Behavior_Wander.cpp">
+      <Filter>Entity\Actor\Behaviors</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGenStep.cpp">
+      <Filter>Environment\GenerationSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGenStep_CellularAutomata.cpp">
+      <Filter>Environment\GenerationSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGenStep_FillAndEdge.cpp">
+      <Filter>Environment\GenerationSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGenStep_FromFile.cpp">
+      <Filter>Environment\GenerationSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGenStep_Mutate.cpp">
+      <Filter>Environment\GenerationSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGenStep_SpawnActor.cpp">
+      <Filter>Environment\GenerationSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGenStep_SpawnItem.cpp">
+      <Filter>Environment\GenerationSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="MapGenStep_RoomsAndPaths.cpp">
+      <Filter>Environment\GenerationSteps</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogue.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCommon.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="App.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineBuildPreferences.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile.hpp">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.hpp">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.hpp">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityDefinition.hpp">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="MapDefinition.hpp">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="TileDefinition.hpp">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.hpp">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor.hpp">
+      <Filter>Entity\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="ActorDefinition.hpp">
+      <Filter>Entity\Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectileDefinition.hpp">
+      <Filter>Entity\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.hpp">
+      <Filter>Entity\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="Adventure.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="AdventureDefinition.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Portal.hpp">
+      <Filter>Entity\Portal</Filter>
+    </ClInclude>
+    <ClInclude Include="PortalDefinition.hpp">
+      <Filter>Entity\Portal</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemDefinition.hpp">
+      <Filter>Entity\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.hpp">
+      <Filter>Entity\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Behavior.hpp">
+      <Filter>Entity\Actor\Behaviors</Filter>
+    </ClInclude>
+    <ClInclude Include="Behavior_Flee.hpp">
+      <Filter>Entity\Actor\Behaviors</Filter>
+    </ClInclude>
+    <ClInclude Include="Behavior_RangedAttack.hpp">
+      <Filter>Entity\Actor\Behaviors</Filter>
+    </ClInclude>
+    <ClInclude Include="Behavior_MeleeAttack.hpp">
+      <Filter>Entity\Actor\Behaviors</Filter>
+    </ClInclude>
+    <ClInclude Include="Behavior_Wander.hpp">
+      <Filter>Entity\Actor\Behaviors</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenStep.hpp">
+      <Filter>Environment\GenerationSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenStep_CellularAutomata.hpp">
+      <Filter>Environment\GenerationSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenStep_FillAndEdge.hpp">
+      <Filter>Environment\GenerationSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenStep_FromFile.hpp">
+      <Filter>Environment\GenerationSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenStep_Mutate.hpp">
+      <Filter>Environment\GenerationSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenStep_SpawnActor.hpp">
+      <Filter>Environment\GenerationSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenStep_SpawnItem.hpp">
+      <Filter>Environment\GenerationSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenStep_RoomsAndPaths.hpp">
+      <Filter>Environment\GenerationSteps</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogue.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\Run_Win32\Data\GameConfig.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run_Win32\Data\Definitions\TileDefinition.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run_Win32\Data\Definitions\MapDefinition.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run_Win32\Data\Definitions\ActorDefinition.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run_Win32\Data\Definitions\ProjectileDefinition.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run_Win32\Data\Definitions\AdventureDefinition.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run_Win32\Data\Definitions\PortalDefinition.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run_Win32\Data\Definitions\ItemDefinition.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run_Win32\Data\Definitions\Behavior.xml">
+      <Filter>Data</Filter>
+    </Xml>
+  </ItemGroup>
+</Project>

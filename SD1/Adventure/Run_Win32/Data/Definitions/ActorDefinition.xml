@@ -1,0 +1,245 @@
+<ActorDefinitions>
+
+  <ActorDefinition name="Player" faction="Good">
+    <Size physicsRadius="0.3" localDrawBounds="-0.5,-0.5,0.5,0.5"/>
+    <SpriteAnimSet spriteSheet= "Player.png" spriteLayout="13,21">
+      <SpriteAnim name="IdleNorth"		        spriteIndexes="104,105"                                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleSouth"		        spriteIndexes="130,131"                                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleEast"		          spriteIndexes="143,144"                                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleWest"		          spriteIndexes="117,118"                                               framesPerSecond="4"/>   
+      <SpriteAnim name="WalkNorth"		        spriteIndexes="104,105,106,107,108,109,110,111,112"                   framesPerSecond="18"/>
+      <SpriteAnim name="WalkSouth"		        spriteIndexes="130,131,132,133,134,135,136,137,138"                   framesPerSecond="18"/>
+      <SpriteAnim name="WalkEast"		          spriteIndexes="143,144,145,146,147,148,149,150,151"                   framesPerSecond="18"/>
+      <SpriteAnim name="WalkWest"		          spriteIndexes="117,118,119,120,121,122,123,124,125"                   framesPerSecond="18"/>
+      <SpriteAnim name="RangedAttackNorth"		spriteIndexes="208,209,210,211,212,213,214,215,216,217,218,219,220"   framesPerSecond="26" priority="1" playMode="Once"/>
+      <SpriteAnim name="RangedAttackSouth"		spriteIndexes="234,235,236,237,238,239,240,241,242,243,244,245,246"   framesPerSecond="26" priority="1" playMode="Once"/>
+      <SpriteAnim name="RangedAttackEast"		  spriteIndexes="247,248,249,250,251,252,253,254,255,256,257,258,259"   framesPerSecond="26" priority="1" playMode="Once"/>
+      <SpriteAnim name="RangedAttackWest"		  spriteIndexes="221,222,223,224,225,226,227,228,229,230,231,232,233"   framesPerSecond="26" priority="1" playMode="Once"/>
+      <SpriteAnim name="SpearAttackNorth"		  spriteIndexes="52,53,54,55,56,57,58,59"                               framesPerSecond="16" priority="1" playMode="Once"/>
+      <SpriteAnim name="SpearAttackSouth"		  spriteIndexes="78,79,80,81,82,83,84,85"                               framesPerSecond="16" priority="1" playMode="Once"/>
+      <SpriteAnim name="SpearAttackEast"		  spriteIndexes="91,92,93,94,95,96,97,98"                               framesPerSecond="16" priority="1" playMode="Once"/>
+      <SpriteAnim name="SpearAttackWest"		  spriteIndexes="65,66,67,68,69,70,71,72"                               framesPerSecond="16" priority="1" playMode="Once"/>
+      <SpriteAnim name="Death"		            spriteIndexes="260,261,262,263,264,265"                               framesPerSecond="6"  priority="2" playMode="Once"/>
+    </SpriteAnimSet>
+    <Movement>
+      <Sight distance="20.0"/>
+      <Walk speed="2.0"/>
+      <Swim speed="1.5"/>
+    </Movement>
+    <Health max="20" start="20"/>
+    <Stats>
+      <Minimum attack="10" defense="12" speed="5"/>
+      <Maximum attack="10" defense="12" speed="5"/>
+    </Stats>
+    <Equipment>
+      <Bow type="Bow"/>
+      <Spear type="Spear"/>
+    </Equipment>
+  </ActorDefinition>
+
+  <ActorDefinition name="Marcus" faction="Evil">
+    <Size physicsRadius="0.3" localDrawBounds="-0.5,-0.5,0.5,0.5"/>
+    <SpriteAnimSet spriteSheet= "Player.png"  spriteLayout="13,21">
+      <SpriteAnim name="IdleNorth"		        spriteIndexes="104,105"                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleSouth"		        spriteIndexes="130,131"                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleEast"		          spriteIndexes="143,144"                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleWest"		          spriteIndexes="117,118"                               framesPerSecond="4"/>
+      <SpriteAnim name="WalkNorth"		        spriteIndexes="104,105,106,107,108,109,110,111,112"   framesPerSecond="18"/>
+      <SpriteAnim name="WalkSouth"		        spriteIndexes="130,131,132,133,134,135,136,137,138"   framesPerSecond="18"/>
+      <SpriteAnim name="WalkEast"		          spriteIndexes="143,144,145,146,147,148,149,150,151"   framesPerSecond="18"/>
+      <SpriteAnim name="WalkWest"		          spriteIndexes="117,118,119,120,121,122,123,124,125"   framesPerSecond="18"/>
+      <SpriteAnim name="RangedAttackNorth"		spriteIndexes="208,209,210,211,212,213,214,215,216,217,218,219,220"   framesPerSecond="26" priority="1" playMode="Once"/>
+      <SpriteAnim name="RangedAttackSouth"		spriteIndexes="234,235,236,237,238,239,240,241,242,243,244,245,246"   framesPerSecond="26" priority="1" playMode="Once"/>
+      <SpriteAnim name="RangedAttackEast"		  spriteIndexes="247,248,249,250,251,252,253,254,255,256,257,258,259"   framesPerSecond="26" priority="1" playMode="Once"/>
+      <SpriteAnim name="RangedAttackWest"		  spriteIndexes="221,222,223,224,225,226,227,228,229,230,231,232,233"   framesPerSecond="26" priority="1" playMode="Once"/>
+      <SpriteAnim name="Death"		            spriteIndexes="260,261,262,263,264,265"                               framesPerSecond="6"  priority="1" playMode="Once"/>
+      <SpriteAnim name="SpearAttackNorth"		  spriteIndexes="52,53,54,55,56,57,58,59"                               framesPerSecond="16" priority="1" playMode="Once"/>
+      <SpriteAnim name="SpearAttackSouth"		  spriteIndexes="78,79,80,81,82,83,84,85"                               framesPerSecond="16" priority="1" playMode="Once"/>
+      <SpriteAnim name="SpearAttackEast"		  spriteIndexes="91,92,93,94,95,96,97,98"                               framesPerSecond="16" priority="1" playMode="Once"/>
+      <SpriteAnim name="SpearAttackWest"		  spriteIndexes="65,66,67,68,69,70,71,72"                               framesPerSecond="16" priority="1" playMode="Once"/>
+    </SpriteAnimSet>
+    <Equipment>
+      <Head type="Plate Head"/>
+      <Chest type="Plate Chest"/>
+      <Arms type="Plate Arms"/>
+      <Legs type="Plate Legs"/>
+      <Feet type="Plate Feet"/>
+      <Hands type="Plate Hands"/>
+      <Spear type="Spear"/>
+    </Equipment>
+    <Movement>
+      <Sight distance="20.0"/>
+      <Walk speed="1.0"/>
+    </Movement>
+    <Health max="20" start="20"/>
+    <Stats>
+      <Minimum attack="3" defense="2" speed="5"/>
+      <Maximum attack="3" defense="2" speed="5"/>
+    </Stats>
+    <Behaviors>
+      <RangedAttack/>
+      <MeleeAttack/>
+      <Wander/>
+    </Behaviors>
+  </ActorDefinition>
+
+  <ActorDefinition name="Archer_Enemy" faction="Evil">
+    <Size physicsRadius="0.3" localDrawBounds="-0.5,-0.5,0.5,0.5"/>
+    <SpriteAnimSet spriteSheet= "Bandit.png" spriteLayout="13,21">
+      <SpriteAnim name="IdleNorth"		        spriteIndexes="104,105"                                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleSouth"		        spriteIndexes="130,131"                                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleEast"		          spriteIndexes="143,144"                                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleWest"		          spriteIndexes="117,118"                                               framesPerSecond="4"/>
+      <SpriteAnim name="WalkNorth"		        spriteIndexes="104,105,106,107,108,109,110,111,112"                   framesPerSecond="18"/>
+      <SpriteAnim name="WalkSouth"		        spriteIndexes="130,131,132,133,134,135,136,137,138"                   framesPerSecond="18"/>
+      <SpriteAnim name="WalkEast"		          spriteIndexes="143,144,145,146,147,148,149,150,151"                   framesPerSecond="18"/>
+      <SpriteAnim name="WalkWest"		          spriteIndexes="117,118,119,120,121,122,123,124,125"                   framesPerSecond="18"/>
+      <SpriteAnim name="RangedAttackNorth"		spriteIndexes="208,209,210,211,212,213,214,215,216,217,218,219,220"   framesPerSecond="26" priority="1" playMode="Once"/>
+      <SpriteAnim name="RangedAttackSouth"		spriteIndexes="234,235,236,237,238,239,240,241,242,243,244,245,246"   framesPerSecond="26" priority="1" playMode="Once"/>
+      <SpriteAnim name="RangedAttackEast"		  spriteIndexes="247,248,249,250,251,252,253,254,255,256,257,258,259"   framesPerSecond="26" priority="1" playMode="Once"/>
+      <SpriteAnim name="RangedAttackWest"		  spriteIndexes="221,222,223,224,225,226,227,228,229,230,231,232,233"   framesPerSecond="26" priority="1" playMode="Once"/>
+      <SpriteAnim name="Death"		            spriteIndexes="260,261,262,263,264,265"                               framesPerSecond="6"  priority="1" playMode="Once"/>
+    </SpriteAnimSet>
+    <Movement>
+      <Sight distance="20.0"/>
+      <Walk speed="1.0"/>
+    </Movement>
+    <Health max="15" start="15"/>
+    <Stats>
+      <Minimum attack="5" defense="1" speed="1"/>
+      <Maximum attack="5" defense="1" speed="2"/>
+    </Stats>
+    <Behaviors>
+      <Flee/>
+      <RangedAttack/>
+      <Wander/>
+    </Behaviors>
+    <Equipment>
+      <Chest type="Leather Chest"/>
+      <Arms type="Leather Arms"/>
+      <Feet type="Leather Feet"/>
+      <Hands type="Leather Hands"/>
+      <Bow type="Bow"/>
+    </Equipment>
+  </ActorDefinition>
+
+  <ActorDefinition name="Spearman_Enemy" faction="Evil">
+    <Size physicsRadius="0.3" localDrawBounds="-0.5,-0.5,0.5,0.5"/>
+    <SpriteAnimSet spriteSheet= "Bandit.png" spriteLayout="13,21">
+      <SpriteAnim name="IdleNorth"		        spriteIndexes="104,105"                                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleSouth"		        spriteIndexes="130,131"                                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleEast"		          spriteIndexes="143,144"                                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleWest"		          spriteIndexes="117,118"                                               framesPerSecond="4"/>
+      <SpriteAnim name="WalkNorth"		        spriteIndexes="104,105,106,107,108,109,110,111,112"                   framesPerSecond="18"/>
+      <SpriteAnim name="WalkSouth"		        spriteIndexes="130,131,132,133,134,135,136,137,138"                   framesPerSecond="18"/>
+      <SpriteAnim name="WalkEast"		          spriteIndexes="143,144,145,146,147,148,149,150,151"                   framesPerSecond="18"/>
+      <SpriteAnim name="WalkWest"		          spriteIndexes="117,118,119,120,121,122,123,124,125"                   framesPerSecond="18"/>
+      <SpriteAnim name="SpearAttackNorth"		  spriteIndexes="52,53,54,55,56,57,58,59"                               framesPerSecond="16" priority="1" playMode="Once"/>
+      <SpriteAnim name="SpearAttackSouth"		  spriteIndexes="78,79,80,81,82,83,84,85"                               framesPerSecond="16" priority="1" playMode="Once"/>
+      <SpriteAnim name="SpearAttackEast"		  spriteIndexes="91,92,93,94,95,96,97,98"                               framesPerSecond="16" priority="1" playMode="Once"/>
+      <SpriteAnim name="SpearAttackWest"		  spriteIndexes="65,66,67,68,69,70,71,72"                               framesPerSecond="16" priority="1" playMode="Once"/>
+      <SpriteAnim name="Death"		            spriteIndexes="260,261,262,263,264,265"                               framesPerSecond="6"  priority="2" playMode="Once"/>
+    </SpriteAnimSet>
+    <Movement>
+      <Sight distance="20.0"/>
+      <Walk speed="1.0"/>
+    </Movement>
+    <Health max="20" start="20"/>
+    <Stats>
+      <Minimum attack="2" defense="1" speed="2"/>
+      <Maximum attack="2" defense="2" speed="2"/>
+    </Stats>
+    <Behaviors>
+      <Flee/>
+      <MeleeAttack/>
+      <Wander/>
+    </Behaviors>
+    <Equipment>
+      <Chest type="Leather Chest"/>
+      <Arms type="Leather Arms"/>
+      <Feet type="Leather Feet"/>
+      <Hands type="Leather Hands"/>
+      <Spear type="Spear"/>
+    </Equipment>
+  </ActorDefinition>
+
+  <ActorDefinition name="Archer_Ally" faction="Good">
+    <Size physicsRadius="0.3" localDrawBounds="-0.5,-0.5,0.5,0.5"/>
+    <SpriteAnimSet spriteSheet= "Ally.png" spriteLayout="13,21">
+      <SpriteAnim name="IdleNorth"		        spriteIndexes="104,105"                                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleSouth"		        spriteIndexes="130,131"                                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleEast"		          spriteIndexes="143,144"                                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleWest"		          spriteIndexes="117,118"                                               framesPerSecond="4"/>
+      <SpriteAnim name="WalkNorth"		        spriteIndexes="104,105,106,107,108,109,110,111,112"                   framesPerSecond="18"/>
+      <SpriteAnim name="WalkSouth"		        spriteIndexes="130,131,132,133,134,135,136,137,138"                   framesPerSecond="18"/>
+      <SpriteAnim name="WalkEast"		          spriteIndexes="143,144,145,146,147,148,149,150,151"                   framesPerSecond="18"/>
+      <SpriteAnim name="WalkWest"		          spriteIndexes="117,118,119,120,121,122,123,124,125"                   framesPerSecond="18"/>
+      <SpriteAnim name="RangedAttackNorth"		spriteIndexes="208,209,210,211,212,213,214,215,216,217,218,219,220"   framesPerSecond="26" playMode="Once"/>
+      <SpriteAnim name="RangedAttackSouth"		spriteIndexes="234,235,236,237,238,239,240,241,242,243,244,245,246"   framesPerSecond="26" playMode="Once"/>
+      <SpriteAnim name="RangedAttackEast"		  spriteIndexes="247,248,249,250,251,252,253,254,255,256,257,258,259"   framesPerSecond="26" playMode="Once"/>
+      <SpriteAnim name="RangedAttackWest"		  spriteIndexes="221,222,223,224,225,226,227,228,229,230,231,232,233"   framesPerSecond="26" playMode="Once"/>
+      <SpriteAnim name="Death"		            spriteIndexes="260,261,262,263,264,265"                               framesPerSecond="6" playMode="Once"/>
+    </SpriteAnimSet>
+    <Equipment>
+      <Chest type="Leather Chest"/>
+      <Arms type="Leather Arms"/>
+      <Feet type="Leather Feet"/>
+      <Hands type="Leather Hands"/>
+    </Equipment>
+    <Movement>
+      <Sight distance="20.0"/>
+      <Walk speed="1.0"/>
+    </Movement>
+    <Health max="10" start="10"/>
+    <Stats>
+      <Minimum attack="2" defense="1" speed="2"/>
+      <Maximum attack="2" defense="2" speed="2"/>
+    </Stats>
+    <Behaviors>
+      <Flee/>
+      <RangedAttack/>
+      <Wander/>
+    </Behaviors>
+  </ActorDefinition>
+
+  <ActorDefinition name="Spearman_Ally" faction="Good">
+    <Size physicsRadius="0.3" localDrawBounds="-0.5,-0.5,0.5,0.5"/>
+    <SpriteAnimSet spriteSheet= "Ally.png" spriteLayout="13,21">
+      <SpriteAnim name="IdleNorth"		        spriteIndexes="104,105"                                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleSouth"		        spriteIndexes="130,131"                                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleEast"		          spriteIndexes="143,144"                                               framesPerSecond="4"/>
+      <SpriteAnim name="IdleWest"		          spriteIndexes="117,118"                                               framesPerSecond="4"/>
+      <SpriteAnim name="WalkNorth"		        spriteIndexes="104,105,106,107,108,109,110,111,112"                   framesPerSecond="18"/>
+      <SpriteAnim name="WalkSouth"		        spriteIndexes="130,131,132,133,134,135,136,137,138"                   framesPerSecond="18"/>
+      <SpriteAnim name="WalkEast"		          spriteIndexes="143,144,145,146,147,148,149,150,151"                   framesPerSecond="18"/>
+      <SpriteAnim name="WalkWest"		          spriteIndexes="117,118,119,120,121,122,123,124,125"                   framesPerSecond="18"/>
+      <SpriteAnim name="SpearAttackNorth"		  spriteIndexes="52,53,54,55,56,57,58,59"                               framesPerSecond="16" priority="1" playMode="Once"/>
+      <SpriteAnim name="SpearAttackSouth"		  spriteIndexes="78,79,80,81,82,83,84,85"                               framesPerSecond="16" priority="1" playMode="Once"/>
+      <SpriteAnim name="SpearAttackEast"		  spriteIndexes="91,92,93,94,95,96,97,98"                               framesPerSecond="16" priority="1" playMode="Once"/>
+      <SpriteAnim name="SpearAttackWest"		  spriteIndexes="65,66,67,68,69,70,71,72"                               framesPerSecond="16" priority="1" playMode="Once"/>
+      <SpriteAnim name="Death"		            spriteIndexes="260,261,262,263,264,265"                               framesPerSecond="6"  priority="2" playMode="Once"/>
+    </SpriteAnimSet>
+    <Movement>
+      <Sight distance="20.0"/>
+      <Walk speed="1.0"/>
+    </Movement>
+    <Health max="20" start="20"/>
+    <Stats>
+      <Minimum attack="2" defense="1" speed="2"/>
+      <Maximum attack="2" defense="2" speed="2"/>
+    </Stats>
+    <Behaviors>
+      <Flee/>
+      <MeleeAttack/>
+      <Wander/>
+    </Behaviors>
+    <Equipment>
+      <Chest type="Leather Chest"/>
+      <Arms type="Leather Arms"/>
+      <Feet type="Leather Feet"/>
+      <Hands type="Leather Hands"/>
+      <Spear type="Spear"/>
+    </Equipment>
+  </ActorDefinition>
+
+</ActorDefinitions>

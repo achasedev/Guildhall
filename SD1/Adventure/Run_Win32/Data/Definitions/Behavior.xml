@@ -1,0 +1,7 @@
+<Behaviors>
+
+  <Flee minFleeDistance="5"/>
+  <RangedAttack projectile="Arrow"/>
+  <Wander maxDistancePerMove="5"/>
+  <MeleeAttack/>
+</Behaviors>
