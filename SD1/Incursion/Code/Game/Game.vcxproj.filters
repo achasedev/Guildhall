@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="General">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Entity">
+      <UniqueIdentifier>{03c5afea-a4c3-434c-9668-44fbd7cd6e84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Environment">
+      <UniqueIdentifier>{0bd03e53-620c-4c8e-8a48-9596b6ea5036}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main_Win32.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="App.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCommon.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerTank.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="NpcTurret.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="NpcTank.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Explosion.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="TileDefinition.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="Tile.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="PickUp.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCommon.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="App.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerTank.hpp">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="NpcTurret.hpp">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="NpcTank.hpp">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.hpp">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.hpp">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Explosion.hpp">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="World.hpp">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="TileDefinition.hpp">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile.hpp">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.hpp">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineBuildPreferences.hpp">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="PickUp.hpp">
+      <Filter>Entity</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
