@@ -1,0 +1,13 @@
+<material>
+
+	<shader name="Phong_Alpha"/>
+
+	<textures>
+		<texture name="Miku/Miku_Base.png" bind="0" />
+		<texture name="Flat" bind="1"/>
+	</textures>
+
+	<samplers>
+	</samplers>
+
+</material>
