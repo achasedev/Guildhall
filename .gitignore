@@ -95,7 +95,7 @@ $RECYCLE.BIN/
 *.history
 *.suo
 *.TMP
-Data/Screenshots/
+**/Run_Win32/Data/Screenshots/
 *.log
 **/.vs/
 Temporary/
