@@ -1,0 +1,301 @@
+<spritesheet name="archer_f" texture="Data/Images/Archer.png" layout="5,5">
+
+	<!-- Image portrait -->
+	<sprite name="archer_f.portrait">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="152,13,235,130" />
+		<pivot xy="0.5,0" />
+	</sprite>
+
+
+	<!-- Idle -->
+	<sprite name="archer_f.tl.idle">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="10,232,25,258" flipX="true" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.tr.idle">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="10,232,25,258" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.al.idle">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="10,200,24,226" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.ar.idle">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="10,200,24,226" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+
+
+	<!-- Walk -->
+	<sprite name="archer_f.tl.walk0">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="30,233,46,260" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.tr.walk0">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="30,233,46,260" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.al.walk0">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="30,202,44,227" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.ar.walk0">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="30,202,44,227" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+
+	<sprite name="archer_f.tl.walk1">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="50,234,65,259" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.tr.walk1">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="50,234,65,259" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.al.walk1">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="49,200,65,228" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.ar.walk1">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="49,200,65,228" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+
+
+	<!-- hit -->
+	<sprite name="archer_f.tl.hit">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="70,232,86,260" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.tr.hit">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="70,232,86,260" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.al.hit">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="70,200,85,228" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.ar.hit">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="70,200,85,228" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+
+
+<!-- weak -->
+	<sprite name="archer_f.tl.weak">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="90,232,106,257" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.tr.weak">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="90,232,106,257" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.al.weak">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="90,200,105,225" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.ar.weak">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="90,200,105,225" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+
+
+	<!-- Cast -->
+	<sprite name="archer_f.tl.cast">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="111,232,126,259" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.tr.cast">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="111,232,126,259" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.al.cast">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="110,200,124,226" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.ar.cast">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="110,200,124,226" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+
+
+	<!-- Crouch -->
+	<sprite name="archer_f.tl.crouch">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="129,232,145,257" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.tr.crouch">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="129,232,145,257" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.al.crouch">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="130,200,145,223" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.ar.crouch">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="130,200,145,223" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+
+
+	<!-- Dead -->
+	<sprite name="archer_f.tl.dead">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="10,168,26,187" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.tr.dead">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="10,168,26,187" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.al.dead">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="10,136,25,156" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.ar.dead">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="10,136,25,156" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+
+
+	<!-- Attack -->
+	<sprite name="archer_f.tl.attack0">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="30,168,46,193" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.tr.attack0">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="30,168,46,193" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.al.attack0">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="31,136,46,164" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.ar.attack0">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="31,136,46,164" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+
+	<sprite name="archer_f.tl.attack1">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="50,168,65,194" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.tr.attack1">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="50,168,65,194" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.al.attack1">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="50,136,66,162" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.ar.attack1">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="50,136,66,162" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+
+	<sprite name="archer_f.tl.attack2">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="70,168,85,193" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.tr.attack2">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="70,168,85,193" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.al.attack2">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="71,136,85,161" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.ar.attack2">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="71,136,85,161" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+
+	<sprite name="archer_f.tl.attack3">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="89,168,107,194" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.tr.attack3">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="89,168,107,194" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.al.attack3">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="88,136,105,163" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.ar.attack3">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="88,136,105,163" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+
+	<sprite name="archer_f.tl.attack4">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="110,168,126,194" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.tr.attack4">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="110,168,126,194" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.al.attack4">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="110,136,125,163" />
+		<pivot xy="0.5,0" />
+	</sprite>
+	<sprite name="archer_f.ar.attack4">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="110,136,125,163" flipX="true"/>
+		<pivot xy="0.5,0" />
+	</sprite>
+
+
+
+</spritesheet> 

@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Environment">
+      <UniqueIdentifier>{90896873-f326-40de-8f58-eea7c154bf27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="State Management">
+      <UniqueIdentifier>{b3bdc9b8-e926-4f7f-848e-ac7ff9514012}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="State Management\Game States">
+      <UniqueIdentifier>{9726638b-9c45-4cb3-b385-8fb2d220ca32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="State Management\Play Actions">
+      <UniqueIdentifier>{badc56cf-e148-4c18-9a51-32b59bf35fe6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="State Management\Play Modes">
+      <UniqueIdentifier>{961371d4-eb84-483e-b746-06e42fd98403}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Architecture">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Actor">
+      <UniqueIdentifier>{3235847c-ad41-4d7e-9859-0cb0031fb081}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Actor\Animation">
+      <UniqueIdentifier>{3ed61619-68ea-441d-b73c-552bf2197ff7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main_Win32.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="App.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCommon.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockDefinition.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="Block.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>State Management\Game States</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState_Loading.cpp">
+      <Filter>State Management\Game States</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState_MainMenu.cpp">
+      <Filter>State Management\Game States</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState_Playing.cpp">
+      <Filter>State Management\Game States</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayAction.cpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayAction_Move.cpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayMode.cpp">
+      <Filter>State Management\Play Modes</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayMode_Default.cpp">
+      <Filter>State Management\Play Modes</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorController.cpp">
+      <Filter>Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="BoardState.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayMode_Menu.cpp">
+      <Filter>State Management\Play Modes</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayMode_SelectTile.cpp">
+      <Filter>State Management\Play Modes</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayAction_Wait.cpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayMode_Observe.cpp">
+      <Filter>State Management\Play Modes</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayAction_Attack.cpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayMode_Victory.cpp">
+      <Filter>State Management\Play Modes</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>Actor\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="IsoSprite.cpp">
+      <Filter>Actor\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="IsoAnimation.cpp">
+      <Filter>Actor\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationSet.cpp">
+      <Filter>Actor\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayAction_Jump.cpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayAction_Walk.cpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorDefinition.cpp">
+      <Filter>Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayAction_Arrow.cpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayAction_Meteor.cpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="FlyoutText.cpp">
+      <Filter>Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayMode_Pause.cpp">
+      <Filter>State Management\Play Modes</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayAction_Guard.cpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayAction_Heal.cpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="BoardStateDefinition.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game.hpp">
+      <Filter>Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCommon.hpp">
+      <Filter>Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="App.hpp">
+      <Filter>Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineBuildPreferences.hpp">
+      <Filter>Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockDefinition.hpp">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="Block.hpp">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.hpp">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.hpp">
+      <Filter>State Management\Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState_Loading.hpp">
+      <Filter>State Management\Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState_MainMenu.hpp">
+      <Filter>State Management\Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState_Playing.hpp">
+      <Filter>State Management\Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayAction.hpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayAction_Move.hpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayMode.hpp">
+      <Filter>State Management\Play Modes</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayMode_Default.hpp">
+      <Filter>State Management\Play Modes</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.hpp">
+      <Filter>Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="ActorController.hpp">
+      <Filter>Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="BoardState.hpp">
+      <Filter>Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayMode_Menu.hpp">
+      <Filter>State Management\Play Modes</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayMode_SelectTile.hpp">
+      <Filter>State Management\Play Modes</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayAction_Wait.hpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayMode_Observe.hpp">
+      <Filter>State Management\Play Modes</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayAction_Attack.hpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayMode_Victory.hpp">
+      <Filter>State Management\Play Modes</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor.hpp">
+      <Filter>Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator.hpp">
+      <Filter>Actor\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="IsoSprite.hpp">
+      <Filter>Actor\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="IsoAnimation.hpp">
+      <Filter>Actor\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationSet.hpp">
+      <Filter>Actor\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayAction_Jump.hpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayAction_Walk.hpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="ActorDefinition.hpp">
+      <Filter>Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayAction_Arrow.hpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayAction_Meteor.hpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="FlyoutText.hpp">
+      <Filter>Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayMode_Pause.hpp">
+      <Filter>State Management\Play Modes</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayAction_Guard.hpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayAction_Heal.hpp">
+      <Filter>State Management\Play Actions</Filter>
+    </ClInclude>
+    <ClInclude Include="BoardStateDefinition.hpp">
+      <Filter>Architecture</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

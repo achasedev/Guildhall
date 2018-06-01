@@ -1,0 +1,299 @@
+<spritesheet name="mage_f" texture="Data/Images/Mage.png" layout="5,5">
+
+	<!-- Image portrait -->
+	<sprite name="mage_f.portrait">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="152,12,236,129" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+
+
+	<!-- Idle -->
+	<sprite name="mage_f.tl.idle">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="10,232,26,259" flipX="true"/>
+		<pivot xy="0.5,0.0"/>
+	</sprite>
+	<sprite name="mage_f.tr.idle">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="10,232,26,259" />
+		<pivot xy="0.5,0.0"/>
+	</sprite>
+	<sprite name="mage_f.al.idle">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="11,200,26,227" />
+		<pivot xy="0.5,0.0"/>
+	</sprite>
+	<sprite name="mage_f.ar.idle">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="11,200,26,227" flipX="true"/>
+		<pivot xy="0.5,0.0"/>
+	</sprite>
+
+
+	<!-- Walk -->
+	<sprite name="mage_f.tl.walk0">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="30,233,46,260" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.tr.walk0">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="30,233,46,260" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.al.walk0">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="31,202,46,228" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+		<sprite name="mage_f.ar.walk0">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="31,202,46,228" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+
+	<sprite name="mage_f.tl.walk1">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="50,234,66,260" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.tr.walk1">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="50,234,66,260" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.al.walk1">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="50,201,66,228" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.ar.walk1">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="50,201,66,228" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+
+
+	<!-- Hit -->
+	<sprite name="mage_f.tl.hit">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="70,232,86,259" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.tr.hit">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="70,232,86,259" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.al.hit">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="71,200,87,227" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.ar.hit">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="71,200,87,227" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+
+
+	<!-- Weak -->
+	<sprite name="mage_f.tl.weak">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="91,232,106,258" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.tr.weak">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="91,232,106,258" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.al.weak">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="91,200,106,225" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.ar.weak">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="91,200,106,225" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+
+
+	<!-- Cast -->
+	<sprite name="mage_f.tl.cast">
+	   <ppu count="16" />
+	   <uv layout="pixel" uvs="110,232,125,259" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.tr.cast">
+	   <ppu count="16" />
+	   <uv layout="pixel" uvs="110,232,125,259" />
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.al.cast">
+	   <ppu count="16" />
+	   <uv layout="pixel" uvs="110,200,126,229" />
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.ar.cast">
+	   <ppu count="16" />
+	   <uv layout="pixel" uvs="110,200,126,229" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+
+	<!-- Crouch -->
+	<sprite name="mage_f.tl.crouch">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="131,232,147,256" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.tr.crouch">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="131,232,147,256" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.al.crouch">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="130,200,146,224" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.ar.crouch">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="130,200,146,224" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+
+
+	<!-- Dead -->
+	<sprite name="mage_f.tl.dead">
+	   <ppu count="16" />
+	   <uv layout="pixel" uvs="10,169,26,188" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.tr.dead">
+	   <ppu count="16" />
+	   <uv layout="pixel" uvs="10,169,26,188" />
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.al.dead"> 
+	   <ppu count="16" />
+	   <uv layout="pixel" uvs="11,137,27,159" />
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.ar.dead"> 
+	   <ppu count="16" />
+	   <uv layout="pixel" uvs="11,137,27,159" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+
+	<!-- Attack -->
+	<sprite name="mage_f.tl.attack0">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="31,168,47,197" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.tr.attack0">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="31,168,47,197" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.al.attack0">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="30,136,46,164" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.ar.attack0">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="30,136,46,164" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+
+	<sprite name="mage_f.tl.attack1">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="50,168,66,197" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.tr.attack1">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="50,168,66,197" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.al.attack1">
+	   <ppu count="16" />
+	   <uv layout="pixel" uvs="51,136,67,163" />
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.ar.attack1">
+	   <ppu count="16" />
+	   <uv layout="pixel" uvs="51,136,67,163" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+	<sprite name="mage_f.tl.attack2">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="71,171,87,196" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.tr.attack2">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="71,171,87,196" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.al.attack2">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="70,136,86,165" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.ar.attack2">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="70,136,86,165" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+
+	<sprite name="mage_f.tl.attack3">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="90,168,108,196" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.tr.attack3">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="90,168,108,196" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.al.attack3">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="89,136,107,164" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.ar.attack3">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="89,136,107,164" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+
+	<sprite name="mage_f.tl.attack4">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="111,168,127,196" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.tr.attack4">
+		<ppu count="16" />
+		<uv layout="pixel" uvs="111,168,127,196" />
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.al.attack4">
+	   <ppu count="16" />
+	   <uv layout="pixel" uvs="110,136,126,164" />
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="mage_f.ar.attack4">
+	   <ppu count="16" />
+	   <uv layout="pixel" uvs="110,136,126,164" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+</spritesheet>

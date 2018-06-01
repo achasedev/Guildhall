@@ -1,0 +1,34 @@
+<!-- 
+   Goal of an animation set is to alias keywords to one or more animations.
+   This allows us to add animation variations, or control an animation using 
+   known keywords that alias to actual aniamtions.
+-->
+
+<animationset name="knight_f">
+
+   <alias alias="idle">
+      <animation name="knight_f.idle" />
+   </alias>
+   <alias alias="weak">
+      <animation name="knight_f.weak" />
+   </alias>
+   <alias alias="walk">
+      <animation name="knight_f.walk" />
+   </alias>
+   <alias alias="hit">
+      <animation name="knight_f.hit" />
+   </alias>
+   <alias alias="jump">
+      <animation name="knight_f.jump" />
+   </alias>
+   <alias alias="attack">
+      <animation name="knight_f.attack" />
+   </alias>
+   <alias alias="cast">
+      <animation name="knight_f.spell_attack" />
+   </alias>
+   <alias alias="dead">
+      <animation name="knight_f.dead" />
+   </alias>
+
+</animationset>

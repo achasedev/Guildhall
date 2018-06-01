@@ -1,0 +1,42 @@
+<isoanimations>
+
+   <isoanimation name="knight_f.idle" playmode="loop">
+      <frame isosprite="knight_f.idle" duration="1.0" />
+   </isoanimation>
+   <isoanimation name="knight_f.weak" playmode="loop">
+      <frame isosprite="knight_f.weak" duration="1.0" />
+   </isoanimation>
+   <isoanimation name="knight_f.dead" playmode="loop">
+      <frame isosprite="knight_f.dead" duration="1.0" />
+   </isoanimation>
+   <isoanimation name="knight_f.walk" playmode="loop">
+      <frame isosprite="knight_f.walk0" duration=".25" />
+      <frame isosprite="knight_f.walk1" duration=".25" />
+   </isoanimation>
+   <isoanimation name="knight_f.attack" playmode="clamp">
+      <frame isosprite="knight_f.walk1" duration=".25" />
+      <frame isosprite="knight_f.attack2" duration=".1" />
+      <frame isosprite="knight_f.attack3" duration=".1" />
+      <frame isosprite="knight_f.attack4" duration=".1" />
+   </isoanimation>
+
+   <isoanimation name="knight_f.charge" playmode="clamp">
+      <frame isosprite="knight_f.cast" duration=".25" />
+   </isoanimation>
+
+   <isoanimation name="knight_f.spell_attack" playmode="clamp">
+      <frame isosprite="knight_f.attack0" duration=".75" />
+      <frame isosprite="knight_f.attack3" duration=".25" />
+   </isoanimation>
+
+   <isoanimation name="knight_f.hit" playmode="clamp">
+      <frame isosprite="knight_f.hit" duration="1.0" />
+   </isoanimation>
+
+   <isoanimation name="knight_f.jump" playmode="clamp">
+      <frame isosprite="knight_f.crouch" duration=".25" />
+      <frame isosprite="knight_f.cast" duration=".50" />
+      <frame isosprite="knight_f.crouch" duration=".25" />
+   </isoanimation>
+
+</isoanimations>

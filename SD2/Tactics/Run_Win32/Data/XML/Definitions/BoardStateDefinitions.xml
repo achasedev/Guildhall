@@ -1,0 +1,42 @@
+<boardstatedefinitions>
+
+	<boardstatedefinition name="Test0" map="Data/Images/map0.png">
+		<actor name="Andrew" 	position="5,5" 	team="0" definition="knight_f"/>
+		<actor name="Chris" 	position="5,6" 	team="0" definition="mage_f"/>
+		<actor name="Neesarg" 	position="5,7" 	team="0" definition="archer_f"/>
+		<actor name="Abhishek" 	position="7,5" team="1" definition="knight_f"/>
+		<actor name="Chase" 	position="7,6" team="1" definition="archer_f"/>
+	</boardstatedefinition>
+
+	<boardstatedefinition name="Test1" map="Data/Images/map1.png">
+		<actor name="Hannah" 	position="8,8" 	team="1" definition="knight_f"/>
+		<actor name="Emily" 	position="8,9" 	team="0" definition="mage_f"/>
+		<actor name="Tony" 		position="8,10" team="0" definition="archer_f"/>
+		<actor name="Andrew" 	position="1,3" 	team="1" definition="knight_f"/>
+		<actor name="Squirrel" 	position="2,4" 	team="1" definition="mage_f"/>
+	</boardstatedefinition>
+
+	<boardstatedefinition name="Test2" map="Data/Images/map2.png">
+		<actor name="Kevin" 	position="3,3" 	team="0" definition="knight_f"/>
+		<actor name="Joey" 		position="3,4" 	team="0" definition="mage_f"/>
+		<actor name="Ludi" 		position="3,5" 	team="0" definition="archer_f"/>
+		<actor name="Isabel" 	position="3,6" 	team="0" definition="knight_f"/>
+		<actor name="Cole" 		position="3,7" 	team="0" definition="mage_f"/>
+		<actor name="Bryan" 	position="3,8" 	team="0" definition="knight_f"/>
+		<actor name="Brennan" 	position="3,9" 	team="0" definition="mage_f"/>
+		<actor name="Bo" 		position="3,10" team="0" definition="archer_f"/>
+		<actor name="Andrew" 	position="3,11" team="0" definition="knight_f"/>
+		<actor name="Steven" 	position="3,12" team="0" definition="mage_f"/>
+		<actor name="Hershal" 	position="8,3" 	team="1" definition="knight_f"/>
+		<actor name="Harrison" 	position="8,4" 	team="1" definition="mage_f"/>
+		<actor name="Alex" 		position="8,5" 	team="1" definition="archer_f"/>
+		<actor name="Gerald" 	position="8,6" 	team="1" definition="knight_f"/>
+		<actor name="Xie" 		position="2,7" 	team="1" definition="mage_f"/>
+		<actor name="John" 		position="8,8" 	team="1" definition="knight_f"/>
+		<actor name="David" 	position="8,9" 	team="1" definition="mage_f"/>
+		<actor name="Nick" 		position="8,10" team="1" definition="archer_f"/>
+		<actor name="Hattie" 	position="8,11" team="1" definition="knight_f"/>
+		<actor name="Zach" 		position="8,12" team="1" definition="mage_f"/>
+	</boardstatedefinition>
+
+</boardstatedefinitions>

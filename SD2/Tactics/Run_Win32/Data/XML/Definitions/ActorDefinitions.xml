@@ -1,0 +1,37 @@
+
+<actordefinitions>
+
+	<actordefinition name="knight_f">
+		<attributes maxhealth="100" movespeed="4" jump="1" height="2" strength="10" actionspeed="20" critchance="0.05" blockrate="0.05"/>
+		<animation animationset="knight_f" defaultsprite="knight_f.idle" />
+		<actions>
+			<action name="attack" />
+			<action name="guard" />
+			<action name="move" />
+			<action name="wait" />
+		</actions>
+	</actordefinition>
+
+	<actordefinition name="archer_f">
+		<attributes maxhealth="40" movespeed="5" jump="2" height="2" strength="5" actionspeed="35" critchance="0.05" />
+		<animation animationset="archer_f" defaultsprite="archer_f.idle" />
+		<actions>
+			<action name="attack" />
+			<action name="arrow" />
+			<action name="move" />
+			<action name="wait" />
+		</actions>
+	</actordefinition>
+
+		<actordefinition name="mage_f">
+		<attributes maxhealth="60" movespeed="5" jump="3" height="2" strength="5" actionspeed="25" critchance="0.5"/>
+		<animation animationset="mage_f" defaultsprite="mage_f.idle" />
+		<actions>
+			<action name="heal" />
+			<action name="meteor" />
+			<action name="move" />
+			<action name="wait" />
+		</actions>
+	</actordefinition>
+
+</actordefinitions>

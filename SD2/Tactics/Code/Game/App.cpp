@@ -1,0 +1,264 @@
+/************************************************************************/
+/* Project: Protogame2D
+/* File: App.cpp
+/* Author: Andrew Chase
+/* Date: September 23rd, 2017
+/* Bugs: None
+/* Description: Handles communication between the engine and the game
+/************************************************************************/
+#include "Game/App.hpp"
+#include "Game/GameCommon.hpp"
+#include "Engine/Core/Window.hpp"
+#include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Renderer/Renderer.hpp"
+#include "Engine/Input/InputSystem.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Core/Blackboard.hpp"
+#include "Engine/Core/Command.hpp"
+#include "Engine/Core/Clock.hpp"
+
+// Static instance for singleton behavior
+App* App::s_instance = nullptr;
+
+// Basic command for testing
+void Command_Quit(Command& cmd)
+{
+	UNUSED(cmd);
+	ConsolePrintf("Quitting...");
+	App::GetInstance()->Quit();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Default constructor - creates the Game and initializes it to the initial game state
+//
+App::App()
+	: m_isQuitting(false)
+	, m_timeSinceProgramStart(0.f)
+{
+	ASSERT_OR_DIE(s_instance == nullptr, "Error: App constructor called when a singleton App instance already exists");
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Destructor that deletes the Game instance
+//
+App::~App()
+{
+	// Shutdown in reverse order of initialization
+	Game::ShutDown();
+	Command::Shutdown();
+	DevConsole::Shutdown();
+
+	AudioSystem::Shutdown();
+	InputSystem::Shutdown();
+	Renderer::Shutdown();
+
+	delete g_gameConfigBlackboard;
+	g_gameConfigBlackboard = nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Creates the singleton App instance, and initializes systems
+//
+void App::Initialize()
+{
+	if (s_instance == nullptr)
+	{
+		// Setting up the App
+		s_instance = new App();
+		s_instance->SetupGameConfigBlackboard();
+		s_instance->RegisterAppCommands();
+
+		// Construct the Engine Systems
+		Renderer::Initialize();
+		s_instance->RenderInitScreen();
+
+		Clock::Initialize();
+		InputSystem::Initialize();
+		AudioSystem::Initialize();
+		DevConsole::Initialize();
+		Command::Initialize();
+
+		// Make the game instance
+		Game::Initialize();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Calls begin and end frame on the Render and InputSystem, as well as 
+//
+void App::RunFrame()
+{
+	Clock::GetMasterClock()->BeginFrame();
+	Renderer::GetInstance()->BeginFrame();
+	InputSystem::GetInstance()->BeginFrame();
+	AudioSystem::GetInstance()->BeginFrame();
+
+	ProcessInput();
+	Update();
+	Render();
+
+	AudioSystem::GetInstance()->EndFrame();
+	InputSystem::GetInstance()->EndFrame();
+	Renderer::GetInstance()->EndFrame();
+
+	// Temporary sleep so this program doesn't eat resources
+	Sleep(1);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Function called every frame to update the game's time-based calculations
+//
+void App::Update()
+{
+	// Update the console before game
+	if (DevConsole::IsDevConsoleOpen())
+	{
+		DevConsole::GetInstance()->Update();
+	}
+
+	// Game still updates regardless of DevConsole state
+	Game::GetInstance()->Update();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Tells the Game object to render all Entities
+//
+void App::Render() const
+{
+	// Clear to bright pink to show that nothing has been drawn yet
+	Renderer::GetInstance()->ClearScreen(Rgba::YELLOW); 
+
+	// Render the game
+	Game::GetInstance()->Render();
+
+	// Draw the DevConsole if it is open
+	if (DevConsole::IsDevConsoleOpen())
+	{
+		DevConsole::GetInstance()->Render();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Draws an initialization screen while the engine systems are being created
+//
+void App::RenderInitScreen() const
+{
+	Renderer* renderer = Renderer::GetInstance();
+
+	renderer->ClearScreen(Rgba::BLUE);
+	renderer->EnableDepth(COMPARE_LESS, true);
+	renderer->ClearDepth();
+	renderer->SetCurrentCamera(renderer->GetUICamera());
+
+	BitmapFont* font = renderer->CreateOrGetBitmapFont("SquirrelFixedFont");
+	AABB2 loadingBounds = AABB2(Vector2(0.35f * Window::GetInstance()->GetWindowAspect() * Renderer::UI_ORTHO_HEIGHT, 0.3f * Renderer::UI_ORTHO_HEIGHT), Vector2(0.65f * Window::GetInstance()->GetWindowAspect() * Renderer::UI_ORTHO_HEIGHT, 0.7f * Renderer::UI_ORTHO_HEIGHT));
+	renderer->DrawTextInBox2D("Initializing Engine...", loadingBounds, Vector2(0.5f, 0.5f), 50.f, TEXT_DRAW_OVERRUN, font);
+	renderer->EndFrame();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks for input this frame and makes state changes accordingly
+//
+void App::ProcessInput()
+{
+	// Check to take a screenshot at the end of this frame
+	if (InputSystem::GetInstance()->WasKeyJustPressed(InputSystem::KEYBOARD_F8))
+	{
+		Renderer::GetInstance()->SaveScreenshotAtEndOfFrame("Hello");
+	}
+
+	// DevConsole toggle check here in run frame because reasons
+	if (InputSystem::GetInstance()->WasKeyJustPressed(InputSystem::KEYBOARD_TILDE))
+	{
+		DevConsole::ToggleConsole();
+	}
+
+	// Only process game input if the DevConsole is not open
+	if (!DevConsole::IsDevConsoleOpen())
+	{
+		Game::GetInstance()->ProcessInput();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets up the global blackboard for game settings and external information
+//
+void App::SetupGameConfigBlackboard()
+{
+	tinyxml2::XMLDocument configDocument;
+	configDocument.LoadFile("Data/GameConfig.xml");
+	g_gameConfigBlackboard = new Blackboard();
+	tinyxml2::XMLElement* currElement = configDocument.RootElement();
+
+	while (currElement != nullptr)
+	{
+		g_gameConfigBlackboard->PopulateFromXmlElementAttributes(*currElement);
+		currElement = currElement->NextSiblingElement();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the App-specific commands to the command registry
+//
+void App::RegisterAppCommands() const
+{
+	Command::Register("quit", "Closes the application", Command_Quit);
+	Command::Register("exit", "Closes the application", Command_Quit);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Accessor used by Main_Win32 to determine when the app was closed
+//
+bool App::IsQuitting() const
+{
+	return m_isQuitting;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the time in milliseconds since the App first launched
+//
+float App::GetTimeSinceProgramStart() const
+{
+	return m_timeSinceProgramStart;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the singleton App instance
+//
+App* App::GetInstance()
+{
+	return s_instance;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Deletes the app instance
+//
+void App::Shutdown()
+{
+	delete s_instance;
+	s_instance = nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the App's quit bool to true, so Main_Win32 will destroy it
+//
+void App::Quit()
+{
+	m_isQuitting = true;
+}

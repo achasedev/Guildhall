@@ -1,0 +1,298 @@
+<spritesheet name="knight_f" texture="Data/Images/Knight.png" layout="5,5">
+
+	<!-- Portrait -->
+	<sprite name="knight_f.portrait">
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="153,146,236,259"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+
+	<!-- Idle -->
+	<sprite name="knight_f.tl.idle">
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="11,232,26,257" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.tr.idle">
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="11,232,26,257"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.al.idle">
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="12,200,26,225"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.ar.idle">
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="12,200,26,225" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+	<!-- Walk -->
+	<sprite name="knight_f.tl.walk0">
+		<ppu count="16"/>
+		<uv layout="pixel" uvs="31,233,47,258" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.tr.walk0">
+		<ppu count="16"/>
+		<uv layout="pixel" uvs="31,233,47,258"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.al.walk0">
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="31,201,46,226"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.ar.walk0">
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="31,201,46,226" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+	<sprite name="knight_f.tl.walk1">
+		<ppu count="16"/>
+		<uv layout="pixel" uvs="51,234,66,258" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.tr.walk1">
+		<ppu count="16"/>
+		<uv layout="pixel" uvs="51,234,66,258"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.al.walk1">
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="51,200,66,226"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.ar.walk1">
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="51,200,66,226" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+	<!-- Hit -->
+	<sprite name="knight_f.tl.hit">
+		<ppu count="16"/>
+		<uv layout="pixel" uvs="71,232,87,258" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.tr.hit">
+		<ppu count="16"/>
+		<uv layout="pixel" uvs="71,232,87,258"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.al.hit">
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="71,200,87,225"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.ar.hit">
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="71,200,87,225" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+
+	<!-- Weak -->
+	<sprite name="knight_f.tl.weak">
+		<ppu count="16"/>
+		<uv layout="pixel" uvs="91,232,107,256" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.tr.weak">
+		<ppu count="16"/>
+		<uv layout="pixel" uvs="91,232,107,256"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.al.weak">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="91,200,106,225"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.ar.weak">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="91,200,106,225" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+
+	<!-- Cast -->
+	<sprite name="knight_f.tl.cast">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="110,232,126,259" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.tr.cast">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="110,232,126,259"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.al.cast">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="110,200,126,226"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.ar.cast">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="110,200,126,226" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+
+	<!-- Crouch -->
+	<sprite name="knight_f.tl.crouch">		
+		<ppu count="16"/>
+		<uv layout="pixel" uvs="130,232,146,255" flipX="true"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.tr.crouch">		
+		<ppu count="16"/>
+		<uv layout="pixel" uvs="130,232,146,255"/>
+		<pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.al.crouch">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="131,200,146,223"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.ar.crouch">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="131,200,146,223" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+
+	<!-- Dead -->
+	<sprite name="knight_f.tl.dead">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="9,168,27,187" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.tr.dead">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="9,168,27,187"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.al.dead">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="10,137,26,156"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.ar.dead">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="10,137,26,156" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+
+	<!-- Attack -->
+	<sprite name="knight_f.tl.attack0">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="30,168,48,193" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.tr.attack0">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="30,168,48,193"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.al.attack0">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="32,136,48,164"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.ar.attack0">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="32,136,48,164" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+	<sprite name="knight_f.tl.attack1">   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="51,168,66,193" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.tr.attack1">   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="51,168,66,193"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.al.attack1">   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="51,136,66,161"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.ar.attack1">   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="51,136,66,161" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+	<sprite name="knight_f.tl.attack2">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="70,170,85,194" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.tr.attack2">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="70,170,85,194"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.al.attack2">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="72,137,87,161"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.ar.attack2">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="72,137,87,161" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+
+	<sprite name="knight_f.tl.attack3">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="89,168,107,191" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.tr.attack3">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="89,168,107,191"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.al.attack3">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="88,136,107,162"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.ar.attack3">	   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="88,136,107,162" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+	<sprite name="knight_f.tl.attack4">   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="109,168,127,191" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.tr.attack4">   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="109,168,127,191"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.al.attack4">   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="110,136,127,162"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+	<sprite name="knight_f.ar.attack4">   
+	   <ppu count="16"/>
+	   <uv layout="pixel" uvs="110,136,127,162" flipX="true"/>
+	   <pivot xy="0.5,0"/>
+	</sprite>
+
+</spritesheet>

@@ -1,0 +1,94 @@
+<isosprites spritesheet="archer_f">
+
+   <isosprite name="archer_f.idle">
+      <subsprite direction="away_left" sprite="archer_f.al.idle" />  
+      <subsprite direction="away_right" sprite="archer_f.ar.idle" />    
+      <subsprite direction="towards_left" sprite="archer_f.tl.idle" />
+      <subsprite direction="towards_right" sprite="archer_f.tr.idle" />  
+   </isosprite>
+
+   <isosprite name="archer_f.walk0">
+      <subsprite direction="away_left" sprite="archer_f.al.walk0" />         
+      <subsprite direction="away_right" sprite="archer_f.ar.walk0" /> 
+      <subsprite direction="towards_left" sprite="archer_f.tl.walk0" /> 
+      <subsprite direction="towards_right" sprite="archer_f.tr.walk0" /> 
+   </isosprite>
+
+   <isosprite name="archer_f.walk1">
+      <subsprite direction="away_left" sprite="archer_f.al.walk1" /> 
+      <subsprite direction="away_right" sprite="archer_f.ar.walk1" /> 
+      <subsprite direction="towards_left" sprite="archer_f.tl.walk1" /> 
+      <subsprite direction="towards_right" sprite="archer_f.tr.walk1" />  
+   </isosprite>
+
+   <isosprite name="archer_f.hit">
+      <subsprite direction="away_left" sprite="archer_f.al.hit" /> 
+      <subsprite direction="away_right" sprite="archer_f.ar.hit" /> 
+      <subsprite direction="towards_left" sprite="archer_f.tl.hit" /> 
+      <subsprite direction="towards_right" sprite="archer_f.tr.hit" />  
+   </isosprite>
+
+   <isosprite name="archer_f.weak">
+      <subsprite direction="away_left" sprite="archer_f.al.weak" /> 
+      <subsprite direction="away_right" sprite="archer_f.ar.weak" /> 
+      <subsprite direction="towards_left" sprite="archer_f.tl.weak" /> 
+      <subsprite direction="towards_right" sprite="archer_f.tr.weak" />  
+   </isosprite>
+
+   <isosprite name="archer_f.cast">
+      <subsprite direction="away_left" sprite="archer_f.al.cast" /> 
+      <subsprite direction="away_right" sprite="archer_f.ar.cast" /> 
+      <subsprite direction="towards_left" sprite="archer_f.tl.cast" /> 
+      <subsprite direction="towards_right" sprite="archer_f.tr.cast" />  
+   </isosprite>
+
+   <isosprite name="archer_f.crouch">
+      <subsprite direction="away_left" sprite="archer_f.al.crouch" /> 
+      <subsprite direction="away_right" sprite="archer_f.ar.crouch" /> 
+      <subsprite direction="towards_left" sprite="archer_f.tl.crouch" /> 
+      <subsprite direction="towards_right" sprite="archer_f.tr.crouch" />  
+   </isosprite>
+
+   <isosprite name="archer_f.dead">
+      <subsprite direction="away_left" sprite="archer_f.al.dead" /> 
+      <subsprite direction="away_right" sprite="archer_f.ar.dead" /> 
+      <subsprite direction="towards_left" sprite="archer_f.tl.dead" /> 
+      <subsprite direction="towards_right" sprite="archer_f.tr.dead" />  
+   </isosprite>
+
+   <isosprite name="archer_f.attack0">
+      <subsprite direction="away_left" sprite="archer_f.al.attack0" /> 
+      <subsprite direction="away_right" sprite="archer_f.ar.attack0" /> 
+      <subsprite direction="towards_left" sprite="archer_f.tl.attack0" /> 
+      <subsprite direction="towards_right" sprite="archer_f.tr.attack0" />  
+   </isosprite>
+
+   <isosprite name="archer_f.attack1">
+      <subsprite direction="away_left" sprite="archer_f.al.attack1" /> 
+      <subsprite direction="away_right" sprite="archer_f.ar.attack1" /> 
+      <subsprite direction="towards_left" sprite="archer_f.tl.attack1" /> 
+      <subsprite direction="towards_right" sprite="archer_f.tr.attack1" />  
+   </isosprite>
+
+   <isosprite name="archer_f.attack2">
+      <subsprite direction="away_left" sprite="archer_f.al.attack2" /> 
+      <subsprite direction="away_right" sprite="archer_f.ar.attack2" /> 
+      <subsprite direction="towards_left" sprite="archer_f.tl.attack2" /> 
+      <subsprite direction="towards_right" sprite="archer_f.tr.attack2" />  
+   </isosprite>
+
+   <isosprite name="archer_f.attack3">
+      <subsprite direction="away_left" sprite="archer_f.al.attack3" /> 
+      <subsprite direction="away_right" sprite="archer_f.ar.attack3" /> 
+      <subsprite direction="towards_left" sprite="archer_f.tl.attack3" /> 
+      <subsprite direction="towards_right" sprite="archer_f.tr.attack3" />  
+   </isosprite>
+
+   <isosprite name="archer_f.attack4">
+      <subsprite direction="away_left" sprite="archer_f.al.attack4" /> 
+      <subsprite direction="away_right" sprite="archer_f.ar.attack4" /> 
+      <subsprite direction="towards_left" sprite="archer_f.tl.attack4" /> 
+      <subsprite direction="towards_right" sprite="archer_f.tr.attack4" />  
+   </isosprite>
+
+</isosprites>
