@@ -13,7 +13,7 @@
 *.so
 *.dylib
 *.dll
-!data/*.dll
+!**/Run_Win32/*.dll
 
 # Fortran module files
 *.mod
