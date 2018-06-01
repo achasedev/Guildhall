@@ -13,7 +13,7 @@
 *.so
 *.dylib
 *.dll
-!data/*.dll
+!**/Run_Win32/*.dll
 
 # Fortran module files
 *.mod
@@ -26,6 +26,7 @@
 
 # Executables
 *.exe
+!**/Run_win32/*.exe
 *.out
 *.app
 
