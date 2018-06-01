@@ -42,7 +42,10 @@ public:
 	float GetOrientationDegrees() const;
 
 	static Vector2 MakeDirectionAtDegrees(float degrees);
+	static Vector2 GetRandomVector(float desiredMagnitude);
+
 	const static Vector2 ZERO;
+	const static Vector2 ONES;
 
 public: // NOTE: this is one of the few cases where we break both the "m_" naming rule AND the avoid-public-members rule
 	float x;

@@ -1,5 +1,5 @@
 /************************************************************************/
-/* Project: SD1 C27 Asteroids Gold
+/* Project: Game Engine
 /* File: Rgba.hpp
 /* Author: Andrew Chase
 /* Date: September 17th, 2017
@@ -51,6 +51,9 @@ public:
 	static const Rgba RED;
 	static const Rgba PURPLE;
 	static const Rgba ORANGE;
-	static const Rgba GREEN;
+	static const Rgba LIGHT_GREEN;
 	static const Rgba BROWN;
+	static const Rgba BLACK;
+	static const Rgba GRAY;
+	static const Rgba GREEN;
 };

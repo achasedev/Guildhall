@@ -1,5 +1,5 @@
 /************************************************************************/
-/* Project: SD1 C27 A3 - Asteroids Gold
+/* Project: Game Engine
 /* File: InputSystem.hpp
 /* Author: Andrew Chase
 /* Date: September 13th, 2017
@@ -39,10 +39,17 @@ public:
 	static const int NUM_KEYS = 256; 
 	static const int NUM_CONTROLLERS = 4;
 	static const unsigned char	KEYBOARD_ESCAPE;
+	static const unsigned char	KEYBOARD_SPACEBAR;
 	static const unsigned char	KEYBOARD_UP_ARROW;
 	static const unsigned char	KEYBOARD_LEFT_ARROW;
 	static const unsigned char	KEYBOARD_RIGHT_ARROW;
 	static const unsigned char	KEYBOARD_F1;
+	static const unsigned char	KEYBOARD_F2;
+	static const unsigned char  KEYBOARD_F3;
+	static const unsigned char  KEYBOARD_F4;
+	static const unsigned char  KEYBOARD_F5;
+	static const unsigned char  KEYBOARD_F6;
+	static const unsigned char  KEYBOARD_F10;
 
 
 private:

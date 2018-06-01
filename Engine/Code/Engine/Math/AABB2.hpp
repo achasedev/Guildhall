@@ -46,6 +46,11 @@ public:
 	void operator-=(const Vector2& antiTranslation);						// Inverse of Translate, moves the box opposite of antiTranslation
 	AABB2 operator+(const Vector2& translation) const;						// Returns a copy of this box with an offset added to it
 	AABB2 operator-(const Vector2& antiTranslation) const;					// Returns a copy of this box with an offset subtracted to it
+
+
+	static const AABB2 UNIT_SQUARE_CENTERED;								// Square centered at (0,0) with width 2
+	static const AABB2 HALF_UNIT_SQUARE_CENTERED;							// Square centered at (0,0) with width 1
+	static const AABB2 UNIT_SQUARE_OFFCENTER;								// Square with bottom left corner at (0,0), width 1
 };
 
 

@@ -1,5 +1,5 @@
 /************************************************************************/
-/* Project: SD1 C27 A3 - Asteroids Gold
+/* Project: Game Engine
 /* File: XboxController.hpp
 /* Author: Andrew Chase
 /* Date: September 18th, 2017

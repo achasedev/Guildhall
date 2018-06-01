@@ -1,3 +1,11 @@
+/************************************************************************/
+/* Project: Game Engine
+/* File: XboxController.cpp
+/* Author: Andrew Chase
+/* Date: September 18th, 2017
+/* Bugs: None
+/* Description: Implementation of the XboxController class
+/************************************************************************/
 #include "Engine/Input/XboxController.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #define WIN32_LEAN_AND_MEAN
@@ -118,7 +126,7 @@ void XboxController::UpdateStickState(XboxStickID stickID, short rawX, short raw
 	// Correct the magnitude through range mapping
 	currStick.m_normalizedRawMagnitude = currStick.m_normalizedRawPosition.GetLength();
 	float correctedMagnitude = RangeMapFloat(currStick.m_normalizedRawMagnitude, currStick.m_innerDeadzoneFraction, currStick.m_outerDeadzoneFraction, 0.f, 1.f);
-	currStick.m_normalizedCorrectedMagnitude = Clamp01(correctedMagnitude);
+	currStick.m_normalizedCorrectedMagnitude = ClampFloatZeroToOne(correctedMagnitude);
 
 	// Calculate the correct X and Y
 	float normalizedCorrectedX = currStick.m_normalizedCorrectedMagnitude * CosDegrees(currStick.m_orientationAngle);

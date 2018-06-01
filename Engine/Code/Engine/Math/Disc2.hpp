@@ -53,3 +53,6 @@ bool DoDiscsOverlap(const Disc2& a, const Disc2& b);
 
 // Detects whether two discs overlap, using the member data of a disc instead of two disc objects
 bool DoDiscsOverlap(const Vector2& aCenter, float aRadius, const Vector2& bCenter, float bRadius);
+
+// Detects whether a disc overlaps a point
+bool DoesDiscOverlapPoint(const Vector2& center, float radius, const Vector2& point);

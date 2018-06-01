@@ -1,5 +1,5 @@
 /************************************************************************/
-/* Project: SD1 C27 A2 - Asteroids
+/* Project: Game Engine
 /* File: Renderer.cpp
 /* Author: Andrew Chase
 /* Date: September 3rd, 2017
@@ -13,6 +13,31 @@
 #include <windows.h>
 #include <gl/gl.h>					// Include basic OpenGL constants and function declarations
 #pragma comment( lib, "opengl32" )	// Link in the OpenGL32.lib static library
+#include "ThirdParty/stb/stb_image.h"
+
+//-----------------------------------------------------------------------------------------------
+// Constructor - currently does nothing, as the loaded textures map is already initialized by default
+// to an empty map
+//
+Renderer::Renderer()
+{
+	
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Destructor - free all memory allocated to Renderer pointers
+//
+Renderer::~Renderer()
+{
+	// Free the loaded texture map
+	std::map<std::string, Texture*>::iterator texItr = m_loadedTextures.begin();
+	for(texItr; texItr != m_loadedTextures.end(); texItr++)
+	{
+		delete texItr->second;
+	}
+	m_loadedTextures.clear();
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -94,6 +119,32 @@ void Renderer::DrawRegularPolygon(const Vector2& centerPos, int numSides, float 
 
 
 //-----------------------------------------------------------------------------------------------
+// Draws a filled quad given the bounds as an AABB2
+//
+void Renderer::DrawAABB2(const AABB2& boundsToDraw, const Rgba& color)
+{
+	SetDrawColor(color);
+	glBegin(GL_QUADS);
+
+	// Bottom left
+	glVertex2f(boundsToDraw.mins.x, boundsToDraw.mins.y);
+
+	// Bottom right
+	glVertex2f(boundsToDraw.maxs.x, boundsToDraw.mins.y);
+
+	// Top right
+	glVertex2f(boundsToDraw.maxs.x, boundsToDraw.maxs.y);
+
+	// Top left
+	glVertex2f(boundsToDraw.mins.x, boundsToDraw.maxs.y);
+
+	glEnd();
+
+	// Set color back to white
+	SetDrawColor(Rgba::WHITE);
+}
+
+//-----------------------------------------------------------------------------------------------
 // Draws a dotted circle to the coordinate system
 //
 void Renderer::DrawDottedCircle(const Vector2& centerPos, float radius)
@@ -134,9 +185,9 @@ void Renderer::SetDrawColor(const Rgba& newColor)
 //-----------------------------------------------------------------------------------------------
 // Clears the back buffer to a solid color
 //
-void Renderer::ClearBackBuffer(float red, float green, float blue, float alpha)
+void Renderer::ClearScreen(const Rgba& clearColor)
 {
-	glClearColor(red, green, blue, alpha);
+	glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -165,9 +216,18 @@ void Renderer::PushMatrix()
 // Adds a translation to the top transformation matrix, so the coordinate system is now at
 // (xPosition, yPosition, zPosition)
 //
-void Renderer::TranslateCoordinateSystem(float xPosition, float yPosition, float zPosition)
+void Renderer::TranslateCoordinateSystem2D(float xPosition, float yPosition)
 {
-	glTranslatef(xPosition, yPosition, zPosition);
+	glTranslatef(xPosition, yPosition, 0.f);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Moves the coordinate system over by translationVector
+//
+void Renderer::TranslateCoordinateSystem2D(Vector2 translationVector)
+{
+	glTranslatef(translationVector.x, translationVector.y, 0.f);
 }
 
 
@@ -207,6 +267,25 @@ void Renderer::SetLineWidth(float lineWidth)
 }
 
 
+void Renderer::SetBlendMode(BlendMode nextMode)
+{
+	switch (nextMode)
+	{
+	case BLEND_MODE_ERROR:
+		break;
+	case BLEND_MODE_ALPHA:
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		break;
+	case BLEND_MODE_ADDITIVE:
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		break;
+	case NUM_BLEND_MODES:
+		break;
+	default:
+		break;
+	}
+}
+
 //-----------------------------------------------------------------------------------------------
 // Enables the OpenGL macro GL_BLEND
 //
@@ -226,9 +305,57 @@ void Renderer::EnableSmoothLine()
 
 
 //-----------------------------------------------------------------------------------------------
-// Calls the OpenGL function glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+// Returns a pointer to the texture pointer corresponding to the given path.
+// If no texture has been loaded for the given path yet, the texture is loaded and returned.
 //
-void Renderer::EnableAlphaBlendFunc()
+Texture* Renderer::CreateOrGetTexture(std::string texturePath)
 {
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	if (m_loadedTextures[texturePath] != nullptr)
+	{
+		return m_loadedTextures[texturePath];
+	}
+
+	m_loadedTextures[texturePath] = new Texture(texturePath);
+	
+	// ToDo: Put guarantee check here for the texture file being found
+
+	return m_loadedTextures[texturePath];
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Draws a textured AABB2 from the provided texture data
+// Texture coordinates are the coordinates of the texture at the min and max of bounds (bottom left
+// and top right)
+//
+void Renderer::DrawTexturedAABB2(const AABB2& bounds, const Texture& texture, const Vector2& texCoordAtMins, const Vector2& texCoordAtMaxs, const Rgba& tint)
+{
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture.m_textureID);
+
+	SetDrawColor(tint);
+
+	glBegin(GL_QUADS);
+	{
+		// Bottom Left
+		glTexCoord2f(texCoordAtMins.x, texCoordAtMins.y);
+		glVertex2f(bounds.mins.x, bounds.mins.y);
+
+		// Bottom right
+		glTexCoord2f(texCoordAtMaxs.x, texCoordAtMins.y);
+		glVertex2f(bounds.maxs.x, bounds.mins.y);
+
+		// Top Right
+		glTexCoord2f(texCoordAtMaxs.x, texCoordAtMaxs.y);
+		glVertex2f(bounds.maxs.x, bounds.maxs.y);
+
+		// Top Left
+		glTexCoord2f(texCoordAtMins.x, texCoordAtMaxs.y);
+		glVertex2f(bounds.mins.x, bounds.maxs.y);
+	}
+	glEnd();
+
+	SetDrawColor(Rgba::WHITE);
+
+	glDisable(GL_TEXTURE_2D);
 }

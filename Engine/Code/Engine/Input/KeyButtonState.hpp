@@ -1,5 +1,5 @@
 /************************************************************************/
-/* Project: SD1 C27 A3 - Asteroids Gold
+/* Project: Game Engine
 /* File: KeyButtonState.hpp
 /* Author: Andrew Chase
 /* Date: September 19th, 2017

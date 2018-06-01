@@ -224,3 +224,14 @@ bool DoDiscsOverlap(const Vector2& aCenter, float aRadius, const Vector2& bCente
 
 	return doOverlap;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks if a disc given by 'center' and 'radius' overlaps the point 'point'
+bool DoesDiscOverlapPoint(const Vector2& center, float radius, const Vector2& point)
+{
+	float distanceSquared = GetDistanceSquared(center, point);
+	float radiusSquared = (radius * radius);
+	
+	return (distanceSquared <= radiusSquared);
+}

@@ -8,6 +8,11 @@
 /************************************************************************/
 #include "Engine/Math/AABB2.hpp"
 
+// Constant square values
+const AABB2 AABB2::UNIT_SQUARE_CENTERED = AABB2(Vector2(-1.f, -1.f), Vector2(1.f, 1.f));
+const AABB2 AABB2::HALF_UNIT_SQUARE_CENTERED = AABB2(Vector2(-0.5f, -0.5f), Vector2(0.5f, 0.5f));
+const AABB2 AABB2::UNIT_SQUARE_OFFCENTER = AABB2(Vector2(0.f, 0.f), Vector2(1.f, 1.f));
+
 
 //-----------------------------------------------------------------------------------------------
 // Constructs a Box2D using explicit float boundaries

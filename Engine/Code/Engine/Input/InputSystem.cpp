@@ -1,5 +1,5 @@
 /************************************************************************/
-/* Project: SD1 C27 A3 - Asteroids Gold
+/* Project: Game Engine
 /* File: InputSystem.cpp
 /* Author: Andrew Chase
 /* Date: September 13th, 2017
@@ -13,12 +13,22 @@
 
 // Mapping InputSystem constants to Windows macros
 const unsigned char	InputSystem::KEYBOARD_ESCAPE		= VK_ESCAPE;
+const unsigned char InputSystem::KEYBOARD_SPACEBAR		= VK_SPACE;
 const unsigned char	InputSystem::KEYBOARD_F1			= VK_F1;
+const unsigned char	InputSystem::KEYBOARD_F2			= VK_F2;
+const unsigned char	InputSystem::KEYBOARD_F3			= VK_F3;
+const unsigned char	InputSystem::KEYBOARD_F4			= VK_F4;
+const unsigned char	InputSystem::KEYBOARD_F5			= VK_F5;
+const unsigned char	InputSystem::KEYBOARD_F6			= VK_F6;
+const unsigned char	InputSystem::KEYBOARD_F10			= VK_F10;
 const unsigned char	InputSystem::KEYBOARD_LEFT_ARROW	= VK_LEFT;
 const unsigned char	InputSystem::KEYBOARD_UP_ARROW		= VK_UP;
 const unsigned char	InputSystem::KEYBOARD_RIGHT_ARROW	= VK_RIGHT;
 
 
+//-----------------------------------------------------------------------------------------------
+// Constructor - Creates 4 XboxControllers with their ID's equal to their index in the array
+//
 InputSystem::InputSystem()
 {
 	for (int i = 0; i < NUM_CONTROLLERS; i++)
