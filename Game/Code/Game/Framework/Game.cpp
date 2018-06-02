@@ -5,20 +5,20 @@
 /* Description: Game class for general gameplay management
 /************************************************************************/
 #include "Game.hpp"
-#include "Game/GameCommon.hpp"
-#include "Game/GameState.hpp"
-#include "Game/GameState_Loading.hpp"
-#include "Game/GameState_MainMenu.hpp"
-#include "Game/GameState_Playing.hpp"
-#include "Engine/Renderer/Renderer.hpp"
+#include "Game/Framework/GameCommon.hpp"
+#include "Game/GameStates/GameState.hpp"
+#include "Game/GameStates/GameState_Loading.hpp"
+#include "Game/GameStates/GameState_MainMenu.hpp"
+#include "Game/GameStates/GameState_Playing.hpp"
+#include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Input/InputSystem.hpp"
-#include "Engine/Core/Command.hpp"
-#include "Engine/Core/ErrorWarningAssert.hpp"
-#include "Engine/Core/StringUtils.hpp"
-#include "Engine/Core/Clock.hpp"
-#include "Engine/Core/AssetDB.hpp"
-#include "Engine/Renderer/MaterialInstance.hpp"
-#include "Engine/Renderer/Renderable.hpp"
+#include "Engine/Core/DeveloperConsole/Command.hpp"
+#include "Engine/Core/Utility/ErrorWarningAssert.hpp"
+#include "Engine/Core/Utility/StringUtils.hpp"
+#include "Engine/Core/Time/Clock.hpp"
+#include "Engine/Assets/AssetDB.hpp"
+#include "Engine/Rendering/Materials/MaterialInstance.hpp"
+#include "Engine/Rendering/Core/Renderable.hpp"
 
 // The singleton instance
 Game* Game::s_instance = nullptr;

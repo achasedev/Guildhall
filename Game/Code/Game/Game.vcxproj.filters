@@ -13,60 +13,60 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main_Win32.cpp">
+    <ClCompile Include="Framework\App.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
+    <ClCompile Include="Framework\Game.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="App.cpp">
+    <ClCompile Include="Framework\GameCommon.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="GameCommon.cpp">
+    <ClCompile Include="Framework\Main_Win32.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="GameState.cpp">
+    <ClCompile Include="GameStates\GameState.cpp">
       <Filter>State Management\Game States</Filter>
     </ClCompile>
-    <ClCompile Include="GameState_Loading.cpp">
+    <ClCompile Include="GameStates\GameState_Loading.cpp">
       <Filter>State Management\Game States</Filter>
     </ClCompile>
-    <ClCompile Include="GameState_MainMenu.cpp">
+    <ClCompile Include="GameStates\GameState_MainMenu.cpp">
       <Filter>State Management\Game States</Filter>
     </ClCompile>
-    <ClCompile Include="GameState_Playing.cpp">
+    <ClCompile Include="GameStates\GameState_Playing.cpp">
       <Filter>State Management\Game States</Filter>
     </ClCompile>
-    <ClCompile Include="GameState_Ready.cpp">
+    <ClCompile Include="GameStates\GameState_Ready.cpp">
       <Filter>State Management\Game States</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game.hpp">
+    <ClInclude Include="Framework\App.hpp">
       <Filter>Architecture</Filter>
     </ClInclude>
-    <ClInclude Include="GameCommon.hpp">
+    <ClInclude Include="Framework\Game.hpp">
       <Filter>Architecture</Filter>
     </ClInclude>
-    <ClInclude Include="App.hpp">
+    <ClInclude Include="Framework\GameCommon.hpp">
       <Filter>Architecture</Filter>
     </ClInclude>
-    <ClInclude Include="EngineBuildPreferences.hpp">
+    <ClInclude Include="Framework\EngineBuildPreferences.hpp">
       <Filter>Architecture</Filter>
     </ClInclude>
-    <ClInclude Include="GameState.hpp">
+    <ClInclude Include="GameStates\GameState.hpp">
       <Filter>State Management\Game States</Filter>
     </ClInclude>
-    <ClInclude Include="GameState_Loading.hpp">
+    <ClInclude Include="GameStates\GameState_Loading.hpp">
       <Filter>State Management\Game States</Filter>
     </ClInclude>
-    <ClInclude Include="GameState_MainMenu.hpp">
+    <ClInclude Include="GameStates\GameState_MainMenu.hpp">
       <Filter>State Management\Game States</Filter>
     </ClInclude>
-    <ClInclude Include="GameState_Playing.hpp">
+    <ClInclude Include="GameStates\GameState_Playing.hpp">
       <Filter>State Management\Game States</Filter>
     </ClInclude>
-    <ClInclude Include="GameState_Ready.hpp">
+    <ClInclude Include="GameStates\GameState_Ready.hpp">
       <Filter>State Management\Game States</Filter>
     </ClInclude>
   </ItemGroup>

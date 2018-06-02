@@ -4,15 +4,15 @@
 /* Date: March 24th, 2018
 /* Description: Implementation of the GameState_MainMenu class
 /************************************************************************/
-#include "Game/App.hpp"
-#include "Game/GameCommon.hpp"
-#include "Game/GameState_Ready.hpp"
-#include "Game/GameState_Playing.hpp"
-#include "Game/GameState_MainMenu.hpp"
+#include "Game/Framework/App.hpp"
+#include "Game/Framework/GameCommon.hpp"
+#include "Game/GameStates/GameState_Ready.hpp"
+#include "Game/GameStates/GameState_Playing.hpp"
+#include "Game/GameStates/GameState_MainMenu.hpp"
 
 #include "Engine/Core/Window.hpp"
-#include "Engine/Core/AssetDB.hpp"
-#include "Engine/Renderer/Renderer.hpp"
+#include "Engine/Assets/AssetDB.hpp"
+#include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Input/InputSystem.hpp"
 
 //-----------------------------------------------------------------------------------------------

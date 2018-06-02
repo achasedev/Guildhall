@@ -5,7 +5,7 @@
 /* Description: Class used to manage a Game instance
 /************************************************************************/
 #pragma once
-#include "Game/Game.hpp"
+#include "Game/Framework/Game.hpp"
 
 
 class App 

@@ -9,11 +9,11 @@
 /************************************************************************/
 #define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
-#include "Game/App.hpp"
-#include "Game/GameCommon.hpp"
+#include "Game/Framework/App.hpp"
+#include "Game/Framework/GameCommon.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Core/Window.hpp"
-#include "Engine/Renderer/glFunctions.hpp"
+#include "Engine/Rendering/OpenGL/glFunctions.hpp"
 
 #define UNUSED(x) (void)(x);
 

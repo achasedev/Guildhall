@@ -7,7 +7,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "Game/GameState.hpp"
+#include "Game/GameStates/GameState.hpp"
 
 class Camera;
 class GameObject;

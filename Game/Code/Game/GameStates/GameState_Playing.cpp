@@ -4,24 +4,24 @@
 /* Date: May 21st, 2018
 /* Description: Implementation of the GameState_Playing class
 /************************************************************************/
-#include "Game/App.hpp"
-#include "Game/Game.hpp"
-#include "Game/GameCommon.hpp"
-#include "Game/GameState_Playing.hpp"
+#include "Game/Framework/App.hpp"
+#include "Game/Framework/Game.hpp"
+#include "Game/Framework/GameCommon.hpp"
+#include "Game/GameStates/GameState_Playing.hpp"
 
-#include "Engine/Core/AssetDB.hpp"
+#include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
-#include "Engine/Renderer/Camera.hpp"
-#include "Engine/Renderer/Sampler.hpp"
-#include "Engine/Renderer/Material.hpp"
+#include "Engine/Rendering/Core/Camera.hpp"
+#include "Engine/Rendering/Resources/Sampler.hpp"
+#include "Engine/Rendering/Materials/Material.hpp"
 #include "Engine/Input/InputSystem.hpp"
-#include "Engine/Renderer/Renderer.hpp"
-#include "Engine/Renderer/MeshGroup.hpp"
-#include "Engine/Renderer/Renderable.hpp"
-#include "Engine/Renderer/RenderScene.hpp"
-#include "Engine/Renderer/ParticleEmitter.hpp"
-#include "Engine/Renderer/DebugRenderSystem.hpp"
-#include "Engine/Renderer/ForwardRenderingPath.hpp"
+#include "Engine/Rendering/Core/Renderer.hpp"
+#include "Engine/Rendering/Meshes/MeshGroup.hpp"
+#include "Engine/Rendering/Core/Renderable.hpp"
+#include "Engine/Rendering/Core/RenderScene.hpp"
+#include "Engine/Rendering/Particles/ParticleEmitter.hpp"
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
+#include "Engine/Rendering/Core/ForwardRenderingPath.hpp"
 
 // Constants
 const float GameState_Playing::CAMERA_ROTATION_SPEED = 45.f;

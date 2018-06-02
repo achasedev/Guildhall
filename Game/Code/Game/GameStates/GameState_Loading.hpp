@@ -6,7 +6,7 @@
 				(Draws a loading screen and loads images/sounds from disk)
 /************************************************************************/
 #pragma once
-#include "Game/GameState.hpp"
+#include "Game/GameStates/GameState.hpp"
 
 
 class GameState_Loading : public GameState

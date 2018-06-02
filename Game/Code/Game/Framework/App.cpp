@@ -4,20 +4,20 @@
 /* Date: March 24th, 2018
 /* Description: Handles communication between the engine and the game
 /************************************************************************/
-#include "Game/App.hpp"
-#include "Game/GameCommon.hpp"
-#include "Engine/Core/Clock.hpp"
+#include "Game/Framework/App.hpp"
+#include "Game/Framework/GameCommon.hpp"
+#include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Core/Window.hpp"
-#include "Engine/Core/Command.hpp"
-#include "Engine/Core/AssetDB.hpp"
-#include "Engine/Core/Blackboard.hpp"
-#include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/DeveloperConsole/Command.hpp"
+#include "Engine/Assets/AssetDB.hpp"
+#include "Engine/Core/Utility/Blackboard.hpp"
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 #include "Engine/Core/EngineCommon.hpp"
-#include "Engine/Renderer/Renderer.hpp"
+#include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
-#include "Engine/Renderer/RenderScene.hpp"
-#include "Engine/Renderer/DebugRenderSystem.hpp"
+#include "Engine/Rendering/Core/RenderScene.hpp"
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 // Static instance for singleton behavior
 App* App::s_instance = nullptr;

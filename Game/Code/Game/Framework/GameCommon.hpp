@@ -6,8 +6,8 @@
 				common game elements (renderers, input systems, etc)
 /************************************************************************/
 #pragma once
-#include "Engine/Core/ErrorWarningAssert.hpp"
-#include "Engine/Core/StringUtils.hpp"
+#include "Engine/Core/Utility/ErrorWarningAssert.hpp"
+#include "Engine/Core/Utility/StringUtils.hpp"
 
 
 //-----Macros-----

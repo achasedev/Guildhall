@@ -5,7 +5,7 @@
 /* Description: Abstract class to represent a given Game's state
 /************************************************************************/
 #pragma once
-#include "Game/Game.hpp"
+#include "Game/Framework/Game.hpp"
 
 
 class GameState

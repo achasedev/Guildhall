@@ -4,13 +4,13 @@
 /* Date: June 1st, 2018
 /* Description: Implementation of the Ready GameState class
 /************************************************************************/
-#include "Game/GameState_Ready.hpp"
-#include "Game/GameState_Playing.hpp"
+#include "Game/GameStates/GameState_Ready.hpp"
+#include "Game/GameStates/GameState_Playing.hpp"
 
 #include "Engine/Core/Window.hpp"
-#include "Engine/Core/AssetDB.hpp"
+#include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Input/InputSystem.hpp"
-#include "Engine/Renderer/Renderer.hpp"
+#include "Engine/Rendering/Core/Renderer.hpp"
 
 
 //-----------------------------------------------------------------------------------------------

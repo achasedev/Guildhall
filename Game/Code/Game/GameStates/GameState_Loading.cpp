@@ -4,13 +4,15 @@
 /* Date: March 24th, 2018
 /* Description: Implementation of the GameState_Loading class
 /************************************************************************/
-#include "Game/Game.hpp"
-#include "Game/GameCommon.hpp"
-#include "Game/GameState_Loading.hpp"
-#include "Game/GameState_MainMenu.hpp"
+#include "Game/Framework/Game.hpp"
+#include "Game/Framework/GameCommon.hpp"
+#include "Game/GameStates/GameState_Loading.hpp"
+#include "Game/GameStates/GameState_MainMenu.hpp"
+
 #include "Engine/Core/Window.hpp"
-#include "Engine/Renderer/Renderer.hpp"
-#include "Engine/Core/AssetDB.hpp"
+#include "Engine/Assets/AssetDB.hpp"
+#include "Engine/Rendering/Core/Renderer.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Necessary override imposed by the GameState base class, is unused

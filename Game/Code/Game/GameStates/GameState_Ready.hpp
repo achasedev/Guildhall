@@ -7,7 +7,7 @@
 /************************************************************************/
 #pragma once
 
-#include "Game/GameState.hpp"
+#include "Game/GameStates/GameState.hpp"
 #include "Engine/Math/AABB2.hpp"
 
 class GameState_Ready : public GameState
