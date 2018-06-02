@@ -6,10 +6,12 @@
 /************************************************************************/
 #include "Game/App.hpp"
 #include "Game/GameCommon.hpp"
-#include "Engine/Core/Window.hpp"
-#include "Engine/Core/AssetDB.hpp"
+#include "Game/GameState_Ready.hpp"
 #include "Game/GameState_Playing.hpp"
 #include "Game/GameState_MainMenu.hpp"
+
+#include "Engine/Core/Window.hpp"
+#include "Engine/Core/AssetDB.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Input/InputSystem.hpp"
 
@@ -19,13 +21,13 @@
 GameState_MainMenu::GameState_MainMenu()
 	: m_cursorPosition(0)
 {
-	float aspect = Window::GetInstance()->GetWindowAspect();
+	float aspect = Window::GetInstance()->GetAspect();
 	float height = Renderer::UI_ORTHO_HEIGHT;
 
 	m_menuBounds = AABB2(Vector2(0.1f * aspect * height, 0.1f * height), Vector2(0.9f * aspect * height, 0.4f * height));
 	m_fontHeight = 100.f;
 
-	m_menuOptions.push_back("Press Space to start.");
+	m_menuOptions.push_back("Press Space to proceed to ready state.");
 }
 
 
@@ -61,7 +63,7 @@ void GameState_MainMenu::ProcessInput()
 	// Selection
 	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_SPACEBAR))
 	{
-		Game::TransitionToGameState(new GameState_Playing());
+		Game::TransitionToGameState(new GameState_Ready());
 	}
 
 	// Quit
@@ -103,16 +105,23 @@ void GameState_MainMenu::Render() const
 		{
 			color = Rgba::YELLOW;
 		}
-		renderer->DrawTextInBox2D(m_menuOptions[menuIndex].c_str(), currentTextBounds, Vector2(0.5f, 0.f), m_fontHeight, TEXT_DRAW_SHRINK_TO_FIT, font, color);
+		renderer->DrawTextInBox2D(m_menuOptions[menuIndex].c_str(), currentTextBounds, Vector2(0.5f, 0.5f), m_fontHeight, TEXT_DRAW_SHRINK_TO_FIT, font, color);
 		currentTextBounds.Translate(Vector2(0.f, -m_fontHeight));
 	}
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Called when the game transitions into this state, before the first update
+//
 void GameState_MainMenu::Enter()
 {
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Called when the game transitios out of this state, before deletion
+//
 void GameState_MainMenu::Leave()
 {
 }

@@ -292,6 +292,7 @@
     <ClCompile Include="GameState_Loading.cpp" />
     <ClCompile Include="GameState_MainMenu.cpp" />
     <ClCompile Include="GameState_Playing.cpp" />
+    <ClCompile Include="GameState_Ready.cpp" />
     <ClCompile Include="Main_Win32.cpp" />
     <ClCompile Include="Game.cpp" />
   </ItemGroup>
@@ -304,6 +305,7 @@
     <ClInclude Include="GameState_Loading.hpp" />
     <ClInclude Include="GameState_MainMenu.hpp" />
     <ClInclude Include="GameState_Playing.hpp" />
+    <ClInclude Include="GameState_Ready.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Engine\Code\Engine\Engine.vcxproj">

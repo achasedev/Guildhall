@@ -37,6 +37,9 @@
     <ClCompile Include="GameState_Playing.cpp">
       <Filter>State Management\Game States</Filter>
     </ClCompile>
+    <ClCompile Include="GameState_Ready.cpp">
+      <Filter>State Management\Game States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -61,6 +64,9 @@
       <Filter>State Management\Game States</Filter>
     </ClInclude>
     <ClInclude Include="GameState_Playing.hpp">
+      <Filter>State Management\Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState_Ready.hpp">
       <Filter>State Management\Game States</Filter>
     </ClInclude>
   </ItemGroup>

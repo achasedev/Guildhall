@@ -52,7 +52,7 @@ void GameState_Loading::Render() const
 	renderer->SetCurrentCamera(renderer->GetUICamera());
 
 	BitmapFont* font = AssetDB::CreateOrGetBitmapFont("Default.png");
-	AABB2 loadingBounds = AABB2(Vector2(0.35f * Window::GetInstance()->GetWindowAspect() * Renderer::UI_ORTHO_HEIGHT, 0.3f * Renderer::UI_ORTHO_HEIGHT), Vector2(0.65f * Window::GetInstance()->GetWindowAspect() * Renderer::UI_ORTHO_HEIGHT, 0.7f * Renderer::UI_ORTHO_HEIGHT));
+	AABB2 loadingBounds = AABB2(Vector2(0.35f * Window::GetInstance()->GetAspect() * Renderer::UI_ORTHO_HEIGHT, 0.3f * Renderer::UI_ORTHO_HEIGHT), Vector2(0.65f * Window::GetInstance()->GetAspect() * Renderer::UI_ORTHO_HEIGHT, 0.7f * Renderer::UI_ORTHO_HEIGHT));
 	renderer->DrawTextInBox2D("Loading Game...", loadingBounds, Vector2(0.5f, 0.5f), 50.f, TEXT_DRAW_OVERRUN, font);
 }
 
