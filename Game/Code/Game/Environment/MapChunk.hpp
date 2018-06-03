@@ -2,6 +2,7 @@
 
 class Mesh;
 class Material;
+class Matrix44;
 class Renderable;
 
 class MapChunk
@@ -9,7 +10,7 @@ class MapChunk
 public:
 	//-----Public Methods-----
 
-	MapChunk(Mesh* mesh, Material* material);
+	MapChunk(const Matrix44& model, Mesh* mesh, Material* material);
 	~MapChunk();
 
 

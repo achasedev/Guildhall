@@ -127,7 +127,7 @@ void GameState_Playing::ProcessInput()
 
 	if (input->WasKeyJustPressed('I'))
 	{
-		Light* light = Light::CreatePointLight(m_gameCamera->GetPosition());
+		Light* light = Light::CreatePointLight(m_gameCamera->GetPosition(), Rgba::WHITE, Vector3(0.f, 0.f, 0.001f));
 		Game::GetRenderScene()->AddLight(light);
 	}
 }

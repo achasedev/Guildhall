@@ -5,9 +5,9 @@
 #include "Engine/Rendering/Core/Renderable.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
 
-MapChunk::MapChunk(Mesh* mesh, Material* material)
+MapChunk::MapChunk(const Matrix44& model, Mesh* mesh, Material* material)
 {
-	m_renderable = new Renderable(Matrix44::IDENTITY, mesh, material);
+	m_renderable = new Renderable(model, mesh, material);
 	Game::GetRenderScene()->AddRenderable(m_renderable);
 }
 
