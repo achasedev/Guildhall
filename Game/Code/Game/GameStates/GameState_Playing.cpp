@@ -4,6 +4,7 @@
 /* Date: May 21st, 2018
 /* Description: Implementation of the GameState_Playing class
 /************************************************************************/
+#include "Game/Environment/Map.hpp"
 #include "Game/Framework/App.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/GameCommon.hpp"
@@ -32,7 +33,6 @@ const float GameState_Playing::CAMERA_TRANSLATION_SPEED = 10.f;
 //
 GameState_Playing::GameState_Playing()
 {
-	m_scene = new RenderScene("Default");
 }
 
 
@@ -41,11 +41,6 @@ GameState_Playing::GameState_Playing()
 //
 GameState_Playing::~GameState_Playing()
 {
-	delete m_emitter;
-	m_emitter = nullptr;
-
-	delete m_scene;
-	m_scene = nullptr;
 }
 
 
@@ -54,46 +49,10 @@ GameState_Playing::~GameState_Playing()
 //
 void GameState_Playing::Enter()
 {
-	MeshGroup* group = AssetDB::CreateOrGetMeshGroup("Miku.obj");
+	m_map = new Map();
+	m_map->Intialize(AABB2(Vector2(-100.f, -100.f), Vector2(100.f, 100.f)), 0.f, 20.f, IntVector2(8, 8), "Data/Images/Map.jpg");
 
-	Renderable* renderable = new Renderable(Matrix44::IDENTITY, group, nullptr);
-
-	Material* quad		= AssetDB::CreateOrGetSharedMaterial("Miku_Quad_Instanced"); 
-	Material* base		= AssetDB::CreateOrGetSharedMaterial("Miku_Base_Instanced"); 
-	Material* detail	= AssetDB::CreateOrGetSharedMaterial("Miku_Detail_Instanced");
-
-	// Make a linear sampler for miku
-	Sampler* sampler = new Sampler();
-	sampler->Initialize(SAMPLER_FILTER_LINEAR, EDGE_SAMPLING_REPEAT);
-
-	quad->SetSampler(0, sampler);
-	base->SetSampler(0, sampler);
-	detail->SetSampler(0, sampler);
-
-	quad->SetProperty("SPECULAR_POWER", 25.0f);
-	quad->SetProperty("SPECULAR_AMOUNT", 1.f);
-	base->SetProperty("SPECULAR_POWER", 25.0f);
-	base->SetProperty("SPECULAR_AMOUNT", 1.f);	
-	detail->SetProperty("SPECULAR_POWER", 25.0f);
-	detail->SetProperty("SPECULAR_AMOUNT", 1.f);
-
-	renderable->SetSharedMaterial(quad, 0);
-	renderable->SetSharedMaterial(base, 1);
-	renderable->SetSharedMaterial(detail, 2);
-	renderable->SetSharedMaterial(base, 3);
-
-	m_emitter = new ParticleEmitter(Game::GetGameClock());
-	m_emitter->SetRenderable(renderable);
-	renderable->ClearInstances();
-
-	m_scene->AddRenderable(renderable);
-
-	m_emitter->SetSpawnRate(100);
-	m_emitter->SetSpawnVelocityFunction([]() { return 10.f * Vector3(GetRandomFloatInRange(-6.f, 6.f), 6.f, GetRandomFloatInRange(-6.f, 6.f)); });
-	m_emitter->SetSpawnAngularVelocityFunction([]() { return 360.f * GetRandomPointOnSphere(); });
-	m_emitter->SetSpawnLifetimeFunction([]() { return 5.f; });
-
-	// Set up the game camera
+ 	// Set up the game camera
 	Renderer* renderer = Renderer::GetInstance();
 	m_gameCamera = new Camera();
 	m_gameCamera->SetColorTarget(renderer->GetDefaultColorTarget());
@@ -101,20 +60,18 @@ void GameState_Playing::Enter()
 	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 1000.f);
 	m_gameCamera->LookAt(Vector3(0.f, 0.f, -5.0f), Vector3::ZERO);
 
-	m_scene->AddCamera(m_gameCamera);
-	m_scene->AddLight(Light::CreateDirectionalLight(Vector3::ZERO));
-	m_scene->SetAmbience(Rgba(100, 100, 100, 255));
-
-	// Set up the mouse for FPS controls
+	Game::GetRenderScene()->AddCamera(m_gameCamera);
+	Game::GetRenderScene()->AddLight(Light::CreateDirectionalLight(Vector3::ZERO, Vector3::DIRECTION_DOWN, Rgba(255, 255, 255, 100)));
+	Game::GetRenderScene()->SetAmbience(Rgba(255, 255, 255, 50));
+ 
+ 	// Set up the mouse for FPS controls
 	Mouse& mouse = InputSystem::GetMouse();
 
 	mouse.ShowMouseCursor(false);
 	mouse.LockCursorToClient(true);
 	mouse.SetCursorMode(CURSORMODE_RELATIVE);
-
-	DebugRenderSystem::SetWorldCamera(m_gameCamera);
-
-	DebugRenderSystem::DrawUVSphere(Vector3::ZERO, 300.f);
+ 
+ 	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 }
 
 
@@ -123,6 +80,7 @@ void GameState_Playing::Enter()
 //
 void GameState_Playing::Leave()
 {
+	TODO("Clear the render scene");
 }
 
 
@@ -164,6 +122,14 @@ void GameState_Playing::UpdateCameraOnInput()
 void GameState_Playing::ProcessInput()
 {
 	UpdateCameraOnInput();
+
+	InputSystem* input = InputSystem::GetInstance();
+
+	if (input->WasKeyJustPressed('I'))
+	{
+		Light* light = Light::CreatePointLight(m_gameCamera->GetPosition());
+		Game::GetRenderScene()->AddLight(light);
+	}
 }
 
 
@@ -172,7 +138,6 @@ void GameState_Playing::ProcessInput()
 //
 void GameState_Playing::Update()
 {
-	m_emitter->Update();
 }
 
 
@@ -181,5 +146,5 @@ void GameState_Playing::Update()
 //
 void GameState_Playing::Render() const
 {
-	ForwardRenderingPath::Render(m_scene);
+	ForwardRenderingPath::Render(Game::GetRenderScene());
 }

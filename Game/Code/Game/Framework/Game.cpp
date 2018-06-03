@@ -10,15 +10,17 @@
 #include "Game/GameStates/GameState_Loading.hpp"
 #include "Game/GameStates/GameState_MainMenu.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
-#include "Engine/Rendering/Core/Renderer.hpp"
+
+#include "Engine/Assets/AssetDB.hpp"
+#include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Rendering/Core/Renderer.hpp"
+#include "Engine/Core/Utility/StringUtils.hpp"
+#include "Engine/Rendering/Core/Renderable.hpp"
+#include "Engine/Rendering/Core/RenderScene.hpp"
 #include "Engine/Core/DeveloperConsole/Command.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
-#include "Engine/Core/Utility/StringUtils.hpp"
-#include "Engine/Core/Time/Clock.hpp"
-#include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Rendering/Materials/MaterialInstance.hpp"
-#include "Engine/Rendering/Core/Renderable.hpp"
 
 // The singleton instance
 Game* Game::s_instance = nullptr;
@@ -38,6 +40,8 @@ Game::Game()
 //
 Game::~Game()
 {
+	delete m_gameScene;
+	m_gameScene = nullptr;
 }
 
 
@@ -55,20 +59,7 @@ void Game::Initialize()
 	Matrix44 test = Matrix44::MakeRotation(Vector3(45.f, 45.f, 45.f));
 	Vector4 rotation = test.Transform(Vector4(0.f, 0.f, 1.f, 0.f));
 
-//	Material* material = AssetDB::GetSharedMaterial("Debug_Render");
-// 	{
-// 		Material* instance = new Material();
-// 		instance->SetShader(AssetDB::CreateOrGetShader("Debug_Render"));
-// 		instance->GetEditableShader();
-// 		instance->SetProperty("TINT", Vector4::ZERO);
-// 
-// 		Renderable* renderable = new Renderable(nullptr, instance);
-// 		renderable->GetMaterialInstance()->SetProperty("TINT", Vector4::ONES);
-// 
-// 		delete renderable;
-// 
-// 		delete instance;	
-// 	}
+	s_instance->m_gameScene = new RenderScene("Game Scene");
 }
 
 
@@ -148,6 +139,15 @@ Clock* Game::GetGameClock()
 float Game::GetDeltaTime()
 {
 	return s_instance->m_gameClock->GetDeltaTime();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the game's render scene
+//
+RenderScene* Game::GetRenderScene()
+{
+	return s_instance->m_gameScene;
 }
 
 

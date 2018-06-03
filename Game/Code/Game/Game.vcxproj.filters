@@ -40,6 +40,12 @@
     <ClCompile Include="GameStates\GameState_Ready.cpp">
       <Filter>State Management\Game States</Filter>
     </ClCompile>
+    <ClCompile Include="Environment\Map.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Environment\MapChunk.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -69,5 +75,7 @@
     <ClInclude Include="GameStates\GameState_Ready.hpp">
       <Filter>State Management\Game States</Filter>
     </ClInclude>
+    <ClInclude Include="Environment\Map.hpp" />
+    <ClInclude Include="Environment\MapChunk.hpp" />
   </ItemGroup>
 </Project>

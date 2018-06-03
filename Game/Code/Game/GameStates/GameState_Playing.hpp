@@ -9,6 +9,7 @@
 #include <vector>
 #include "Game/GameStates/GameState.hpp"
 
+class Map;
 class Camera;
 class GameObject;
 class RenderScene;
@@ -40,11 +41,9 @@ private:
 	//-----Private Data-----
 
 	Camera* m_gameCamera;
-
-	ParticleEmitter* m_emitter;
 	std::vector<GameObject*> m_gameObjects;
 
-	RenderScene* m_scene;
+	Map* m_map;
 
 	static const float CAMERA_ROTATION_SPEED;
 	static const float CAMERA_TRANSLATION_SPEED;

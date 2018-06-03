@@ -10,8 +10,9 @@
 #include <string>
 #include "Engine/Math/Vector2.hpp"
 
-class GameState;
 class Clock;
+class GameState;
+class RenderScene;
 
 class Game
 {
@@ -32,6 +33,7 @@ public:
 	static GameState*			GetCurrentGameState();
 	static Clock*				GetGameClock();
 	static float				GetDeltaTime();
+	static RenderScene*			GetRenderScene();
 
 
 private:
@@ -50,6 +52,8 @@ private:
 	GameState*		m_currentState = nullptr;
 	GameState*		m_pendingState = nullptr;
 	Clock*			m_gameClock;
+
+	RenderScene*	m_gameScene;
 
 	static Game* s_instance;			// The singleton Game instance
 };
