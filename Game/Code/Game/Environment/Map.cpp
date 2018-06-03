@@ -1,3 +1,9 @@
+/************************************************************************/
+/* File: Map.cpp
+/* Author: Andrew Chase
+/* Date: June 3rd, 2018
+/* Description: Implementation of the map class
+/************************************************************************/
 #include "Game/Environment/Map.hpp"
 #include "Game/Environment/MapChunk.hpp"
 #include "Game/Framework/GameCommon.hpp"
@@ -9,8 +15,10 @@
 #include "Engine/Rendering/Meshes/MeshBuilder.hpp"
 #include "Engine/Rendering/Materials/Material.hpp"
 
-#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
+//-----------------------------------------------------------------------------------------------
+// Destructor - deletes the reference image and all chunks
+//
 Map::~Map()
 {
 	// Delete all chunks
@@ -20,10 +28,18 @@ Map::~Map()
 	}
 
 	m_mapChunks.clear();
+
+	delete m_image;
+	m_image = nullptr;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Constructs the mesh chunks for the map from the given height map file path
+//
 void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, const IntVector2& chunkLayout, const std::string& filepath)
 {
+	// Set member variables
 	m_worldBounds = worldBounds;
 	m_chunkLayout = chunkLayout;
 	m_heightRange = FloatRange(minHeight, maxHeight);
@@ -31,21 +47,30 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 	Image* image = AssetDB::CreateOrGetImage(filepath);
 	m_image = image;
 
-	// Each texel of the image is a vertex, so ensure the image is at least 2x2
 	IntVector2 imageDimensions = image->GetDimensions();
+	m_texelDimensions = IntVector2(imageDimensions.x - 1, imageDimensions.y - 1);
+
+	// Assertions
+	// Each texel of the image is a vertex, so ensure the image is at least 2x2
 	GUARANTEE_OR_DIE(imageDimensions.x >= 2 && imageDimensions.y >= 2, Stringf("Error: Map::Initialize received bad map image \"%s\"", filepath.c_str()));
 
 	// Assert that the image dimensions can be evenly chunked
 	GUARANTEE_OR_DIE(((imageDimensions.x - 1) % chunkLayout.x == 0) && ((imageDimensions.y - 1) % chunkLayout.y == 0), Stringf("Error: Map::Initialize couldn't match the chunk layout to the image \"%s\"", filepath.c_str()));
 
-	m_dimensions = IntVector2(imageDimensions.x - 1, imageDimensions.y - 1);
+	// Build chunks
+	BuildChunks();
+}
 
-	// Set up iteration values
-	Vector2 worldDimensions = worldBounds.GetDimensions();
 
-	// Construct all the positions and uvs
-	std::vector<Vector3> positions;
-	std::vector<Vector2> uvs;
+//-----------------------------------------------------------------------------------------------
+// Constructs all positions and UVs used by the entire map from the heightmap image
+// All positions are defined in world space
+//
+void Map::ConstructPositionAndUVLists(std::vector<Vector3>& positions, std::vector<Vector2>& uvs)
+{
+	IntVector2 imageDimensions = m_image->GetDimensions();
+	Vector2 worldDimensions = m_worldBounds.GetDimensions();
+
 	float xStride = worldDimensions.x / (float) (imageDimensions.x - 1);
 	float zStride = worldDimensions.y / (float) (imageDimensions.y - 1);
 
@@ -54,10 +79,10 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 		for (int texelXIndex = 0; texelXIndex < imageDimensions.x; ++texelXIndex)
 		{
 			// Determine the position
-			float x = worldBounds.mins.x + texelXIndex * xStride;
-			float z = worldBounds.maxs.y - texelYIndex * zStride;
-			float y = image->GetTexelGrayScale(texelXIndex, texelYIndex);
-			y = RangeMapFloat(y, 0.f, 255.f, minHeight, maxHeight);
+			float x = m_worldBounds.mins.x + texelXIndex * xStride;
+			float z = m_worldBounds.maxs.y - texelYIndex * zStride;
+			float y = m_image->GetTexelGrayScale(texelXIndex, texelYIndex);
+			y = RangeMapFloat(y, 0.f, 255.f, m_heightRange.min, m_heightRange.max);
 
 			Vector3 position = Vector3(x, y, z);
 			positions.push_back(position);
@@ -69,102 +94,129 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 			uvs.push_back(uv);
 		}
 	}
+}
 
-	// Build chunks
-	IntVector2 chunkDimensions = IntVector2((imageDimensions.x - 1) / chunkLayout.x, (imageDimensions.y - 1) / chunkLayout.y);
+
+//-----------------------------------------------------------------------------------------------
+// Builds the mesh of the map by building all the individual chunks
+//
+void Map::BuildChunks()
+{
+	// Construct all the positions and uvs
+	std::vector<Vector3> positions;
+	std::vector<Vector2> uvs;
+
+	ConstructPositionAndUVLists(positions, uvs);
+
+
+	// Set up the material for the map
 	Material* mapMaterial = AssetDB::CreateOrGetSharedMaterial("Map");
 	mapMaterial->SetProperty("SPECULAR_AMOUNT", 0.f);
 	mapMaterial->SetProperty("SPECULAR_POWER", 1.f);
 
-	for (int chunkYIndex = 0; chunkYIndex < chunkLayout.y; ++chunkYIndex)
+
+	// Across chunks - y
+	for (int chunkYIndex = 0; chunkYIndex < m_chunkLayout.y; ++chunkYIndex)
 	{
 		// Across chunks - x
-		for (int chunkXIndex = 0; chunkXIndex < chunkLayout.x; ++chunkXIndex)
+		for (int chunkXIndex = 0; chunkXIndex < m_chunkLayout.x; ++chunkXIndex)
 		{
-			int texelXStart = chunkXIndex * chunkDimensions.x;
-			int texelYStart = chunkYIndex * chunkDimensions.y;
-
-			MeshBuilder mb;
-			std::vector<Vector3> chunkPositions;
-			mb.BeginBuilding(PRIMITIVE_TRIANGLES, false);
-			for (int texelYIndex = texelYStart; texelYIndex <= texelYStart + chunkDimensions.y; ++texelYIndex)
-			{
-				for (int texelXIndex = texelXStart; texelXIndex <= (texelXStart + chunkDimensions.x); ++texelXIndex)
-				{
-					int vertexIndex = texelYIndex * imageDimensions.x + texelXIndex;
-					chunkPositions.push_back(positions[vertexIndex]);	
-				}
-			}
-
-			// Get the average location of all the positions
-			Vector3 averagePosition = Vector3::ZERO;
-			int positionCount = (int) chunkPositions.size();
-			for (int index = 0; index < positionCount; ++index)
-			{
-				averagePosition += chunkPositions[index];
-			}
-			averagePosition /= (float) positionCount;
-
-			DebugRenderSystem::DrawUVSphere(averagePosition, 1000.f);
-
-			Matrix44 model = Matrix44::MakeModelMatrix(averagePosition, Vector3::ZERO, Vector3::ONES);
-			Matrix44 toLocal = Matrix44::MakeModelMatrix(-1.f * averagePosition, Vector3::ZERO, Vector3::ONES);
-
-			mb.BeginBuilding(PRIMITIVE_TRIANGLES, false);
-			for (int texelYIndex = texelYStart; texelYIndex < texelYStart + chunkDimensions.y; ++texelYIndex)
-			{
-				for (int texelXIndex = texelXStart; texelXIndex < (texelXStart + chunkDimensions.x); ++texelXIndex)
-				{
-					int tl = texelYIndex * imageDimensions.x + texelXIndex;
-					int tr = tl + 1;
-					int bl = tl + imageDimensions.x;
-					int br = bl + 1;
-	
-					// Transform them to local space
-					Vector3 tlPosition = toLocal.TransformPoint(positions[tl]).xyz();
-					Vector3 trPosition = toLocal.TransformPoint(positions[tr]).xyz();
-					Vector3 blPosition = toLocal.TransformPoint(positions[bl]).xyz();
-					Vector3 brPosition = toLocal.TransformPoint(positions[br]).xyz();
-
-					if ((chunkXIndex + chunkYIndex) % 2 == 0)
-					{
-						mb.SetColor(Rgba::RED);
-					}
-
-					mb.SetUVs(uvs[tl]);
-					mb.PushVertex(tlPosition);
-					
-					mb.SetUVs(uvs[bl]);
-					mb.PushVertex(blPosition);
-					
-					mb.SetUVs(uvs[br]);
-					mb.PushVertex(brPosition);
-					
-					mb.SetUVs(uvs[tl]);
-					mb.PushVertex(tlPosition);
-					
-					mb.SetUVs(uvs[br]);
-					mb.PushVertex(brPosition);
-					
-					mb.SetUVs(uvs[tr]);
-					mb.PushVertex(trPosition);
-				}
-			}
-
-			mb.FinishBuilding();
-			mb.GenerateSmoothNormals();
-
-			Mesh* chunkMesh = mb.CreateMesh();
-
-			MapChunk* chunk = new MapChunk(model, chunkMesh, mapMaterial);
-			m_mapChunks.push_back(chunk);
+			// Build this chunk
+			BuildSingleChunk(positions, uvs, chunkXIndex, chunkYIndex, mapMaterial);
 		}
 	}
 }
 
 
-Image* Map::GetImage() const
+//-----------------------------------------------------------------------------------------------
+// Builds a single chunk renderable, given the information from the height map and the index of the current chunk
+//
+void Map::BuildSingleChunk(std::vector<Vector3>& positions, std::vector<Vector2>& uvs, int chunkXIndex, int chunkYIndex, Material* material)
 {
-	return m_image;
-}
+	// Set up initial state variables
+	IntVector2 imageDimensions = m_image->GetDimensions();
+	IntVector2 chunkDimensions = IntVector2((imageDimensions.x - 1) / m_chunkLayout.x, (imageDimensions.y - 1) / m_chunkLayout.y);
 
+	int texelXStart = chunkXIndex * chunkDimensions.x;
+	int texelYStart = chunkYIndex * chunkDimensions.y;
+
+	// Iterate across all texels corresponding to this chunk and get the positions
+	std::vector<Vector3> chunkPositions;
+
+	for (int texelYIndex = texelYStart; texelYIndex <= texelYStart + chunkDimensions.y; ++texelYIndex)
+	{
+		for (int texelXIndex = texelXStart; texelXIndex <= (texelXStart + chunkDimensions.x); ++texelXIndex)
+		{
+			int vertexIndex = texelYIndex * imageDimensions.x + texelXIndex;
+			chunkPositions.push_back(positions[vertexIndex]);	
+		}
+	}
+
+	// Get the average location of all the positions, for the model matrix
+	Vector3 averagePosition = Vector3::ZERO;
+	int positionCount = (int) chunkPositions.size();
+	for (int index = 0; index < positionCount; ++index)
+	{
+		averagePosition += chunkPositions[index];
+	}
+	averagePosition /= (float) positionCount;
+
+	// Construct matrices use to transform the points
+	Matrix44 model = Matrix44::MakeModelMatrix(averagePosition, Vector3::ZERO, Vector3::ONES);
+	Matrix44 toLocal = Matrix44::MakeModelMatrix(-1.f * averagePosition, Vector3::ZERO, Vector3::ONES);
+
+	// Build the mesh
+	MeshBuilder mb;
+	mb.BeginBuilding(PRIMITIVE_TRIANGLES, false);
+
+	// Color it red to make adjacent chunks distinct
+	if ((chunkXIndex + chunkYIndex) % 2 == 0)
+	{
+		mb.SetColor(Rgba::RED);
+	}
+
+	for (int texelYIndex = texelYStart; texelYIndex < texelYStart + chunkDimensions.y; ++texelYIndex)
+	{
+		for (int texelXIndex = texelXStart; texelXIndex < (texelXStart + chunkDimensions.x); ++texelXIndex)
+		{
+			int tl = texelYIndex * imageDimensions.x + texelXIndex;
+			int tr = tl + 1;
+			int bl = tl + imageDimensions.x;
+			int br = bl + 1;
+
+			// Transform them to local space (local to this specific chunk)
+			Vector3 tlPosition = toLocal.TransformPoint(positions[tl]).xyz();
+			Vector3 trPosition = toLocal.TransformPoint(positions[tr]).xyz();
+			Vector3 blPosition = toLocal.TransformPoint(positions[bl]).xyz();
+			Vector3 brPosition = toLocal.TransformPoint(positions[br]).xyz();
+
+			// Set the vertices for the mesh
+			mb.SetUVs(uvs[tl]);
+			mb.PushVertex(tlPosition);
+
+			mb.SetUVs(uvs[bl]);
+			mb.PushVertex(blPosition);
+
+			mb.SetUVs(uvs[br]);
+			mb.PushVertex(brPosition);
+
+			mb.SetUVs(uvs[tl]);
+			mb.PushVertex(tlPosition);
+
+			mb.SetUVs(uvs[br]);
+			mb.PushVertex(brPosition);
+
+			mb.SetUVs(uvs[tr]);
+			mb.PushVertex(trPosition);
+		}
+	}
+
+	// Generate the mesh with normals and tangents
+	mb.FinishBuilding();
+	mb.GenerateSmoothNormals();
+
+	Mesh* chunkMesh = mb.CreateMesh();
+
+	MapChunk* chunk = new MapChunk(model, chunkMesh, material);
+	m_mapChunks.push_back(chunk);
+}

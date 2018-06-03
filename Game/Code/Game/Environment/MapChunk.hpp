@@ -1,3 +1,9 @@
+/************************************************************************/
+/* File: MapChunk.hpp
+/* Author: Andrew Chase
+/* Date: June 3rd, 2018
+/* Description: Class to represent a single renderable chunk of the world map
+/************************************************************************/
 #pragma once
 
 class Mesh;
