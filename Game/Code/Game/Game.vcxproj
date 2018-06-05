@@ -286,6 +286,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Entity\Player.cpp" />
     <ClCompile Include="Environment\Map.cpp" />
     <ClCompile Include="Environment\MapChunk.cpp" />
     <ClCompile Include="Framework\App.cpp" />
@@ -299,6 +300,7 @@
     <ClCompile Include="Framework\Game.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Entity\Player.hpp" />
     <ClInclude Include="Environment\Map.hpp" />
     <ClInclude Include="Environment\MapChunk.hpp" />
     <ClInclude Include="Framework\App.hpp" />

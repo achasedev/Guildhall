@@ -30,6 +30,12 @@ public:
 
 	void Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, const IntVector2& chunkLayout, const std::string& fileName);
 
+	// Accessors
+	float GetHeightAtPosition(const Vector3& position);
+	
+	// Producers
+	bool IsPositionInXZBounds(const Vector3& position);
+
 
 private:
 	//-----Private Methods-----

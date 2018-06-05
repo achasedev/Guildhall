@@ -46,6 +46,9 @@
     <ClCompile Include="Environment\MapChunk.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\Player.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -77,5 +80,6 @@
     </ClInclude>
     <ClInclude Include="Environment\Map.hpp" />
     <ClInclude Include="Environment\MapChunk.hpp" />
+    <ClInclude Include="Entity\Player.hpp" />
   </ItemGroup>
 </Project>

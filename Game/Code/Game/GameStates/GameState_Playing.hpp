@@ -30,6 +30,8 @@ public:
 	virtual void Enter() override;
 	virtual void Leave() override;
 
+	Map* GetMap() const;
+
 
 private:
 	//-----Private Methods-----

@@ -10,6 +10,7 @@
 #include <string>
 #include "Engine/Math/Vector2.hpp"
 
+class Map;
 class Clock;
 class GameState;
 class RenderScene;
@@ -34,6 +35,8 @@ public:
 	static Clock*				GetGameClock();
 	static float				GetDeltaTime();
 	static RenderScene*			GetRenderScene();
+
+	static Map* GetMap();
 
 
 private:

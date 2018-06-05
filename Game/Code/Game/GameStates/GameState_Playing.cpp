@@ -90,6 +90,15 @@ void GameState_Playing::Leave()
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the current map of the play state
+//
+Map* GameState_Playing::GetMap() const
+{
+	return m_map;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Updates the camera based on mouse and keyboard input
 //
 void GameState_Playing::UpdateCameraOnInput()

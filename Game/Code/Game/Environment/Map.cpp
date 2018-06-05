@@ -62,6 +62,55 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the height at the map at the given position
+//
+float Map::GetHeightAtPosition(const Vector3& position)
+{
+	if (!IsPositionInXZBounds(position))
+	{
+		return 0.f;
+	}
+
+	Vector2 uvs = RangeMap(position.xz(), m_worldBounds.mins, m_worldBounds.maxs, Vector2::ZERO, Vector2::ONES);
+	Vector2 mapCoords = Vector2(uvs.x * (float) m_texelDimensions.x, uvs.y * (float) m_texelDimensions.y);
+
+	IntVector2 cellCoords = IntVector2(mapCoords);
+	Vector2 cellFraction = mapCoords - cellCoords.GetAsFloats();
+
+	// Quad we're in
+	IntVector2 bli = cellCoords;
+	IntVector2 bri = cellCoords + IntVector2(1, 0);
+	IntVector2 tli = cellCoords + IntVector2(0, 1);
+	IntVector2 tri = cellCoords + IntVector2(1, 1);
+
+	// Get the heights
+	float blh = m_image->GetTexelGrayScale(bli.x, bli.y);
+	float brh = m_image->GetTexelGrayScale(bri.x, bri.y);
+	float tlh = m_image->GetTexelGrayScale(tli.x, tli.y);
+	float trh = m_image->GetTexelGrayScale(tri.x, tri.y);
+
+	// Bilinear interpolate to find the height
+	float bottomHeight	= Interpolate(blh, brh, cellFraction.x);
+	float topheight		= Interpolate(tlh, trh, cellFraction.x);
+	float finalHeight	= Interpolate(bottomHeight, topheight, cellFraction.y);
+
+	return finalHeight;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if the given position is in the xz-bounds of the map
+//
+bool Map::IsPositionInXZBounds(const Vector3& position)
+{
+	bool inXBounds = (m_worldBounds.mins.x <= position.x && m_worldBounds.maxs.x >= position.x);
+	bool inYBounds = (m_worldBounds.mins.y <= position.z && m_worldBounds.maxs.y >= position.z);
+
+	return (inXBounds && inYBounds);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Constructs all positions and UVs used by the entire map from the heightmap image
 // All positions are defined in world space
 //
