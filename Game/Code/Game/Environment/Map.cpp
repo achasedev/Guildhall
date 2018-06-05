@@ -15,7 +15,6 @@
 #include "Engine/Rendering/Meshes/MeshBuilder.hpp"
 #include "Engine/Rendering/Materials/Material.hpp"
 
-
 //-----------------------------------------------------------------------------------------------
 // Destructor - deletes the reference image and all chunks
 //
@@ -47,7 +46,7 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 	Image* image = AssetDB::CreateOrGetImage(filepath);
 	m_image = image;
 
-	IntVector2 imageDimensions = image->GetDimensions();
+	IntVector2 imageDimensions = image->GetTexelDimensions();
 	m_texelDimensions = IntVector2(imageDimensions.x - 1, imageDimensions.y - 1);
 
 	// Assertions
@@ -68,7 +67,7 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 //
 void Map::ConstructPositionAndUVLists(std::vector<Vector3>& positions, std::vector<Vector2>& uvs)
 {
-	IntVector2 imageDimensions = m_image->GetDimensions();
+	IntVector2 imageDimensions = m_image->GetTexelDimensions();
 	Vector2 worldDimensions = m_worldBounds.GetDimensions();
 
 	float xStride = worldDimensions.x / (float) (imageDimensions.x - 1);
@@ -82,7 +81,7 @@ void Map::ConstructPositionAndUVLists(std::vector<Vector3>& positions, std::vect
 			float x = m_worldBounds.mins.x + texelXIndex * xStride;
 			float z = m_worldBounds.maxs.y - texelYIndex * zStride;
 			float y = m_image->GetTexelGrayScale(texelXIndex, texelYIndex);
-			y = RangeMapFloat(y, 0.f, 255.f, m_heightRange.min, m_heightRange.max);
+			y = RangeMapFloat(y, 0.f, 1.f, m_heightRange.min, m_heightRange.max);
 
 			Vector3 position = Vector3(x, y, z);
 			positions.push_back(position);
@@ -110,10 +109,7 @@ void Map::BuildChunks()
 
 
 	// Set up the material for the map
-	Material* mapMaterial = AssetDB::CreateOrGetSharedMaterial("Map");
-	mapMaterial->SetProperty("SPECULAR_AMOUNT", 0.f);
-	mapMaterial->SetProperty("SPECULAR_POWER", 1.f);
-
+	Material* mapMaterial = AssetDB::GetSharedMaterial("Map");
 
 	// Across chunks - y
 	for (int chunkYIndex = 0; chunkYIndex < m_chunkLayout.y; ++chunkYIndex)
@@ -134,7 +130,7 @@ void Map::BuildChunks()
 void Map::BuildSingleChunk(std::vector<Vector3>& positions, std::vector<Vector2>& uvs, int chunkXIndex, int chunkYIndex, Material* material)
 {
 	// Set up initial state variables
-	IntVector2 imageDimensions = m_image->GetDimensions();
+	IntVector2 imageDimensions = m_image->GetTexelDimensions();
 	IntVector2 chunkDimensions = IntVector2((imageDimensions.x - 1) / m_chunkLayout.x, (imageDimensions.y - 1) / m_chunkLayout.y);
 
 	int texelXStart = chunkXIndex * chunkDimensions.x;
@@ -214,6 +210,7 @@ void Map::BuildSingleChunk(std::vector<Vector3>& positions, std::vector<Vector2>
 	// Generate the mesh with normals and tangents
 	mb.FinishBuilding();
 	mb.GenerateSmoothNormals();
+	
 
 	Mesh* chunkMesh = mb.CreateMesh();
 

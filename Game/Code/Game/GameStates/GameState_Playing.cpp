@@ -24,6 +24,8 @@
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 #include "Engine/Rendering/Core/ForwardRenderingPath.hpp"
 
+#include "Engine/Core/Time/ScopedProfiler.hpp"
+
 // Constants
 const float GameState_Playing::CAMERA_ROTATION_SPEED = 45.f;
 const float GameState_Playing::CAMERA_TRANSLATION_SPEED = 10.f;
@@ -49,8 +51,11 @@ GameState_Playing::~GameState_Playing()
 //
 void GameState_Playing::Enter()
 {
+	ScopedProfiler sp = ScopedProfiler("PlayState Enter");
+	UNUSED(sp);
+
 	m_map = new Map();
-	m_map->Intialize(AABB2(Vector2(-100.f, -100.f), Vector2(100.f, 100.f)), 0.f, 20.f, IntVector2(8, 8), "Data/Images/Map.jpg");
+	m_map->Intialize(AABB2(Vector2(-100.f, -100.f), Vector2(100.f, 100.f)), 0.f, 20.f, IntVector2(32, 32), "Data/Images/Map.jpg");
 
  	// Set up the game camera
 	Renderer* renderer = Renderer::GetInstance();

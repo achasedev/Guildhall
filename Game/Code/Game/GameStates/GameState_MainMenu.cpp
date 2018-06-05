@@ -24,10 +24,11 @@ GameState_MainMenu::GameState_MainMenu()
 	float aspect = Window::GetInstance()->GetAspect();
 	float height = Renderer::UI_ORTHO_HEIGHT;
 
-	m_menuBounds = AABB2(Vector2(0.1f * aspect * height, 0.1f * height), Vector2(0.9f * aspect * height, 0.4f * height));
+	m_menuBounds = AABB2(Vector2(0.25f * aspect * height, 0.25f * height), Vector2(0.75f * aspect * height, 0.75f * height));
 	m_fontHeight = 100.f;
 
-	m_menuOptions.push_back("Press Space to proceed to ready state.");
+	m_menuOptions.push_back("Play");
+	m_menuOptions.push_back("Quit");
 }
 
 
@@ -63,7 +64,7 @@ void GameState_MainMenu::ProcessInput()
 	// Selection
 	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_SPACEBAR))
 	{
-		Game::TransitionToGameState(new GameState_Ready());
+		ProcessMenuSelection();
 	}
 
 	// Quit
@@ -132,4 +133,14 @@ void GameState_MainMenu::Leave()
 //
 void GameState_MainMenu::ProcessMenuSelection() const
 {
+	std::string selectedOption = m_menuOptions[m_cursorPosition];
+
+	if (selectedOption == "Play")
+	{
+		Game::TransitionToGameState(new GameState_Ready());
+	}
+	else if (selectedOption == "Quit")
+	{
+		App::GetInstance()->Quit();
+	}
 }

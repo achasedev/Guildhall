@@ -69,6 +69,9 @@ void App::Initialize()
 {
 	if (s_instance == nullptr)
 	{
+		// To print the time taken
+		ScopedProfiler sp = ScopedProfiler("Engine Startup"); UNUSED(sp);
+
 		// Setting up the App
 		s_instance = new App();
 		s_instance->SetupGameConfigBlackboard();
@@ -104,11 +107,7 @@ void App::RunFrame()
 	InputSystem::GetInstance()->BeginFrame();
 	AudioSystem::GetInstance()->BeginFrame();
 
-	// Only process input if the window is in focus
-	//if (Window::GetInstance()->IsWindowInFocus())
-	//{
-		ProcessInput();
-	//}
+	ProcessInput();
 
 	Update();
 	Render();

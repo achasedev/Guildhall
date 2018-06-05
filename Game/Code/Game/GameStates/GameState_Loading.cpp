@@ -12,7 +12,10 @@
 #include "Engine/Core/Window.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
-
+#include "Engine/Core/Time/ScopedProfiler.hpp"
+#include "Engine/Rendering/Resources/Skybox.hpp"
+#include "Engine/Rendering/Core/RenderScene.hpp"
+#include "Engine/Rendering/Materials/Material.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Necessary override imposed by the GameState base class, is unused
@@ -55,7 +58,7 @@ void GameState_Loading::Render() const
 
 	BitmapFont* font = AssetDB::CreateOrGetBitmapFont("Default.png");
 	AABB2 loadingBounds = AABB2(Vector2(0.35f * Window::GetInstance()->GetAspect() * Renderer::UI_ORTHO_HEIGHT, 0.3f * Renderer::UI_ORTHO_HEIGHT), Vector2(0.65f * Window::GetInstance()->GetAspect() * Renderer::UI_ORTHO_HEIGHT, 0.7f * Renderer::UI_ORTHO_HEIGHT));
-	renderer->DrawTextInBox2D("Loading Game...", loadingBounds, Vector2(0.5f, 0.5f), 50.f, TEXT_DRAW_OVERRUN, font);
+	renderer->DrawTextInBox2D("Loading Game\n(with one second sleep)...", loadingBounds, Vector2(0.5f, 0.5f), 50.f, TEXT_DRAW_OVERRUN, font);
 }
 
 
@@ -74,6 +77,9 @@ void GameState_Loading::Leave()
 //
 void GameState_Loading::LoadResources() const
 {
+	// To print the time taken
+	ScopedProfiler sp = ScopedProfiler("Game Loading"); UNUSED(sp);
+
 	MeshBuilder mb;
 	mb.BeginBuilding(PRIMITIVE_TRIANGLES, true);
 	mb.PushCube(Vector3::ZERO, 0.1f * Vector3::ONES, Rgba::ORANGE);
@@ -84,4 +90,15 @@ void GameState_Loading::LoadResources() const
 
 	// Make miku!
 	AssetDB::CreateOrGetMeshGroup("Miku.obj");
+
+	// Set up the material for the map
+	Material* mapMaterial = AssetDB::CreateOrGetSharedMaterial("Map");
+	mapMaterial->SetProperty("SPECULAR_AMOUNT", 0.f);
+	mapMaterial->SetProperty("SPECULAR_POWER", 1.f);
+
+	// Load Skybox here, and set it to the scene
+	Skybox* skybox = AssetDB::CreateOrGetSkybox("Sky.jpg");
+	Game::GetRenderScene()->SetSkybox(skybox);
+
+	//Sleep(1000);
 }
