@@ -11,9 +11,13 @@
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
 #include "Game/Framework/App.hpp"
 #include "Game/Framework/GameCommon.hpp"
-#include "Engine/Input/InputSystem.hpp"
+
 #include "Engine/Core/Window.hpp"
+#include "Engine/Input/InputSystem.hpp"
 #include "Engine/Rendering/OpenGL/glFunctions.hpp"
+
+#pragma comment(lib, "ThirdParty/assimp/lib/assimp-vc140-mt.lib" )
+#define ASSIMP_DLL
 
 #define UNUSED(x) (void)(x);
 
