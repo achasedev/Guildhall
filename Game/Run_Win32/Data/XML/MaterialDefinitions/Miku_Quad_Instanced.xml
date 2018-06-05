@@ -10,4 +10,9 @@
 	<samplers>
 	</samplers>
 
+	<properties>
+		<property name="SPECULAR_POWER" value="1.0"/>
+		<property name="SPECULAR_AMOUNT" value="1.0"/>
+	</properties>
+	
 </material>

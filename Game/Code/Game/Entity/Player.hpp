@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Core/GameObject.hpp"
 
+class Camera;
 class OrbitCamera;
 
 class Player : public GameObject
@@ -14,12 +15,14 @@ public:
 	void ProcessInput();
 	virtual void Update(float deltaTime) override;
 
+	Camera* GetCamera() const;
+
 
 private:
 	//-----Private Methods-----
 
-	void UpdateCameraOnInput();
-	void UpdatePositionOnInput();
+	void UpdateCameraOnInput(float deltaTime);
+	void UpdatePositionOnInput(float deltaTime);
 
 	void UpdateHeightOnMap();
 
@@ -27,7 +30,8 @@ private:
 private:
 	//-----Private Data-----
 
-	Vector3 m_position;
 	OrbitCamera* m_camera;
 
+	static const float CAMERA_ROTATION_SPEED;
+	static const float CAMERA_TRANSLATION_SPEED;
 };

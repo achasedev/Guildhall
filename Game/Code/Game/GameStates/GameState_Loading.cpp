@@ -90,15 +90,14 @@ void GameState_Loading::LoadResources() const
 
 	// Make miku!
 	AssetDB::CreateOrGetMeshGroup("Miku.obj");
+	AssetDB::CreateOrGetSharedMaterial("Miku_Base");
+	AssetDB::CreateOrGetSharedMaterial("Miku_Quad");
+	AssetDB::CreateOrGetSharedMaterial("Miku_Detail");
 
 	// Set up the material for the map
 	Material* mapMaterial = AssetDB::CreateOrGetSharedMaterial("Map");
-	mapMaterial->SetProperty("SPECULAR_AMOUNT", 0.f);
-	mapMaterial->SetProperty("SPECULAR_POWER", 1.f);
 
 	// Load Skybox here, and set it to the scene
 	Skybox* skybox = AssetDB::CreateOrGetSkybox("Sky.jpg");
 	Game::GetRenderScene()->SetSkybox(skybox);
-
-	//Sleep(1000);
 }

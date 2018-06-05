@@ -4,9 +4,10 @@
 /* Date: May 21st, 2018
 /* Description: Implementation of the GameState_Playing class
 /************************************************************************/
-#include "Game/Environment/Map.hpp"
+#include "Game/Entity/Player.hpp"
 #include "Game/Framework/App.hpp"
 #include "Game/Framework/Game.hpp"
+#include "Game/Environment/Map.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 
@@ -26,9 +27,6 @@
 
 #include "Engine/Core/Time/ScopedProfiler.hpp"
 
-// Constants
-const float GameState_Playing::CAMERA_ROTATION_SPEED = 45.f;
-const float GameState_Playing::CAMERA_TRANSLATION_SPEED = 10.f;
 
 //-----------------------------------------------------------------------------------------------
 // Base constructor
@@ -43,6 +41,8 @@ GameState_Playing::GameState_Playing()
 //
 GameState_Playing::~GameState_Playing()
 {
+	delete m_player;
+	m_player = nullptr;
 }
 
 
@@ -51,21 +51,23 @@ GameState_Playing::~GameState_Playing()
 //
 void GameState_Playing::Enter()
 {
-	ScopedProfiler sp = ScopedProfiler("PlayState Enter");
-	UNUSED(sp);
+	// Make the player
+	m_player = new Player();
+	Game::GetRenderScene()->AddRenderable(&m_player->GetRenderable());
 
+	// Make the map
 	m_map = new Map();
 	m_map->Intialize(AABB2(Vector2(-100.f, -100.f), Vector2(100.f, 100.f)), 0.f, 20.f, IntVector2(32, 32), "Data/Images/Map.jpg");
 
  	// Set up the game camera
-	Renderer* renderer = Renderer::GetInstance();
-	m_gameCamera = new Camera();
-	m_gameCamera->SetColorTarget(renderer->GetDefaultColorTarget());
-	m_gameCamera->SetDepthTarget(renderer->GetDefaultDepthTarget());
-	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 1000.f);
-	m_gameCamera->LookAt(Vector3(0.f, 0.f, -5.0f), Vector3::ZERO);
+//	Renderer* renderer = Renderer::GetInstance();
+// 	m_gameCamera = new Camera();
+// 	m_gameCamera->SetColorTarget(renderer->GetDefaultColorTarget());
+// 	m_gameCamera->SetDepthTarget(renderer->GetDefaultDepthTarget());
+// 	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 1000.f);
+// 	m_gameCamera->LookAt(Vector3(0.f, 0.f, -5.0f), Vector3::ZERO);
 
-	Game::GetRenderScene()->AddCamera(m_gameCamera);
+	Game::GetRenderScene()->AddCamera(m_player->GetCamera());
 	Game::GetRenderScene()->AddLight(Light::CreateDirectionalLight(Vector3::ZERO, Vector3::DIRECTION_DOWN, Rgba(255, 255, 255, 100)));
 	Game::GetRenderScene()->SetAmbience(Rgba(255, 255, 255, 50));
  
@@ -76,7 +78,7 @@ void GameState_Playing::Enter()
 	mouse.LockCursorToClient(true);
 	mouse.SetCursorMode(CURSORMODE_RELATIVE);
  
- 	DebugRenderSystem::SetWorldCamera(m_gameCamera);
+ 	DebugRenderSystem::SetWorldCamera(m_player->GetCamera());
 }
 
 
@@ -99,49 +101,17 @@ Map* GameState_Playing::GetMap() const
 
 
 //-----------------------------------------------------------------------------------------------
-// Updates the camera based on mouse and keyboard input
-//
-void GameState_Playing::UpdateCameraOnInput()
-{
-	float deltaTime = Game::GetDeltaTime();
-	InputSystem* input = InputSystem::GetInstance();
-
-	// Translating the camera
-	Vector3 translationOffset = Vector3::ZERO;
-	if (input->IsKeyPressed('W'))								{ translationOffset.z += 1.f; }		// Forward
-	if (input->IsKeyPressed('S'))								{ translationOffset.z -= 1.f; }		// Left
-	if (input->IsKeyPressed('A'))								{ translationOffset.x -= 1.f; }		// Back
-	if (input->IsKeyPressed('D'))								{ translationOffset.x += 1.f; }		// Right
-	if (input->IsKeyPressed(InputSystem::KEYBOARD_SPACEBAR))	{ translationOffset.y += 1.f; }		// Up
-	if (input->IsKeyPressed('X'))								{ translationOffset.y -= 1.f; }		// Down
-
-	translationOffset *= CAMERA_TRANSLATION_SPEED * deltaTime;
-
-	m_gameCamera->TranslateLocal(translationOffset);
-
-	// Rotating the camera
-	Mouse& mouse = InputSystem::GetMouse();
-	IntVector2 mouseDelta = mouse.GetMouseDelta();
-
-	Vector2 rotationOffset = Vector2((float) mouseDelta.y, (float) mouseDelta.x) * 0.12f;
-	Vector3 rotation = Vector3(rotationOffset.x * CAMERA_ROTATION_SPEED * deltaTime, rotationOffset.y * CAMERA_ROTATION_SPEED * deltaTime, 0.f);
-
-	m_gameCamera->Rotate(rotation);
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Checks for input
 //
 void GameState_Playing::ProcessInput()
 {
-	UpdateCameraOnInput();
+	m_player->ProcessInput();
 
 	InputSystem* input = InputSystem::GetInstance();
 
 	if (input->WasKeyJustPressed('I'))
 	{
-		Light* light = Light::CreatePointLight(m_gameCamera->GetPosition(), Rgba::WHITE, Vector3(0.f, 0.f, 0.001f));
+		Light* light = Light::CreatePointLight(m_player->transform.position, Rgba::WHITE, Vector3(0.f, 0.f, 0.001f));
 		Game::GetRenderScene()->AddLight(light);
 	}
 }

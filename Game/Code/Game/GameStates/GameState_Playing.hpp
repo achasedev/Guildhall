@@ -10,6 +10,7 @@
 #include "Game/GameStates/GameState.hpp"
 
 class Map;
+class Player;
 class Camera;
 class GameObject;
 class RenderScene;
@@ -36,17 +37,13 @@ public:
 private:
 	//-----Private Methods-----
 
-	void UpdateCameraOnInput();
 
 	
 private:
 	//-----Private Data-----
 
-	Camera* m_gameCamera;
 	std::vector<GameObject*> m_gameObjects;
 
 	Map* m_map;
-
-	static const float CAMERA_ROTATION_SPEED;
-	static const float CAMERA_TRANSLATION_SPEED;
+	Player* m_player;
 };

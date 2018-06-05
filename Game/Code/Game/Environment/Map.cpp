@@ -258,7 +258,8 @@ void Map::BuildSingleChunk(std::vector<Vector3>& positions, std::vector<Vector2>
 
 	// Generate the mesh with normals and tangents
 	mb.FinishBuilding();
-	mb.GenerateSmoothNormals();
+	mb.GenerateFlatTBN();
+	//mb.GenerateSmoothNormals();
 	
 
 	Mesh* chunkMesh = mb.CreateMesh();
