@@ -6,6 +6,10 @@
 /************************************************************************/
 #include "Game.hpp"
 #include "Game/Framework/GameCommon.hpp"
+#include "Game/GameStates/GameState.hpp"
+#include "Game/GameStates/GameState_Loading.hpp"
+#include "Game/GameStates/GameState_MainMenu.hpp"
+#include "Game/GameStates/GameState_Playing.hpp"
 
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Core/Time/Clock.hpp"
@@ -25,6 +29,7 @@ Game* Game::s_instance = nullptr;
 // Default constructor, initialize any game members here (private)
 //
 Game::Game()
+	: m_currentState(new GameState_Loading())
 {
 	m_gameClock = new Clock(Clock::GetMasterClock());
 }
@@ -73,6 +78,7 @@ void Game::ShutDown()
 //
 void Game::ProcessInput()
 {
+	m_currentState->ProcessInput();
 }
 
 
@@ -82,6 +88,11 @@ void Game::ProcessInput()
 //
 void Game::Update()
 {
+	// Check for state change
+	CheckToUpdateGameState();
+
+	// Update the current state
+	m_currentState->Update();
 }
 
 
@@ -90,6 +101,26 @@ void Game::Update()
 //
 void Game::Render() const
 {
+	m_currentState->Render();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the pending state flag to the one given, so the next frame the game will switch to the
+// given state
+//
+void Game::TransitionToGameState(GameState* newState)
+{
+	s_instance->m_pendingState = newState;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the current GameState of the singleton Game instance
+//
+GameState* Game::GetCurrentGameState()
+{
+	return s_instance->m_currentState;
 }
 
 
@@ -121,9 +152,50 @@ RenderScene* Game::GetRenderScene()
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the map of the playstate, or nullptr otherwise
+//
+Map* Game::GetMap()
+{
+	GameState_Playing* playstate = dynamic_cast<GameState_Playing*>(s_instance->m_currentState);
+
+	if (playstate != nullptr)
+	{
+		return playstate->GetMap();
+	}
+
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the singleton Game instance
 //
 Game* Game::GetInstance()
 {
 	return s_instance;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks if there is a pending 
+//
+void Game::CheckToUpdateGameState()
+{
+	// Have a state pending
+	if (m_pendingState != nullptr)
+	{
+		if (m_currentState != nullptr)
+		{
+			// Leave and destroy current
+			m_currentState->Leave();
+			delete m_currentState;
+		}
+
+		// Set new as current
+		m_currentState = m_pendingState;
+		m_pendingState = nullptr;
+
+		// Enter the new state
+		m_currentState->Enter();
+	}
 }

@@ -49,7 +49,7 @@ bool AppMessageHandler(unsigned int msg, size_t wparam, size_t lparam)
 void Initialize()
 { 
 	// Creates a Windows window for the game
-	Window* theWindow = Window::Initialize(1.777777f, "DFS - Animation : Andrew Chase");	// 1.77777 = 16:9 aspect ratio
+	Window* theWindow = Window::Initialize(1.777777f, "A09 Project : Andrew Chase");	// 1.77777 = 16:9 aspect ratio
 	theWindow->RegisterHandler(AppMessageHandler);
 
 	// Set up the modern context
