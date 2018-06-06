@@ -11,6 +11,7 @@
 
 #include "Engine/Core/Window.hpp"
 #include "Engine/Assets/AssetDB.hpp"
+#include "Engine/Assets/AssetImporter.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/Time/ScopedProfiler.hpp"
 #include "Engine/Rendering/Resources/Skybox.hpp"
@@ -77,4 +78,7 @@ void GameState_Loading::Leave()
 //
 void GameState_Loading::LoadResources() const
 {
+	AssetImporter importer;
+
+	importer.LoadFile("Data/Scenes/Miku/source/TDA MIKUsita menos.fbx");
 }
