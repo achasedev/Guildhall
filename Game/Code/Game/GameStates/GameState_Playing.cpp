@@ -59,14 +59,6 @@ void GameState_Playing::Enter()
 	m_map = new Map();
 	m_map->Intialize(AABB2(Vector2(-100.f, -100.f), Vector2(100.f, 100.f)), 0.f, 20.f, IntVector2(32, 32), "Data/Images/Map.jpg");
 
- 	// Set up the game camera
-//	Renderer* renderer = Renderer::GetInstance();
-// 	m_gameCamera = new Camera();
-// 	m_gameCamera->SetColorTarget(renderer->GetDefaultColorTarget());
-// 	m_gameCamera->SetDepthTarget(renderer->GetDefaultDepthTarget());
-// 	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 1000.f);
-// 	m_gameCamera->LookAt(Vector3(0.f, 0.f, -5.0f), Vector3::ZERO);
-
 	Game::GetRenderScene()->AddCamera(m_player->GetCamera());
 	Game::GetRenderScene()->AddLight(Light::CreateDirectionalLight(Vector3::ZERO, Vector3::DIRECTION_DOWN, Rgba(255, 255, 255, 100)));
 	Game::GetRenderScene()->SetAmbience(Rgba(255, 255, 255, 50));
@@ -122,6 +114,7 @@ void GameState_Playing::ProcessInput()
 //
 void GameState_Playing::Update()
 {
+	m_player->Update(Game::GetDeltaTime());
 }
 
 

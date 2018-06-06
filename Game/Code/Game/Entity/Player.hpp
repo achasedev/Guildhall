@@ -32,6 +32,6 @@ private:
 
 	OrbitCamera* m_camera;
 
-	static const float CAMERA_ROTATION_SPEED;
-	static const float CAMERA_TRANSLATION_SPEED;
+	static const float PLAYER_ROTATION_SPEED;
+	static const float PLAYER_TRANSLATION_SPEED;
 };
