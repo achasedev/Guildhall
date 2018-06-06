@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="State Management">
+      <UniqueIdentifier>{b3bdc9b8-e926-4f7f-848e-ac7ff9514012}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="State Management\Game States">
+      <UniqueIdentifier>{9726638b-9c45-4cb3-b385-8fb2d220ca32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Architecture">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Framework\App.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Game.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\GameCommon.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Main_Win32.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStates\GameState.cpp">
+      <Filter>State Management\Game States</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStates\GameState_Loading.cpp">
+      <Filter>State Management\Game States</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStates\GameState_MainMenu.cpp">
+      <Filter>State Management\Game States</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStates\GameState_Playing.cpp">
+      <Filter>State Management\Game States</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStates\GameState_Ready.cpp">
+      <Filter>State Management\Game States</Filter>
+    </ClCompile>
+    <ClCompile Include="Environment\Map.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Environment\MapChunk.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\Player.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Framework\App.hpp">
+      <Filter>Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Game.hpp">
+      <Filter>Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\GameCommon.hpp">
+      <Filter>Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\EngineBuildPreferences.hpp">
+      <Filter>Architecture</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStates\GameState.hpp">
+      <Filter>State Management\Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStates\GameState_Loading.hpp">
+      <Filter>State Management\Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStates\GameState_MainMenu.hpp">
+      <Filter>State Management\Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStates\GameState_Playing.hpp">
+      <Filter>State Management\Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStates\GameState_Ready.hpp">
+      <Filter>State Management\Game States</Filter>
+    </ClInclude>
+    <ClInclude Include="Environment\Map.hpp" />
+    <ClInclude Include="Environment\MapChunk.hpp" />
+    <ClInclude Include="Entity\Player.hpp" />
+  </ItemGroup>
+</Project>
