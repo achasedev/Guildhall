@@ -32,6 +32,7 @@ public:
 private:
 	//-----Private Methods-----
 
+	void UpdateCameraOnInput();
 
 	
 private:
@@ -39,4 +40,8 @@ private:
 
 	Camera* m_gameCamera;
 	std::vector<GameObject*> m_gameObjects;
+
+	static constexpr float CAMERA_ROTATION_SPEED = 45.f;
+	static constexpr float CAMERA_TRANSLATION_SPEED = 10.f;
+
 };
