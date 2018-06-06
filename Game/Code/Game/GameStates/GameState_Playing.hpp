@@ -9,12 +9,9 @@
 #include <vector>
 #include "Game/GameStates/GameState.hpp"
 
-class Map;
-class Player;
 class Camera;
 class GameObject;
 class RenderScene;
-class ParticleEmitter;
 
 class GameState_Playing : public GameState
 {
@@ -31,8 +28,6 @@ public:
 	virtual void Enter() override;
 	virtual void Leave() override;
 
-	Map* GetMap() const;
-
 
 private:
 	//-----Private Methods-----
@@ -42,8 +37,6 @@ private:
 private:
 	//-----Private Data-----
 
+	Camera* m_gameCamera;
 	std::vector<GameObject*> m_gameObjects;
-
-	Map* m_map;
-	Player* m_player;
 };

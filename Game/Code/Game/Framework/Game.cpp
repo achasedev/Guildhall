@@ -152,22 +152,6 @@ RenderScene* Game::GetRenderScene()
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the map of the playstate, or nullptr otherwise
-//
-Map* Game::GetMap()
-{
-	GameState_Playing* playstate = dynamic_cast<GameState_Playing*>(s_instance->m_currentState);
-
-	if (playstate != nullptr)
-	{
-		return playstate->GetMap();
-	}
-
-	return nullptr;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Returns the singleton Game instance
 //
 Game* Game::GetInstance()

@@ -77,27 +77,4 @@ void GameState_Loading::Leave()
 //
 void GameState_Loading::LoadResources() const
 {
-	// To print the time taken
-	ScopedProfiler sp = ScopedProfiler("Game Loading"); UNUSED(sp);
-
-	MeshBuilder mb;
-	mb.BeginBuilding(PRIMITIVE_TRIANGLES, true);
-	mb.PushCube(Vector3::ZERO, 0.1f * Vector3::ONES, Rgba::ORANGE);
-	mb.FinishBuilding();
-	Mesh* mesh = mb.CreateMesh();
-
-	AssetDB::AddMesh("Particle", mesh);
-
-	// Make miku!
-	AssetDB::CreateOrGetMeshGroup("Miku.obj");
-	AssetDB::CreateOrGetSharedMaterial("Miku_Base");
-	AssetDB::CreateOrGetSharedMaterial("Miku_Quad");
-	AssetDB::CreateOrGetSharedMaterial("Miku_Detail");
-
-	// Set up the material for the map
-	Material* mapMaterial = AssetDB::CreateOrGetSharedMaterial("Map");
-
-	// Load Skybox here, and set it to the scene
-	Skybox* skybox = AssetDB::CreateOrGetSkybox("Sky.jpg");
-	Game::GetRenderScene()->SetSkybox(skybox);
 }
