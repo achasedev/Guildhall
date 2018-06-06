@@ -10,9 +10,7 @@
 #include <string>
 #include "Engine/Math/Vector2.hpp"
 
-class Map;
 class Clock;
-class GameState;
 class RenderScene;
 
 class Game
@@ -29,14 +27,11 @@ public:
 	void Render() const;				// Renders all game objects to screen, called each frame
 
 	static Game*	GetInstance();
-	static void		TransitionToGameState(GameState* newState);
 
-	static GameState*			GetCurrentGameState();
 	static Clock*				GetGameClock();
 	static float				GetDeltaTime();
 	static RenderScene*			GetRenderScene();
 
-	static Map* GetMap();
 
 
 private:
@@ -46,16 +41,11 @@ private:
 	~Game();
 	Game(const Game& copy) = delete;
 
-	void		CheckToUpdateGameState();
-
 
 private:
 	//-----Private Data-----
 
-	GameState*		m_currentState = nullptr;
-	GameState*		m_pendingState = nullptr;
 	Clock*			m_gameClock;
-
 	RenderScene*	m_gameScene;
 
 	static Game* s_instance;			// The singleton Game instance
