@@ -47,7 +47,7 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 	m_image = image;
 
 	IntVector2 imageDimensions = image->GetTexelDimensions();
-	m_texelDimensions = IntVector2(imageDimensions.x - 1, imageDimensions.y - 1);
+	m_cellDimensions = IntVector2(imageDimensions.x - 1, imageDimensions.y - 1);
 
 	// Assertions
 	// Each texel of the image is a vertex, so ensure the image is at least 2x2
@@ -66,28 +66,31 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 //
 float Map::GetHeightAtPosition(const Vector3& position)
 {
-	if (!IsPositionInXZBounds(position))
+	if (!IsPositionInCellBounds(position))
 	{
 		return 0.f;
 	}
 
-	Vector2 uvs = RangeMap(position.xz(), m_worldBounds.mins, m_worldBounds.maxs, Vector2::ZERO, Vector2::ONES);
-	Vector2 mapCoords = Vector2(uvs.x * (float) m_texelDimensions.x, uvs.y * (float) m_texelDimensions.y);
+	Vector2 normalizedMapCoords = RangeMap(position.xz(), m_worldBounds.mins, m_worldBounds.maxs, Vector2::ZERO, Vector2::ONES);
+	Vector2 cellCoords = Vector2(normalizedMapCoords.x * m_cellDimensions.x, normalizedMapCoords.y * m_cellDimensions.y);
 
-	IntVector2 cellCoords = IntVector2(mapCoords);
-	Vector2 cellFraction = mapCoords - cellCoords.GetAsFloats();
+	// Flip texel coords since image is top left (0,0)
+	cellCoords.y = (m_image->GetTexelDimensions().y - cellCoords.y - 1);
+
+	IntVector2 texelCoords = IntVector2(cellCoords);
+	Vector2 cellFraction = cellCoords - texelCoords.GetAsFloats();
 
 	// Quad we're in
-	IntVector2 bli = cellCoords;
-	IntVector2 bri = cellCoords + IntVector2(1, 0);
-	IntVector2 tli = cellCoords + IntVector2(0, 1);
-	IntVector2 tri = cellCoords + IntVector2(1, 1);
+	IntVector2 bli = texelCoords;
+	IntVector2 bri = texelCoords + IntVector2(1, 0);
+	IntVector2 tli = texelCoords + IntVector2(0, 1);
+	IntVector2 tri = texelCoords + IntVector2(1, 1);
 
 	// Get the heights
-	float blh = m_image->GetTexelGrayScale(bli.x, bli.y);
-	float brh = m_image->GetTexelGrayScale(bri.x, bri.y);
-	float tlh = m_image->GetTexelGrayScale(tli.x, tli.y);
-	float trh = m_image->GetTexelGrayScale(tri.x, tri.y);
+	float blh = RangeMapFloat(m_image->GetTexelGrayScale(bli.x, bli.y), 0.f, 1.f, m_heightRange.min, m_heightRange.max);
+	float brh = RangeMapFloat(m_image->GetTexelGrayScale(bri.x, bri.y), 0.f, 1.f, m_heightRange.min, m_heightRange.max);
+	float tlh = RangeMapFloat(m_image->GetTexelGrayScale(tli.x, tli.y), 0.f, 1.f, m_heightRange.min, m_heightRange.max);
+	float trh = RangeMapFloat(m_image->GetTexelGrayScale(tri.x, tri.y), 0.f, 1.f, m_heightRange.min, m_heightRange.max);
 
 	// Bilinear interpolate to find the height
 	float bottomHeight	= Interpolate(blh, brh, cellFraction.x);
@@ -101,7 +104,7 @@ float Map::GetHeightAtPosition(const Vector3& position)
 //-----------------------------------------------------------------------------------------------
 // Returns true if the given position is in the xz-bounds of the map
 //
-bool Map::IsPositionInXZBounds(const Vector3& position)
+bool Map::IsPositionInCellBounds(const Vector3& position)
 {
 	bool inXBounds = (m_worldBounds.mins.x <= position.x && m_worldBounds.maxs.x >= position.x);
 	bool inYBounds = (m_worldBounds.mins.y <= position.z && m_worldBounds.maxs.y >= position.z);
@@ -258,8 +261,7 @@ void Map::BuildSingleChunk(std::vector<Vector3>& positions, std::vector<Vector2>
 
 	// Generate the mesh with normals and tangents
 	mb.FinishBuilding();
-	mb.GenerateFlatTBN();
-	//mb.GenerateSmoothNormals();
+	mb.GenerateSmoothNormals();
 	
 
 	Mesh* chunkMesh = mb.CreateMesh();

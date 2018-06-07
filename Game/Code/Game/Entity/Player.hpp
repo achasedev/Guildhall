@@ -1,7 +1,14 @@
+/************************************************************************/
+/* File: Player.hpp
+/* Author: Andrew Chase
+/* Date: June 5th, 2018
+/* Description: Class to represent a player-controlled entity
+/************************************************************************/
 #pragma once
 #include "Engine/Core/GameObject.hpp"
 
 class Camera;
+class Stopwatch;
 class OrbitCamera;
 
 class Player : public GameObject
@@ -12,9 +19,10 @@ public:
 	Player();
 	~Player();
 
-	void ProcessInput();
-	virtual void Update(float deltaTime) override;
+	void			ProcessInput();
+	virtual void	Update(float deltaTime) override;
 
+	// Accessors
 	Camera* GetCamera() const;
 
 
@@ -30,6 +38,7 @@ private:
 private:
 	//-----Private Data-----
 
+	Stopwatch* m_stopwatch;
 	OrbitCamera* m_camera;
 
 	static const float PLAYER_ROTATION_SPEED;

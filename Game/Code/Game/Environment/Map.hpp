@@ -34,7 +34,7 @@ public:
 	float GetHeightAtPosition(const Vector3& position);
 	
 	// Producers
-	bool IsPositionInXZBounds(const Vector3& position);
+	bool IsPositionInCellBounds(const Vector3& position);
 
 
 private:
@@ -49,7 +49,7 @@ private:
 	//-----Private Data-----
 
 	AABB2					m_worldBounds;		// World-unit boundary
-	IntVector2				m_texelDimensions;  // Texel dimensions
+	IntVector2				m_cellDimensions;	// Texel/Cell dimensions
 	FloatRange				m_heightRange;		// Max/Min height for the map
 	IntVector2				m_chunkLayout;		// Number of chunks wide/long
 	std::vector<MapChunk*>	m_mapChunks;		// List of chunks

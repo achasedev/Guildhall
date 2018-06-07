@@ -95,7 +95,7 @@ void GameState_Loading::LoadResources() const
 	AssetDB::CreateOrGetSharedMaterial("Miku_Detail");
 
 	// Set up the material for the map
-	Material* mapMaterial = AssetDB::CreateOrGetSharedMaterial("Map");
+	AssetDB::CreateOrGetSharedMaterial("Map");
 
 	// Load Skybox here, and set it to the scene
 	Skybox* skybox = AssetDB::CreateOrGetSkybox("Sky.jpg");
