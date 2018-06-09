@@ -10,6 +10,8 @@
 #include <vector>
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/Vector2.hpp"
+#include "Engine/Math/Vector3.hpp"
+#include "Engine/Math/Vector4.hpp"
 #include "Engine/Math/FloatRange.hpp"
 #include "Engine/Math/IntVector2.hpp"
 
@@ -19,6 +21,15 @@ class Vector3;
 class Material;
 class MapChunk;
 class Renderable;
+
+struct MapVertex
+{
+	Vector3 position;
+	Vector3 normal;
+	Vector4 tangent;
+	Vector2 uv;
+};
+
 
 class Map
 {
@@ -31,6 +42,7 @@ public:
 	void Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, const IntVector2& chunkLayout, const std::string& fileName);
 
 	// Accessors
+	float GetHeightAtVertexCoord(const IntVector2& vertexCoord);
 	float GetHeightAtPosition(const Vector3& position);
 	
 	// Producers
@@ -40,20 +52,21 @@ public:
 private:
 	//-----Private Methods-----
 
-	void BuildChunks();
-		void ConstructPositionAndUVLists(std::vector<Vector3>& positions, std::vector<Vector2>& uvs);
-		void BuildSingleChunk(std::vector<Vector3>& positions, std::vector<Vector2>& uvs, int chunkXIndex, int chunkYIndex, Material* material);
+	void BuildTerrain(Image* heightMap);
+		void ConstructMapVertexList(Image* heightMap);
+			void CalculateInitialPositionsAndUVs(std::vector<Vector3>& positions, std::vector<Vector2>& uvs, Image* image);
+		void BuildSingleChunk(int chunkXIndex, int chunkYIndex, Material* material);
 
 
 private:
 	//-----Private Data-----
 
 	AABB2					m_worldBounds;		// World-unit boundary
-	IntVector2				m_cellDimensions;	// Texel/Cell dimensions
-	FloatRange				m_heightRange;		// Max/Min height for the map
+	IntVector2				m_mapCellLayout;	// Texel/Cell dimensions
 	IntVector2				m_chunkLayout;		// Number of chunks wide/long
+
+	FloatRange				m_heightRange;		// Max/Min height for the map
 	std::vector<MapChunk*>	m_mapChunks;		// List of chunks
 
-	Image*					m_image;	// Height map image
-
+	std::vector<MapVertex>	m_mapVertices;
 };

@@ -64,9 +64,6 @@ void GameState_Playing::Enter()
 	Game::GetRenderScene()->AddLight(Light::CreateDirectionalLight(Vector3::ZERO, Vector3(1.f, -1.f, 0.f), Rgba(255, 255, 255, 180)));
 	Game::GetRenderScene()->SetAmbience(Rgba(255, 255, 255, 50));
  
- 	// Set up the mouse for FPS controls
-	Mouse& mouse = InputSystem::GetMouse();
- 
 	// Test the debug render system
  	DebugRenderSystem::SetWorldCamera(m_player->GetCamera());
 }

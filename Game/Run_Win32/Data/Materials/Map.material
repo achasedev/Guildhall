@@ -1,6 +1,6 @@
 <material>
 
-	<shader name="Phong_Opaque"/>
+	<shader name="Vertex_Normal"/>
 
 	<textures>
 		<texture name="Data/Images/Ground.png" bind="0" />
