@@ -96,7 +96,7 @@ void GameState_MainMenu::Render() const
 	renderer->Draw2DQuad(m_menuBounds, AABB2::UNIT_SQUARE_OFFCENTER, Rgba::BLUE, AssetDB::GetSharedMaterial("UI"));
 
 	// Draw the menu options
-	BitmapFont* font = AssetDB::CreateOrGetBitmapFont("Default.png");
+	BitmapFont* font = AssetDB::CreateOrGetBitmapFont("Data/Images/Fonts/Default.png");
 	AABB2 currentTextBounds = m_menuBounds;
 
 	for (int menuIndex = 0; menuIndex < static_cast<int>(m_menuOptions.size()); ++menuIndex)

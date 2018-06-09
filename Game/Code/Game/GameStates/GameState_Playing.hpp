@@ -42,6 +42,6 @@ private:
 	std::vector<GameObject*> m_gameObjects;
 
 	static constexpr float CAMERA_ROTATION_SPEED = 45.f;
-	static constexpr float CAMERA_TRANSLATION_SPEED = 10.f;
+	static constexpr float CAMERA_TRANSLATION_SPEED = 5.f;
 
 };

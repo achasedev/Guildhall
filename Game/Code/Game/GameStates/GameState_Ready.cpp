@@ -49,7 +49,7 @@ void GameState_Ready::Render() const
 	renderer->Draw2DQuad(m_textBoxBounds, AABB2::UNIT_SQUARE_OFFCENTER, Rgba::BLUE, AssetDB::GetSharedMaterial("UI"));
 
 	// Draw the text
-	BitmapFont* font = AssetDB::CreateOrGetBitmapFont("Default.png");
+	BitmapFont* font = AssetDB::CreateOrGetBitmapFont("Data/Images/Fonts/Default.png");
 	renderer->DrawTextInBox2D("In Ready state, press 'space' to play", m_textBoxBounds, Vector2(0.5f, 0.5f), 40.f, TEXT_DRAW_SHRINK_TO_FIT, font, Rgba::WHITE);
 }
 

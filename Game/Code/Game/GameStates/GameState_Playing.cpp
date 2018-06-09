@@ -67,6 +67,21 @@ void GameState_Playing::Enter()
 	mouse.SetCursorMode(CURSORMODE_RELATIVE);
  
  	DebugRenderSystem::SetWorldCamera(m_gameCamera);
+
+	//std::vector<Renderable*> renderables = AssetDB::LoadFileWithAssimp("Data/Models/Katsuragi/Katsuragi.obj");
+	std::vector<Renderable*> renderables = AssetDB::LoadFileWithAssimp("Data/Models/Gage/Gage.fbx");
+
+	renderables[0]->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 20.f);
+	renderables[0]->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.2f);
+
+	int count = (int) renderables.size();
+
+	for (int index = 0; index < count; ++index)
+	{
+		Game::GetRenderScene()->AddRenderable(renderables[index]);
+	}
+	
+	//Skybox* skybox = AssetDB::CreateOrGetSkybox("Data/Images/Skybox.png");
 }
 
 
@@ -95,6 +110,11 @@ void GameState_Playing::UpdateCameraOnInput()
 	if (input->IsKeyPressed('D'))								{ translationOffset.x += 1.f; }		// Right
 	if (input->IsKeyPressed(InputSystem::KEYBOARD_SPACEBAR))	{ translationOffset.y += 1.f; }		// Up
 	if (input->IsKeyPressed('X'))								{ translationOffset.y -= 1.f; }		// Down
+
+	if (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT))
+	{
+		translationOffset *= 10.f;
+	}
 
 	translationOffset *= CAMERA_TRANSLATION_SPEED * deltaTime;
 
