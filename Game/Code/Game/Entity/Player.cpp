@@ -38,10 +38,10 @@ Player::Player()
 	m_camera->SetProjectionPerspective(90.f, 0.1f, 1000.f);
 
 	// Set up the renderable
-	MeshGroup* mikuMesh = AssetDB::CreateOrGetMeshGroup("Miku.obj");
-	Material* baseMaterial = AssetDB::CreateOrGetSharedMaterial("Miku_Base");
-	Material* quadMaterial = AssetDB::CreateOrGetSharedMaterial("Miku_Quad");
-	Material* detailMaterial = AssetDB::CreateOrGetSharedMaterial("Miku_Detail");
+	MeshGroup* mikuMesh = AssetDB::CreateOrGetMeshGroup("Data/Models/Miku.obj");
+	Material* baseMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Base.material");
+	Material* quadMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Quad.material");
+	Material* detailMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Detail.material");
 
 	m_renderable = Renderable(transform.GetModelMatrix(), mikuMesh, baseMaterial);
 	m_renderable.SetSharedMaterial(quadMaterial, 0);
@@ -126,18 +126,21 @@ void Player::UpdateCameraOnInput(float deltaTime)
 {
 	// Rotating the camera
 	Mouse& mouse = InputSystem::GetMouse();
-	IntVector2 mouseDelta = mouse.GetMouseDelta();
-
-	Vector2 rotationOffset = Vector2((float) mouseDelta.y, (float) mouseDelta.x) * 0.12f;
-	Vector3 rotation = Vector3(rotationOffset.x * PLAYER_ROTATION_SPEED * deltaTime, rotationOffset.y * PLAYER_ROTATION_SPEED * deltaTime, 0.f);
-
-	m_camera->RotateHorizontally(-rotation.y);
-	m_camera->RotateVertically(-rotation.x);
-
-	float wheelDelta = mouse.GetMouseWheelDelta();
-	if (wheelDelta != 0.f)
+	if (mouse.IsButtonPressed(MOUSEBUTTON_LEFT) || mouse.IsButtonPressed(MOUSEBUTTON_RIGHT))
 	{
-		m_camera->MoveAlongRadius(wheelDelta * 10.f);
+		IntVector2 mouseDelta = mouse.GetMouseDelta();
+
+		Vector2 rotationOffset = Vector2((float) mouseDelta.y, (float) mouseDelta.x) * 0.12f;
+		Vector3 rotation = Vector3(rotationOffset.x * PLAYER_ROTATION_SPEED * deltaTime, rotationOffset.y * PLAYER_ROTATION_SPEED * deltaTime, 0.f);
+
+		m_camera->RotateHorizontally(-rotation.y);
+		m_camera->RotateVertically(-rotation.x);
+
+		float wheelDelta = mouse.GetMouseWheelDelta();
+		if (wheelDelta != 0.f)
+		{
+			m_camera->MoveAlongRadius(wheelDelta * 10.f);
+		}
 	}
 }
 

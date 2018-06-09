@@ -161,7 +161,7 @@ void Map::BuildChunks()
 
 
 	// Set up the material for the map
-	Material* mapMaterial = AssetDB::GetSharedMaterial("Map");
+	Material* mapMaterial = AssetDB::GetSharedMaterial("Data/Materials/Map.material");
 
 	// Across chunks - y
 	for (int chunkYIndex = 0; chunkYIndex < m_chunkLayout.y; ++chunkYIndex)

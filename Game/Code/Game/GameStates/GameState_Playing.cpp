@@ -66,16 +66,9 @@ void GameState_Playing::Enter()
  
  	// Set up the mouse for FPS controls
 	Mouse& mouse = InputSystem::GetMouse();
-
-	mouse.ShowMouseCursor(false);
-	mouse.LockCursorToClient(true);
-	mouse.SetCursorMode(CURSORMODE_RELATIVE);
  
 	// Test the debug render system
  	DebugRenderSystem::SetWorldCamera(m_player->GetCamera());
-	DebugRenderSystem::DrawUVSphere(Vector3(-10.f, 20.f, 0.f), 3000);
-	DebugRenderSystem::DrawPoint(Vector3(10.f, 20.f, 0.f), 3000);
-	DebugRenderSystem::Draw2DText("This is DebugRenderSystem text", Window::GetInstance()->GetWindowBounds(), 3000);
 }
 
 
@@ -111,6 +104,22 @@ void GameState_Playing::ProcessInput()
 		Light* light = Light::CreatePointLight(m_player->transform.position, Rgba::WHITE, Vector3(0.f, 0.f, 0.001f));
 		Game::GetRenderScene()->AddLight(light);
 	}
+
+	Mouse& mouse = InputSystem::GetMouse();
+
+	if (mouse.WasButtonJustPressed(MOUSEBUTTON_LEFT) || mouse.WasButtonJustPressed(MOUSEBUTTON_RIGHT))
+	{
+		mouse.ShowMouseCursor(false);
+		mouse.LockCursorToClient(true);
+		mouse.SetCursorMode(CURSORMODE_RELATIVE);
+	}
+	
+	if (mouse.WasButtonJustReleased(MOUSEBUTTON_LEFT) || mouse.WasButtonJustReleased(MOUSEBUTTON_RIGHT))
+	{
+		mouse.ShowMouseCursor(true);
+		mouse.LockCursorToClient(false);
+		mouse.SetCursorMode(CURSORMODE_ABSOLUTE);
+	}
 }
 
 
@@ -129,13 +138,4 @@ void GameState_Playing::Update()
 void GameState_Playing::Render() const
 {
 	ForwardRenderingPath::Render(Game::GetRenderScene());
-
-	Renderer* renderer = Renderer::GetInstance();
-	renderer->SetCurrentCamera(renderer->GetUICamera());
-
-	AABB2 drawBounds = AABB2(Vector2::ZERO, Vector2(400.f, 200.f));
-	
-	renderer->Draw2DQuad(AABB2(Vector2(0.f, 620.f), Vector2(700.f, 620.f)), AABB2::UNIT_SQUARE_OFFCENTER, Rgba::BLUE);
-	renderer->Draw2DQuad(drawBounds, AABB2::UNIT_SQUARE_OFFCENTER, Rgba::BLUE);
-	renderer->DrawTextInBox2D("This was drawn using direct rendering", drawBounds, Vector2::ZERO, 30.f, TEXT_DRAW_WORD_WRAP, AssetDB::CreateOrGetBitmapFont("Default.png"));
 }

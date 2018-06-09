@@ -1,9 +1,9 @@
 <material>
 
-	<shader name="Phong_Alpha_Instanced"/>
+	<shader name="Phong_Opaque"/>
 
 	<textures>
-		<texture name="Miku/Miku_Detail.png" bind="0" />
+		<texture name="Data/Images/Ground.png" bind="0" />
 		<texture name="Flat" bind="1"/>
 	</textures>
 
@@ -12,7 +12,7 @@
 
 	<properties>
 		<property name="SPECULAR_POWER" value="1.0"/>
-		<property name="SPECULAR_AMOUNT" value="1.0"/>
+		<property name="SPECULAR_AMOUNT" value="0"/>
 	</properties>
 
 </material>

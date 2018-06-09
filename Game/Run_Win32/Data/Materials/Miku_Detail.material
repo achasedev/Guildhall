@@ -3,7 +3,7 @@
 	<shader name="Phong_Alpha"/>
 
 	<textures>
-		<texture name="Miku/Miku_Detail.png" bind="0" />
+		<texture name="Data/Images/Miku/Miku_Detail.png" bind="0" />
 		<texture name="Flat" bind="1"/>
 	</textures>
 
