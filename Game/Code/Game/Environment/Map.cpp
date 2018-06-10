@@ -189,6 +189,48 @@ bool Map::IsPositionInCellBounds(const Vector3& position)
 
 
 //-----------------------------------------------------------------------------------------------
+// Performs a Raycast from the given position in the given direction, returning a hit result
+// Assumes the raycast starts above the map
+//
+RaycastHit_t Map::Raycast(const Vector3& startPosition, const Vector3& direction)
+{
+	float cellWidth = m_worldBounds.GetDimensions().x / (float) m_mapCellLayout.x;
+	float cellHeight = m_worldBounds.GetDimensions().y / (float) m_mapCellLayout.y;
+
+	float stepSize = MinFloat(cellHeight, cellWidth);
+
+	float distanceTravelled = 0.f;
+	Vector3 lastPosition = startPosition;
+
+	while (distanceTravelled < MAX_RAYCAST_DISTANCE)
+	{
+		distanceTravelled += stepSize;
+		Vector3 offset = direction * distanceTravelled;
+
+		Vector3 currPosition = startPosition + offset;
+
+		// If we're off the map just stop
+		if (!IsPositionInCellBounds(currPosition))
+		{
+			return RaycastHit_t(false);
+		}
+
+		float heightOfMap = GetHeightAtPosition(currPosition);
+
+		// Position is under the map, so converge and return the hit
+		if (heightOfMap >= currPosition.y)
+		{
+			return ConvergeRaycast(lastPosition, currPosition);
+		}
+
+		lastPosition = currPosition;
+	}
+
+	return RaycastHit_t(false);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Constructs all positions and UVs used by the entire map from the heightmap image
 // All positions are defined in world space
 //
@@ -464,4 +506,41 @@ void Map::BuildSingleChunk(int chunkXIndex, int chunkYIndex, Material* material)
 
 	MapChunk* chunk = new MapChunk(model, chunkMesh, material);
 	m_mapChunks.push_back(chunk);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Determines the hit of a Raycast given the positions before and after when the hit occurred
+//
+RaycastHit_t Map::ConvergeRaycast(Vector3& positionBeforeHit, Vector3& positionAfterhit)
+{
+	Vector3 midpoint;
+	for (int iteration = 0; iteration < RAYCAST_CONVERGE_ITERATION_COUNT; ++iteration)
+	{
+		midpoint = (positionAfterhit + positionBeforeHit) * 0.5f;
+
+		// Check for early out
+		float mapHeight = GetHeightAtPosition(midpoint);
+		Vector3 mapPosition = Vector3(midpoint.x, mapHeight, midpoint.z);
+		float distance = (mapPosition - midpoint).GetLength();
+
+		if (distance < RAYCAST_CONVERGE_EARLYOUT_DISTANCE)
+		{
+			return RaycastHit_t(true, mapPosition);
+		}
+
+		// No early out, so update the endpositions and continue iterating
+		if (midpoint.y > mapPosition.y)
+		{
+			// Still above map, so update start
+			positionBeforeHit = midpoint;
+		}
+		else
+		{
+			positionAfterhit = midpoint;
+		}
+	}
+
+	// Didn't fully converged, so just return our last midpoint
+	return RaycastHit_t(true, midpoint);
 }

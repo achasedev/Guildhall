@@ -4,6 +4,7 @@
 /* Date: June 5th, 2018
 /* Description: Implementation of the Player class
 /************************************************************************/
+#include "Engine/Core/Window.hpp"
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Environment/Map.hpp"
@@ -19,9 +20,10 @@
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 // Constants
-const float Player::CAMERA_ROTATION_SPEED = 45.f;
-const float Player::PLAYER_ROTATION_SPEED = 180.f;
-const float Player::PLAYER_TRANSLATION_SPEED = 10.f;
+const Vector3	Player::CAMERA_TARGET_OFFSET = Vector3(0.f, 2.f, 0.f);
+const float		Player::CAMERA_ROTATION_SPEED = 45.f;
+const float		Player::PLAYER_ROTATION_SPEED = 180.f;
+const float		Player::PLAYER_TRANSLATION_SPEED = 10.f;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -35,7 +37,7 @@ Player::Player()
 	m_camera = new OrbitCamera();
 	m_camera->SetColorTarget(renderer->GetDefaultColorTarget());
 	m_camera->SetDepthTarget(renderer->GetDefaultDepthTarget());
-	m_camera->SetTarget(transform.position);
+	m_camera->SetTarget(transform.position + CAMERA_TARGET_OFFSET);
 	m_camera->SetRadiusLimits(5.f, 25.f);
 	m_camera->SetRadius(10.f);
 	m_camera->SetAzimuthLimits(5.f, 135.f);
@@ -69,7 +71,7 @@ Player::Player()
 
 
 	//m_renderable = AssetDB::LoadFileWithAssimp("Data/Models/Gage/Gage.fbx");
-	Game::GetRenderScene()->AddRenderable(m_renderable);
+	//Game::GetRenderScene()->AddRenderable(m_renderable);
 	
 	transform.position = Vector3::ZERO;
 	m_stopwatch = new Stopwatch(Game::GetGameClock());
@@ -103,7 +105,7 @@ void Player::ProcessInput()
 	UpdatePositionOnInput(deltaTime);
 	UpdateCameraOnInput(deltaTime);
 
-	m_camera->SetTarget(transform.position);
+	m_camera->SetTarget(transform.position + CAMERA_TARGET_OFFSET);
 }
 
 
@@ -128,6 +130,19 @@ void Player::Update(float deltaTime)
 		options.m_lifetime = 4.f;
 		
 		DebugRenderSystem::DrawPoint(transform.position, options, 0.2f);
+	}
+
+	// Debugging - test raycast
+	RaycastHit_t rayhit = Game::GetMap()->Raycast(m_camera->GetPosition(), m_camera->GetForwardVector());
+
+	if (rayhit.hit)
+	{
+		DebugRenderSystem::DrawUVSphere(rayhit.position, 0.f);
+	}
+	else
+	{
+		//DebugRenderSystem::Draw2DQuad(AABB2(Vector2(300.f, 300.f), Vector2(500.f, 500.f)), Rgba::WHITE, 0.f);
+		DebugRenderSystem::Draw2DText("No hit", Window::GetInstance()->GetWindowBounds(), 0.f);
 	}
 }
 
@@ -185,7 +200,7 @@ void Player::UpdatePositionOnInput(float deltaTime)
 	// Translating the Player
 	Vector3 inputOffset = Vector3::ZERO;
 	if (input->IsKeyPressed('W'))								{ inputOffset.z += 1.f; }		// Forward
-	if (input->IsKeyPressed('S'))								{ inputOffset.x -= 1.f; }		// Left
+	if (input->IsKeyPressed('S'))								{ inputOffset.z -= 1.f; }		// Back
 
 	if (inputOffset == Vector3::ZERO)
 	{

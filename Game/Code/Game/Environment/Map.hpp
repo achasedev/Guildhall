@@ -30,6 +30,14 @@ struct MapVertex
 	Vector2 uv;
 };
 
+struct RaycastHit_t
+{
+	RaycastHit_t(bool hitFlag, const Vector3& endPosition = Vector3::ZERO)
+	: hit(hitFlag), position(endPosition) {}
+
+	bool hit;
+	Vector3 position;
+};
 
 class Map
 {
@@ -51,6 +59,9 @@ public:
 	// Producers
 	bool IsPositionInCellBounds(const Vector3& position);
 
+	// Raycasts
+	RaycastHit_t Raycast(const Vector3& startPosition, const Vector3& direction);
+
 
 private:
 	//-----Private Methods-----
@@ -59,6 +70,8 @@ private:
 		void ConstructMapVertexList(Image* heightMap);
 			void CalculateInitialPositionsAndUVs(std::vector<Vector3>& positions, std::vector<Vector2>& uvs, Image* image);
 		void BuildSingleChunk(int chunkXIndex, int chunkYIndex, Material* material);
+
+	RaycastHit_t ConvergeRaycast(Vector3& positionBeforeHit, Vector3& positionAfterhit);
 
 
 private:
@@ -72,4 +85,8 @@ private:
 	std::vector<MapChunk*>	m_mapChunks;		// List of chunks
 
 	std::vector<MapVertex>	m_mapVertices;
+
+	static constexpr float MAX_RAYCAST_DISTANCE = 2000.f;
+	static const int RAYCAST_CONVERGE_ITERATION_COUNT = 20;
+	static constexpr float RAYCAST_CONVERGE_EARLYOUT_DISTANCE = 0.01f;
 };

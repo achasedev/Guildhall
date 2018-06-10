@@ -42,7 +42,8 @@ private:
 	Stopwatch* m_stopwatch;
 	OrbitCamera* m_camera;
 
-	static const float CAMERA_ROTATION_SPEED;
-	static const float PLAYER_ROTATION_SPEED;
-	static const float PLAYER_TRANSLATION_SPEED;
+	static const Vector3	CAMERA_TARGET_OFFSET;
+	static const float		CAMERA_ROTATION_SPEED;
+	static const float		PLAYER_ROTATION_SPEED;
+	static const float		PLAYER_TRANSLATION_SPEED;
 };
