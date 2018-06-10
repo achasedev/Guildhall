@@ -69,17 +69,14 @@ void GameState_Playing::Enter()
  	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 
 	//std::vector<Renderable*> renderables = AssetDB::LoadFileWithAssimp("Data/Models/Katsuragi/Katsuragi.obj");
-	std::vector<Renderable*> renderables = AssetDB::LoadFileWithAssimp("Data/Models/Gage/Gage.fbx");
+	Renderable* renderable = AssetDB::LoadFileWithAssimp("Data/Models/Gage/Gage.fbx");
 
-	renderables[0]->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 20.f);
-	renderables[0]->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.2f);
+	renderable->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 20.f);
+	renderable->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.2f);
+	renderable->AddInstanceMatrix(Matrix44::IDENTITY);
 
-	int count = (int) renderables.size();
-
-	for (int index = 0; index < count; ++index)
-	{
-		Game::GetRenderScene()->AddRenderable(renderables[index]);
-	}
+	Game::GetRenderScene()->AddRenderable(renderable);
+	
 	
 	//Skybox* skybox = AssetDB::CreateOrGetSkybox("Data/Images/Skybox.png");
 }
