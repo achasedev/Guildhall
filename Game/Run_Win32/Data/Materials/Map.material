@@ -1,6 +1,6 @@
 <material>
 
-	<shader name="Vertex_Normal"/>
+	<shader name="Phong_Opaque"/>
 
 	<textures>
 		<texture name="Data/Images/Ground.png" bind="0" />
@@ -11,8 +11,8 @@
 	</samplers>
 
 	<properties>
-		<property name="SPECULAR_POWER" value="1.0"/>
-		<property name="SPECULAR_AMOUNT" value="0"/>
+		<property name="SPECULAR_POWER" value="10.0"/>
+		<property name="SPECULAR_AMOUNT" value="0.7"/>
 	</properties>
 
 </material>

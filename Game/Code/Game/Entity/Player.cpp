@@ -8,14 +8,19 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Environment/Map.hpp"
 #include "Engine/Assets/AssetDB.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
+#include "Engine/Rendering/Core/Renderable.hpp"
 #include "Engine/Rendering/Core/OrbitCamera.hpp"
+#include "Engine/Rendering/Core/RenderScene.hpp"
+#include "Engine/Rendering/Meshes/MeshGroup.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 // Constants
-const float Player::PLAYER_ROTATION_SPEED = 45.f;
+const float Player::CAMERA_ROTATION_SPEED = 45.f;
+const float Player::PLAYER_ROTATION_SPEED = 180.f;
 const float Player::PLAYER_TRANSLATION_SPEED = 10.f;
 
 
@@ -43,13 +48,33 @@ Player::Player()
 	Material* quadMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Quad.material");
 	Material* detailMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Detail.material");
 
-	m_renderable = Renderable(transform.GetModelMatrix(), mikuMesh, baseMaterial);
-	m_renderable.SetSharedMaterial(quadMaterial, 0);
-	m_renderable.SetSharedMaterial(detailMaterial, 2);
+	RenderableDraw_t draw;
+	m_renderable = new Renderable();
 
+	draw.sharedMaterial = quadMaterial;
+	draw.mesh = mikuMesh->GetMesh(0);
+	m_renderable->AddDraw(draw);
+
+	draw.sharedMaterial = baseMaterial;
+	draw.mesh = mikuMesh->GetMesh(1);
+	m_renderable->AddDraw(draw);
+	
+	draw.sharedMaterial = detailMaterial;
+	draw.mesh = mikuMesh->GetMesh(2);
+	m_renderable->AddDraw(draw);
+
+	draw.sharedMaterial = baseMaterial;
+	draw.mesh = mikuMesh->GetMesh(3);
+	m_renderable->AddDraw(draw);
+
+
+	//m_renderable = AssetDB::LoadFileWithAssimp("Data/Models/Gage/Gage.fbx");
+	Game::GetRenderScene()->AddRenderable(m_renderable);
+	
 	transform.position = Vector3::ZERO;
 	m_stopwatch = new Stopwatch(Game::GetGameClock());
 	m_stopwatch->SetInterval(0.5f);
+	m_renderable->AddInstanceMatrix(transform.GetModelMatrix());
 }
 
 
@@ -58,6 +83,8 @@ Player::Player()
 //
 Player::~Player()
 {
+	Game::GetRenderScene()->RemoveRenderable(m_renderable);
+
 	delete m_stopwatch;
 	m_stopwatch = nullptr;
 
@@ -76,12 +103,6 @@ void Player::ProcessInput()
 	UpdatePositionOnInput(deltaTime);
 	UpdateCameraOnInput(deltaTime);
 
-	Mouse& mouse = InputSystem::GetMouse();
-	if (mouse.IsButtonPressed(MOUSEBUTTON_RIGHT))
-	{
-		transform.rotation.y = m_camera->GetRotation().y;
-	}
-
 	m_camera->SetTarget(transform.position);
 }
 
@@ -94,8 +115,9 @@ void Player::Update(float deltaTime)
 	GameObject::Update(deltaTime);
 
 	UpdateHeightOnMap();
+	UpdateOrientationWithNormal();
 
-	m_renderable.SetModelMatrix(transform.GetModelMatrix(), 0);
+	m_renderable->SetInstanceMatrix(0, transform.GetModelMatrix());
 
 	// Drop a breadcrumb if the timer is up
 	if (m_stopwatch->DecrementByIntervalOnce())
@@ -131,7 +153,7 @@ void Player::UpdateCameraOnInput(float deltaTime)
 		IntVector2 mouseDelta = mouse.GetMouseDelta();
 
 		Vector2 rotationOffset = Vector2((float) mouseDelta.y, (float) mouseDelta.x) * 0.12f;
-		Vector3 rotation = Vector3(rotationOffset.x * PLAYER_ROTATION_SPEED * deltaTime, rotationOffset.y * PLAYER_ROTATION_SPEED * deltaTime, 0.f);
+		Vector3 rotation = Vector3(rotationOffset.x, rotationOffset.y, 0.f) * CAMERA_ROTATION_SPEED * deltaTime;
 
 		m_camera->RotateHorizontally(-rotation.y);
 		m_camera->RotateVertically(-rotation.x);
@@ -152,16 +174,41 @@ void Player::UpdatePositionOnInput(float deltaTime)
 {
 	InputSystem* input = InputSystem::GetInstance();
 
-	// Translating the camera
-	Vector3 translationOffset = Vector3::ZERO;
-	if (input->IsKeyPressed('W'))								{ translationOffset.z += 1.f; }		// Forward
-	if (input->IsKeyPressed('S'))								{ translationOffset.z -= 1.f; }		// Left
-	if (input->IsKeyPressed('A'))								{ translationOffset.x -= 1.f; }		// Back
-	if (input->IsKeyPressed('D'))								{ translationOffset.x += 1.f; }		// Right
+	// Rotating the palyer
+	float inputRotation = 0.f;
 
-	translationOffset *= PLAYER_TRANSLATION_SPEED * deltaTime;
+	if (input->IsKeyPressed('A')) { inputRotation -= 1.f; }		// Turn left
+	if (input->IsKeyPressed('D')) { inputRotation += 1.f; }		// Turn right
 
-	transform.TranslateLocal(translationOffset);
+	transform.Rotate(Vector3(0.f, inputRotation * PLAYER_ROTATION_SPEED * deltaTime, 0.f));
+
+	// Translating the Player
+	Vector3 inputOffset = Vector3::ZERO;
+	if (input->IsKeyPressed('W'))								{ inputOffset.z += 1.f; }		// Forward
+	if (input->IsKeyPressed('S'))								{ inputOffset.x -= 1.f; }		// Left
+
+	if (inputOffset == Vector3::ZERO)
+	{
+		return;
+	}
+
+	Vector3 worldForward = transform.GetWorldForward();
+	worldForward.y = 0;
+	worldForward.NormalizeAndGetLength();
+
+	Vector3 forwardTranslation = inputOffset.z * worldForward;
+
+	Vector3 worldRight = transform.GetWorldRight();
+	worldRight.y = 0;
+	worldRight.NormalizeAndGetLength();
+
+	Vector3 rightTranslation = inputOffset.x * worldRight;
+	Vector3 worldTranslation = forwardTranslation + rightTranslation;
+
+	worldTranslation.NormalizeAndGetLength();
+	worldTranslation *= (PLAYER_TRANSLATION_SPEED * deltaTime);
+
+	transform.TranslateWorld(worldTranslation);
 }
 
 
@@ -173,4 +220,23 @@ void Player::UpdateHeightOnMap()
 	Map* map = Game::GetMap();
 	float height = map->GetHeightAtPosition(transform.position);
 	transform.position.y = height;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Finds the normal of the terrain at the player's postion and sets the player to be oriented with that normal
+//
+void Player::UpdateOrientationWithNormal()
+{
+	Map* map = Game::GetMap();
+
+	Vector3 normal = map->GetNormalAtPosition(transform.position);
+	Vector3 right = CrossProduct(normal, transform.GetWorldForward());
+	right.NormalizeAndGetLength();
+
+	Vector3 newForward = CrossProduct(right, normal);
+	newForward.NormalizeAndGetLength();
+
+	Matrix44 newModel = Matrix44(right, normal, newForward, transform.position);
+	transform.SetModelMatrix(newModel);
 }

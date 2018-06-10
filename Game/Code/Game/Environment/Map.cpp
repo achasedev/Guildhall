@@ -121,6 +121,62 @@ float Map::GetHeightAtPosition(const Vector3& position)
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the normal at the map at the position of the vertex given by vertexCoord
+//
+Vector3 Map::GetNormalAtVertexCoord(const IntVector2& vertexCoord)
+{
+	if (vertexCoord.x < 0 || vertexCoord.x >= m_mapCellLayout.x || vertexCoord.y < 0 || vertexCoord.y >= m_mapCellLayout.y)
+	{
+		return 0.f;
+	}
+
+	int index = (m_mapCellLayout.x + 1) * vertexCoord.y + vertexCoord.x;
+
+	return m_mapVertices[index].normal;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the normal of the map at the given position
+//
+Vector3 Map::GetNormalAtPosition(const Vector3& position)
+{
+	if (!IsPositionInCellBounds(position))
+	{
+		return Vector3::DIRECTION_UP;
+	}
+
+	Vector2 normalizedMapCoords = RangeMap(position.xz(), m_worldBounds.mins, m_worldBounds.maxs, Vector2::ZERO, Vector2::ONES);
+	Vector2 cellCoords = Vector2(normalizedMapCoords.x * m_mapCellLayout.x, normalizedMapCoords.y * m_mapCellLayout.y);
+
+	// Flip texel coords since image is top left (0,0)
+	cellCoords.y = (m_mapCellLayout.y - cellCoords.y - 1);
+
+	IntVector2 texelCoords = IntVector2(cellCoords);
+	Vector2 cellFraction = cellCoords - texelCoords.GetAsFloats();
+
+	// Quad we're in
+	IntVector2 bli = texelCoords;
+	IntVector2 bri = texelCoords + IntVector2(1, 0);
+	IntVector2 tli = texelCoords + IntVector2(0, 1);
+	IntVector2 tri = texelCoords + IntVector2(1, 1);
+
+	// Get the normals
+	Vector3 blh = GetNormalAtVertexCoord(bli);
+	Vector3 brh = GetNormalAtVertexCoord(bri);
+	Vector3 tlh = GetNormalAtVertexCoord(tli);
+	Vector3 trh = GetNormalAtVertexCoord(tri);
+
+	// Bilinear interpolate to find the height
+	Vector3 bottomNormal	= Interpolate(blh, brh, cellFraction.x);
+	Vector3 topNormal		= Interpolate(tlh, trh, cellFraction.x);
+	Vector3 finalNormal		= Interpolate(bottomNormal, topNormal, cellFraction.y);
+
+	return finalNormal;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns true if the given position is in the xz-bounds of the map
 //
 bool Map::IsPositionInCellBounds(const Vector3& position)

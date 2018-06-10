@@ -45,6 +45,9 @@ public:
 	float GetHeightAtVertexCoord(const IntVector2& vertexCoord);
 	float GetHeightAtPosition(const Vector3& position);
 	
+	Vector3 GetNormalAtVertexCoord(const IntVector2& vertexCoord);
+	Vector3 GetNormalAtPosition(const Vector3& position);
+
 	// Producers
 	bool IsPositionInCellBounds(const Vector3& position);
 

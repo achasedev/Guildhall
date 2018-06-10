@@ -54,14 +54,13 @@ void GameState_Playing::Enter()
 {
 	// Make the player
 	m_player = new Player();
-	Game::GetRenderScene()->AddRenderable(&m_player->GetRenderable());
 
 	// Make the map
 	m_map = new Map();
-	m_map->Intialize(AABB2(Vector2(-100.f, -100.f), Vector2(100.f, 100.f)), 0.f, 20.f, IntVector2(32, 32), "Data/Images/Map.jpg");
+	m_map->Intialize(AABB2(Vector2(-100.f, -100.f), Vector2(100.f, 100.f)), 0.f, 20.f, IntVector2(8, 8), "Data/Images/Map.jpg");
 
 	Game::GetRenderScene()->AddCamera(m_player->GetCamera());
-	Game::GetRenderScene()->AddLight(Light::CreateDirectionalLight(Vector3::ZERO, Vector3(1.f, -1.f, 0.f), Rgba(255, 255, 255, 180)));
+	Game::GetRenderScene()->AddLight(Light::CreateDirectionalLight(Vector3::ZERO, Vector3(0.1f, -1.f, 0.f), Rgba(200, 200, 200, 160)));
 	Game::GetRenderScene()->SetAmbience(Rgba(255, 255, 255, 50));
  
 	// Test the debug render system
