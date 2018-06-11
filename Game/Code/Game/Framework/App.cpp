@@ -132,9 +132,6 @@ void App::Update()
 		DevConsole::GetInstance()->Update();
 	}
 
-	// Update the DebugRenderSystem
-	DebugRenderSystem::GetInstance()->Update();
-
 	// Game still updates regardless of DevConsole state
 	Game::GetInstance()->Update();
 }
@@ -149,7 +146,7 @@ void App::Render() const
 	Game::GetInstance()->Render();
 
 	// Render debug
-	DebugRenderSystem::GetInstance()->Render();
+	DebugRenderSystem::GetInstance()->UpdateAndRender();
 
 	// Draw the DevConsole if it is open
 	if (DevConsole::IsDevConsoleOpen())
