@@ -57,7 +57,7 @@ void GameState_Playing::Enter()
 
 	Game::GetRenderScene()->AddCamera(m_gameCamera);
 	Game::GetRenderScene()->AddLight(Light::CreateDirectionalLight(Vector3::ZERO, Vector3::DIRECTION_DOWN, Rgba(255, 255, 255, 100)));
-	Game::GetRenderScene()->SetAmbience(Rgba(255, 255, 255, 50));
+	Game::GetRenderScene()->SetAmbience(Rgba(255, 255, 255, 100));
  
  	// Set up the mouse for FPS controls
 	Mouse& mouse = InputSystem::GetMouse();
@@ -69,16 +69,20 @@ void GameState_Playing::Enter()
  	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 
 	//std::vector<Renderable*> renderables = AssetDB::LoadFileWithAssimp("Data/Models/Katsuragi/Katsuragi.obj");
-	Renderable* renderable = AssetDB::LoadFileWithAssimp("Data/Models/Gage/Gage.fbx");
+	Renderable* gage = AssetDB::LoadFileWithAssimp("Data/Models/Gage/Gage.fbx");
+	Renderable* katsuragi = AssetDB::LoadFileWithAssimp("Data/Models/Katsuragi/Katsuragi.obj");
 
-	renderable->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 20.f);
-	renderable->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.2f);
-	renderable->AddInstanceMatrix(Matrix44::IDENTITY);
+	katsuragi->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 20.f);
+	katsuragi->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.2f);
+	katsuragi->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(-100.f, 0.f, 0.f), Vector3::ZERO, Vector3(500.f, 500.f, 500.f)));
 
-	Game::GetRenderScene()->AddRenderable(renderable);
-	
-	
-	//Skybox* skybox = AssetDB::CreateOrGetSkybox("Data/Images/Skybox.png");
+	gage->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 20.f);
+	gage->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.2f);
+	gage->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(100.f, 0.f, 0.f), Vector3::ZERO, Vector3::ONES));
+
+	Game::GetRenderScene()->AddRenderable(katsuragi);
+	Game::GetRenderScene()->AddRenderable(gage);
+
 }
 
 
