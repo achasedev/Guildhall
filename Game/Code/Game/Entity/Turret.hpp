@@ -13,6 +13,8 @@ public:
 
 	virtual void Update(float deltaTime) override;
 
+	void TurnTowardsTarget(const Vector3& target);
+
 
 private:
 	//-----Private Data-----

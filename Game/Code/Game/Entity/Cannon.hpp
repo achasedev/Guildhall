@@ -11,6 +11,8 @@ public:
 
 	virtual void Update(float deltaTime) override;
 
+	void ElevateTowardsTarget(const Vector3& target);
+
 
 private:
 	//-----Private Data-----
