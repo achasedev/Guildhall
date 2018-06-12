@@ -45,38 +45,34 @@ Player::Player()
 	m_camera->SetProjectionPerspective(90.f, 0.1f, 1000.f);
 
 	// Set up the renderable
-	MeshGroup* mikuMesh = AssetDB::CreateOrGetMeshGroup("Data/Models/Miku.obj");
-	Material* baseMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Base.material");
-	Material* quadMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Quad.material");
-	Material* detailMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Detail.material");
+// 	MeshGroup* mikuMesh = AssetDB::CreateOrGetMeshGroup("Data/Models/Miku.obj");
+// 	Material* baseMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Base.material");
+// 	Material* quadMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Quad.material");
+// 	Material* detailMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Detail.material");
+// 
+// 	RenderableDraw_t draw;
+// 	m_renderable = new Renderable();
+// 
+// 	draw.sharedMaterial = quadMaterial;
+// 	draw.mesh = mikuMesh->GetMesh(0);
+// 	m_renderable->AddDraw(draw);
+// 
+// 	draw.sharedMaterial = baseMaterial;
+// 	draw.mesh = mikuMesh->GetMesh(1);
+// 	m_renderable->AddDraw(draw);
+// 	
+// 	draw.sharedMaterial = detailMaterial;
+// 	draw.mesh = mikuMesh->GetMesh(2);
+// 	m_renderable->AddDraw(draw);
+// 
+// 	draw.sharedMaterial = baseMaterial;
+// 	draw.mesh = mikuMesh->GetMesh(3);
+// 	m_renderable->AddDraw(draw);
 
-	RenderableDraw_t draw;
-	m_renderable = new Renderable();
-
-	draw.sharedMaterial = quadMaterial;
-	draw.mesh = mikuMesh->GetMesh(0);
-	m_renderable->AddDraw(draw);
-
-	draw.sharedMaterial = baseMaterial;
-	draw.mesh = mikuMesh->GetMesh(1);
-	m_renderable->AddDraw(draw);
-	
-	draw.sharedMaterial = detailMaterial;
-	draw.mesh = mikuMesh->GetMesh(2);
-	m_renderable->AddDraw(draw);
-
-	draw.sharedMaterial = baseMaterial;
-	draw.mesh = mikuMesh->GetMesh(3);
-	m_renderable->AddDraw(draw);
-
-
-	//m_renderable = AssetDB::LoadFileWithAssimp("Data/Models/Gage/Gage.fbx");
-	//Game::GetRenderScene()->AddRenderable(m_renderable);
-	
+	// Set up tank renderable
 	transform.position = Vector3::ZERO;
 	m_stopwatch = new Stopwatch(Game::GetGameClock());
 	m_stopwatch->SetInterval(0.5f);
-	m_renderable->AddInstanceMatrix(transform.GetModelMatrix());
 }
 
 
@@ -114,12 +110,7 @@ void Player::ProcessInput()
 //
 void Player::Update(float deltaTime)
 {
-	GameObject::Update(deltaTime);
-
-	UpdateHeightOnMap();
-	UpdateOrientationWithNormal();
-
-	m_renderable->SetInstanceMatrix(0, transform.GetModelMatrix());
+	Tank::Update(deltaTime);
 
 	// Drop a breadcrumb if the timer is up
 	if (m_stopwatch->DecrementByIntervalOnce())
@@ -141,7 +132,6 @@ void Player::Update(float deltaTime)
 	}
 	else
 	{
-		//DebugRenderSystem::Draw2DQuad(AABB2(Vector2(300.f, 300.f), Vector2(500.f, 500.f)), Rgba::WHITE, 0.f);
 		DebugRenderSystem::Draw2DText("No hit", Window::GetInstance()->GetWindowBounds(), 0.f);
 	}
 }
@@ -224,34 +214,4 @@ void Player::UpdatePositionOnInput(float deltaTime)
 	worldTranslation *= (PLAYER_TRANSLATION_SPEED * deltaTime);
 
 	transform.TranslateWorld(worldTranslation);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Finds the height of the terrain at the player's postion and set the player to be at that height
-//
-void Player::UpdateHeightOnMap()
-{
-	Map* map = Game::GetMap();
-	float height = map->GetHeightAtPosition(transform.position);
-	transform.position.y = height;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Finds the normal of the terrain at the player's postion and sets the player to be oriented with that normal
-//
-void Player::UpdateOrientationWithNormal()
-{
-	Map* map = Game::GetMap();
-
-	Vector3 normal = map->GetNormalAtPosition(transform.position);
-	Vector3 right = CrossProduct(normal, transform.GetWorldForward());
-	right.NormalizeAndGetLength();
-
-	Vector3 newForward = CrossProduct(right, normal);
-	newForward.NormalizeAndGetLength();
-
-	Matrix44 newModel = Matrix44(right, normal, newForward, transform.position);
-	transform.SetModelMatrix(newModel);
 }

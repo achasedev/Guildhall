@@ -49,6 +49,15 @@
     <ClCompile Include="Entity\Player.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\Tank.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\Turret.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\Cannon.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -81,5 +90,8 @@
     <ClInclude Include="Environment\Map.hpp" />
     <ClInclude Include="Environment\MapChunk.hpp" />
     <ClInclude Include="Entity\Player.hpp" />
+    <ClInclude Include="Entity\Tank.hpp" />
+    <ClInclude Include="Entity\Turret.hpp" />
+    <ClInclude Include="Entity\Cannon.hpp" />
   </ItemGroup>
 </Project>

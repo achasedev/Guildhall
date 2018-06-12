@@ -286,7 +286,10 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Entity\Cannon.cpp" />
     <ClCompile Include="Entity\Player.cpp" />
+    <ClCompile Include="Entity\Tank.cpp" />
+    <ClCompile Include="Entity\Turret.cpp" />
     <ClCompile Include="Environment\Map.cpp" />
     <ClCompile Include="Environment\MapChunk.cpp" />
     <ClCompile Include="Framework\App.cpp" />
@@ -300,7 +303,10 @@
     <ClCompile Include="Framework\Game.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Entity\Cannon.hpp" />
     <ClInclude Include="Entity\Player.hpp" />
+    <ClInclude Include="Entity\Tank.hpp" />
+    <ClInclude Include="Entity\Turret.hpp" />
     <ClInclude Include="Environment\Map.hpp" />
     <ClInclude Include="Environment\MapChunk.hpp" />
     <ClInclude Include="Framework\App.hpp" />

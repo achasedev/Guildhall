@@ -5,13 +5,13 @@
 /* Description: Class to represent a player-controlled entity
 /************************************************************************/
 #pragma once
-#include "Engine/Core/GameObject.hpp"
+#include "Game/Entity/Tank.hpp"
 
 class Camera;
 class Stopwatch;
 class OrbitCamera;
 
-class Player : public GameObject
+class Player : public Tank
 {
 public:
 	//-----Public Methods-----
@@ -31,9 +31,6 @@ private:
 
 	void UpdateCameraOnInput(float deltaTime);
 	void UpdatePositionOnInput(float deltaTime);
-
-	void UpdateHeightOnMap();
-	void UpdateOrientationWithNormal();
 
 
 private:
