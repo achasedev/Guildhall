@@ -49,17 +49,17 @@ void Turret::Update(float deltaTime)
 
 void Turret::TurnTowardsTarget(const Vector3& target)
 {
-	Vector3 worldDirection = (target - transform.position).GetNormalized();
-	Vector3 directionInParentSpace = transform.GetParentsToWorldMatrix().TransformVector(worldDirection).xyz();
-
-	Matrix44 lookAt = Matrix44::MakeLookAt(transform.position, directionInParentSpace, transform.GetWorldUp());
-
-	Vector3 oldRotation = transform.rotation;
-	Matrix44 result = Interpolate(lookAt, transform.GetToWorldMatrix(), 0.25f);
-
-	Vector3 newRotation = Matrix44::ExtractRotationDegrees(result);
-	newRotation.y = oldRotation.y;
-
-
-	m_cannon->ElevateTowardsTarget(target);
+// 	Vector3 worldDirection = (target - transform.position).GetNormalized();
+// 	Vector3 directionInParentSpace = transform.GetParentsToWorldMatrix().TransformVector(worldDirection).xyz();
+// 
+// 	Matrix44 lookAt = Matrix44::MakeLookAt(transform.position, directionInParentSpace, transform.GetWorldUp());
+// 
+// 	Vector3 oldRotation = transform.rotation;
+// 	Matrix44 result = Interpolate(lookAt, transform.GetToWorldMatrix(), 0.25f);
+// 
+// 	Vector3 newRotation = Matrix44::ExtractRotationDegrees(result);
+// 	newRotation.y = oldRotation.y;
+// 
+// 
+// 	m_cannon->ElevateTowardsTarget(target);
 }
