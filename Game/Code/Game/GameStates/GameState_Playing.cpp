@@ -124,7 +124,7 @@ void GameState_Playing::ProcessInput()
 //
 void GameState_Playing::Update()
 {
-	m_player->Update(Game::GetDeltaTime());
+	m_player->Update(Game::GetDeltaTime());	
 }
 
 

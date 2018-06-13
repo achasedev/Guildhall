@@ -37,3 +37,8 @@ void Cannon::Update(float deltaTime)
 	UNUSED(deltaTime);
 	m_renderable->SetInstanceMatrix(0, transform.GetToWorldMatrix());
 }
+
+void Cannon::ElevateTowardsTarget(const Vector3& target)
+{
+
+}
