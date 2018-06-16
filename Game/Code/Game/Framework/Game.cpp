@@ -5,6 +5,10 @@
 /* Description: Game class for general gameplay management
 /************************************************************************/
 #include "Game.hpp"
+#include "Game/Entity/Tank.hpp"
+//#include "Game/Entity/Bullet.hpp"
+#include "Game/Entity/Player.hpp"
+#include "Game/Environment/Map.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/GameStates/GameState.hpp"
 #include "Game/GameStates/GameState_Loading.hpp"
@@ -12,6 +16,7 @@
 #include "Game/GameStates/GameState_Playing.hpp"
 
 #include "Engine/Assets/AssetDB.hpp"
+#include "Engine/Core/GameObject.hpp"
 #include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
@@ -40,8 +45,12 @@ Game::Game()
 //
 Game::~Game()
 {
-	delete m_gameScene;
-	m_gameScene = nullptr;
+	DeleteAllGameObjects();
+	DeleteMap();
+	DeletePlayer();
+
+	delete m_renderScene;
+	m_renderScene = nullptr;
 }
 
 
@@ -59,7 +68,7 @@ void Game::Initialize()
 	Matrix44 test = Matrix44::MakeRotation(Vector3(45.f, 45.f, 45.f));
 	Vector4 rotation = test.Transform(Vector4(0.f, 0.f, 1.f, 0.f));
 
-	s_instance->m_gameScene = new RenderScene("Game Scene");
+	s_instance->m_renderScene = new RenderScene("Game Scene");
 }
 
 
@@ -147,7 +156,95 @@ float Game::GetDeltaTime()
 //
 RenderScene* Game::GetRenderScene()
 {
-	return s_instance->m_gameScene;
+	return s_instance->m_renderScene;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the player character
+//
+Player* Game::GetPlayer()
+{
+	return s_instance->m_player;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the list of GameObjects currently in the game
+//
+std::vector<GameObject*>& Game::GetGameObjects()
+{
+	return s_instance->m_gameObjects;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Spawns the player
+//
+void Game::InitializePlayer()
+{
+	s_instance->m_player = new Player();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Initializes the map using the map parameters provided
+//
+void Game::InitializeMap(const AABB2& worldBounds, float minHeight, float maxHeight, const IntVector2& chunkLayout, const std::string& fileName)
+{
+	s_instance->m_map = new Map();
+	s_instance->m_map->Intialize(worldBounds, minHeight, maxHeight, chunkLayout, fileName);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the GameObject to the list of GameObjects
+//
+void Game::AddGameObject(GameObject* object)
+{
+	s_instance->m_gameObjects.push_back(object);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Deletes the player character object
+//
+void Game::DeletePlayer()
+{
+	if (s_instance->m_player != nullptr)
+	{
+		delete s_instance->m_player;
+		s_instance->m_player = nullptr;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Deletes the map
+//
+void Game::DeleteMap()
+{
+	if (s_instance->m_map != nullptr)
+	{
+		delete s_instance->m_map;
+		s_instance->m_map = nullptr;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Deletes all GameObjects in the list and clears it
+//
+void Game::DeleteAllGameObjects()
+{
+	int numGameObjects = (int) s_instance->m_gameObjects.size();
+
+	for (int objectIndex = 0; objectIndex < numGameObjects; ++objectIndex)
+	{
+		delete s_instance->m_gameObjects[objectIndex];
+	}
+
+	s_instance->m_gameObjects.clear();
 }
 
 
@@ -156,14 +253,7 @@ RenderScene* Game::GetRenderScene()
 //
 Map* Game::GetMap()
 {
-	GameState_Playing* playstate = dynamic_cast<GameState_Playing*>(s_instance->m_currentState);
-
-	if (playstate != nullptr)
-	{
-		return playstate->GetMap();
-	}
-
-	return nullptr;
+	return s_instance->m_map;
 }
 
 

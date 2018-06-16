@@ -8,12 +8,25 @@
 #pragma once
 #include <map>
 #include <string>
+#include <vector>
 #include "Engine/Math/Vector2.hpp"
 
 class Map;
 class Clock;
 class GameState;
 class RenderScene;
+class Player;
+class Map;
+class GameObject;
+class AABB2;
+class IntVector2;
+
+enum GameObjectType
+{
+	GAMEOBJECT_TANK,
+	GAMEOBJECT_BULLET,
+	NUM_GAMEOBJECT_TYPES
+};
 
 class Game
 {
@@ -34,9 +47,23 @@ public:
 	static GameState*			GetCurrentGameState();
 	static Clock*				GetGameClock();
 	static float				GetDeltaTime();
-	static RenderScene*			GetRenderScene();
 
-	static Map* GetMap();
+	// Gameplay Accessors
+	static Map*			GetMap();
+	static RenderScene*	GetRenderScene();
+	static Player*		GetPlayer();
+	static std::vector<GameObject*>& GetGameObjects();
+
+	// Gameplay mutators
+	static void InitializePlayer();
+	static void InitializeMap(const AABB2& worldBounds, float minHeight, float maxHeight, const IntVector2& chunkLayout, const std::string& fileName);
+
+	static void AddGameObject(GameObject* object);
+
+	static void DeletePlayer();
+	static void DeleteMap();
+	static void DeleteAllGameObjects();
+
 
 
 private:
@@ -52,11 +79,17 @@ private:
 private:
 	//-----Private Data-----
 
+	// Framework
 	GameState*		m_currentState = nullptr;
 	GameState*		m_pendingState = nullptr;
 	Clock*			m_gameClock;
 
-	RenderScene*	m_gameScene;
+	// Gameplay
+	Map* m_map = nullptr;
+	Player* m_player = nullptr;
+	RenderScene* m_renderScene = nullptr;
+	std::vector<GameObject*> m_gameObjects;
 
-	static Game* s_instance;			// The singleton Game instance
+
+	static Game* s_instance;	// The singleton Game instance
 };

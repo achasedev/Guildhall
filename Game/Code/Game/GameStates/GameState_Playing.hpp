@@ -31,8 +31,6 @@ public:
 	virtual void Enter() override;
 	virtual void Leave() override;
 
-	Map* GetMap() const;
-
 
 private:
 	//-----Private Methods-----
@@ -42,8 +40,4 @@ private:
 private:
 	//-----Private Data-----
 
-	std::vector<GameObject*> m_gameObjects;
-
-	Map* m_map;
-	Player* m_player;
 };

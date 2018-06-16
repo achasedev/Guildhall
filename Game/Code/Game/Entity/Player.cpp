@@ -20,7 +20,7 @@
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 // Constants
-const Vector3	Player::CAMERA_TARGET_OFFSET = Vector3(0.f, 2.f, 0.f);
+const Vector3	Player::CAMERA_TARGET_OFFSET = Vector3(0.f, 5.f, 0.f);
 const float		Player::CAMERA_ROTATION_SPEED = 45.f;
 
 
@@ -37,37 +37,11 @@ Player::Player()
 	m_camera->SetDepthTarget(renderer->GetDefaultDepthTarget());
 	m_camera->SetTarget(transform.position + CAMERA_TARGET_OFFSET);
 	m_camera->SetRadiusLimits(5.f, 25.f);
-	m_camera->SetRadius(10.f);
+	m_camera->SetRadius(15.f);
 	m_camera->SetAzimuthLimits(5.f, 135.f);
 	m_camera->SetAzimuth(45.f);
 	m_camera->SetProjectionPerspective(90.f, 0.1f, 1000.f);
 
-	// Set up the renderable
-// 	MeshGroup* mikuMesh = AssetDB::CreateOrGetMeshGroup("Data/Models/Miku.obj");
-// 	Material* baseMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Base.material");
-// 	Material* quadMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Quad.material");
-// 	Material* detailMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Detail.material");
-// 
-// 	RenderableDraw_t draw;
-// 	m_renderable = new Renderable();
-// 
-// 	draw.sharedMaterial = quadMaterial;
-// 	draw.mesh = mikuMesh->GetMesh(0);
-// 	m_renderable->AddDraw(draw);
-// 
-// 	draw.sharedMaterial = baseMaterial;
-// 	draw.mesh = mikuMesh->GetMesh(1);
-// 	m_renderable->AddDraw(draw);
-// 	
-// 	draw.sharedMaterial = detailMaterial;
-// 	draw.mesh = mikuMesh->GetMesh(2);
-// 	m_renderable->AddDraw(draw);
-// 
-// 	draw.sharedMaterial = baseMaterial;
-// 	draw.mesh = mikuMesh->GetMesh(3);
-// 	m_renderable->AddDraw(draw);
-
-	// Set up tank renderable
 	transform.position = Vector3::ZERO;
 	m_stopwatch = new Stopwatch(Game::GetGameClock());
 	m_stopwatch->SetInterval(0.5f);
@@ -100,6 +74,12 @@ void Player::ProcessInput()
 	UpdateCameraOnInput(deltaTime);
 
 	m_camera->SetTarget(transform.position + CAMERA_TARGET_OFFSET);
+
+	Mouse& mouse = InputSystem::GetMouse();
+	if (mouse.WasButtonJustPressed(MOUSEBUTTON_LEFT))
+	{
+		ShootCannon();
+	}
 }
 
 

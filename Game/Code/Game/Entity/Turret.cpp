@@ -49,6 +49,11 @@ void Turret::Update(float deltaTime)
 	m_cannon->Update(deltaTime);
 }
 
+Cannon* Turret::GetCannon() const
+{
+	return m_cannon;
+}
+
 void Turret::TurnTowardsTarget(const Vector3& target)
 {
 	Matrix44 toParent = transform.GetLocalMatrix();

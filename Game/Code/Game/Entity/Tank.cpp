@@ -1,4 +1,6 @@
 #include "Game/Entity/Tank.hpp"
+#include "Game/Entity/Bullet.hpp"
+#include "Game/Entity/Cannon.hpp"
 #include "Game/Entity/Turret.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Environment/Map.hpp"
@@ -6,14 +8,17 @@
 
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Rendering/Core/Renderable.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
 
 const float Tank::TANK_ROTATION_SPEED = 60.f;
 const float Tank::TANK_TRANSLATION_SPEED = 5.f;
+const float Tank::TANK_DEFAULT_FIRERATE = 1.f;
 
 Tank::Tank()
 {
+	m_fireRate = TANK_DEFAULT_FIRERATE;
 	// Set up the tank base renderable
 	m_renderable = new Renderable();
 	RenderableDraw_t draw;
@@ -29,6 +34,8 @@ Tank::Tank()
 
 	// Make the turret child to our transform
 	m_turret = new Turret(transform);
+	m_stopwatch = new Stopwatch(Game::GetGameClock());
+	m_stopwatch->SetInterval(1.f / m_fireRate);
 }
 
 Tank::~Tank()
@@ -62,6 +69,21 @@ void Tank::SetTarget(bool hasTarget, const Vector3& target /*= Vector3::ZERO*/)
 {
 	m_hasTarget = hasTarget;
 	m_target = target;
+}
+
+void Tank::ShootCannon()
+{
+	if (m_stopwatch->HasIntervalElapsed())
+	{
+		Matrix44 fireTransform = m_turret->GetCannon()->GetFireTransform();
+		Vector3 position = Matrix44::ExtractTranslation(fireTransform);
+		Quaternion rotation = Quaternion::FromEuler(Matrix44::ExtractRotationDegrees(fireTransform));
+
+		Bullet* bullet = new Bullet(position, rotation);
+		Game::AddGameObject(bullet);
+
+		m_stopwatch->SetInterval(1.f / m_fireRate);
+	}
 }
 
 void Tank::UpdateHeightOnMap()

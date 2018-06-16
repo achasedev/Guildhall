@@ -13,13 +13,18 @@ public:
 
 	virtual void Update(float deltaTime) override;
 
+	Cannon* GetCannon() const;
+
 	void TurnTowardsTarget(const Vector3& target);
+
+	void ShootProjectile();
 
 
 private:
 	//-----Private Data-----
 
 	Cannon* m_cannon;
+
 
 	static const float TURRET_ROTATION_SPEED;
 

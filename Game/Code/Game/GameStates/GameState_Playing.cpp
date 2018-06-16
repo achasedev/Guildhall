@@ -42,8 +42,9 @@ GameState_Playing::GameState_Playing()
 //
 GameState_Playing::~GameState_Playing()
 {
-	delete m_player;
-	m_player = nullptr;
+	Game::DeleteAllGameObjects();
+	Game::DeleteMap();
+	Game::DeletePlayer();
 }
 
 
@@ -53,18 +54,18 @@ GameState_Playing::~GameState_Playing()
 void GameState_Playing::Enter()
 {
 	// Make the player
-	m_player = new Player();
+	Game::InitializePlayer();
 
 	// Make the map
-	m_map = new Map();
-	m_map->Intialize(AABB2(Vector2(-100.f, -100.f), Vector2(100.f, 100.f)), 0.f, 20.f, IntVector2(8, 8), "Data/Images/Map.jpg");
+	Game::InitializeMap(AABB2(Vector2(-100.f, -100.f), Vector2(100.f, 100.f)), 0.f, 20.f, IntVector2(8, 8), "Data/Images/Map.jpg");
 
-	Game::GetRenderScene()->AddCamera(m_player->GetCamera());
+	Camera* playerCamera = Game::GetPlayer()->GetCamera();
+	Game::GetRenderScene()->AddCamera(playerCamera);
 	Game::GetRenderScene()->AddLight(Light::CreateDirectionalLight(Vector3::ZERO, Vector3(0.1f, -1.f, 0.f), Rgba(200, 200, 200, 160)));
 	Game::GetRenderScene()->SetAmbience(Rgba(255, 255, 255, 50));
  
 	// Test the debug render system
- 	DebugRenderSystem::SetWorldCamera(m_player->GetCamera());
+ 	DebugRenderSystem::SetWorldCamera(playerCamera);
 
 	Mouse& mouse = InputSystem::GetMouse();
 
@@ -79,16 +80,6 @@ void GameState_Playing::Enter()
 //
 void GameState_Playing::Leave()
 {
-	TODO("Clear the render scene");
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns the current map of the play state
-//
-Map* GameState_Playing::GetMap() const
-{
-	return m_map;
 }
 
 
@@ -97,13 +88,14 @@ Map* GameState_Playing::GetMap() const
 //
 void GameState_Playing::ProcessInput()
 {
-	m_player->ProcessInput();
+	Player* player = Game::GetPlayer();
+	player->ProcessInput();
 
 	InputSystem* input = InputSystem::GetInstance();
 
 	if (input->WasKeyJustPressed('I'))
 	{
-		Light* light = Light::CreatePointLight(m_player->transform.position, Rgba::WHITE, Vector3(0.f, 0.f, 0.001f));
+		Light* light = Light::CreatePointLight(player->transform.position, Rgba::WHITE, Vector3(0.f, 0.f, 0.001f));
 		Game::GetRenderScene()->AddLight(light);
 	}
 }
@@ -114,7 +106,17 @@ void GameState_Playing::ProcessInput()
 //
 void GameState_Playing::Update()
 {
-	m_player->Update(Game::GetDeltaTime());	
+	float deltaTime = Game::GetDeltaTime();
+
+	Game::GetPlayer()->Update(deltaTime);
+	
+	std::vector<GameObject*>& gameObjects = Game::GetGameObjects();
+	int numObjects = (int) gameObjects.size();
+
+	for (int objectIndex = 0; objectIndex < numObjects; ++objectIndex)
+	{
+		gameObjects[objectIndex]->Update(deltaTime);
+	}
 }
 
 

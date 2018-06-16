@@ -2,6 +2,7 @@
 #include "Engine/Core/GameObject.hpp"
 
 class Turret;
+class Stopwatch;
 
 class Tank : public GameObject
 {
@@ -14,6 +15,8 @@ public:
 	virtual void Update(float deltaTime) override;
 
 	void SetTarget(bool hasTarget, const Vector3& target = Vector3::ZERO);
+
+	void ShootCannon();
 
 
 private:
@@ -31,8 +34,10 @@ protected:
 	bool m_hasTarget = false;
 	bool m_lookAtTarget = true;
 	Vector3 m_target;
+	float m_fireRate;	// Shells per second the tank can fire
+	Stopwatch* m_stopwatch;
 
 	static const float TANK_ROTATION_SPEED;
 	static const float TANK_TRANSLATION_SPEED;
-
+	static const float TANK_DEFAULT_FIRERATE;
 };

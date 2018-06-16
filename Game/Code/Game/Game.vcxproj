@@ -286,6 +286,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Entity\Bullet.cpp" />
     <ClCompile Include="Entity\Cannon.cpp" />
     <ClCompile Include="Entity\Player.cpp" />
     <ClCompile Include="Entity\Tank.cpp" />
@@ -303,6 +304,7 @@
     <ClCompile Include="Framework\Game.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Entity\Bullet.hpp" />
     <ClInclude Include="Entity\Cannon.hpp" />
     <ClInclude Include="Entity\Player.hpp" />
     <ClInclude Include="Entity\Tank.hpp" />

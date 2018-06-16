@@ -7,8 +7,9 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Rendering/Core/Renderable.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
-const float Cannon::CANNON_ROTATION_SPEED = 20.f;
+const float Cannon::CANNON_ROTATION_SPEED = 30.f;
 
 Cannon::Cannon(Transform& parent)
 {
@@ -25,6 +26,10 @@ Cannon::Cannon(Transform& parent)
 	m_renderable->AddInstanceMatrix(transform.GetWorldMatrix());
 
 	Game::GetRenderScene()->AddRenderable(m_renderable);
+
+	// Set up the muzzle transform
+	m_muzzleTransform.SetParentTransform(&transform);
+	m_muzzleTransform.position = Vector3(0.f, 0.f, 1.5f);
 }
 
 Cannon::~Cannon()
@@ -39,6 +44,17 @@ void Cannon::Update(float deltaTime)
 {
 	UNUSED(deltaTime);
 	m_renderable->SetInstanceMatrix(0, transform.GetWorldMatrix());
+
+	// For debugging
+	DebugRenderOptions options;
+	options.m_lifetime = 0.f;
+
+	DebugRenderSystem::DrawBasis(m_muzzleTransform.GetWorldMatrix(), options);
+}
+
+Matrix44 Cannon::GetFireTransform()
+{
+	return m_muzzleTransform.GetWorldMatrix();
 }
 
 void Cannon::ElevateTowardsTarget(const Vector3& target)
