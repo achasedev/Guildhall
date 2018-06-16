@@ -11,6 +11,7 @@
 
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Assets/AssimpLoader.hpp"
 #include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Resources/Sampler.hpp"
 #include "Engine/Rendering/Materials/Material.hpp"
@@ -68,21 +69,28 @@ void GameState_Playing::Enter()
  
  	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 
-	//std::vector<Renderable*> renderables = AssetDB::LoadFileWithAssimp("Data/Models/Katsuragi/Katsuragi.obj");
-	Renderable* gage = AssetDB::LoadFileWithAssimp("Data/Models/Gage/Gage.fbx");
-	Renderable* katsuragi = AssetDB::LoadFileWithAssimp("Data/Models/Katsuragi/Katsuragi.obj");
+	AssimpLoader loader;
+	loader.LoadFile("Data/Models/Gage/Gage.fbx");
+	//loader.LoadFile("Data/Models/unitychan.fbx");
 
-	katsuragi->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 20.f);
-	katsuragi->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.2f);
-	katsuragi->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(-100.f, 0.f, 0.f), Vector3::ZERO, Vector3(500.f, 500.f, 500.f)));
+	//loader.LoadFile("Data/Models/boblampclean.md5mesh");
+	Renderable* gage = loader.GetRenderable();
+
+	//Renderable* hello = AssetDB::LoadModelWithAssimp("Data/Models/unitychan_ARpose1.fbx", false);
+
+	//Renderable* katsuragi = AssetDB::LoadModelWithAssimp("Data/Models/Katsuragi/Katsuragi.obj", false);
+
+	//katsuragi->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 20.f);
+	//katsuragi->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.2f);
+	//katsuragi->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(-100.f, 0.f, 0.f), Vector3::ZERO, Vector3(500.f, 500.f, 500.f)));
 
 	gage->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 20.f);
 	gage->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.2f);
-	gage->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(100.f, 0.f, 0.f), Vector3::ZERO, Vector3::ONES));
+	gage->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(0.f, 0.f, 0.f), Vector3::ZERO, Vector3::ONES));
 
-	Game::GetRenderScene()->AddRenderable(katsuragi);
+	//Game::GetRenderScene()->AddRenderable(katsuragi);
 	Game::GetRenderScene()->AddRenderable(gage);
-
+	DebugRenderSystem::DrawSkeleton(gage->GetSkeletonBase(), gage->GetInstanceMatrix(0), 300.f);
 }
 
 
@@ -128,7 +136,7 @@ void GameState_Playing::UpdateCameraOnInput()
 	Vector2 rotationOffset = Vector2((float) mouseDelta.y, (float) mouseDelta.x) * 0.12f;
 	Vector3 rotation = Vector3(rotationOffset.x * CAMERA_ROTATION_SPEED * deltaTime, rotationOffset.y * CAMERA_ROTATION_SPEED * deltaTime, 0.f);
 
-	m_gameCamera->Rotate(rotation);
+	m_gameCamera->Rotate(rotation);	
 }
 
 //-----------------------------------------------------------------------------------------------
