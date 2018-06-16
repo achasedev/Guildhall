@@ -65,6 +65,12 @@ void GameState_Playing::Enter()
  
 	// Test the debug render system
  	DebugRenderSystem::SetWorldCamera(m_player->GetCamera());
+
+	Mouse& mouse = InputSystem::GetMouse();
+
+	mouse.SetCursorMode(CURSORMODE_RELATIVE);
+	mouse.ShowMouseCursor(false);
+	mouse.LockCursorToClient(true);
 }
 
 
@@ -99,22 +105,6 @@ void GameState_Playing::ProcessInput()
 	{
 		Light* light = Light::CreatePointLight(m_player->transform.position, Rgba::WHITE, Vector3(0.f, 0.f, 0.001f));
 		Game::GetRenderScene()->AddLight(light);
-	}
-
-	Mouse& mouse = InputSystem::GetMouse();
-
-	if (mouse.WasButtonJustPressed(MOUSEBUTTON_LEFT) || mouse.WasButtonJustPressed(MOUSEBUTTON_RIGHT))
-	{
-		mouse.ShowMouseCursor(false);
-		mouse.LockCursorToClient(true);
-		mouse.SetCursorMode(CURSORMODE_RELATIVE);
-	}
-	
-	if (mouse.WasButtonJustReleased(MOUSEBUTTON_LEFT) || mouse.WasButtonJustReleased(MOUSEBUTTON_RIGHT))
-	{
-		mouse.ShowMouseCursor(true);
-		mouse.LockCursorToClient(false);
-		mouse.SetCursorMode(CURSORMODE_ABSOLUTE);
 	}
 }
 

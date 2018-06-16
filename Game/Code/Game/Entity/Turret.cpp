@@ -4,9 +4,13 @@
 #include "Game/Framework/GameCommon.hpp"
 
 #include "Engine/Math/Matrix44.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Rendering/Core/Renderable.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
+
+const float Turret::TURRET_ROTATION_SPEED = 60.f;
+
 
 Turret::Turret(Transform& parent)
 {
@@ -21,7 +25,7 @@ Turret::Turret(Transform& parent)
 	draw.drawMatrix = Matrix44::MakeModelMatrix(Vector3::ZERO, Vector3::ZERO, Vector3(1.3f, 0.9f, 1.3f));
 
 	m_renderable->AddDraw(draw);
-	m_renderable->AddInstanceMatrix(transform.GetToWorldMatrix());
+	m_renderable->AddInstanceMatrix(transform.GetWorldMatrix());
 
 	Game::GetRenderScene()->AddRenderable(m_renderable);
 
@@ -41,25 +45,31 @@ Turret::~Turret()
 
 void Turret::Update(float deltaTime)
 {
-	UNUSED(deltaTime);
-	m_renderable->SetInstanceMatrix(0, transform.GetToWorldMatrix());
-
+	m_renderable->SetInstanceMatrix(0, transform.GetWorldMatrix());
 	m_cannon->Update(deltaTime);
 }
 
 void Turret::TurnTowardsTarget(const Vector3& target)
 {
-// 	Vector3 worldDirection = (target - transform.position).GetNormalized();
-// 	Vector3 directionInParentSpace = transform.GetParentsToWorldMatrix().TransformVector(worldDirection).xyz();
-// 
-// 	Matrix44 lookAt = Matrix44::MakeLookAt(transform.position, directionInParentSpace, transform.GetWorldUp());
-// 
-// 	Vector3 oldRotation = transform.rotation;
-// 	Matrix44 result = Interpolate(lookAt, transform.GetToWorldMatrix(), 0.25f);
-// 
-// 	Vector3 newRotation = Matrix44::ExtractRotationDegrees(result);
-// 	newRotation.y = oldRotation.y;
-// 
-// 
-// 	m_cannon->ElevateTowardsTarget(target);
+	Matrix44 toParent = transform.GetLocalMatrix();
+	Matrix44 toLocal = transform.GetWorldMatrix().GetInverse();
+
+	Vector3 localPosition = toLocal.TransformPoint(target).xyz();
+	localPosition.y = 0.f;
+
+	Vector3 parentPosition = toParent.TransformPoint(localPosition).xyz();
+	Vector3 currentRotation = transform.rotation.GetAsEulerAngles();
+
+	Vector2 dirToTarget = (parentPosition - transform.position).xz();
+
+	float startAngle = currentRotation.y;
+	float endAngle = 180.f - (dirToTarget.GetOrientationDegrees() + 90.f);
+
+	float deltaTime = Game::GetDeltaTime();
+	float newAngle = TurnToward(startAngle, endAngle, TURRET_ROTATION_SPEED * deltaTime);
+
+	currentRotation.y = newAngle;
+	transform.rotation = Quaternion::FromEuler(currentRotation);
+
+	m_cannon->ElevateTowardsTarget(target);
 }

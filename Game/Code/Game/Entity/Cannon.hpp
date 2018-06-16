@@ -17,4 +17,6 @@ public:
 private:
 	//-----Private Data-----
 
+	static const float CANNON_ROTATION_SPEED;
+
 };

@@ -21,4 +21,6 @@ private:
 
 	Cannon* m_cannon;
 
+	static const float TURRET_ROTATION_SPEED;
+
 };

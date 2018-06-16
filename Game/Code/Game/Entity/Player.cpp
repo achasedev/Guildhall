@@ -22,8 +22,6 @@
 // Constants
 const Vector3	Player::CAMERA_TARGET_OFFSET = Vector3(0.f, 2.f, 0.f);
 const float		Player::CAMERA_ROTATION_SPEED = 45.f;
-const float		Player::PLAYER_ROTATION_SPEED = 180.f;
-const float		Player::PLAYER_TRANSLATION_SPEED = 10.f;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -110,8 +108,6 @@ void Player::ProcessInput()
 //
 void Player::Update(float deltaTime)
 {
-	Tank::Update(deltaTime);
-
 	// Drop a breadcrumb if the timer is up
 	if (m_stopwatch->DecrementByIntervalOnce())
 	{
@@ -129,11 +125,15 @@ void Player::Update(float deltaTime)
 	if (rayhit.hit)
 	{
 		DebugRenderSystem::DrawUVSphere(rayhit.position, 0.f);
+		SetTarget(true, rayhit.position);
 	}
 	else
 	{
 		DebugRenderSystem::Draw2DText("No hit", Window::GetInstance()->GetWindowBounds(), 0.f);
+		SetTarget(false);
 	}
+
+	Tank::Update(deltaTime);
 }
 
 
@@ -153,21 +153,28 @@ void Player::UpdateCameraOnInput(float deltaTime)
 {
 	// Rotating the camera
 	Mouse& mouse = InputSystem::GetMouse();
-	if (mouse.IsButtonPressed(MOUSEBUTTON_LEFT) || mouse.IsButtonPressed(MOUSEBUTTON_RIGHT))
+	IntVector2 mouseDelta = mouse.GetMouseDelta();
+
+	Vector2 rotationOffset = Vector2((float) mouseDelta.y, (float) mouseDelta.x) * 0.12f;
+	Vector3 rotation = Vector3(rotationOffset.x, rotationOffset.y, 0.f) * CAMERA_ROTATION_SPEED * deltaTime;
+
+	m_camera->RotateHorizontally(-rotation.y);
+	m_camera->RotateVertically(-rotation.x);
+
+	float wheelDelta = mouse.GetMouseWheelDelta();
+	if (wheelDelta != 0.f)
 	{
-		IntVector2 mouseDelta = mouse.GetMouseDelta();
+		m_camera->MoveAlongRadius(wheelDelta * 10.f);
+	}
 
-		Vector2 rotationOffset = Vector2((float) mouseDelta.y, (float) mouseDelta.x) * 0.12f;
-		Vector3 rotation = Vector3(rotationOffset.x, rotationOffset.y, 0.f) * CAMERA_ROTATION_SPEED * deltaTime;
+	if (mouse.WasButtonJustPressed(MOUSEBUTTON_RIGHT))
+	{
+		m_lookAtTarget = false;
+	}
 
-		m_camera->RotateHorizontally(-rotation.y);
-		m_camera->RotateVertically(-rotation.x);
-
-		float wheelDelta = mouse.GetMouseWheelDelta();
-		if (wheelDelta != 0.f)
-		{
-			m_camera->MoveAlongRadius(wheelDelta * 10.f);
-		}
+	if (mouse.WasButtonJustReleased(MOUSEBUTTON_RIGHT))
+	{
+		m_lookAtTarget = true;
 	}
 }
 
@@ -185,7 +192,7 @@ void Player::UpdatePositionOnInput(float deltaTime)
 	if (input->IsKeyPressed('A')) { inputRotation -= 1.f; }		// Turn left
 	if (input->IsKeyPressed('D')) { inputRotation += 1.f; }		// Turn right
 
-	transform.Rotate(Vector3(0.f, inputRotation * PLAYER_ROTATION_SPEED * deltaTime, 0.f));
+	transform.Rotate(Vector3(0.f, inputRotation * TANK_ROTATION_SPEED * deltaTime, 0.f));
 
 	// Translating the Player
 	Vector3 inputOffset = Vector3::ZERO;
@@ -211,7 +218,7 @@ void Player::UpdatePositionOnInput(float deltaTime)
 	Vector3 worldTranslation = forwardTranslation + rightTranslation;
 
 	worldTranslation.NormalizeAndGetLength();
-	worldTranslation *= (PLAYER_TRANSLATION_SPEED * deltaTime);
+	worldTranslation *= (TANK_TRANSLATION_SPEED * deltaTime);
 
 	transform.TranslateWorld(worldTranslation);
 }

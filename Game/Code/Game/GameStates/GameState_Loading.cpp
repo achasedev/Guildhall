@@ -88,12 +88,6 @@ void GameState_Loading::LoadResources() const
 
 	AssetDB::AddMesh("Particle", mesh);
 
-	// Make miku!
-	AssetDB::CreateOrGetMeshGroup("Data/Models/Miku.obj");
-	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Base.material");
-	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Quad.material");
-	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Detail.material");
-
 	// Set up the material for the map
 	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Map.material");
 
