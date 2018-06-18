@@ -26,7 +26,6 @@
 
 #include "Engine/Core/Time/ScopedProfiler.hpp"
 
-
 //-----------------------------------------------------------------------------------------------
 // Base constructor
 //
@@ -70,11 +69,11 @@ void GameState_Playing::Enter()
  	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 
 	AssimpLoader loader;
-	loader.LoadFile("Data/Models/Gage/Gage.fbx");
-	//loader.LoadFile("Data/Models/unitychan.fbx");
+	//loader.LoadFile("Data/Models/Gage/Gage.fbx");
+	loader.LoadFile("Data/Models/unitychan.fbx");
 
 	//loader.LoadFile("Data/Models/boblampclean.md5mesh");
-	Renderable* gage = loader.GetRenderable();
+	m_modelRenderable = loader.GetRenderable();
 
 	//Renderable* hello = AssetDB::LoadModelWithAssimp("Data/Models/unitychan_ARpose1.fbx", false);
 
@@ -84,13 +83,12 @@ void GameState_Playing::Enter()
 	//katsuragi->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.2f);
 	//katsuragi->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(-100.f, 0.f, 0.f), Vector3::ZERO, Vector3(500.f, 500.f, 500.f)));
 
-	gage->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 20.f);
-	gage->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.2f);
-	gage->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(0.f, 0.f, 0.f), Vector3::ZERO, Vector3::ONES));
+	m_modelRenderable->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 20.f);
+	m_modelRenderable->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.2f);
+	m_modelRenderable->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(0.f, 0.f, 0.f), Vector3::ZERO, Vector3::ONES));
 
 	//Game::GetRenderScene()->AddRenderable(katsuragi);
-	Game::GetRenderScene()->AddRenderable(gage);
-	DebugRenderSystem::DrawSkeleton(gage->GetSkeletonBase(), gage->GetInstanceMatrix(0), 300.f);
+	Game::GetRenderScene()->AddRenderable(m_modelRenderable);
 }
 
 
@@ -139,12 +137,42 @@ void GameState_Playing::UpdateCameraOnInput()
 	m_gameCamera->Rotate(rotation);	
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Checks for input corresponding to toggling rendering
+//
+void GameState_Playing::CheckRenderInput()
+{
+	InputSystem* input = InputSystem::GetInstance();
+
+	if (input->WasKeyJustPressed('I'))
+	{
+		m_renderModel = !m_renderModel;
+
+		if (m_renderModel)
+		{
+			Game::GetRenderScene()->RemoveRenderable(m_modelRenderable);
+		}
+		else
+		{
+			Game::GetRenderScene()->AddRenderable(m_modelRenderable);
+		}
+	}
+
+	if (input->WasKeyJustPressed('O'))
+	{
+		m_renderSkeleton = !m_renderSkeleton;
+	}
+}
+
+
 //-----------------------------------------------------------------------------------------------
 // Checks for input
 //
 void GameState_Playing::ProcessInput()
 {
 	UpdateCameraOnInput();
+	CheckRenderInput();
 }
 
 
@@ -162,4 +190,9 @@ void GameState_Playing::Update()
 void GameState_Playing::Render() const
 {
 	ForwardRenderingPath::Render(Game::GetRenderScene());
+
+	if (m_renderSkeleton)
+	{
+		DebugRenderSystem::DrawSkeleton(m_modelRenderable->GetSkeletonBase(), m_modelRenderable->GetInstanceMatrix(0), 0.f);
+	}
 }

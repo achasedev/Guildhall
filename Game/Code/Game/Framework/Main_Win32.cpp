@@ -74,28 +74,13 @@ void Shutdown()
 	// Shutdown the window used for the context
 	Window::Shutdown();
 }
-#include "Engine/Math/Vector3.hpp"
-#include "Engine/Math/Quaternion.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Master MAIN function for the program, loops until the App is closed
 //
 int WINAPI WinMain( HINSTANCE applicationInstanceHandle, HINSTANCE, LPSTR commandLineString, int )
 {
-	Vector3 angles = Vector3(89.f, 44.3948f, 78.4904f);
-	Quaternion quat = Quaternion::FromEuler(angles);
-
-	Vector3 culmError = Vector3::ZERO;
-	for (int i = 0; i < 60; ++i)
-	{
-		Vector3 newAngles = quat.GetAsEulerAngles();
-		Vector3 error = newAngles - angles;
-
-		culmError += error;
-		DebuggerPrintf("Iteration: %i - Error: (%f, %f, %f)\n", i, culmError.x, culmError.y, culmError.z);
-
-		quat = Quaternion::FromEuler(newAngles);
-	}
 	UNUSED( commandLineString );
 	UNUSED( applicationInstanceHandle );
 

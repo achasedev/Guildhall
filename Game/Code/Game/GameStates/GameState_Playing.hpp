@@ -12,6 +12,7 @@
 class Camera;
 class GameObject;
 class RenderScene;
+class Renderable;
 
 class GameState_Playing : public GameState
 {
@@ -33,6 +34,7 @@ private:
 	//-----Private Methods-----
 
 	void UpdateCameraOnInput();
+	void CheckRenderInput();
 
 	
 private:
@@ -40,6 +42,10 @@ private:
 
 	Camera* m_gameCamera;
 	std::vector<GameObject*> m_gameObjects;
+
+	Renderable* m_modelRenderable;
+	bool m_renderModel = true;
+	bool m_renderSkeleton = true;
 
 	static constexpr float CAMERA_ROTATION_SPEED = 45.f;
 	static constexpr float CAMERA_TRANSLATION_SPEED = 5.f;

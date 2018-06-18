@@ -96,6 +96,7 @@ void App::Initialize()
 	}
 }
 
+#include "Engine/Core/Time/ScopedProfiler.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Calls begin and end frame on the Render and InputSystem, as well as 
