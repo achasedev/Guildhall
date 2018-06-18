@@ -209,10 +209,10 @@ RaycastHit_t Map::Raycast(const Vector3& startPosition, const Vector3& direction
 
 		Vector3 currPosition = startPosition + offset;
 
-		// If we're off the map just stop
+		// If we're off the map just send a no hit response
 		if (!IsPositionInCellBounds(currPosition))
 		{
-			return RaycastHit_t(false);
+			return RaycastHit_t(false, startPosition + 2000.f * direction);
 		}
 
 		float heightOfMap = GetHeightAtPosition(currPosition);
@@ -226,7 +226,7 @@ RaycastHit_t Map::Raycast(const Vector3& startPosition, const Vector3& direction
 		lastPosition = currPosition;
 	}
 
-	return RaycastHit_t(false);
+	return RaycastHit_t(false, startPosition + 2000.f * direction);
 }
 
 
@@ -445,12 +445,6 @@ void Map::BuildSingleChunk(int chunkXIndex, int chunkYIndex, Material* material)
 	// Build the mesh
 	MeshBuilder mb;
 	mb.BeginBuilding(PRIMITIVE_TRIANGLES, false);
-
-	// Color it red to make adjacent chunks distinct
-	if ((chunkXIndex + chunkYIndex) % 2 == 0)
-	{
-		mb.SetColor(Rgba::RED);
-	}
 
 	for (int texelYIndex = texelYStart; texelYIndex < texelYStart + chunkDimensions.y; ++texelYIndex)
 	{

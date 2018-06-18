@@ -105,14 +105,13 @@ void Player::Update(float deltaTime)
 	if (rayhit.hit)
 	{
 		DebugRenderSystem::DrawUVSphere(rayhit.position, 0.f);
-		SetTarget(true, rayhit.position);
 	}
 	else
 	{
 		DebugRenderSystem::Draw2DText("No hit", Window::GetInstance()->GetWindowBounds(), 0.f);
-		SetTarget(false);
 	}
 
+	SetTarget(true, rayhit.position);
 	Tank::Update(deltaTime);
 }
 
@@ -166,7 +165,7 @@ void Player::UpdatePositionOnInput(float deltaTime)
 {
 	InputSystem* input = InputSystem::GetInstance();
 
-	// Rotating the palyer
+	// Rotating the player
 	float inputRotation = 0.f;
 
 	if (input->IsKeyPressed('A')) { inputRotation -= 1.f; }		// Turn left

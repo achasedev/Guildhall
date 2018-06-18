@@ -1,5 +1,6 @@
 #include "Game/Entity/Cannon.hpp"
 #include "Game/Framework/Game.hpp"
+#include "Game/Environment/Map.hpp"
 #include "Game/Framework/GameCommon.hpp"
 
 #include "Engine/Math/Matrix44.hpp"
@@ -8,7 +9,6 @@
 #include "Engine/Rendering/Core/Renderable.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
-
 const float Cannon::CANNON_ROTATION_SPEED = 30.f;
 
 Cannon::Cannon(Transform& parent)
@@ -29,7 +29,7 @@ Cannon::Cannon(Transform& parent)
 
 	// Set up the muzzle transform
 	m_muzzleTransform.SetParentTransform(&transform);
-	m_muzzleTransform.position = Vector3(0.f, 0.f, 1.5f);
+	m_muzzleTransform.position = Vector3(0.f, 0.f, 3.f);
 }
 
 Cannon::~Cannon()
@@ -50,6 +50,14 @@ void Cannon::Update(float deltaTime)
 	options.m_lifetime = 0.f;
 
 	DebugRenderSystem::DrawBasis(m_muzzleTransform.GetWorldMatrix(), options);
+
+	// Also show where the gun is aiming
+	Vector3 position = transform.GetParentsToWorldMatrix().TransformPoint(transform.position).xyz();
+	Vector3 direction = transform.GetWorldForward();
+	RaycastHit_t hit = Game::GetMap()->Raycast(position, direction);
+
+	// Don't actually care if it hit, just render a debug to the end position
+	DebugRenderSystem::Draw3DLine(position, hit.position, Rgba::RED, 0.f);
 }
 
 Matrix44 Cannon::GetFireTransform()
