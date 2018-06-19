@@ -1,3 +1,9 @@
+/************************************************************************/
+/* File: Bullet.hpp
+/* Author: Andrew Chase
+/* Date: June 18th, 2018
+/* Description: Class to represent a fired projectile
+/************************************************************************/
 #pragma once
 #include "Engine/Core/GameObject.hpp"
 
@@ -15,6 +21,9 @@ public:
 private:
 	//-----Private Data-----
 
+	float m_timeToLive;
+
 	static const float BULLET_SPEED;
+	static const float BULLET_LIFETIME;
 
 };

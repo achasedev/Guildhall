@@ -41,4 +41,5 @@ private:
 
 	static const Vector3	CAMERA_TARGET_OFFSET;
 	static const float		CAMERA_ROTATION_SPEED;
+
 };

@@ -32,11 +32,12 @@ struct MapVertex
 
 struct RaycastHit_t
 {
-	RaycastHit_t(bool hitFlag, const Vector3& endPosition = Vector3::ZERO)
-	: hit(hitFlag), position(endPosition) {}
+	RaycastHit_t(bool hitFlag, const Vector3& endPosition = Vector3::ZERO, bool wentFull = false)
+	: hit(hitFlag), position(endPosition), wentFullDistance(wentFull) {}
 
 	bool hit;
 	Vector3 position;
+	bool wentFullDistance;
 };
 
 class Map
@@ -60,7 +61,13 @@ public:
 	bool IsPositionInCellBounds(const Vector3& position);
 
 	// Raycasts
-	RaycastHit_t Raycast(const Vector3& startPosition, const Vector3& direction);
+	RaycastHit_t Raycast(const Vector3& startPosition, const Vector3& direction, float distance);
+
+
+public:
+	//-----Public Data-----
+
+	static constexpr float MAX_RAYCAST_DISTANCE = 2000.f;
 
 
 private:
@@ -86,7 +93,7 @@ private:
 
 	std::vector<MapVertex>	m_mapVertices;
 
-	static constexpr float MAX_RAYCAST_DISTANCE = 2000.f;
 	static const int RAYCAST_CONVERGE_ITERATION_COUNT = 20;
 	static constexpr float RAYCAST_CONVERGE_EARLYOUT_DISTANCE = 0.01f;
+
 };

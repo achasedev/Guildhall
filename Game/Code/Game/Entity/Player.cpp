@@ -4,10 +4,13 @@
 /* Date: June 5th, 2018
 /* Description: Implementation of the Player class
 /************************************************************************/
-#include "Engine/Core/Window.hpp"
 #include "Game/Entity/Player.hpp"
+#include "Game/Entity/Turret.hpp"
+#include "Game/Entity/Cannon.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Environment/Map.hpp"
+
+#include "Engine/Core/Window.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
@@ -17,6 +20,7 @@
 #include "Engine/Rendering/Core/OrbitCamera.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
 #include "Engine/Rendering/Meshes/MeshGroup.hpp"
+
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 // Constants
@@ -28,6 +32,7 @@ const float		Player::CAMERA_ROTATION_SPEED = 45.f;
 // Constructor
 //
 Player::Player()
+	: Tank(0)
 {
 	Renderer* renderer = Renderer::GetInstance();
 
@@ -100,7 +105,7 @@ void Player::Update(float deltaTime)
 	}
 
 	// Debugging - test raycast
-	RaycastHit_t rayhit = Game::GetMap()->Raycast(m_camera->GetPosition(), m_camera->GetForwardVector());
+	RaycastHit_t rayhit = Game::GetMap()->Raycast(m_camera->GetPosition(), m_camera->GetForwardVector(), Map::MAX_RAYCAST_DISTANCE);
 
 	if (rayhit.hit)
 	{
@@ -187,17 +192,7 @@ void Player::UpdatePositionOnInput(float deltaTime)
 	worldForward.y = 0;
 	worldForward.NormalizeAndGetLength();
 
-	Vector3 forwardTranslation = inputOffset.z * worldForward;
+	Vector3 forwardTranslation = inputOffset.z * worldForward * (1.5f * TANK_TRANSLATION_SPEED * deltaTime);
 
-	Vector3 worldRight = transform.GetWorldRight();
-	worldRight.y = 0;
-	worldRight.NormalizeAndGetLength();
-
-	Vector3 rightTranslation = inputOffset.x * worldRight;
-	Vector3 worldTranslation = forwardTranslation + rightTranslation;
-
-	worldTranslation.NormalizeAndGetLength();
-	worldTranslation *= (TANK_TRANSLATION_SPEED * deltaTime);
-
-	transform.TranslateWorld(worldTranslation);
+	transform.TranslateWorld(forwardTranslation);
 }

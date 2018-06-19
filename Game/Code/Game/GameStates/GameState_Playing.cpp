@@ -6,8 +6,10 @@
 /************************************************************************/
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/App.hpp"
+#include "Game/Entity/NPCTank.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Environment/Map.hpp"
+#include "Game/Entity/NPCSpawner.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 
@@ -72,6 +74,10 @@ void GameState_Playing::Enter()
 	mouse.SetCursorMode(CURSORMODE_RELATIVE);
 	mouse.ShowMouseCursor(false);
 	mouse.LockCursorToClient(true);
+
+	// Testing
+	NPCSpawner* spawner = new NPCSpawner(Vector3(10.f, 15.f, 10.f), 1);
+	Game::AddGameObject(spawner);
 }
 
 
@@ -116,6 +122,15 @@ void GameState_Playing::Update()
 	for (int objectIndex = 0; objectIndex < numObjects; ++objectIndex)
 	{
 		gameObjects[objectIndex]->Update(deltaTime);
+	}
+
+	for (int objectIndex = numObjects - 1; objectIndex >= 0; --objectIndex)
+	{
+		if (gameObjects[objectIndex]->IsMarkedForDelete())
+		{
+			delete gameObjects[objectIndex];
+			gameObjects.erase(gameObjects.begin() + objectIndex);
+		}
 	}
 }
 

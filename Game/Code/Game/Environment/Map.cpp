@@ -192,7 +192,7 @@ bool Map::IsPositionInCellBounds(const Vector3& position)
 // Performs a Raycast from the given position in the given direction, returning a hit result
 // Assumes the raycast starts above the map
 //
-RaycastHit_t Map::Raycast(const Vector3& startPosition, const Vector3& direction)
+RaycastHit_t Map::Raycast(const Vector3& startPosition, const Vector3& direction, float distance)
 {
 	float cellWidth = m_worldBounds.GetDimensions().x / (float) m_mapCellLayout.x;
 	float cellHeight = m_worldBounds.GetDimensions().y / (float) m_mapCellLayout.y;
@@ -202,7 +202,7 @@ RaycastHit_t Map::Raycast(const Vector3& startPosition, const Vector3& direction
 	float distanceTravelled = 0.f;
 	Vector3 lastPosition = startPosition;
 
-	while (distanceTravelled < MAX_RAYCAST_DISTANCE)
+	while (distanceTravelled < distance)
 	{
 		distanceTravelled += stepSize;
 		Vector3 offset = direction * distanceTravelled;
@@ -212,7 +212,7 @@ RaycastHit_t Map::Raycast(const Vector3& startPosition, const Vector3& direction
 		// If we're off the map just send a no hit response
 		if (!IsPositionInCellBounds(currPosition))
 		{
-			return RaycastHit_t(false, startPosition + 2000.f * direction);
+			return RaycastHit_t(false, startPosition + 2000.f * direction, true);
 		}
 
 		float heightOfMap = GetHeightAtPosition(currPosition);
@@ -226,7 +226,7 @@ RaycastHit_t Map::Raycast(const Vector3& startPosition, const Vector3& direction
 		lastPosition = currPosition;
 	}
 
-	return RaycastHit_t(false, startPosition + 2000.f * direction);
+	return RaycastHit_t(false, startPosition + 2000.f * direction, true);
 }
 
 
@@ -520,7 +520,7 @@ RaycastHit_t Map::ConvergeRaycast(Vector3& positionBeforeHit, Vector3& positionA
 
 		if (distance < RAYCAST_CONVERGE_EARLYOUT_DISTANCE)
 		{
-			return RaycastHit_t(true, mapPosition);
+			return RaycastHit_t(true, mapPosition, false);
 		}
 
 		// No early out, so update the endpositions and continue iterating
@@ -536,5 +536,5 @@ RaycastHit_t Map::ConvergeRaycast(Vector3& positionBeforeHit, Vector3& positionA
 	}
 
 	// Didn't fully converged, so just return our last midpoint
-	return RaycastHit_t(true, midpoint);
+	return RaycastHit_t(true, midpoint, false);
 }

@@ -61,6 +61,12 @@
     <ClCompile Include="Entity\Bullet.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\NPCTank.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\NPCSpawner.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -97,5 +103,7 @@
     <ClInclude Include="Entity\Turret.hpp" />
     <ClInclude Include="Entity\Cannon.hpp" />
     <ClInclude Include="Entity\Bullet.hpp" />
+    <ClInclude Include="Entity\NPCTank.hpp" />
+    <ClInclude Include="Entity\NPCSpawner.hpp" />
   </ItemGroup>
 </Project>

@@ -1,3 +1,9 @@
+/************************************************************************/
+/* File: Tank.cpp
+/* Author: Andrew Chase
+/* Date: June 18th, 2018
+/* Description: Implementation of the Tank class
+/************************************************************************/
 #include "Game/Entity/Tank.hpp"
 #include "Game/Entity/Bullet.hpp"
 #include "Game/Entity/Cannon.hpp"
@@ -12,12 +18,21 @@
 #include "Engine/Rendering/Core/Renderable.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
 
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
+
+// Constants
 const float Tank::TANK_ROTATION_SPEED = 60.f;
 const float Tank::TANK_TRANSLATION_SPEED = 5.f;
 const float Tank::TANK_DEFAULT_FIRERATE = 1.f;
 
-Tank::Tank()
+
+//-----------------------------------------------------------------------------------------------
+// Constructor
+//
+Tank::Tank(unsigned int team)
 {
+	m_team = team;
+
 	m_fireRate = TANK_DEFAULT_FIRERATE;
 	// Set up the tank base renderable
 	m_renderable = new Renderable();
@@ -38,6 +53,10 @@ Tank::Tank()
 	m_stopwatch->SetInterval(1.f / m_fireRate);
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Destructor
+//
 Tank::~Tank()
 {
 	delete m_turret;
@@ -48,6 +67,10 @@ Tank::~Tank()
 	m_renderable = nullptr;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Update
+//
 void Tank::Update(float deltaTime)
 {
 	GameObject::Update(deltaTime);
@@ -63,14 +86,28 @@ void Tank::Update(float deltaTime)
 	}
 
 	m_turret->Update(deltaTime);
+
+	// For debugging
+	DebugRenderOptions options;
+	options.m_lifetime = 0.f;
+
+	DebugRenderSystem::DrawBasis(transform.GetWorldMatrix(), options, 3.f);
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Sets the target to the one specified, or sets the flag for no target
+//
 void Tank::SetTarget(bool hasTarget, const Vector3& target /*= Vector3::ZERO*/)
 {
 	m_hasTarget = hasTarget;
 	m_target = target;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Spawns a bullet if the shoot cooldown is finished
+//
 void Tank::ShootCannon()
 {
 	if (m_stopwatch->HasIntervalElapsed())
@@ -86,6 +123,10 @@ void Tank::ShootCannon()
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Sets the tanks position to be at the appropriate height of the terrain
+//
 void Tank::UpdateHeightOnMap()
 {
 	Map* map = Game::GetMap();
@@ -93,6 +134,10 @@ void Tank::UpdateHeightOnMap()
 	transform.position.y = height;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Orients the tank so that its up vector lines up with the normal at the current position
+//
 void Tank::UpdateOrientationWithNormal()
 {
 	Map* map = Game::GetMap();
@@ -107,4 +152,3 @@ void Tank::UpdateOrientationWithNormal()
 	Matrix44 newModel = Matrix44(right, normal, newForward, transform.position);
 	transform.SetModelMatrix(newModel);
 }
-
