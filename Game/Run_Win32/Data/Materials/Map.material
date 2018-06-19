@@ -3,7 +3,7 @@
 	<shader name="Phong_Opaque"/>
 
 	<textures>
-		<texture name="Data/Images/Ground.png" bind="0" />
+		<texture name="Data/Images/Ground.png" bind="0" generateMipMaps="true"/>
 		<texture name="Flat" bind="1"/>
 	</textures>
 

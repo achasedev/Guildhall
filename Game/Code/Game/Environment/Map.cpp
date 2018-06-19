@@ -12,8 +12,10 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Rendering/Core/Renderable.hpp"
+#include "Engine/Rendering/Resources/Sampler.hpp"
 #include "Engine/Rendering/Meshes/MeshBuilder.hpp"
 #include "Engine/Rendering/Materials/Material.hpp"
+
 
 #include "Game/Framework/Game.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
@@ -381,7 +383,7 @@ void Map::CalculateInitialPositionsAndUVs(std::vector<Vector3>& positions, std::
 	}
 }
 
-
+#include "Engine/Rendering/OpenGL/glFunctions.hpp"
 //-----------------------------------------------------------------------------------------------
 // Builds the mesh of the map by building all the individual chunks
 //
@@ -392,6 +394,10 @@ void Map::BuildTerrain(Image* heightMap)
 
 	// Set up the material for the map
 	Material* mapMaterial = AssetDB::GetSharedMaterial("Data/Materials/Map.material");
+	Sampler* testSampler = new Sampler();
+
+	testSampler->Initialize(SAMPLER_FILTER_LINEAR_MIPMAP_LINEAR, EDGE_SAMPLING_CLAMP_TO_EDGE);
+	mapMaterial->SetSampler(0, testSampler);
 
 	// Across chunks - y
 	for (int chunkYIndex = 0; chunkYIndex < m_chunkLayout.y; ++chunkYIndex)
