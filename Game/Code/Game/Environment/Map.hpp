@@ -51,6 +51,8 @@ public:
 	void Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, const IntVector2& chunkLayout, const std::string& fileName);
 
 	// Accessors
+	Vector3 GetPositionAtVertexCoord(const IntVector2& vertexCoord);
+
 	float GetHeightAtVertexCoord(const IntVector2& vertexCoord);
 	float GetHeightAtPosition(const Vector3& position);
 	
@@ -75,7 +77,7 @@ private:
 
 	void BuildTerrain(Image* heightMap);
 		void ConstructMapVertexList(Image* heightMap);
-			void CalculateInitialPositionsAndUVs(std::vector<Vector3>& positions, std::vector<Vector2>& uvs, Image* image);
+			void CalculateInitialPositionsAndUVs(Image* image);
 		void BuildSingleChunk(int chunkXIndex, int chunkYIndex, Material* material);
 
 	RaycastHit_t ConvergeRaycast(Vector3& positionBeforeHit, Vector3& positionAfterhit);
@@ -86,6 +88,7 @@ private:
 
 	AABB2					m_worldBounds;		// World-unit boundary
 	IntVector2				m_mapCellLayout;	// Texel/Cell dimensions
+	IntVector2				m_mapVertexLayout;	// +1 on X and Y off cell dimensions
 	IntVector2				m_chunkLayout;		// Number of chunks wide/long
 
 	FloatRange				m_heightRange;		// Max/Min height for the map

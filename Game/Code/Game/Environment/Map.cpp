@@ -50,6 +50,8 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 	GUARANTEE_OR_DIE(image != nullptr, Stringf("Error: Map::Initialize couldn't load height map file \"%s\"", filepath.c_str()));
 
 	IntVector2 imageDimensions = image->GetTexelDimensions();
+
+	m_mapVertexLayout = imageDimensions;
 	m_mapCellLayout = IntVector2(imageDimensions.x - 1, imageDimensions.y - 1);
 
 	// Assertions
@@ -67,16 +69,32 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the position of the map at the given vertex coordinate
+//
+Vector3 Map::GetPositionAtVertexCoord(const IntVector2& vertexCoord)
+{
+	// Clamp to edge
+	IntVector2 coord = vertexCoord;
+	coord.x = ClampInt(coord.x, 0, m_mapVertexLayout.x);
+	coord.y = ClampInt(coord.y, 0, m_mapVertexLayout.y);
+
+	int index = coord.y * m_mapVertexLayout.x + coord.x;
+
+	return m_mapVertices[index].position;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the height at the map at the position of the vertex given by vertexCoord
 //
 float Map::GetHeightAtVertexCoord(const IntVector2& vertexCoord)
 {
-	if (vertexCoord.x < 0 || vertexCoord.x >= m_mapCellLayout.x || vertexCoord.y < 0 || vertexCoord.y >= m_mapCellLayout.y)
+	if (vertexCoord.x < 0 || vertexCoord.x >= m_mapVertexLayout.x || vertexCoord.y < 0 || vertexCoord.y >= m_mapVertexLayout.y)
 	{
 		return 0.f;
 	}
 
-	int index = (m_mapCellLayout.x + 1) * vertexCoord.y + vertexCoord.x;
+	int index = (m_mapVertexLayout.x) * vertexCoord.y + vertexCoord.x;
 
 	return m_mapVertices[index].position.y;
 }
@@ -127,12 +145,12 @@ float Map::GetHeightAtPosition(const Vector3& position)
 //
 Vector3 Map::GetNormalAtVertexCoord(const IntVector2& vertexCoord)
 {
-	if (vertexCoord.x < 0 || vertexCoord.x >= m_mapCellLayout.x || vertexCoord.y < 0 || vertexCoord.y >= m_mapCellLayout.y)
+	if (vertexCoord.x < 0 || vertexCoord.x >= m_mapVertexLayout.x || vertexCoord.y < 0 || vertexCoord.y >= m_mapVertexLayout.y)
 	{
 		return 0.f;
 	}
 
-	int index = (m_mapCellLayout.x + 1) * vertexCoord.y + vertexCoord.x;
+	int index = (m_mapVertexLayout.x) * vertexCoord.y + vertexCoord.x;
 
 	return m_mapVertices[index].normal;
 }
@@ -238,113 +256,63 @@ RaycastHit_t Map::Raycast(const Vector3& startPosition, const Vector3& direction
 //
 void Map::ConstructMapVertexList(Image* heightMap)
 {
-	std::vector<Vector3> positions;
-	std::vector<Vector2> uvs;
+	CalculateInitialPositionsAndUVs(heightMap);
 
-	CalculateInitialPositionsAndUVs(positions, uvs, heightMap);
-
-	IntVector2	imageDimensions = heightMap->GetTexelDimensions();
-
-	MeshBuilder mb;
-	mb.BeginBuilding(PRIMITIVE_TRIANGLES, false);
-
-	for (int texelYIndex = 0; texelYIndex < imageDimensions.y - 1; ++texelYIndex)
+	// Now Calculate all normals and tangents
+	for (int currYIndex = 0; currYIndex < m_mapCellLayout.y; ++currYIndex)
 	{
-		for (int texelXIndex = 0; texelXIndex < imageDimensions.x - 1; ++texelXIndex)
+		for (int currXIndex = 0; currXIndex < m_mapCellLayout.x; ++ currXIndex)
 		{
-			int tl = texelYIndex * imageDimensions.x + texelXIndex;
-			int tr = tl + 1;
-			int bl = tl + imageDimensions.x;
-			int br = bl + 1;
+			IntVector2 currCoords = IntVector2(currXIndex, currYIndex);
+			Vector3 currPosition = GetPositionAtVertexCoord(currCoords);
 
-			// Set the vertices for the mesh
-			mb.SetUVs(uvs[tl]);
-			mb.PushVertex(positions[tl]);
+			// Get all neighbor positions first, in a linear list
+			std::vector<Vector3> neighborPositions;
 
-			mb.SetUVs(uvs[bl]);
-			mb.PushVertex(positions[bl]);
+			neighborPositions.push_back(GetPositionAtVertexCoord(currCoords + IntVector2(-1,  1)));
+			neighborPositions.push_back(GetPositionAtVertexCoord(currCoords + IntVector2( 0,  1)));
+			neighborPositions.push_back(GetPositionAtVertexCoord(currCoords + IntVector2( 1,  1)));
+			neighborPositions.push_back(GetPositionAtVertexCoord(currCoords + IntVector2( 1,  0))); // Tangent
+			neighborPositions.push_back(GetPositionAtVertexCoord(currCoords + IntVector2( 1, -1)));
+			neighborPositions.push_back(GetPositionAtVertexCoord(currCoords + IntVector2( 0, -1)));
+			neighborPositions.push_back(GetPositionAtVertexCoord(currCoords + IntVector2(-1, -1)));
+			neighborPositions.push_back(GetPositionAtVertexCoord(currCoords + IntVector2(-1,  0)));
 
-			mb.SetUVs(uvs[br]);
-			mb.PushVertex(positions[br]);
 
-			mb.SetUVs(uvs[tl]);
-			mb.PushVertex(positions[tl]);
+			// Construct the normals and tangents
+			Vector3 finalNormal = Vector3::ZERO;
 
-			mb.SetUVs(uvs[br]);
-			mb.PushVertex(positions[br]);
-
-			mb.SetUVs(uvs[tr]);
-			mb.PushVertex(positions[tr]);
-		}
-	}
-
-	mb.FinishBuilding();
-	mb.GenerateFlatTBN();
-
-	// Push the MeshBuilder data into the list
-	for (int texelYIndex = 0; texelYIndex < imageDimensions.y - 1; ++texelYIndex)
-	{
-		for (int texelXIndex = 0; texelXIndex < imageDimensions.x - 1; ++texelXIndex)
-		{
-			int index = (texelYIndex * (imageDimensions.x - 1) + texelXIndex) * 6;
-
-			VertexLit litVertex1 = mb.GetVertex<VertexLit>(index);
-			MapVertex mapVertex1;
-
-			mapVertex1.position	= litVertex1.m_position;
-			mapVertex1.normal	= litVertex1.m_normal;
-			mapVertex1.tangent  = litVertex1.m_tangent;
-			mapVertex1.uv		= litVertex1.m_texUVs;
-
-			m_mapVertices.push_back(mapVertex1);
-
-			if (texelXIndex == imageDimensions.x - 2)
+			for (int positionIndex = 0; positionIndex < (int) neighborPositions.size(); ++positionIndex)
 			{
-				index += 5;
+				Vector3 firstPosition = neighborPositions[positionIndex];
+				
+				int secondIndex = positionIndex + 1;
+				if (positionIndex == (int) (neighborPositions.size() - 1))
+				{
+					secondIndex = 0;
+				}
 
-				VertexLit litVertex2 = mb.GetVertex<VertexLit>(index);
-				MapVertex mapVertex2;
+				Vector3 secondPosition = neighborPositions[secondIndex];
 
-				mapVertex2.position	= litVertex2.m_position;
-				mapVertex2.normal	= litVertex2.m_normal;
-				mapVertex2.tangent  = litVertex2.m_tangent;
-				mapVertex2.uv		= litVertex2.m_texUVs;
+				Vector3 a = firstPosition - currPosition;
+				Vector3 b = secondPosition - currPosition;
 
-				m_mapVertices.push_back(mapVertex2);
+				Vector3 currNormal = CrossProduct(a, b);
+				finalNormal += currNormal;
 			}
-		}
-	}
 
-	// Grab the last row
-	for (int texelXIndex = 0; texelXIndex < imageDimensions.x - 1; ++texelXIndex)
-	{
-		int y = imageDimensions.y - 2;
-		int index = ((y * (imageDimensions.x - 1) + texelXIndex) * 6) + 1;
+			finalNormal.NormalizeAndGetLength();
+			finalNormal *= -1.0f;
 
-		VertexLit litVertex1 = mb.GetVertex<VertexLit>(index);
-		MapVertex mapVertex1;
+			int vertexIndex = currYIndex * m_mapVertexLayout.x + currXIndex;
 
-		mapVertex1.position	= litVertex1.m_position;
-		mapVertex1.normal	= litVertex1.m_normal;
-		mapVertex1.tangent  = litVertex1.m_tangent;
-		mapVertex1.uv		= litVertex1.m_texUVs;
+			m_mapVertices[vertexIndex].normal = finalNormal;
 
-		m_mapVertices.push_back(mapVertex1);
-
-		if (texelXIndex == imageDimensions.x - 2)
-		{
-			index++;
-
-			VertexLit litVertex2 = mb.GetVertex<VertexLit>(index);
-			MapVertex mapVertex2;
-
-			mapVertex2.position	= litVertex2.m_position;
-			mapVertex2.normal	= litVertex2.m_normal;
-			mapVertex2.tangent  = litVertex2.m_tangent;
-			mapVertex2.uv		= litVertex2.m_texUVs;
-
-			m_mapVertices.push_back(mapVertex2);
-		}
+			// Tangent end point is the 5th position processed, so 4th index
+			Vector3 tangent = (neighborPositions[3] - currPosition).GetNormalized();
+			
+			m_mapVertices[vertexIndex].tangent = Vector4(tangent, 1.0f);
+		}	
 	}
 }
 
@@ -352,24 +320,28 @@ void Map::ConstructMapVertexList(Image* heightMap)
 //-----------------------------------------------------------------------------------------------
 // Calculates the positions and uvs for each vertex in the map
 //
-void Map::CalculateInitialPositionsAndUVs(std::vector<Vector3>& positions, std::vector<Vector2>& uvs, Image* image)
+void Map::CalculateInitialPositionsAndUVs(Image* image)
 {
+	m_mapVertices.resize(image->GetTexelCount());
+
 	IntVector2	imageDimensions = image->GetTexelDimensions();
 	Vector2		worldDimensions = m_worldBounds.GetDimensions();
 
-	float xStride = worldDimensions.x / (float) (imageDimensions.x - 1);
-	float zStride = worldDimensions.y / (float) (imageDimensions.y - 1);
+	float xStride = worldDimensions.x / (float) (m_mapCellLayout.x);
+	float zStride = worldDimensions.y / (float) (m_mapCellLayout.y);
 
 	for (int texelYIndex = 0; texelYIndex < imageDimensions.y; ++texelYIndex)
 	{
 		for (int texelXIndex = 0; texelXIndex < imageDimensions.x; ++texelXIndex)
 		{
+			unsigned int mapVertexIndex = texelYIndex * imageDimensions.x + texelXIndex;
+
 			// Determine the UV
 			float u = ((float) texelXIndex / ((float) imageDimensions.x - 1));
 			float v = 1.0f - ((float) texelYIndex / ((float) imageDimensions.y - 1));
 
 			Vector2 uv = Vector2(u, v);
-			uvs.push_back(uv);
+			m_mapVertices[mapVertexIndex].uv = uv;
 
 				// Determine the position
 			float x = m_worldBounds.mins.x + texelXIndex * xStride;
@@ -378,12 +350,12 @@ void Map::CalculateInitialPositionsAndUVs(std::vector<Vector3>& positions, std::
 			y = RangeMapFloat(y, 0.f, 1.f, m_heightRange.min, m_heightRange.max);
 
 			Vector3 position = Vector3(x, y, z);
-			positions.push_back(position);
+			m_mapVertices[mapVertexIndex].position = position;
 		}
 	}
 }
 
-#include "Engine/Rendering/OpenGL/glFunctions.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // Builds the mesh of the map by building all the individual chunks
 //
