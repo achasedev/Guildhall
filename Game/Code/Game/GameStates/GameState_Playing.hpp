@@ -13,6 +13,8 @@ class Camera;
 class GameObject;
 class RenderScene;
 class Renderable;
+class AnimationClip;
+class SkeletonBase;
 
 class GameState_Playing : public GameState
 {
@@ -44,8 +46,13 @@ private:
 	std::vector<GameObject*> m_gameObjects;
 
 	Renderable* m_modelRenderable;
+	const SkeletonBase* m_skeleton;
+	AnimationClip* m_clip = nullptr;
+
 	bool m_renderModel = true;
 	bool m_renderSkeleton = true;
+
+
 
 	static constexpr float CAMERA_ROTATION_SPEED = 45.f;
 	static constexpr float CAMERA_TRANSLATION_SPEED = 5.f;

@@ -23,6 +23,9 @@
 #include "Engine/Rendering/Particles/ParticleEmitter.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 #include "Engine/Rendering/Core/ForwardRenderingPath.hpp"
+#include "Engine/Rendering/Animation/AnimationClip.hpp"
+#include "Engine/Core/Time/Clock.hpp"
+#include "Engine/Rendering/Animation/SkeletonBase.hpp"
 
 #include "Engine/Core/Time/ScopedProfiler.hpp"
 
@@ -69,11 +72,16 @@ void GameState_Playing::Enter()
  	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 
 	AssimpLoader loader;
-	//loader.LoadFile("Data/Models/Gage/Gage.fbx");
-	loader.LoadFile("Data/Models/unitychan.fbx");
+	loader.LoadFile("Data/Models/Gage/Gage.fbx");
+
+	//loader.LoadFile("Data/Models/unitychan.fbx");
+	//loader.LoadFile("Data/Models/lilith.fbx");
+
+	m_clip = loader.GetAnimationClip(0);
 
 	//loader.LoadFile("Data/Models/boblampclean.md5mesh");
 	m_modelRenderable = loader.GetRenderable();
+	m_skeleton = loader.GetSkeletonBase();
 
 	//Renderable* hello = AssetDB::LoadModelWithAssimp("Data/Models/unitychan_ARpose1.fbx", false);
 
@@ -193,6 +201,38 @@ void GameState_Playing::Render() const
 
 	if (m_renderSkeleton)
 	{
-		DebugRenderSystem::DrawSkeleton(m_modelRenderable->GetSkeletonBase(), m_modelRenderable->GetInstanceMatrix(0), 0.f);
+		float time = Game::GetGameClock()->GetTotalSeconds();
+
+		Pose* pose = m_clip->CalculatePoseAtTime(time);
+
+		int numBones = pose->GetBoneCount();
+
+		for (int boneIndex = 0; boneIndex < numBones; ++boneIndex)
+		{
+			const SkeletonBase* base = pose->GetBaseSkeleton();
+
+			BoneData_t currentBone = base->GetBoneData(boneIndex);
+			Matrix44 boneTransfrom = pose->GetBoneTransform(boneIndex);
+			Vector3 currPos = Matrix44::ExtractTranslation(boneTransfrom);
+
+			int parentIndex = currentBone.parentIndex;
+
+			// Root
+			if (parentIndex < 0)
+			{
+				DebugRenderSystem::DrawCube(currPos, 0.f, Rgba::RED, Vector3::ONES * 2.f);
+			}
+			else
+			{
+				Matrix44 parentTransform = pose->GetBoneTransform(parentIndex);
+				Vector3 parentPos = Matrix44::ExtractTranslation(parentTransform);
+
+				DebugRenderSystem::DrawCube(currPos, 0.f, Rgba::WHITE);
+				DebugRenderSystem::Draw3DLine(currPos, parentPos, DebugRenderOptions(), Rgba::RED, Rgba::RED);
+			}
+
+
+		}
+		//DebugRenderSystem::DrawSkeleton(m_skeleton, Matrix44::IDENTITY, 0.f);
 	}
 }
