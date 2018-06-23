@@ -21,6 +21,10 @@ class Vector3;
 class Material;
 class MapChunk;
 class Renderable;
+class GameEntity;
+class NPCTank;
+class Bullet;
+class NPCSpawner;
 
 struct MapVertex
 {
@@ -49,18 +53,23 @@ public:
 	~Map();
 
 	void Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, const IntVector2& chunkLayout, const std::string& fileName);
+	void Update();
 
 	// Accessors
-	Vector3 GetPositionAtVertexCoord(const IntVector2& vertexCoord);
 
-	float GetHeightAtVertexCoord(const IntVector2& vertexCoord);
-	float GetHeightAtPosition(const Vector3& position);
-	
-	Vector3 GetNormalAtVertexCoord(const IntVector2& vertexCoord);
-	Vector3 GetNormalAtPosition(const Vector3& position);
 
 	// Producers
-	bool IsPositionInCellBounds(const Vector3& position);
+	Vector3 GetPositionAtVertexCoord(const IntVector2& vertexCoord);
+	float	GetHeightAtVertexCoord(const IntVector2& vertexCoord);
+	float	GetHeightAtPosition(const Vector3& position);
+	Vector3 GetNormalAtVertexCoord(const IntVector2& vertexCoord);
+	Vector3 GetNormalAtPosition(const Vector3& position);
+	bool	IsPositionInCellBounds(const Vector3& position);
+
+	// Mutators
+	void AddNPCTank(NPCTank* tank);
+	void AddBullet(Bullet* bullet);
+	void AddSpawner(NPCSpawner* spawner);
 
 	// Raycasts
 	RaycastHit_t Raycast(const Vector3& startPosition, const Vector3& direction, float distance);
@@ -80,7 +89,16 @@ private:
 			void CalculateInitialPositionsAndUVs(Image* image);
 		void BuildSingleChunk(int chunkXIndex, int chunkYIndex, Material* material);
 
-	RaycastHit_t ConvergeRaycast(Vector3& positionBeforeHit, Vector3& positionAfterhit);
+
+	// Update
+	void UpdateEntities();
+	void CheckProjectilesAgainstActors();
+	void CheckActorActorCollisions();
+	void UpdateHeightAndOrientationOnMap();
+	void DeleteObjectsMarkedForDelete();
+
+	RaycastHit_t ConvergeRaycastOnTerrain(Vector3& positionBeforeHit, Vector3& positionAfterhit);
+	RaycastHit_t ConvergeRaycastOnObject(Vector3& positionBeforeHit, Vector3& positionAfterHit, const GameObject* object);
 
 
 private:
@@ -95,6 +113,11 @@ private:
 	std::vector<MapChunk*>	m_mapChunks;		// List of chunks
 
 	std::vector<MapVertex>	m_mapVertices;
+
+	std::vector<NPCTank*>		m_npcTanks;
+	std::vector<Bullet*>		m_bullets;
+	std::vector<NPCSpawner*>	m_spawners;
+	std::vector<GameEntity*>	m_gameEntities;
 
 	static const int RAYCAST_CONVERGE_ITERATION_COUNT = 20;
 	static constexpr float RAYCAST_CONVERGE_EARLYOUT_DISTANCE = 0.01f;

@@ -6,6 +6,7 @@
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
 #include "Game/Entity/NPCTank.hpp"
+#include "Game/Environment/Map.hpp"
 #include "Game/Entity/NPCSpawner.hpp"
 
 #include "Engine/Assets/AssetDB.hpp"
@@ -20,9 +21,10 @@
 // Constructor
 //
 NPCSpawner::NPCSpawner(const Vector3& position, unsigned int teamIndex)
-	: m_teamIndex(teamIndex)
-	, m_timeBetweenSpawns(DEFAULT_TIME_BETWEEN_SPAWNS)
+	: m_timeBetweenSpawns(DEFAULT_TIME_BETWEEN_SPAWNS)
 {
+	m_team = teamIndex;
+
 	transform.position = position;
 
 	m_stopwatch = new Stopwatch(Game::GetGameClock());
@@ -78,8 +80,8 @@ void NPCSpawner::SetSpawnRatePerMinute(float spawnRatePerMinute)
 //
 void NPCSpawner::SpawnEntity() const
 {
-	NPCTank* tank = new NPCTank(m_teamIndex);
+	NPCTank* tank = new NPCTank(m_team);
 	tank->transform = transform;
 
-	Game::AddGameObject(tank);
+	Game::GetMap()->AddNPCTank(tank);
 }

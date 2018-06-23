@@ -19,9 +19,11 @@ const float Bullet::BULLET_LIFETIME = 5.f;
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
-Bullet::Bullet(const Vector3& position, const Quaternion& orientation)
+Bullet::Bullet(const Vector3& position, const Quaternion& orientation, unsigned int team)
 	: m_timeToLive(BULLET_LIFETIME)
 {
+	m_team = team;
+
 	// Set the transform up to spawn at the position and orientation
 	transform.position = position;
 	transform.rotation = orientation;
@@ -65,4 +67,13 @@ void Bullet::Update(float deltaTime)
 
 	transform.TranslateLocal(Vector3::DIRECTION_FORWARD * BULLET_SPEED);
 	m_renderable->SetInstanceMatrix(0, transform.GetWorldMatrix());
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the amount of damage this bullet inflicts
+//
+unsigned int Bullet::GetDamageAmount() const
+{
+	return m_damageAmount;
 }

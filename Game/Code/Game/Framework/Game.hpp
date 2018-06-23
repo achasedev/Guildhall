@@ -52,18 +52,13 @@ public:
 	static Map*			GetMap();
 	static RenderScene*	GetRenderScene();
 	static Player*		GetPlayer();
-	static std::vector<GameObject*>& GetGameObjects();
 
-	// Gameplay mutators
+	// Gameplay Mutators
 	static void InitializePlayer();
 	static void InitializeMap(const AABB2& worldBounds, float minHeight, float maxHeight, const IntVector2& chunkLayout, const std::string& fileName);
 
-	static void AddGameObject(GameObject* object);
-
 	static void DeletePlayer();
 	static void DeleteMap();
-	static void DeleteAllGameObjects();
-
 
 
 private:
@@ -88,8 +83,6 @@ private:
 	Map* m_map = nullptr;
 	Player* m_player = nullptr;
 	RenderScene* m_renderScene = nullptr;
-	std::vector<GameObject*> m_gameObjects;
-
 
 	static Game* s_instance;	// The singleton Game instance
 };

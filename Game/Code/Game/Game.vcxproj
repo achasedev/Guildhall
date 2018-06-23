@@ -288,6 +288,7 @@
   <ItemGroup>
     <ClCompile Include="Entity\Bullet.cpp" />
     <ClCompile Include="Entity\Cannon.cpp" />
+    <ClCompile Include="Entity\GameEntity.cpp" />
     <ClCompile Include="Entity\NPCSpawner.cpp" />
     <ClCompile Include="Entity\NPCTank.cpp" />
     <ClCompile Include="Entity\Player.cpp" />
@@ -308,6 +309,7 @@
   <ItemGroup>
     <ClInclude Include="Entity\Bullet.hpp" />
     <ClInclude Include="Entity\Cannon.hpp" />
+    <ClInclude Include="Entity\GameEntity.hpp" />
     <ClInclude Include="Entity\NPCSpawner.hpp" />
     <ClInclude Include="Entity\NPCTank.hpp" />
     <ClInclude Include="Entity\Player.hpp" />

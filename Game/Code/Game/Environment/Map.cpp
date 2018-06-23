@@ -4,13 +4,19 @@
 /* Date: June 3rd, 2018
 /* Description: Implementation of the map class
 /************************************************************************/
+#include "Game/Entity/Bullet.hpp"
+#include "Game/Entity/Player.hpp"
+#include "Game/Entity/NPCTank.hpp"
 #include "Game/Environment/Map.hpp"
+#include "Game/Entity/NPCSpawner.hpp"
 #include "Game/Environment/MapChunk.hpp"
 #include "Game/Framework/GameCommon.hpp"
 
 #include "Engine/Core/Image.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Assets/AssetDB.hpp"
+#include "Engine/Core/GameObject.hpp"
+#include "Engine/Core/Time/ScopedProfiler.hpp"
 #include "Engine/Rendering/Core/Renderable.hpp"
 #include "Engine/Rendering/Resources/Sampler.hpp"
 #include "Engine/Rendering/Meshes/MeshBuilder.hpp"
@@ -18,7 +24,9 @@
 
 
 #include "Game/Framework/Game.hpp"
+#include "Engine/Core/Window.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Destructor - deletes the reference image and all chunks
@@ -40,6 +48,9 @@ Map::~Map()
 //
 void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, const IntVector2& chunkLayout, const std::string& filepath)
 {
+	ScopedProfiler sp = ScopedProfiler("Map::Initialize()");
+	UNUSED(sp);
+
 	// Set member variables
 	m_worldBounds = worldBounds;
 	m_chunkLayout = chunkLayout;
@@ -65,6 +76,19 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 	BuildTerrain(image);
 
 	delete image;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Performs collision checks on entities and fixes their heights and orientations on the map
+//
+void Map::Update()
+{
+	UpdateEntities();
+	CheckActorActorCollisions();
+	CheckProjectilesAgainstActors();
+	DeleteObjectsMarkedForDelete();
+	UpdateHeightAndOrientationOnMap();
 }
 
 
@@ -209,6 +233,36 @@ bool Map::IsPositionInCellBounds(const Vector3& position)
 
 
 //-----------------------------------------------------------------------------------------------
+// Adds the NPC tank to the map's list of object references
+//
+void Map::AddNPCTank(NPCTank* tank)
+{
+	m_npcTanks.push_back(tank);
+	m_gameEntities.push_back(tank);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the bullet to the map's list of object references
+//
+void Map::AddBullet(Bullet* bullet)
+{
+	m_bullets.push_back(bullet);
+	m_gameEntities.push_back(bullet);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the given spawner to the map's list of entity references
+//
+void Map::AddSpawner(NPCSpawner* spawner)
+{
+	m_spawners.push_back(spawner);
+	m_gameEntities.push_back(spawner);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Performs a Raycast from the given position in the given direction, returning a hit result
 // Assumes the raycast starts above the map
 //
@@ -227,23 +281,38 @@ RaycastHit_t Map::Raycast(const Vector3& startPosition, const Vector3& direction
 		distanceTravelled += stepSize;
 		Vector3 offset = direction * distanceTravelled;
 
-		Vector3 currPosition = startPosition + offset;
+		Vector3 rayPosition = startPosition + offset;
 
 		// If we're off the map just send a no hit response
-		if (!IsPositionInCellBounds(currPosition))
+		if (!IsPositionInCellBounds(rayPosition))
 		{
 			return RaycastHit_t(false, startPosition + 2000.f * direction, true);
 		}
 
-		float heightOfMap = GetHeightAtPosition(currPosition);
-
-		// Position is under the map, so converge and return the hit
-		if (heightOfMap >= currPosition.y)
+		// Check against any entity first	
+		for (int objIndex = 0; objIndex < (int) m_gameEntities.size(); ++objIndex)
 		{
-			return ConvergeRaycast(lastPosition, currPosition);
+			float radius = m_gameEntities[objIndex]->GetPhysicsRadius();
+			Vector3 objPosition = m_gameEntities[objIndex]->transform.position;
+
+			float distanceSquared = (objPosition - rayPosition).GetLengthSquared();
+
+			if (distanceSquared < radius * radius)
+			{
+				return ConvergeRaycastOnObject(lastPosition, rayPosition, m_gameEntities[objIndex]);
+			}
 		}
 
-		lastPosition = currPosition;
+		// If no hit against entity, check for hit against terrain
+		float heightOfMap = GetHeightAtPosition(rayPosition);
+
+		// Position is under the map, so converge and return the hit
+		if (heightOfMap >= rayPosition.y)
+		{
+			return ConvergeRaycastOnTerrain(lastPosition, rayPosition);
+		}
+
+		lastPosition = rayPosition;
 	}
 
 	return RaycastHit_t(false, startPosition + 2000.f * direction, true);
@@ -481,10 +550,210 @@ void Map::BuildSingleChunk(int chunkXIndex, int chunkYIndex, Material* material)
 }
 
 
+void Map::UpdateEntities()
+{
+	for (int entityIndex = 0; entityIndex < (int) m_gameEntities.size(); ++entityIndex)
+	{
+		m_gameEntities[entityIndex]->Update(Game::GetDeltaTime());
+	}
+
+	// Update the player
+	Game::GetPlayer()->Update(Game::GetDeltaTime());
+}
+
 //-----------------------------------------------------------------------------------------------
-// Determines the hit of a Raycast given the positions before and after when the hit occurred
+// Checks for bullet collisions against actors, and marks them for delete if so
 //
-RaycastHit_t Map::ConvergeRaycast(Vector3& positionBeforeHit, Vector3& positionAfterhit)
+void Map::CheckProjectilesAgainstActors()
+{
+	for (int bulletIndex = 0; bulletIndex < (int) m_bullets.size(); ++bulletIndex)
+	{
+		Bullet* currBullet = m_bullets[bulletIndex];
+
+		for (int tankIndex = 0; tankIndex < (int) m_npcTanks.size(); ++tankIndex)
+		{
+			NPCTank* currTank = m_npcTanks[tankIndex];
+
+			if (currTank->GetTeamIndex() != currBullet->GetTeamIndex())
+			{
+				if (DoSpheresOverlap(currBullet->transform.position, currBullet->GetPhysicsRadius(), currTank->transform.position, currTank->GetPhysicsRadius()))
+				{
+					currBullet->SetMarkedForDelete(true);
+					currTank->TakeDamage(100);
+				}
+			}
+		}
+
+		// Also check against the player
+		Player* player = Game::GetPlayer();
+		if (Game::GetPlayer()->GetTeamIndex() != currBullet->GetTeamIndex())
+		{
+			if (DoSpheresOverlap(currBullet->transform.position, currBullet->GetPhysicsRadius(), player->transform.position, player->GetPhysicsRadius()))
+			{
+				currBullet->SetMarkedForDelete(true);
+				// Have the player take damage
+				Game::GetPlayer()->TakeDamage(currBullet->GetDamageAmount());
+			}
+		}
+	}
+}
+
+
+void Map::CheckActorActorCollisions()
+{
+}
+
+void Map::UpdateHeightAndOrientationOnMap()
+{
+	for (int tankIndex = 0; tankIndex < (int) m_npcTanks.size(); ++tankIndex)
+	{
+		m_npcTanks[tankIndex]->UpdateHeightOnMap();
+		m_npcTanks[tankIndex]->UpdateOrientationWithNormal();
+	}
+
+	Game::GetPlayer()->UpdateHeightOnMap();
+	Game::GetPlayer()->UpdateOrientationWithNormal();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks for entities that are marked for delete, and if so deletes and removes them
+//
+void Map::DeleteObjectsMarkedForDelete()
+{
+	// Bullets
+	{
+	int numBullets = (int) m_bullets.size();
+	for (int bulletIndex = numBullets - 1; bulletIndex >= 0; --bulletIndex)
+	{
+		Bullet* currBullet = m_bullets[bulletIndex];
+
+		if (currBullet->IsMarkedForDelete())
+		{
+			int numEntities = (int) m_gameEntities.size();
+			for (int entityIndex = numEntities - 1; entityIndex >= 0; --entityIndex)
+			{
+				GameEntity* currEntity = m_gameEntities[entityIndex];
+
+				if (currEntity == currBullet)
+				{
+					// Remove fast
+					m_bullets[bulletIndex] = m_bullets[numBullets - 1]; 
+					m_bullets.erase(m_bullets.begin() + numBullets - 1);
+					numBullets--;
+
+					m_gameEntities[entityIndex] = m_gameEntities[numEntities - 1];
+					m_gameEntities.erase(m_gameEntities.begin() + numEntities - 1);
+					numEntities--;
+
+					delete currBullet;
+					currBullet = nullptr;
+					break;
+				}
+			}
+
+			if (currBullet == nullptr)
+			{
+				break;
+			}
+		}
+	}
+	}
+
+	{
+	// Tanks
+	int numTanks = (int) m_npcTanks.size();
+	for (int tankIndex = numTanks - 1; tankIndex >= 0; --tankIndex)
+	{
+		NPCTank* currTank = m_npcTanks[tankIndex];
+
+		if (currTank->IsMarkedForDelete())
+		{
+			int numEntities = (int) m_gameEntities.size();
+			for (int entityIndex = numEntities - 1; entityIndex >= 0; --entityIndex)
+			{
+				GameEntity* currEntity = m_gameEntities[entityIndex];
+
+				if (currEntity == currTank)
+				{
+					// Remove fast
+					m_npcTanks[tankIndex] = m_npcTanks[numTanks - 1]; 
+					m_npcTanks.erase(m_npcTanks.begin() + numTanks - 1);
+					numTanks--;
+
+					m_gameEntities[entityIndex] = m_gameEntities[numEntities - 1];
+					m_gameEntities.erase(m_gameEntities.begin() + numEntities - 1);
+					numEntities--;
+
+					delete currTank;
+					currTank = nullptr;
+					break;
+				}
+			}
+
+			if (currTank == nullptr)
+			{
+				break;
+			}
+		}
+	}
+	}
+
+	{
+	// Spawners
+	int numSpawners = (int) m_spawners.size();
+	for (int spawnerIndex = numSpawners - 1; spawnerIndex >= 0; --spawnerIndex)
+	{
+		NPCSpawner* currSpawner = m_spawners[spawnerIndex];
+
+		if (currSpawner->IsMarkedForDelete())
+		{
+			int numEntities = (int) m_gameEntities.size();
+			for (int entityIndex = numEntities - 1; entityIndex >= 0; --entityIndex)
+			{
+				GameEntity* currEntity = m_gameEntities[entityIndex];
+
+				if (currEntity == currSpawner)
+				{
+					// Remove fast
+					m_spawners[spawnerIndex] = m_spawners[numSpawners - 1]; 
+					m_spawners.erase(m_spawners.begin() + numSpawners - 1);
+					numSpawners--;
+
+					m_gameEntities[entityIndex] = m_gameEntities[numEntities - 1];
+					m_gameEntities.erase(m_gameEntities.begin() + numEntities - 1);
+					numEntities--;
+
+					delete currSpawner;
+					currSpawner = nullptr;
+					break;
+				}
+			}
+
+			if (currSpawner == nullptr)
+			{
+				break;
+			}
+		}
+	}
+	}
+
+	// Don't delete the player, just reset them
+	Player* player = Game::GetPlayer();
+	if (player->IsMarkedForDelete())
+	{
+		player->SetMarkedForDelete(false);
+		player->SetHealth(10);
+		player->transform.position = Vector3::ZERO;
+		DebugRenderSystem::Draw2DText("Player Died, respawning at (0,0)", Window::GetInstance()->GetWindowBounds(), 3.f, Rgba::RED, 50.f);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Determines the hit of a Raycast given the positions before and after when the hit occurred on the terrain
+//
+RaycastHit_t Map::ConvergeRaycastOnTerrain(Vector3& positionBeforeHit, Vector3& positionAfterhit)
 {
 	Vector3 midpoint;
 	for (int iteration = 0; iteration < RAYCAST_CONVERGE_ITERATION_COUNT; ++iteration)
@@ -510,6 +779,47 @@ RaycastHit_t Map::ConvergeRaycast(Vector3& positionBeforeHit, Vector3& positionA
 		else
 		{
 			positionAfterhit = midpoint;
+		}
+	}
+
+	// Didn't fully converged, so just return our last midpoint
+	return RaycastHit_t(true, midpoint, false);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Determines the hit of a Raycast given the positions before and after when the hit occurred on an object
+//
+RaycastHit_t Map::ConvergeRaycastOnObject(Vector3& positionBeforeHit, Vector3& positionAfterHit, const GameObject* object)
+{
+	Vector3 midpoint;
+	Vector3 objectPosition = object->transform.position;
+	float radiusSquared = object->GetPhysicsRadius();
+	radiusSquared *= radiusSquared;
+
+	for (int iteration = 0; iteration < RAYCAST_CONVERGE_ITERATION_COUNT; ++iteration)
+	{
+		midpoint = (positionAfterHit + positionBeforeHit) * 0.5f;
+
+		// Check for early out
+		float distanceSquared = (objectPosition - midpoint).GetLengthSquared();
+		float midDelta = distanceSquared - radiusSquared;
+
+		if (AbsoluteValue(midDelta) < RAYCAST_CONVERGE_EARLYOUT_DISTANCE)
+		{
+			return RaycastHit_t(true, midpoint, false);
+		}
+
+		// No early out, so update the endpositions and continue iterating
+		if (midDelta > 0.f)
+		{
+			// Still outside radius, so update start
+			positionBeforeHit = midpoint;
+		}
+		else
+		{
+			// Midpoint is inside radius, so update end
+			positionAfterHit = midpoint;
 		}
 	}
 

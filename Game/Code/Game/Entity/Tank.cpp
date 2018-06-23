@@ -32,6 +32,7 @@ const float Tank::TANK_DEFAULT_FIRERATE = 1.f;
 Tank::Tank(unsigned int team)
 {
 	m_team = team;
+	m_health = 10;
 
 	m_fireRate = TANK_DEFAULT_FIRERATE;
 	// Set up the tank base renderable
@@ -51,6 +52,9 @@ Tank::Tank(unsigned int team)
 	m_turret = new Turret(transform);
 	m_stopwatch = new Stopwatch(Game::GetGameClock());
 	m_stopwatch->SetInterval(1.f / m_fireRate);
+
+	// Set physics radius
+	m_physicsRadius = 3.0f;
 }
 
 
@@ -73,10 +77,7 @@ Tank::~Tank()
 //
 void Tank::Update(float deltaTime)
 {
-	GameObject::Update(deltaTime);
-
-	UpdateHeightOnMap();
-	UpdateOrientationWithNormal();
+	GameEntity::Update(deltaTime);
 
 	m_renderable->SetInstanceMatrix(0, transform.GetWorldMatrix());
 
@@ -90,8 +91,9 @@ void Tank::Update(float deltaTime)
 	// For debugging
 	DebugRenderOptions options;
 	options.m_lifetime = 0.f;
-
-	DebugRenderSystem::DrawBasis(transform.GetWorldMatrix(), options, 3.f);
+	options.m_isWireFrame = true;
+	
+	DebugRenderSystem::DrawUVSphere(transform.position, options, m_physicsRadius);
 }
 
 
@@ -106,6 +108,28 @@ void Tank::SetTarget(bool hasTarget, const Vector3& target /*= Vector3::ZERO*/)
 
 
 //-----------------------------------------------------------------------------------------------
+// Additively applies the damageAmount to this tank's health
+void Tank::TakeDamage(int damageAmount)
+{
+	m_health -= damageAmount;
+
+	if (m_health <= 0)
+	{
+		SetMarkedForDelete(true);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the tank's health to the one specified
+//
+void Tank::SetHealth(int health)
+{
+	m_health = health;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Spawns a bullet if the shoot cooldown is finished
 //
 void Tank::ShootCannon()
@@ -116,8 +140,8 @@ void Tank::ShootCannon()
 		Vector3 position = Matrix44::ExtractTranslation(fireTransform);
 		Quaternion rotation = Quaternion::FromEuler(Matrix44::ExtractRotationDegrees(fireTransform));
 
-		Bullet* bullet = new Bullet(position, rotation);
-		Game::AddGameObject(bullet);
+		Bullet* bullet = new Bullet(position, rotation, m_team);
+		Game::GetMap()->AddBullet(bullet);
 
 		m_stopwatch->SetInterval(1.f / m_fireRate);
 	}

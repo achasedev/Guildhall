@@ -45,7 +45,6 @@ Game::Game()
 //
 Game::~Game()
 {
-	DeleteAllGameObjects();
 	DeleteMap();
 	DeletePlayer();
 
@@ -170,15 +169,6 @@ Player* Game::GetPlayer()
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the list of GameObjects currently in the game
-//
-std::vector<GameObject*>& Game::GetGameObjects()
-{
-	return s_instance->m_gameObjects;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Spawns the player
 //
 void Game::InitializePlayer()
@@ -194,15 +184,6 @@ void Game::InitializeMap(const AABB2& worldBounds, float minHeight, float maxHei
 {
 	s_instance->m_map = new Map();
 	s_instance->m_map->Intialize(worldBounds, minHeight, maxHeight, chunkLayout, fileName);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Adds the GameObject to the list of GameObjects
-//
-void Game::AddGameObject(GameObject* object)
-{
-	s_instance->m_gameObjects.push_back(object);
 }
 
 
@@ -229,22 +210,6 @@ void Game::DeleteMap()
 		delete s_instance->m_map;
 		s_instance->m_map = nullptr;
 	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Deletes all GameObjects in the list and clears it
-//
-void Game::DeleteAllGameObjects()
-{
-	int numGameObjects = (int) s_instance->m_gameObjects.size();
-
-	for (int objectIndex = 0; objectIndex < numGameObjects; ++objectIndex)
-	{
-		delete s_instance->m_gameObjects[objectIndex];
-	}
-
-	s_instance->m_gameObjects.clear();
 }
 
 

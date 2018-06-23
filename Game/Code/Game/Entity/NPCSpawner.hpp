@@ -5,9 +5,9 @@
 /* Description: Class to represent a spawner for NPC controlled tanks
 /************************************************************************/
 #pragma once
-#include "Engine/Core/GameObject.hpp"
+#include "Game/Entity/GameEntity.hpp"
 
-class NPCSpawner : public GameObject
+class NPCSpawner : public GameEntity
 {
 public:
 	//-----Public Methods-----
@@ -31,7 +31,6 @@ private:
 	//-----Private Data-----
 
 	Stopwatch*		m_stopwatch;
-	unsigned int	m_teamIndex;
 	float			m_timeBetweenSpawns;
 
 	static constexpr float DEFAULT_TIME_BETWEEN_SPAWNS = 5.f; // 12 spawns a minute

@@ -5,12 +5,12 @@
 /* Description: Class to represent a tank in game (player or npc)
 /************************************************************************/
 #pragma once
-#include "Engine/Core/GameObject.hpp"
+#include "Game/Entity/GameEntity.hpp"
 
 class Turret;
 class Stopwatch;
 
-class Tank : public GameObject
+class Tank : public GameEntity
 {
 public:
 	//-----Public Methods-----
@@ -22,13 +22,14 @@ public:
 
 	// Mutators
 	void SetTarget(bool hasTarget, const Vector3& target = Vector3::ZERO);
+	void TakeDamage(int damageAmount);
+	void SetHealth(int health);
 
 	// Producers
 	void ShootCannon();
 
 
-private:
-	//-----Private Methods-----
+public:
 
 	void UpdateHeightOnMap();
 	void UpdateOrientationWithNormal();
@@ -45,7 +46,7 @@ protected:
 	float m_fireRate;	// Shells per second the tank can fire
 	Stopwatch* m_stopwatch;
 
-	unsigned int m_team;
+	int m_health;
 
 	static const float TANK_ROTATION_SPEED;
 	static const float TANK_TRANSLATION_SPEED;

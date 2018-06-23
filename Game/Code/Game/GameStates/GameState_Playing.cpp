@@ -44,7 +44,6 @@ GameState_Playing::GameState_Playing()
 //
 GameState_Playing::~GameState_Playing()
 {
-	Game::DeleteAllGameObjects();
 	Game::DeleteMap();
 	Game::DeletePlayer();
 }
@@ -59,7 +58,7 @@ void GameState_Playing::Enter()
 	Game::InitializePlayer();
 
 	// Make the map
-	Game::InitializeMap(AABB2(Vector2(-100.f, -100.f), Vector2(100.f, 100.f)), 0.f, 50.f, IntVector2(8, 8), "Data/Images/Map.jpg");
+	Game::InitializeMap(AABB2(Vector2(-1000.f, -1000.f), Vector2(1000.f, 1000.f)), 0.f, 50.f, IntVector2(8, 8), "Data/Images/Map.jpg");
 
 	Camera* playerCamera = Game::GetPlayer()->GetCamera();
 	Game::GetRenderScene()->AddCamera(playerCamera);
@@ -77,7 +76,7 @@ void GameState_Playing::Enter()
 
 	// Testing
 	NPCSpawner* spawner = new NPCSpawner(Vector3(10.f, 15.f, 10.f), 1);
-	Game::AddGameObject(spawner);
+	Game::GetMap()->AddSpawner(spawner);
 }
 
 
@@ -113,25 +112,8 @@ void GameState_Playing::ProcessInput()
 void GameState_Playing::Update()
 {
 	float deltaTime = Game::GetDeltaTime();
-
-	Game::GetPlayer()->Update(deltaTime);
 	
-	std::vector<GameObject*>& gameObjects = Game::GetGameObjects();
-	int numObjects = (int) gameObjects.size();
-
-	for (int objectIndex = 0; objectIndex < numObjects; ++objectIndex)
-	{
-		gameObjects[objectIndex]->Update(deltaTime);
-	}
-
-	for (int objectIndex = numObjects - 1; objectIndex >= 0; --objectIndex)
-	{
-		if (gameObjects[objectIndex]->IsMarkedForDelete())
-		{
-			delete gameObjects[objectIndex];
-			gameObjects.erase(gameObjects.begin() + objectIndex);
-		}
-	}
+	Game::GetMap()->Update();
 }
 
 
