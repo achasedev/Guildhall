@@ -7,13 +7,15 @@
 #pragma once
 #include "Game/Entity/GameEntity.hpp"
 
-class NPCSpawner : public GameEntity
+class Stopwatch;
+
+class Spawner : public GameEntity
 {
 public:
 	//-----Public Methods-----
 
-	NPCSpawner(const Vector3& position, unsigned int teamIndex);
-	~NPCSpawner();
+	Spawner(const Vector3& position, unsigned int teamIndex);
+	~Spawner();
 
 	virtual void Update(float deltaTime) override;
 
@@ -24,7 +26,7 @@ public:
 private:
 	//-----Private Methods-----
 
-	void SpawnEntity() const;
+	virtual void SpawnEntity() const = 0;
 
 
 private:

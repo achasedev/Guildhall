@@ -29,12 +29,6 @@ public:
 	void ShootCannon();
 
 
-public:
-
-	void UpdateHeightOnMap();
-	void UpdateOrientationWithNormal();
-
-
 protected:
 	//-----Protected Data-----
 
@@ -42,11 +36,10 @@ protected:
 
 	bool m_hasTarget = false;
 	bool m_lookAtTarget = true;
+
 	Vector3 m_target;
 	float m_fireRate;	// Shells per second the tank can fire
 	Stopwatch* m_stopwatch;
-
-	int m_health;
 
 	static const float TANK_ROTATION_SPEED;
 	static const float TANK_TRANSLATION_SPEED;

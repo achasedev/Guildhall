@@ -9,7 +9,7 @@
 #include "Game/Entity/NPCTank.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Environment/Map.hpp"
-#include "Game/Entity/NPCSpawner.hpp"
+#include "Game/Entity/TankSpawner.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 
@@ -58,7 +58,7 @@ void GameState_Playing::Enter()
 	Game::InitializePlayer();
 
 	// Make the map
-	Game::InitializeMap(AABB2(Vector2(-1000.f, -1000.f), Vector2(1000.f, 1000.f)), 0.f, 50.f, IntVector2(8, 8), "Data/Images/Map.jpg");
+	Game::InitializeMap(AABB2(Vector2(-500.f, -500.f), Vector2(500.f, 500.f)), 0.f, 50.f, IntVector2(8, 8), "Data/Images/Map.jpg");
 
 	Camera* playerCamera = Game::GetPlayer()->GetCamera();
 	Game::GetRenderScene()->AddCamera(playerCamera);
@@ -75,8 +75,8 @@ void GameState_Playing::Enter()
 	mouse.LockCursorToClient(true);
 
 	// Testing
-	NPCSpawner* spawner = new NPCSpawner(Vector3(10.f, 15.f, 10.f), 1);
-	Game::GetMap()->AddSpawner(spawner);
+	TankSpawner* spawner = new TankSpawner(Vector3(10.f, 15.f, 10.f), 1);
+	Game::GetMap()->AddGameEntity(spawner);
 }
 
 
@@ -110,9 +110,7 @@ void GameState_Playing::ProcessInput()
 // Updates the play state
 //
 void GameState_Playing::Update()
-{
-	float deltaTime = Game::GetDeltaTime();
-	
+{	
 	Game::GetMap()->Update();
 }
 

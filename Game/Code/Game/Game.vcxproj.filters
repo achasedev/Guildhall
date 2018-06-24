@@ -64,10 +64,19 @@
     <ClCompile Include="Entity\NPCTank.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Entity\NPCSpawner.cpp">
+    <ClCompile Include="Entity\GameEntity.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Entity\GameEntity.cpp">
+    <ClCompile Include="Entity\Swarmer.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\Spawner.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\TankSpawner.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\SwarmerSpawner.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
   </ItemGroup>
@@ -107,7 +116,10 @@
     <ClInclude Include="Entity\Cannon.hpp" />
     <ClInclude Include="Entity\Bullet.hpp" />
     <ClInclude Include="Entity\NPCTank.hpp" />
-    <ClInclude Include="Entity\NPCSpawner.hpp" />
     <ClInclude Include="Entity\GameEntity.hpp" />
+    <ClInclude Include="Entity\Swarmer.hpp" />
+    <ClInclude Include="Entity\Spawner.hpp" />
+    <ClInclude Include="Entity\TankSpawner.hpp" />
+    <ClInclude Include="Entity\SwarmerSpawner.hpp" />
   </ItemGroup>
 </Project>

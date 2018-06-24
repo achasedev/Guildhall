@@ -7,7 +7,7 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Entity/NPCTank.hpp"
 #include "Game/Environment/Map.hpp"
-#include "Game/Entity/NPCSpawner.hpp"
+#include "Game/Entity/Spawner.hpp"
 
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
@@ -20,8 +20,9 @@
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
-NPCSpawner::NPCSpawner(const Vector3& position, unsigned int teamIndex)
-	: m_timeBetweenSpawns(DEFAULT_TIME_BETWEEN_SPAWNS)
+Spawner::Spawner(const Vector3& position, unsigned int teamIndex)
+	: GameEntity(ENTITY_SWARMER)
+	, m_timeBetweenSpawns(DEFAULT_TIME_BETWEEN_SPAWNS)
 {
 	m_team = teamIndex;
 
@@ -44,7 +45,7 @@ NPCSpawner::NPCSpawner(const Vector3& position, unsigned int teamIndex)
 //-----------------------------------------------------------------------------------------------
 // Destructor
 //
-NPCSpawner::~NPCSpawner()
+Spawner::~Spawner()
 {
 	delete m_stopwatch;
 	m_stopwatch = nullptr;
@@ -54,7 +55,7 @@ NPCSpawner::~NPCSpawner()
 //-----------------------------------------------------------------------------------------------
 // Update
 //
-void NPCSpawner::Update(float deltaTime)
+void Spawner::Update(float deltaTime)
 {
 	if (m_stopwatch->HasIntervalElapsed())
 	{
@@ -69,19 +70,7 @@ void NPCSpawner::Update(float deltaTime)
 //-----------------------------------------------------------------------------------------------
 // Sets the spawn rate for this spawner
 //
-void NPCSpawner::SetSpawnRatePerMinute(float spawnRatePerMinute)
+void Spawner::SetSpawnRatePerMinute(float spawnRatePerMinute)
 {
 	m_timeBetweenSpawns = (1.f / spawnRatePerMinute) * 60.f;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Spawns an NPC tank
-//
-void NPCSpawner::SpawnEntity() const
-{
-	NPCTank* tank = new NPCTank(m_team);
-	tank->transform = transform;
-
-	Game::GetMap()->AddNPCTank(tank);
 }

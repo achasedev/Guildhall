@@ -30,9 +30,13 @@ const float Tank::TANK_DEFAULT_FIRERATE = 1.f;
 // Constructor
 //
 Tank::Tank(unsigned int team)
+	: GameEntity(ENTITY_TANK)
 {
 	m_team = team;
 	m_health = 10;
+
+	m_shouldStickToTerrain = true;
+	m_shouldOrientToTerrain = true;
 
 	m_fireRate = TANK_DEFAULT_FIRERATE;
 	// Set up the tank base renderable
@@ -141,38 +145,8 @@ void Tank::ShootCannon()
 		Quaternion rotation = Quaternion::FromEuler(Matrix44::ExtractRotationDegrees(fireTransform));
 
 		Bullet* bullet = new Bullet(position, rotation, m_team);
-		Game::GetMap()->AddBullet(bullet);
+		Game::GetMap()->AddGameEntity(bullet);
 
 		m_stopwatch->SetInterval(1.f / m_fireRate);
 	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Sets the tanks position to be at the appropriate height of the terrain
-//
-void Tank::UpdateHeightOnMap()
-{
-	Map* map = Game::GetMap();
-	float height = map->GetHeightAtPosition(transform.position);
-	transform.position.y = height;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Orients the tank so that its up vector lines up with the normal at the current position
-//
-void Tank::UpdateOrientationWithNormal()
-{
-	Map* map = Game::GetMap();
-
-	Vector3 normal = map->GetNormalAtPosition(transform.position);
-	Vector3 right = CrossProduct(normal, transform.GetWorldForward());
-	right.NormalizeAndGetLength();
-
-	Vector3 newForward = CrossProduct(right, normal);
-	newForward.NormalizeAndGetLength();
-
-	Matrix44 newModel = Matrix44(right, normal, newForward, transform.position);
-	transform.SetModelMatrix(newModel);
 }

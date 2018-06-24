@@ -20,7 +20,8 @@ const float Bullet::BULLET_LIFETIME = 5.f;
 // Constructor
 //
 Bullet::Bullet(const Vector3& position, const Quaternion& orientation, unsigned int team)
-	: m_timeToLive(BULLET_LIFETIME)
+	: GameEntity(ENTITY_BULLET)
+	, m_timeToLive(BULLET_LIFETIME)
 {
 	m_team = team;
 

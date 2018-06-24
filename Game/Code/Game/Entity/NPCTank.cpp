@@ -26,6 +26,7 @@ const float NPCTank::MIN_DOT_TO_SHOOT = 0.96f; // Cos(15 degrees)
 NPCTank::NPCTank(unsigned int team)
 	: Tank(team)
 {
+	m_health = 1;
 }
 
 

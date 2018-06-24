@@ -8,7 +8,7 @@
 #include "Game/Entity/Player.hpp"
 #include "Game/Entity/NPCTank.hpp"
 #include "Game/Environment/Map.hpp"
-#include "Game/Entity/NPCSpawner.hpp"
+#include "Game/Entity/Spawner.hpp"
 #include "Game/Environment/MapChunk.hpp"
 #include "Game/Framework/GameCommon.hpp"
 
@@ -233,32 +233,11 @@ bool Map::IsPositionInCellBounds(const Vector3& position)
 
 
 //-----------------------------------------------------------------------------------------------
-// Adds the NPC tank to the map's list of object references
+// Adds the given entity to the map's list of entities
 //
-void Map::AddNPCTank(NPCTank* tank)
+void Map::AddGameEntity(GameEntity* entity)
 {
-	m_npcTanks.push_back(tank);
-	m_gameEntities.push_back(tank);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Adds the bullet to the map's list of object references
-//
-void Map::AddBullet(Bullet* bullet)
-{
-	m_bullets.push_back(bullet);
-	m_gameEntities.push_back(bullet);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Adds the given spawner to the map's list of entity references
-//
-void Map::AddSpawner(NPCSpawner* spawner)
-{
-	m_spawners.push_back(spawner);
-	m_gameEntities.push_back(spawner);
+	m_gameEntities.push_back(entity);
 }
 
 
@@ -299,7 +278,7 @@ RaycastHit_t Map::Raycast(const Vector3& startPosition, const Vector3& direction
 
 			if (distanceSquared < radius * radius)
 			{
-				return ConvergeRaycastOnObject(lastPosition, rayPosition, m_gameEntities[objIndex]);
+				return ConvergeRaycastOnEntity(lastPosition, rayPosition, m_gameEntities[objIndex]);
 			}
 		}
 
@@ -566,20 +545,22 @@ void Map::UpdateEntities()
 //
 void Map::CheckProjectilesAgainstActors()
 {
-	for (int bulletIndex = 0; bulletIndex < (int) m_bullets.size(); ++bulletIndex)
+	for (int bulletIndex = 0; bulletIndex < (int) m_gameEntities.size(); ++bulletIndex)
 	{
-		Bullet* currBullet = m_bullets[bulletIndex];
+		GameEntity* currBullet = m_gameEntities[bulletIndex];
 
-		for (int tankIndex = 0; tankIndex < (int) m_npcTanks.size(); ++tankIndex)
+		if (currBullet->GetType() != ENTITY_BULLET) { continue; }
+
+		for (int targetIndex = 0; targetIndex < (int) m_gameEntities.size(); ++targetIndex)
 		{
-			NPCTank* currTank = m_npcTanks[tankIndex];
+			GameEntity* currTarget = m_gameEntities[targetIndex];
 
-			if (currTank->GetTeamIndex() != currBullet->GetTeamIndex())
+			if (currTarget->GetTeamIndex() != currBullet->GetTeamIndex())
 			{
-				if (DoSpheresOverlap(currBullet->transform.position, currBullet->GetPhysicsRadius(), currTank->transform.position, currTank->GetPhysicsRadius()))
+				if (DoSpheresOverlap(currBullet->transform.position, currBullet->GetPhysicsRadius(), currTarget->transform.position, currTarget->GetPhysicsRadius()))
 				{
 					currBullet->SetMarkedForDelete(true);
-					currTank->TakeDamage(100);
+					currTarget->TakeDamage(100);
 				}
 			}
 		}
@@ -592,7 +573,7 @@ void Map::CheckProjectilesAgainstActors()
 			{
 				currBullet->SetMarkedForDelete(true);
 				// Have the player take damage
-				Game::GetPlayer()->TakeDamage(currBullet->GetDamageAmount());
+				Game::GetPlayer()->TakeDamage(2);
 			}
 		}
 	}
@@ -605,10 +586,19 @@ void Map::CheckActorActorCollisions()
 
 void Map::UpdateHeightAndOrientationOnMap()
 {
-	for (int tankIndex = 0; tankIndex < (int) m_npcTanks.size(); ++tankIndex)
+	for (int entityIndex = 0; entityIndex < (int) m_gameEntities.size(); ++entityIndex)
 	{
-		m_npcTanks[tankIndex]->UpdateHeightOnMap();
-		m_npcTanks[tankIndex]->UpdateOrientationWithNormal();
+		GameEntity* currEntity = m_gameEntities[entityIndex];
+
+		if (currEntity->ShouldStickToTerrain())
+		{
+			currEntity->UpdateHeightOnMap();
+		}
+		
+		if (currEntity->ShouldOrientToTerrain())
+		{
+			currEntity->UpdateOrientationWithNormal();
+		}
 	}
 
 	Game::GetPlayer()->UpdateHeightOnMap();
@@ -621,121 +611,20 @@ void Map::UpdateHeightAndOrientationOnMap()
 //
 void Map::DeleteObjectsMarkedForDelete()
 {
-	// Bullets
+	for (int entityIndex = (int) m_gameEntities.size() - 1; entityIndex >= 0; --entityIndex)
 	{
-	int numBullets = (int) m_bullets.size();
-	for (int bulletIndex = numBullets - 1; bulletIndex >= 0; --bulletIndex)
-	{
-		Bullet* currBullet = m_bullets[bulletIndex];
+		GameEntity* currEntity = m_gameEntities[entityIndex];
 
-		if (currBullet->IsMarkedForDelete())
+		if (currEntity->IsMarkedForDelete())
 		{
-			int numEntities = (int) m_gameEntities.size();
-			for (int entityIndex = numEntities - 1; entityIndex >= 0; --entityIndex)
-			{
-				GameEntity* currEntity = m_gameEntities[entityIndex];
+			int lastIndex = (int) m_gameEntities.size() - 1;
 
-				if (currEntity == currBullet)
-				{
-					// Remove fast
-					m_bullets[bulletIndex] = m_bullets[numBullets - 1]; 
-					m_bullets.erase(m_bullets.begin() + numBullets - 1);
-					numBullets--;
+			m_gameEntities[entityIndex] = m_gameEntities[lastIndex];
+			m_gameEntities.erase(m_gameEntities.begin() + lastIndex);
 
-					m_gameEntities[entityIndex] = m_gameEntities[numEntities - 1];
-					m_gameEntities.erase(m_gameEntities.begin() + numEntities - 1);
-					numEntities--;
-
-					delete currBullet;
-					currBullet = nullptr;
-					break;
-				}
-			}
-
-			if (currBullet == nullptr)
-			{
-				break;
-			}
+			delete currEntity;
+			break;		
 		}
-	}
-	}
-
-	{
-	// Tanks
-	int numTanks = (int) m_npcTanks.size();
-	for (int tankIndex = numTanks - 1; tankIndex >= 0; --tankIndex)
-	{
-		NPCTank* currTank = m_npcTanks[tankIndex];
-
-		if (currTank->IsMarkedForDelete())
-		{
-			int numEntities = (int) m_gameEntities.size();
-			for (int entityIndex = numEntities - 1; entityIndex >= 0; --entityIndex)
-			{
-				GameEntity* currEntity = m_gameEntities[entityIndex];
-
-				if (currEntity == currTank)
-				{
-					// Remove fast
-					m_npcTanks[tankIndex] = m_npcTanks[numTanks - 1]; 
-					m_npcTanks.erase(m_npcTanks.begin() + numTanks - 1);
-					numTanks--;
-
-					m_gameEntities[entityIndex] = m_gameEntities[numEntities - 1];
-					m_gameEntities.erase(m_gameEntities.begin() + numEntities - 1);
-					numEntities--;
-
-					delete currTank;
-					currTank = nullptr;
-					break;
-				}
-			}
-
-			if (currTank == nullptr)
-			{
-				break;
-			}
-		}
-	}
-	}
-
-	{
-	// Spawners
-	int numSpawners = (int) m_spawners.size();
-	for (int spawnerIndex = numSpawners - 1; spawnerIndex >= 0; --spawnerIndex)
-	{
-		NPCSpawner* currSpawner = m_spawners[spawnerIndex];
-
-		if (currSpawner->IsMarkedForDelete())
-		{
-			int numEntities = (int) m_gameEntities.size();
-			for (int entityIndex = numEntities - 1; entityIndex >= 0; --entityIndex)
-			{
-				GameEntity* currEntity = m_gameEntities[entityIndex];
-
-				if (currEntity == currSpawner)
-				{
-					// Remove fast
-					m_spawners[spawnerIndex] = m_spawners[numSpawners - 1]; 
-					m_spawners.erase(m_spawners.begin() + numSpawners - 1);
-					numSpawners--;
-
-					m_gameEntities[entityIndex] = m_gameEntities[numEntities - 1];
-					m_gameEntities.erase(m_gameEntities.begin() + numEntities - 1);
-					numEntities--;
-
-					delete currSpawner;
-					currSpawner = nullptr;
-					break;
-				}
-			}
-
-			if (currSpawner == nullptr)
-			{
-				break;
-			}
-		}
-	}
 	}
 
 	// Don't delete the player, just reset them
@@ -790,11 +679,11 @@ RaycastHit_t Map::ConvergeRaycastOnTerrain(Vector3& positionBeforeHit, Vector3& 
 //-----------------------------------------------------------------------------------------------
 // Determines the hit of a Raycast given the positions before and after when the hit occurred on an object
 //
-RaycastHit_t Map::ConvergeRaycastOnObject(Vector3& positionBeforeHit, Vector3& positionAfterHit, const GameObject* object)
+RaycastHit_t Map::ConvergeRaycastOnEntity(Vector3& positionBeforeHit, Vector3& positionAfterHit, const GameEntity* entity)
 {
 	Vector3 midpoint;
-	Vector3 objectPosition = object->transform.position;
-	float radiusSquared = object->GetPhysicsRadius();
+	Vector3 objectPosition = entity->transform.position;
+	float radiusSquared = entity->GetPhysicsRadius();
 	radiusSquared *= radiusSquared;
 
 	for (int iteration = 0; iteration < RAYCAST_CONVERGE_ITERATION_COUNT; ++iteration)

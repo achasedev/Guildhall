@@ -24,7 +24,7 @@ class Renderable;
 class GameEntity;
 class NPCTank;
 class Bullet;
-class NPCSpawner;
+class Spawner;
 
 struct MapVertex
 {
@@ -66,10 +66,7 @@ public:
 	Vector3 GetNormalAtPosition(const Vector3& position);
 	bool	IsPositionInCellBounds(const Vector3& position);
 
-	// Mutators
-	void AddNPCTank(NPCTank* tank);
-	void AddBullet(Bullet* bullet);
-	void AddSpawner(NPCSpawner* spawner);
+	void AddGameEntity(GameEntity* entity);
 
 	// Raycasts
 	RaycastHit_t Raycast(const Vector3& startPosition, const Vector3& direction, float distance);
@@ -98,7 +95,7 @@ private:
 	void DeleteObjectsMarkedForDelete();
 
 	RaycastHit_t ConvergeRaycastOnTerrain(Vector3& positionBeforeHit, Vector3& positionAfterhit);
-	RaycastHit_t ConvergeRaycastOnObject(Vector3& positionBeforeHit, Vector3& positionAfterHit, const GameObject* object);
+	RaycastHit_t ConvergeRaycastOnEntity(Vector3& positionBeforeHit, Vector3& positionAfterHit, const GameEntity* entity);
 
 
 private:
@@ -114,9 +111,6 @@ private:
 
 	std::vector<MapVertex>	m_mapVertices;
 
-	std::vector<NPCTank*>		m_npcTanks;
-	std::vector<Bullet*>		m_bullets;
-	std::vector<NPCSpawner*>	m_spawners;
 	std::vector<GameEntity*>	m_gameEntities;
 
 	static const int RAYCAST_CONVERGE_ITERATION_COUNT = 20;
