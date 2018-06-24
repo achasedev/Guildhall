@@ -11,6 +11,7 @@
 #include "Game/Environment/Map.hpp"
 #include "Game/Entity/TankSpawner.hpp"
 #include "Game/Framework/GameCommon.hpp"
+#include "Game/Entity/SwarmerSpawner.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 
 #include "Engine/Core/Window.hpp"
@@ -45,7 +46,6 @@ GameState_Playing::GameState_Playing()
 GameState_Playing::~GameState_Playing()
 {
 	Game::DeleteMap();
-	Game::DeletePlayer();
 }
 
 
@@ -75,8 +75,11 @@ void GameState_Playing::Enter()
 	mouse.LockCursorToClient(true);
 
 	// Testing
-	TankSpawner* spawner = new TankSpawner(Vector3(10.f, 15.f, 10.f), 1);
-	Game::GetMap()->AddGameEntity(spawner);
+// 	TankSpawner* spawner = new TankSpawner(Vector3(10.f, 15.f, 10.f), 1);
+// 	Game::GetMap()->AddGameEntity(spawner);
+
+	SwarmerSpawner* spawner2 = new SwarmerSpawner(Vector3(10.f, 15.f, 10.f), 1);
+	Game::GetMap()->AddGameEntity(spawner2);
 }
 
 

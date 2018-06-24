@@ -6,6 +6,7 @@
 SwarmerSpawner::SwarmerSpawner(const Vector3& position, unsigned int team)
 	: Spawner(position, team)
 {
+	SetSpawnRatePerMinute(120.f);
 }
 
 

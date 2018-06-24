@@ -11,6 +11,8 @@ public:
 
 	virtual void Update(float deltaTime) override;
 
+	virtual void OnCollisionWithEntity(GameEntity* other) override;
+
 
 private:
 	//-----Private Methods-----

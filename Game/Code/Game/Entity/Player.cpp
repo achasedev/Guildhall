@@ -50,6 +50,8 @@ Player::Player()
 	transform.position = Vector3::ZERO;
 	m_stopwatch = new Stopwatch(Game::GetGameClock());
 	m_stopwatch->SetInterval(0.5f);
+
+	m_type = ENTITY_PLAYER;
 }
 
 
@@ -120,6 +122,16 @@ void Player::Update(float deltaTime)
 	Tank::Update(deltaTime);
 }
 
+
+void Player::OnCollisionWithEntity(GameEntity* other)
+{
+	if (other->GetType() == ENTITY_SWARMER)
+	{
+		TakeDamage(1);
+	}
+
+	Tank::OnCollisionWithEntity(other);
+}
 
 //-----------------------------------------------------------------------------------------------
 // Returns the player's camera

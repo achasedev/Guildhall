@@ -22,6 +22,8 @@ public:
 	void			ProcessInput();
 	virtual void	Update(float deltaTime) override;
 
+	virtual void	OnCollisionWithEntity(GameEntity* other) override;
+
 	// Accessors
 	Camera* GetCamera() const;
 

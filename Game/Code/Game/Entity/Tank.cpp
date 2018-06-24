@@ -91,15 +91,13 @@ void Tank::Update(float deltaTime)
 	}
 
 	m_turret->Update(deltaTime);
-
-	// For debugging
-	DebugRenderOptions options;
-	options.m_lifetime = 0.f;
-	options.m_isWireFrame = true;
-	
-	DebugRenderSystem::DrawUVSphere(transform.position, options, m_physicsRadius);
 }
 
+
+void Tank::OnCollisionWithEntity(GameEntity* other)
+{
+	GameEntity::OnCollisionWithEntity(other);
+}
 
 //-----------------------------------------------------------------------------------------------
 // Sets the target to the one specified, or sets the flag for no target

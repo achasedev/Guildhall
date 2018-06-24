@@ -27,22 +27,26 @@ Swarmer::Swarmer(const Vector3& position, unsigned int team)
 
 	Mesh* mesh = AssetDB::GetMesh("Sphere");
 	Material* material = AssetDB::GetSharedMaterial("Phong_Opaque");
-	material->SetDiffuse(AssetDB::GetTexture("Debug/Debug.png"));
 
 	RenderableDraw_t draw;
 	draw.mesh = mesh;
 	draw.sharedMaterial = material;
-	
+
 	m_renderable->AddDraw(draw);
-	draw.drawMatrix = Matrix44::MakeModelMatrix(Vector3(-0.2f, 0.2f, 1.f), Vector3::ZERO, Vector3::ONES);
+	draw.drawMatrix = Matrix44::MakeModelMatrix(Vector3(-0.2f, 0.2f, 1.f), Vector3::ZERO, Vector3(0.1f));
 	m_renderable->AddDraw(draw);
 
-	draw.drawMatrix = Matrix44::MakeModelMatrix(Vector3(0.2f, 0.2f, 1.f), Vector3::ZERO, Vector3::ONES);
+	draw.drawMatrix = Matrix44::MakeModelMatrix(Vector3(0.2f, 0.2f, 1.f), Vector3::ZERO, Vector3(0.1f));
 	m_renderable->AddDraw(draw);
 
-	m_renderable->AddInstanceMatrix(Matrix44::IDENTITY);
+	m_renderable->AddInstanceMatrix(transform.GetWorldMatrix());
 
 	Game::GetRenderScene()->AddRenderable(m_renderable);
+
+	// Set physics radius
+	m_physicsRadius = 1.5f;
+
+	SetHealth(1);
 }
 
 Swarmer::~Swarmer()
@@ -55,7 +59,7 @@ Swarmer::~Swarmer()
 
 void Swarmer::Update(float deltaTime)
 {
-	UNUSED(deltaTime);
+	GameEntity::Update(deltaTime);
 
 	m_target = Game::GetPlayer()->transform.position;
 
@@ -65,8 +69,20 @@ void Swarmer::Update(float deltaTime)
 	{
 		MoveForward();
 	}
+
+	m_renderable->SetInstanceMatrix(0, transform.GetWorldMatrix());
 }
 
+
+void Swarmer::OnCollisionWithEntity(GameEntity* other)
+{
+	if (other->GetTeamIndex() != m_team)
+	{
+		TakeDamage(1000000);
+	}
+
+	GameEntity::OnCollisionWithEntity(other);
+}
 
 //-----------------------------------------------------------------------------------------------
 // Rotates the tank towards the target position

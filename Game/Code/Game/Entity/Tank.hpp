@@ -20,6 +20,8 @@ public:
 
 	virtual void Update(float deltaTime) override;
 
+	virtual void OnCollisionWithEntity(GameEntity* other) override;
+
 	// Mutators
 	void SetTarget(bool hasTarget, const Vector3& target = Vector3::ZERO);
 	void TakeDamage(int damageAmount);

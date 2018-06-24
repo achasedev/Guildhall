@@ -1,7 +1,10 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Environment/Map.hpp"
 #include "Game/Entity/GameEntity.hpp"
+#include "Game/Framework/GameCommon.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
+
 
 GameEntity::GameEntity(eEntityType type)
 	: m_type(type)
@@ -11,6 +14,18 @@ GameEntity::GameEntity(eEntityType type)
 void GameEntity::Update(float deltaTime)
 {
 	GameObject::Update(deltaTime);
+
+	// For debugging
+	DebugRenderOptions options;
+	options.m_lifetime = 0.f;
+	options.m_isWireFrame = true;
+
+	DebugRenderSystem::DrawUVSphere(transform.position, options, m_physicsRadius);
+}
+
+void GameEntity::OnCollisionWithEntity(GameEntity* other)
+{
+	UNUSED(other);
 }
 
 void GameEntity::TakeDamage(int damageAmount)

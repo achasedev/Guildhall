@@ -40,6 +40,17 @@ Map::~Map()
 	}
 
 	m_mapChunks.clear();
+
+	// Delete all entities
+	for (int index = 0; index < (int) m_gameEntities.size(); ++index)
+	{
+		if (m_gameEntities[index]->GetType() != ENTITY_PLAYER)
+		{
+			delete m_gameEntities[index];
+		}
+	}
+
+	m_gameEntities.clear();
 }
 
 
@@ -76,6 +87,9 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 	BuildTerrain(image);
 
 	delete image;
+
+	// Add the player to the map
+	m_gameEntities.push_back(Game::GetPlayer());
 }
 
 
@@ -535,9 +549,6 @@ void Map::UpdateEntities()
 	{
 		m_gameEntities[entityIndex]->Update(Game::GetDeltaTime());
 	}
-
-	// Update the player
-	Game::GetPlayer()->Update(Game::GetDeltaTime());
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -560,20 +571,8 @@ void Map::CheckProjectilesAgainstActors()
 				if (DoSpheresOverlap(currBullet->transform.position, currBullet->GetPhysicsRadius(), currTarget->transform.position, currTarget->GetPhysicsRadius()))
 				{
 					currBullet->SetMarkedForDelete(true);
-					currTarget->TakeDamage(100);
+					currTarget->TakeDamage(2);
 				}
-			}
-		}
-
-		// Also check against the player
-		Player* player = Game::GetPlayer();
-		if (Game::GetPlayer()->GetTeamIndex() != currBullet->GetTeamIndex())
-		{
-			if (DoSpheresOverlap(currBullet->transform.position, currBullet->GetPhysicsRadius(), player->transform.position, player->GetPhysicsRadius()))
-			{
-				currBullet->SetMarkedForDelete(true);
-				// Have the player take damage
-				Game::GetPlayer()->TakeDamage(2);
 			}
 		}
 	}
@@ -582,6 +581,22 @@ void Map::CheckProjectilesAgainstActors()
 
 void Map::CheckActorActorCollisions()
 {
+	// For now, just have swarmers damage others
+	for (int firstIndex = 0; firstIndex < (int) m_gameEntities.size(); ++firstIndex)
+	{
+		GameEntity* firstEntity = m_gameEntities[firstIndex];
+
+		for (int secondIndex = 0; secondIndex < (int) m_gameEntities.size(); ++secondIndex)
+		{
+			GameEntity* secondEntity = m_gameEntities[secondIndex];
+
+			if (DoSpheresOverlap(firstEntity->transform.position, firstEntity->GetPhysicsRadius(), secondEntity->transform.position, secondEntity->GetPhysicsRadius()))
+			{
+				firstEntity->OnCollisionWithEntity(secondEntity);
+				secondEntity->OnCollisionWithEntity(firstEntity);
+			}
+		}
+	}
 }
 
 void Map::UpdateHeightAndOrientationOnMap()
@@ -600,9 +615,6 @@ void Map::UpdateHeightAndOrientationOnMap()
 			currEntity->UpdateOrientationWithNormal();
 		}
 	}
-
-	Game::GetPlayer()->UpdateHeightOnMap();
-	Game::GetPlayer()->UpdateOrientationWithNormal();
 }
 
 
@@ -617,24 +629,24 @@ void Map::DeleteObjectsMarkedForDelete()
 
 		if (currEntity->IsMarkedForDelete())
 		{
-			int lastIndex = (int) m_gameEntities.size() - 1;
+			// Don't delete the player, just reset them
+			if (currEntity->GetType() == ENTITY_PLAYER)
+			{
+				currEntity->SetMarkedForDelete(false);
+				currEntity->SetHealth(10);
+				currEntity->transform.position = Vector3::ZERO;
+				DebugRenderSystem::Draw2DText("Player Died, respawning at (0,0)", Window::GetInstance()->GetWindowBounds(), 3.f, Rgba::RED, 50.f);
+			}
+			else
+			{
+				int lastIndex = (int) m_gameEntities.size() - 1;
 
-			m_gameEntities[entityIndex] = m_gameEntities[lastIndex];
-			m_gameEntities.erase(m_gameEntities.begin() + lastIndex);
+				m_gameEntities[entityIndex] = m_gameEntities[lastIndex];
+				m_gameEntities.erase(m_gameEntities.begin() + lastIndex);
 
-			delete currEntity;
-			break;		
+				delete currEntity;
+			}		
 		}
-	}
-
-	// Don't delete the player, just reset them
-	Player* player = Game::GetPlayer();
-	if (player->IsMarkedForDelete())
-	{
-		player->SetMarkedForDelete(false);
-		player->SetHealth(10);
-		player->transform.position = Vector3::ZERO;
-		DebugRenderSystem::Draw2DText("Player Died, respawning at (0,0)", Window::GetInstance()->GetWindowBounds(), 3.f, Rgba::RED, 50.f);
 	}
 }
 

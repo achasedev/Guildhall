@@ -7,6 +7,7 @@ enum eEntityType
 	ENTITY_TANK,
 	ENTITY_SPAWNER,
 	ENTITY_SWARMER,
+	ENTITY_PLAYER,
 	NUM_ENTITY_TYPES
 };
 
@@ -18,6 +19,8 @@ public:
 	GameEntity(eEntityType type);
 
 	virtual void Update(float deltaTime) override;
+
+	virtual void OnCollisionWithEntity(GameEntity* other);
 
 	inline unsigned int GetTeamIndex() { return m_team; }
 	inline eEntityType	GetType() { return m_type; }
