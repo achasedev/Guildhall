@@ -99,7 +99,7 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 void Map::Update()
 {
 	UpdateEntities();
-	CheckActorActorCollisions();
+	//CheckActorActorCollisions();
 	CheckProjectilesAgainstActors();
 	DeleteObjectsMarkedForDelete();
 	UpdateHeightAndOrientationOnMap();
@@ -311,6 +311,30 @@ RaycastHit_t Map::Raycast(const Vector3& startPosition, const Vector3& direction
 	return RaycastHit_t(false, startPosition + 2000.f * direction, true);
 }
 
+
+std::vector<GameEntity*> Map::GetLocalSwarmers(const Vector3& relativePosition, float localDistance)
+{
+	std::vector<GameEntity*> localSwarmers;
+
+	float squaredLimit = localDistance * localDistance;
+
+	for (int entityIndex = 0; entityIndex < (int) m_gameEntities.size(); ++entityIndex)
+	{
+		GameEntity* currEntity = m_gameEntities[entityIndex];
+
+		if (currEntity->GetType() != ENTITY_SWARMER) { continue; }
+
+		float distanceSquared = (currEntity->transform.position - relativePosition).GetLengthSquared();
+
+		if (distanceSquared > 0.f && distanceSquared <= localDistance)
+		{
+			localSwarmers.push_back(currEntity);
+		}
+	}
+
+
+	return localSwarmers;
+}
 
 //-----------------------------------------------------------------------------------------------
 // Constructs all positions and UVs used by the entire map from the heightmap image

@@ -71,6 +71,9 @@ public:
 	// Raycasts
 	RaycastHit_t Raycast(const Vector3& startPosition, const Vector3& direction, float distance);
 
+	// For swarming
+	std::vector<GameEntity*> GetLocalSwarmers(const Vector3& relativePosition, float localDistance);
+
 
 public:
 	//-----Public Data-----

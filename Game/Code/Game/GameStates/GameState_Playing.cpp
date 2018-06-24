@@ -8,6 +8,7 @@
 #include "Game/Framework/App.hpp"
 #include "Game/Entity/NPCTank.hpp"
 #include "Game/Framework/Game.hpp"
+#include "Game/Entity/Swarmer.hpp"
 #include "Game/Environment/Map.hpp"
 #include "Game/Entity/TankSpawner.hpp"
 #include "Game/Framework/GameCommon.hpp"
@@ -54,6 +55,8 @@ GameState_Playing::~GameState_Playing()
 //
 void GameState_Playing::Enter()
 {
+	Swarmer::InitializeConsoleCommands();
+
 	// Make the player
 	Game::InitializePlayer();
 

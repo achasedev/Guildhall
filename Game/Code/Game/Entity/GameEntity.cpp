@@ -16,11 +16,11 @@ void GameEntity::Update(float deltaTime)
 	GameObject::Update(deltaTime);
 
 	// For debugging
-	DebugRenderOptions options;
-	options.m_lifetime = 0.f;
-	options.m_isWireFrame = true;
-
-	DebugRenderSystem::DrawUVSphere(transform.position, options, m_physicsRadius);
+	//DebugRenderOptions options;
+	//options.m_lifetime = 0.f;
+	//options.m_isWireFrame = true;
+	//
+	//DebugRenderSystem::DrawUVSphere(transform.position, options, m_physicsRadius);
 }
 
 void GameEntity::OnCollisionWithEntity(GameEntity* other)

@@ -29,7 +29,7 @@ Spawner::Spawner(const Vector3& position, unsigned int teamIndex)
 	transform.position = position;
 
 	m_stopwatch = new Stopwatch(Game::GetGameClock());
-	m_stopwatch->SetInterval(m_timeBetweenSpawns);
+	m_stopwatch->SetInterval(0.f);
 
 
 	// To visualize it
