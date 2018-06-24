@@ -152,7 +152,7 @@ float Map::GetHeightAtPosition(const Vector3& position)
 	Vector2 cellCoords = Vector2(normalizedMapCoords.x * m_mapCellLayout.x, normalizedMapCoords.y * m_mapCellLayout.y);
 
 	// Flip texel coords since image is top left (0,0)
-	cellCoords.y = (m_mapCellLayout.y - cellCoords.y - 1);
+	cellCoords.y = (m_mapCellLayout.y - cellCoords.y);
 
 	IntVector2 texelCoords = IntVector2(cellCoords);
 	Vector2 cellFraction = cellCoords - texelCoords.GetAsFloats();

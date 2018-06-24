@@ -51,12 +51,13 @@ Swarmer::Swarmer(const Vector3& position, unsigned int team)
 	RenderableDraw_t draw;
 	draw.mesh = mesh;
 	draw.sharedMaterial = material;
+	draw.drawMatrix = Matrix44::MakeModelMatrix(Vector3(0.f, 0.5f, 0.f), Vector3::ZERO, Vector3::ONES);
 
 	m_renderable->AddDraw(draw);
-	draw.drawMatrix = Matrix44::MakeModelMatrix(Vector3(-0.2f, 0.2f, 1.f), Vector3::ZERO, Vector3(0.1f));
+	draw.drawMatrix = Matrix44::MakeModelMatrix(Vector3(-0.2f, 0.7f, 1.f), Vector3::ZERO, Vector3(0.1f));
 	m_renderable->AddDraw(draw);
 
-	draw.drawMatrix = Matrix44::MakeModelMatrix(Vector3(0.2f, 0.2f, 1.f), Vector3::ZERO, Vector3(0.1f));
+	draw.drawMatrix = Matrix44::MakeModelMatrix(Vector3(0.2f, 0.7f, 1.f), Vector3::ZERO, Vector3(0.1f));
 	m_renderable->AddDraw(draw);
 
 	m_renderable->AddInstanceMatrix(transform.GetWorldMatrix());
