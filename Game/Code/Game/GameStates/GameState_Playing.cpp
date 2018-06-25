@@ -11,21 +11,21 @@
 
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/Time/Clock.hpp"
+#include "Engine/Input/InputSystem.hpp"
 #include "Engine/Assets/AssimpLoader.hpp"
 #include "Engine/Rendering/Core/Camera.hpp"
+#include "Engine/Rendering/Core/Renderer.hpp"
+#include "Engine/Rendering/Core/Renderable.hpp"
+#include "Engine/Rendering/Meshes/MeshGroup.hpp"
+#include "Engine/Rendering/Core/RenderScene.hpp"
 #include "Engine/Rendering/Resources/Sampler.hpp"
 #include "Engine/Rendering/Materials/Material.hpp"
-#include "Engine/Input/InputSystem.hpp"
-#include "Engine/Rendering/Core/Renderer.hpp"
-#include "Engine/Rendering/Meshes/MeshGroup.hpp"
-#include "Engine/Rendering/Core/Renderable.hpp"
-#include "Engine/Rendering/Core/RenderScene.hpp"
+#include "Engine/Rendering/Animation/SkeletonBase.hpp"
+#include "Engine/Rendering/Animation/AnimationClip.hpp"
+#include "Engine/Rendering/Core/ForwardRenderingPath.hpp"
 #include "Engine/Rendering/Particles/ParticleEmitter.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
-#include "Engine/Rendering/Core/ForwardRenderingPath.hpp"
-#include "Engine/Rendering/Animation/AnimationClip.hpp"
-#include "Engine/Core/Time/Clock.hpp"
-#include "Engine/Rendering/Animation/SkeletonBase.hpp"
 
 #include "Engine/Core/Time/ScopedProfiler.hpp"
 
@@ -76,10 +76,10 @@ void GameState_Playing::Enter()
 
 	//loader.LoadFile("Data/Models/unitychan.fbx");
 	//loader.LoadFile("Data/Models/lilith.fbx");
+	//loader.LoadFile("Data/Models/maya.fbx");
 
 	m_clip = loader.GetAnimationClip(0);
 
-	//loader.LoadFile("Data/Models/boblampclean.md5mesh");
 	m_modelRenderable = loader.GetRenderable();
 	m_skeleton = loader.GetSkeletonBase();
 
@@ -128,7 +128,7 @@ void GameState_Playing::UpdateCameraOnInput()
 
 	if (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT))
 	{
-		translationOffset *= 10.f;
+		translationOffset *= 50.f;
 	}
 
 	translationOffset *= CAMERA_TRANSLATION_SPEED * deltaTime;
@@ -234,5 +234,5 @@ void GameState_Playing::Render() const
 
 		}
 		//DebugRenderSystem::DrawSkeleton(m_skeleton, Matrix44::IDENTITY, 0.f);
-	}
+ 	}
 }
