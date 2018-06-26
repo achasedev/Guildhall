@@ -452,10 +452,6 @@ void Map::BuildTerrain(Image* heightMap)
 
 	// Set up the material for the map
 	Material* mapMaterial = AssetDB::GetSharedMaterial("Data/Materials/Map.material");
-	Sampler* testSampler = new Sampler();
-
-	testSampler->Initialize(SAMPLER_FILTER_LINEAR_MIPMAP_LINEAR, EDGE_SAMPLING_REPEAT);
-	mapMaterial->SetSampler(0, testSampler);
 
 	// Across chunks - y
 	for (int chunkYIndex = 0; chunkYIndex < m_chunkLayout.y; ++chunkYIndex)

@@ -27,7 +27,8 @@ in vec4 COLOR;
 in vec2 UV;	
 in vec3 NORMAL;	
 in vec4 TANGENT;												
-																
+
+out vec3 passCameraPosition;														
 out vec2 passUV;												
 out vec4 passColor;
 out vec3 passWorldPosition; // For determining light direction
@@ -44,6 +45,7 @@ void main( void )
 	passUV = UV;												
 	passColor = COLOR;
 
+	passCameraPosition = (VIEW * worldPosition).xyz;
 	passWorldPosition = worldPosition.xyz;
 
 	// Calculate the TBN transform

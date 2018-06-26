@@ -8,11 +8,17 @@
 	</textures>
 
 	<samplers>
+		<sampler filter="linear_mipmap_linear" sampling="repeat" bind="0"/>
 	</samplers>
 
 	<properties>
 		<property name="SPECULAR_POWER" value="1.0"/>
 		<property name="SPECULAR_AMOUNT" value="0.0"/>
+
+		<property name="FOG_MIN_DISTANCE" value="100.0"/>
+		<property name="FOG_MAX_DISTANCE" value="300.0"/>
+		<property name="FOG_MIN_FACTOR" value="0.0"/>
+		<property name="FOG_MAX_FACTOR" value="0.8"/>
 	</properties>
 
 </material>

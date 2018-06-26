@@ -31,6 +31,7 @@ layout(binding=3, std140) uniform lightUBO
 	vec4 AMBIENT;							// xyz color, w intensity
 	Light LIGHTS[MAX_LIGHTS];
 };	
+
 layout(binding=8, std140) uniform specularUBO
 {
 	float SPECULAR_AMOUNT;
@@ -38,9 +39,18 @@ layout(binding=8, std140) uniform specularUBO
 	vec2 PADDING_4;
 };
 
+layout(binding=9, std140) uniform fogUBO
+{
+	float FOG_MIN_DISTANCE;
+	float FOG_MAX_DISTANCE;
+	float FOG_MIN_FACTOR;
+	float FOG_MAX_FACTOR;
+};
+
 in vec2 passUV;												
 in vec4 passColor;											
 
+in vec3 passCameraPosition;
 in vec3 passEyePosition;
 in vec3 passWorldPosition;
 in mat4 passTBNTransform;
@@ -116,6 +126,17 @@ float CalculateShadowFactor(vec3 fragPosition, vec3 normal, Light light)
 	return ndcPos.z - bias > shadowDepth ? 0.f : 1.f;
 }
 
+
+vec4 ApplyFog(vec4 finalColor, float fragDepth)
+{
+	float fogFactor = smoothstep(FOG_MIN_DISTANCE, FOG_MAX_DISTANCE, fragDepth);
+	fogFactor = FOG_MIN_FACTOR + (FOG_MAX_FACTOR - FOG_MIN_FACTOR) * fogFactor;
+
+	finalColor = mix(finalColor, vec4(1.f), fogFactor);
+
+	return finalColor;
+}
+
 // Entry point															
 void main( void )											
 {				
@@ -168,5 +189,7 @@ void main( void )
 	// Clamp the color
 	finalColor = clamp(finalColor, vec4(0), vec4(1));
 	
+	finalColor = ApplyFog(finalColor, passCameraPosition.z);
+
 	outColor = finalColor; 				
 };
