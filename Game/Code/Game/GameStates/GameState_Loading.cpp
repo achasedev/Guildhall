@@ -91,6 +91,7 @@ void GameState_Loading::LoadResources() const
 	// Set up the material for the map
 	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Map.material");
 	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Tank.material");
+	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Water.material");
 
 	// Load Skybox here, and set it to the scene
 	Skybox* skybox = AssetDB::CreateOrGetSkybox("Data/Images/Sky.jpg");

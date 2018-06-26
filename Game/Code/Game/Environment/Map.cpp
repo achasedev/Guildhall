@@ -467,6 +467,25 @@ void Map::BuildTerrain(Image* heightMap)
 			BuildSingleChunk(chunkXIndex, chunkYIndex, mapMaterial);
 		}
 	}
+
+	// Build the water renderable
+	m_waterRenderable = new Renderable();
+	MeshBuilder mb;
+	mb.BeginBuilding(PRIMITIVE_TRIANGLES, true);
+
+	mb.Push3DQuad(Vector3(0.f, 5.f, 0.f), m_worldBounds.GetDimensions(), AABB2::UNIT_SQUARE_OFFCENTER * 64.f, Rgba::WHITE, Vector3::DIRECTION_RIGHT, Vector3::DIRECTION_FORWARD);
+	mb.FinishBuilding();
+
+	Mesh* waterMesh = mb.CreateMesh();
+
+	RenderableDraw_t draw;
+	draw.sharedMaterial = AssetDB::GetSharedMaterial("Data/Materials/Water.material");
+	draw.mesh = waterMesh;
+
+	m_waterRenderable->AddDraw(draw);
+	m_waterRenderable->AddInstanceMatrix(Matrix44::IDENTITY);
+
+	Game::GetRenderScene()->AddRenderable(m_waterRenderable);
 }
 
 

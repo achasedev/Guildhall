@@ -1,10 +1,9 @@
 #version 420 core											
 #define MAX_LIGHTS 8
-																									
+																										
 layout(binding = 0) uniform sampler2D gTexDiffuse;			
 layout(binding = 1) uniform sampler2D gTexNormal;
 layout(binding = 8) uniform sampler2D gShadowDepth;
-
 struct Light
 {
 	vec3 m_position;
@@ -17,6 +16,14 @@ struct Light
 	mat4 m_shadowVP;
 	vec3 m_padding;
 	float m_castsShadows;
+};
+
+layout(binding=0, std140) uniform timeUBO
+{
+	float GAME_DELTA_TIME;
+	float GAME_TOTAL_TIME;
+	float SYSTEM_DELTA_TIME;
+	float SYSTEM_TOTAL_TIME;
 };
 
 layout(binding=3, std140) uniform lightUBO
@@ -112,8 +119,9 @@ float CalculateShadowFactor(vec3 fragPosition, vec3 normal, Light light)
 // Entry point															
 void main( void )											
 {				
-	//----------------------------SET UP VALUES-------------------------------		
-	vec4 surfaceColor = texture(gTexDiffuse, passUV);
+	//----------------------------SET UP VALUES-------------------------------
+	vec2 uv = passUV + vec2(GAME_TOTAL_TIME * 0.1f);		
+	vec4 surfaceColor = texture(gTexDiffuse, uv);
 	vec3 directionToEye = normalize(passEyePosition - passWorldPosition);
 
 	// Get the normal from the normal map, and transform it into TBN space

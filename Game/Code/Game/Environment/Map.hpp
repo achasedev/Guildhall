@@ -111,7 +111,7 @@ private:
 
 	FloatRange				m_heightRange;		// Max/Min height for the map
 	std::vector<MapChunk*>	m_mapChunks;		// List of chunks
-
+	Renderable*				m_waterRenderable;			// The plane for the water in the environment
 	std::vector<MapVertex>	m_mapVertices;
 
 	std::vector<GameEntity*>	m_gameEntities;

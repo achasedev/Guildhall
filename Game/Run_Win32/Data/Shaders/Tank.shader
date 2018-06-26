@@ -8,7 +8,7 @@
     <cull mode="back"/>
     <fill mode="solid"/>
     <wind order="ccw"/>
-    <depth test="less"/>
+    <depth test="less" write="true"/>
     <blend>
     	<color op="add" source="one" destination="zero"/>
     	<alpha op="add" source="one" destination="one"/>
