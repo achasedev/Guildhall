@@ -208,7 +208,7 @@ Vector3 Map::GetNormalAtPosition(const Vector3& position)
 	Vector2 cellCoords = Vector2(normalizedMapCoords.x * m_mapCellLayout.x, normalizedMapCoords.y * m_mapCellLayout.y);
 
 	// Flip texel coords since image is top left (0,0)
-	cellCoords.y = (m_mapCellLayout.y - cellCoords.y - 1);
+	cellCoords.y = (m_mapCellLayout.y - cellCoords.y);
 
 	IntVector2 texelCoords = IntVector2(cellCoords);
 	Vector2 cellFraction = cellCoords - texelCoords.GetAsFloats();
@@ -454,7 +454,7 @@ void Map::BuildTerrain(Image* heightMap)
 	Material* mapMaterial = AssetDB::GetSharedMaterial("Data/Materials/Map.material");
 	Sampler* testSampler = new Sampler();
 
-	testSampler->Initialize(SAMPLER_FILTER_LINEAR_MIPMAP_LINEAR, EDGE_SAMPLING_CLAMP_TO_EDGE);
+	testSampler->Initialize(SAMPLER_FILTER_LINEAR_MIPMAP_LINEAR, EDGE_SAMPLING_REPEAT);
 	mapMaterial->SetSampler(0, testSampler);
 
 	// Across chunks - y
@@ -525,33 +525,38 @@ void Map::BuildSingleChunk(int chunkXIndex, int chunkYIndex, Material* material)
 			Vector3 blPosition = toLocal.TransformPoint(m_mapVertices[bl].position).xyz();
 			Vector3 brPosition = toLocal.TransformPoint(m_mapVertices[br].position).xyz();
 
-			// Set the vertices for the mesh
-			mb.SetUVs(m_mapVertices[tl].uv);
+			// Set up the uv's so the texture repeats for each chunk
+			Vector2 tluv = Vector2(m_mapVertices[tl].uv.x * m_chunkLayout.x, m_mapVertices[tl].uv.y * m_chunkLayout.y);
+			Vector2 bluv = Vector2(m_mapVertices[bl].uv.x * m_chunkLayout.x, m_mapVertices[bl].uv.y * m_chunkLayout.y);
+			Vector2 bruv = Vector2(m_mapVertices[br].uv.x * m_chunkLayout.x, m_mapVertices[br].uv.y * m_chunkLayout.y);
+			Vector2 truv = Vector2(m_mapVertices[tr].uv.x * m_chunkLayout.x, m_mapVertices[tr].uv.y * m_chunkLayout.y);
+
+			mb.SetUVs(tluv);
 			mb.SetNormal(m_mapVertices[tl].normal);
 			mb.SetTangent(m_mapVertices[tl].tangent);
 			mb.PushVertex(tlPosition);
 
-			mb.SetUVs(m_mapVertices[bl].uv);
+			mb.SetUVs(bluv);
 			mb.SetNormal(m_mapVertices[bl].normal);
 			mb.SetTangent(m_mapVertices[bl].tangent);
 			mb.PushVertex(blPosition);
 
-			mb.SetUVs(m_mapVertices[br].uv);
+			mb.SetUVs(bruv);
 			mb.SetNormal(m_mapVertices[br].normal);
 			mb.SetTangent(m_mapVertices[br].tangent);
 			mb.PushVertex(brPosition);
 
-			mb.SetUVs(m_mapVertices[tl].uv);
+			mb.SetUVs(tluv);
 			mb.SetNormal(m_mapVertices[tl].normal);
 			mb.SetTangent(m_mapVertices[tl].tangent);
 			mb.PushVertex(tlPosition);
 
-			mb.SetUVs(m_mapVertices[br].uv);
+			mb.SetUVs(bruv);
 			mb.SetNormal(m_mapVertices[br].normal);
 			mb.SetTangent(m_mapVertices[br].tangent);
 			mb.PushVertex(brPosition);
 
-			mb.SetUVs(m_mapVertices[tr].uv);
+			mb.SetUVs(truv);
 			mb.SetNormal(m_mapVertices[tr].normal);
 			mb.SetTangent(m_mapVertices[tr].tangent);
 			mb.PushVertex(trPosition);

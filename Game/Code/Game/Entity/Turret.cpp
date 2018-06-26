@@ -30,7 +30,7 @@ Turret::Turret(Transform& parent)
 	// Set up the tank base renderable
 	m_renderable = new Renderable();
 	RenderableDraw_t draw;
-	draw.sharedMaterial = AssetDB::GetSharedMaterial("Phong_Opaque");
+	draw.sharedMaterial = AssetDB::GetSharedMaterial("Data/Materials/Tank.material");
 	draw.mesh = AssetDB::GetMesh("Cube");
 	draw.drawMatrix = Matrix44::MakeModelMatrix(Vector3::ZERO, Vector3::ZERO, Vector3(1.3f, 0.9f, 1.3f));
 

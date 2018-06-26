@@ -46,7 +46,7 @@ Swarmer::Swarmer(const Vector3& position, unsigned int team)
 	m_renderable = new Renderable();
 
 	Mesh* mesh = AssetDB::GetMesh("Sphere");
-	Material* material = AssetDB::GetSharedMaterial("Phong_Opaque");
+	Material* material = AssetDB::GetSharedMaterial("Data/Materials/Tank.material");
 
 	RenderableDraw_t draw;
 	draw.mesh = mesh;

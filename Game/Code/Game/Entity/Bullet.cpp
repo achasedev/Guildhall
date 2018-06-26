@@ -32,7 +32,7 @@ Bullet::Bullet(const Vector3& position, const Quaternion& orientation, unsigned 
 	// Set up the renderable
 	m_renderable = new Renderable();
 	RenderableDraw_t draw;
-	draw.sharedMaterial = AssetDB::GetSharedMaterial("Default_Opaque");
+	draw.sharedMaterial = AssetDB::GetSharedMaterial("Data/Materials/Tank.material");
 	draw.mesh = AssetDB::GetMesh("Cube");
 
 	m_renderable->AddDraw(draw);

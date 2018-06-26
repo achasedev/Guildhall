@@ -1,9 +1,9 @@
 <material>
 
-	<shader name="Phong_Opaque"/>
+	<shader name="Data/Shaders/Terrain.shader"/>
 
 	<textures>
-		<texture name="Data/Images/Ground.png" bind="0" generateMipMaps="true"/>
+		<texture name="Data/Images/Ground_Diffuse.png" bind="0" generateMipMaps="true"/>
 		<texture name="Flat" bind="1"/>
 	</textures>
 

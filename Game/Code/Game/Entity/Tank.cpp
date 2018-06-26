@@ -42,7 +42,7 @@ Tank::Tank(unsigned int team)
 	// Set up the tank base renderable
 	m_renderable = new Renderable();
 	RenderableDraw_t draw;
-	draw.sharedMaterial = AssetDB::GetSharedMaterial("Phong_Opaque");
+	draw.sharedMaterial = AssetDB::GetSharedMaterial("Data/Materials/Tank.material");
 	draw.mesh = AssetDB::GetMesh("Cube");
 
 	draw.drawMatrix = Matrix44::MakeModelMatrix(Vector3(0.f, 0.5f, 0.f), Vector3::ZERO, Vector3(3.f, 1.3f, 4.f));

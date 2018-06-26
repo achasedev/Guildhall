@@ -31,7 +31,7 @@ Cannon::Cannon(Transform& parent)
 	// Set up the cannon renderable
 	m_renderable = new Renderable();
 	RenderableDraw_t draw;
-	draw.sharedMaterial = AssetDB::GetSharedMaterial("Phong_Opaque");
+	draw.sharedMaterial = AssetDB::GetSharedMaterial("Data/Materials/Tank.material");
 	draw.mesh = AssetDB::GetMesh("Cube");
 	draw.drawMatrix = Matrix44::MakeModelMatrix(Vector3(0.f, 0.25f, 1.5f), Vector3::ZERO, Vector3(0.2f, 0.2f, 2.f));
 
