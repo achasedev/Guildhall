@@ -86,6 +86,15 @@ void GameState_Playing::Enter()
 
 	SwarmerSpawner* spawner2 = new SwarmerSpawner(Vector3(10.f, 15.f, 10.f), 1);
 	Game::GetMap()->AddGameEntity(spawner2);
+
+	SwarmerSpawner* spawner3 = new SwarmerSpawner(Vector3(-70.f, 15.f, 50.f), 1);
+	Game::GetMap()->AddGameEntity(spawner3);
+
+	SwarmerSpawner* spawner4 = new SwarmerSpawner(Vector3(100.f, 15.f, -50.f), 1);
+	Game::GetMap()->AddGameEntity(spawner4);
+
+	SwarmerSpawner* spawner5 = new SwarmerSpawner(Vector3(-30.f, 15.f, -120.f), 1);
+	Game::GetMap()->AddGameEntity(spawner5);
 }
 
 
@@ -111,6 +120,27 @@ void GameState_Playing::ProcessInput()
 	{
 		Light* light = Light::CreatePointLight(player->transform.position, Rgba::WHITE, Vector3(0.f, 0.f, 0.001f));
 		Game::GetRenderScene()->AddLight(light);
+	}
+
+	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_SHIFT))
+	{
+		AudioSystem* audio = AudioSystem::GetInstance();
+
+		if (!m_songPlaying)
+		{
+			m_song = audio->PlaySound(audio->CreateOrGetSound("Data/Sound/Music/Song.mp3"));
+			m_songPlaying = true;
+		}
+		else
+		{
+			audio->SetSoundPlaybackSpeed(m_song, 1.0f);
+		}
+	}
+
+	if (input->WasKeyJustReleased(InputSystem::KEYBOARD_SHIFT))
+	{
+		AudioSystem* audio = AudioSystem::GetInstance();
+		audio->SetSoundPlaybackSpeed(m_song, 0.f);
 	}
 }
 

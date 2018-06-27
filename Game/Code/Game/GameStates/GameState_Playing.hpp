@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include "Game/GameStates/GameState.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 
 class Map;
 class Player;
@@ -40,4 +41,6 @@ private:
 private:
 	//-----Private Data-----
 
+	bool m_songPlaying = false;
+	SoundPlaybackID m_song;
 };

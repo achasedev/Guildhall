@@ -8,11 +8,13 @@
 #include "Game/Entity/Turret.hpp"
 #include "Game/Entity/Cannon.hpp"
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/Game.hpp"
 #include "Game/Environment/Map.hpp"
 
 #include "Engine/Core/Window.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
@@ -52,6 +54,41 @@ Player::Player()
 	m_stopwatch->SetInterval(0.5f);
 
 	m_type = ENTITY_PLAYER;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		m_mikuMeme[i] = new Renderable();
+
+		MeshGroup* group = AssetDB::CreateOrGetMeshGroup("Data/Models/Miku.obj");
+
+		RenderableDraw_t draw;
+
+		Vector3 position;
+
+		if (i == 0)			{ position = Vector3(-2.f, 1.f, 2.f); }
+		else if (i == 1)	{ position = Vector3(2.f, 1.f, 2.f); }
+		else if (i == 2)	{ position = Vector3(2.f, 1.f, -2.f); }
+		else				{ position = Vector3(-2.f, 1.f, -2.f); }
+
+		draw.drawMatrix = Matrix44::MakeModelMatrix(position, Vector3::ZERO, Vector3::ONES);
+		draw.mesh = group->GetMesh(0);
+		draw.sharedMaterial = AssetDB::GetSharedMaterial("Data/Materials/Miku_Quad.material");
+		m_mikuMeme[i]->AddDraw(draw);
+
+		draw.mesh = group->GetMesh(1);
+		draw.sharedMaterial = AssetDB::GetSharedMaterial("Data/Materials/Miku_Base.material");
+		m_mikuMeme[i]->AddDraw(draw);
+
+		draw.mesh = group->GetMesh(2);
+		draw.sharedMaterial = AssetDB::GetSharedMaterial("Data/Materials/Miku_Base.material");
+		m_mikuMeme[i]->AddDraw(draw);
+
+		draw.mesh = group->GetMesh(3);
+		draw.sharedMaterial = AssetDB::GetSharedMaterial("Data/Materials/Miku_Detail.material");
+		m_mikuMeme[i]->AddDraw(draw);
+
+		m_mikuMeme[i]->AddInstanceMatrix(transform.GetWorldMatrix());
+	}
 }
 
 
@@ -87,6 +124,23 @@ void Player::ProcessInput()
 	{
 		ShootCannon();
 	}
+
+	InputSystem* input = InputSystem::GetInstance();
+
+	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_SHIFT))
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			Game::GetRenderScene()->AddRenderable(m_mikuMeme[i]);	
+		}
+	}
+
+	if (input->WasKeyJustReleased(InputSystem::KEYBOARD_SHIFT))
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			Game::GetRenderScene()->RemoveRenderable(m_mikuMeme[i]);	
+		}	}
 }
 
 
@@ -120,6 +174,12 @@ void Player::Update(float deltaTime)
 
 	SetTarget(true, rayhit.position);
 	Tank::Update(deltaTime);
+
+	for (int i = 0; i < 4; ++i)
+	{
+		Matrix44 mikuMatrix = transform.GetWorldMatrix() * Matrix44::MakeRotation(Vector3(0.f, Game::GetGameClock()->GetTotalSeconds() * 360.f, 0.f));
+		m_mikuMeme[i]->SetInstanceMatrix(0, mikuMatrix);
+	}
 }
 
 
@@ -188,12 +248,22 @@ void Player::UpdatePositionOnInput(float deltaTime)
 	if (input->IsKeyPressed('A')) { inputRotation -= 1.f; }		// Turn left
 	if (input->IsKeyPressed('D')) { inputRotation += 1.f; }		// Turn right
 
+	if (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT))
+	{
+		inputRotation *= 3.f;
+	}
+
 	transform.Rotate(Vector3(0.f, inputRotation * TANK_ROTATION_SPEED * deltaTime, 0.f));
 
 	// Translating the Player
 	Vector3 inputOffset = Vector3::ZERO;
 	if (input->IsKeyPressed('W'))								{ inputOffset.z += 1.f; }		// Forward
 	if (input->IsKeyPressed('S'))								{ inputOffset.z -= 1.f; }		// Back
+
+	if (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT))
+	{
+		inputOffset *= 10.f;
+	}
 
 	if (inputOffset == Vector3::ZERO)
 	{

@@ -11,6 +11,7 @@
 
 #include "Engine/Core/Window.hpp"
 #include "Engine/Assets/AssetDB.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/Time/ScopedProfiler.hpp"
 #include "Engine/Rendering/Resources/Skybox.hpp"
@@ -58,7 +59,7 @@ void GameState_Loading::Render() const
 
 	BitmapFont* font = AssetDB::CreateOrGetBitmapFont("Data/Images/Fonts/Default.png");
 	AABB2 loadingBounds = AABB2(Vector2(0.35f * Window::GetInstance()->GetAspect() * Renderer::UI_ORTHO_HEIGHT, 0.3f * Renderer::UI_ORTHO_HEIGHT), Vector2(0.65f * Window::GetInstance()->GetAspect() * Renderer::UI_ORTHO_HEIGHT, 0.7f * Renderer::UI_ORTHO_HEIGHT));
-	renderer->DrawTextInBox2D("Loading Game\n(with one second sleep)...", loadingBounds, Vector2(0.5f, 0.5f), 50.f, TEXT_DRAW_OVERRUN, font);
+	renderer->DrawTextInBox2D("Loading Game...\n", loadingBounds, Vector2(0.5f, 0.5f), 50.f, TEXT_DRAW_OVERRUN, font);
 }
 
 
@@ -92,6 +93,12 @@ void GameState_Loading::LoadResources() const
 	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Map.material");
 	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Tank.material");
 	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Water.material");
+
+	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Detail.material");
+	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Quad.material");
+	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Base.material");
+
+	AudioSystem::GetInstance()->CreateOrGetSound("Data/Sound/Music/Song.mp3");
 
 	// Load Skybox here, and set it to the scene
 	Skybox* skybox = AssetDB::CreateOrGetSkybox("Data/Images/Sky.jpg");

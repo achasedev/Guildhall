@@ -41,6 +41,8 @@ private:
 	Stopwatch* m_stopwatch;
 	OrbitCamera* m_camera;
 
+	Renderable* m_mikuMeme[4];
+
 	static const Vector3	CAMERA_TARGET_OFFSET;
 	static const float		CAMERA_ROTATION_SPEED;
 
