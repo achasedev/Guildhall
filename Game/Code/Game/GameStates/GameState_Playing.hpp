@@ -50,10 +50,8 @@ private:
 	AnimationClip* m_clip = nullptr;
 
 	bool m_renderModel = true;
-	bool m_renderSkeleton = true;
-
-
-
+	bool m_renderSkeleton = false;
+	bool m_renderAnimation = false;
 	static constexpr float CAMERA_ROTATION_SPEED = 45.f;
 	static constexpr float CAMERA_TRANSLATION_SPEED = 10.f;
 

@@ -72,10 +72,10 @@ void GameState_Playing::Enter()
  	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 
 	AssimpLoader loader;
-	loader.LoadFile("Data/Models/Gage/Gage.fbx");
+	//loader.LoadFile("Data/Models/Gage/Gage.fbx");
 
 	//loader.LoadFile("Data/Models/unitychan.fbx");
-	//loader.LoadFile("Data/Models/lilith.fbx");
+	loader.LoadFile("Data/Models/lilith.fbx");
 	//loader.LoadFile("Data/Models/maya.fbx");
 
 	m_clip = loader.GetAnimationClip(0);
@@ -97,6 +97,10 @@ void GameState_Playing::Enter()
 
 	//Game::GetRenderScene()->AddRenderable(katsuragi);
 	Game::GetRenderScene()->AddRenderable(m_modelRenderable);
+
+	RenderableDraw_t draw;
+	draw.mesh = AssetDB::GetMesh("Cube");
+	draw.sharedMaterial = AssetDB::GetSharedMaterial("Default_Opaque");
 }
 
 
@@ -171,6 +175,11 @@ void GameState_Playing::CheckRenderInput()
 	{
 		m_renderSkeleton = !m_renderSkeleton;
 	}
+
+	if (input->WasKeyJustPressed('P'))
+	{
+		m_renderAnimation = !m_renderAnimation;
+	}
 }
 
 
@@ -201,6 +210,11 @@ void GameState_Playing::Render() const
 
 	if (m_renderSkeleton)
 	{
+		DebugRenderSystem::DrawSkeleton(m_skeleton, Matrix44::IDENTITY, 0.f);
+ 	}
+
+	if (m_renderAnimation)
+	{
 		float time = Game::GetGameClock()->GetTotalSeconds();
 
 		Pose* pose = m_clip->CalculatePoseAtTime(time);
@@ -212,17 +226,18 @@ void GameState_Playing::Render() const
 			const SkeletonBase* base = pose->GetBaseSkeleton();
 
 			BoneData_t currentBone = base->GetBoneData(boneIndex);
-			Matrix44 boneTransfrom = pose->GetBoneTransform(boneIndex);
-			Vector3 currPos = Matrix44::ExtractTranslation(boneTransfrom);
+			Matrix44 poseTransform = pose->GetBoneTransform(boneIndex);
+			Vector3 currPos = Matrix44::ExtractTranslation(poseTransform);
 
 			int parentIndex = currentBone.parentIndex;
 
+
+			// Render the bind hips
+			Vector3 bindScale = Matrix44::ExtractScale(currentBone.worldTransform);
+			Vector3 animScale = Matrix44::ExtractScale(poseTransform);
+
 			// Root
-			if (parentIndex < 0)
-			{
-				DebugRenderSystem::DrawCube(currPos, 0.f, Rgba::RED, Vector3::ONES * 2.f);
-			}
-			else
+			if (parentIndex >= 0)
 			{
 				Matrix44 parentTransform = pose->GetBoneTransform(parentIndex);
 				Vector3 parentPos = Matrix44::ExtractTranslation(parentTransform);
@@ -233,6 +248,5 @@ void GameState_Playing::Render() const
 
 
 		}
-		//DebugRenderSystem::DrawSkeleton(m_skeleton, Matrix44::IDENTITY, 0.f);
- 	}
+	}
 }
