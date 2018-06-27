@@ -12,7 +12,7 @@
 #include "Engine/Rendering/Core/RenderScene.hpp"
 
 // Constants
-const float Bullet::BULLET_SPEED = 5.f;
+const float Bullet::BULLET_SPEED = 2.f;
 const float Bullet::BULLET_LIFETIME = 5.f;
 
 

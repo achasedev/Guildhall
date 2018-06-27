@@ -93,6 +93,7 @@ void GameState_Loading::LoadResources() const
 	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Map.material");
 	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Tank.material");
 	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Water.material");
+	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Crosshair.material");
 
 	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Detail.material");
 	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Quad.material");
@@ -103,4 +104,5 @@ void GameState_Loading::LoadResources() const
 	// Load Skybox here, and set it to the scene
 	Skybox* skybox = AssetDB::CreateOrGetSkybox("Data/Images/Sky.jpg");
 	Game::GetRenderScene()->SetSkybox(skybox);
+
 }

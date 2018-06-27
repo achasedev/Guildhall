@@ -148,3 +148,12 @@ void Tank::ShootCannon()
 		m_stopwatch->SetInterval(1.f / m_fireRate);
 	}
 }
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the time until the tank can fire the next shot
+//
+float Tank::GetTimeUntilNextShot() const
+{
+	return m_stopwatch->GetTimeUntilIntervalEnd();
+}

@@ -1,0 +1,17 @@
+<material>
+
+	<shader name="UI"/>
+
+	<textures>
+		<texture name="Data/Images/Crosshair.png" bind="0" generateMipMaps="true"/>
+		<texture name="Flat" bind="1"/>
+	</textures>
+
+	<samplers>
+		<sampler filter="nearest" sampling="repeat" bind="0"/>
+	</samplers>
+
+	<properties>
+	</properties>
+
+</material>

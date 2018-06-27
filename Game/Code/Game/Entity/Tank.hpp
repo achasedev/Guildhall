@@ -28,7 +28,8 @@ public:
 	void SetHealth(int health);
 
 	// Producers
-	void ShootCannon();
+	void	ShootCannon();
+	float	GetTimeUntilNextShot() const;
 
 
 protected:

@@ -36,6 +36,7 @@ public:
 private:
 	//-----Private Methods-----
 
+	void RenderUI() const;
 
 	
 private:
@@ -43,4 +44,7 @@ private:
 
 	bool m_songPlaying = false;
 	SoundPlaybackID m_song;
+
+	AABB2 m_crosshairBounds;
+	AABB2 m_reloadTimerBounds;
 };

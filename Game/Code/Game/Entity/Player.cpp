@@ -43,7 +43,7 @@ Player::Player()
 	m_camera->SetColorTarget(renderer->GetDefaultColorTarget());
 	m_camera->SetDepthTarget(renderer->GetDefaultDepthTarget());
 	m_camera->SetTarget(transform.position + CAMERA_TARGET_OFFSET);
-	m_camera->SetRadiusLimits(5.f, 25.f);
+	m_camera->SetRadiusLimits(5.f, 50.f);
 	m_camera->SetRadius(15.f);
 	m_camera->SetAzimuthLimits(5.f, 135.f);
 	m_camera->SetAzimuth(45.f);
@@ -120,12 +120,13 @@ void Player::ProcessInput()
 	m_camera->SetTarget(transform.position + CAMERA_TARGET_OFFSET);
 
 	Mouse& mouse = InputSystem::GetMouse();
-	if (mouse.WasButtonJustPressed(MOUSEBUTTON_LEFT))
+	InputSystem* input = InputSystem::GetInstance();
+
+	if (mouse.WasButtonJustPressed(MOUSEBUTTON_LEFT) || mouse.IsButtonPressed(MOUSEBUTTON_LEFT) && input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT))
 	{
 		ShootCannon();
 	}
 
-	InputSystem* input = InputSystem::GetInstance();
 
 	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_SHIFT))
 	{
@@ -133,6 +134,8 @@ void Player::ProcessInput()
 		{
 			Game::GetRenderScene()->AddRenderable(m_mikuMeme[i]);	
 		}
+
+		m_fireRate = TANK_DEFAULT_FIRERATE * 100.f;
 	}
 
 	if (input->WasKeyJustReleased(InputSystem::KEYBOARD_SHIFT))
@@ -140,7 +143,18 @@ void Player::ProcessInput()
 		for (int i = 0; i < 4; ++i)
 		{
 			Game::GetRenderScene()->RemoveRenderable(m_mikuMeme[i]);	
-		}	}
+		}	
+
+		m_fireRate = TANK_DEFAULT_FIRERATE;
+	}
+
+	if (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT))
+	{
+		if (GetTimeUntilNextShot() > 0.1)
+		{
+
+		}
+	}
 }
 
 
@@ -162,15 +176,6 @@ void Player::Update(float deltaTime)
 
 	// Debugging - test raycast
 	RaycastHit_t rayhit = Game::GetMap()->Raycast(m_camera->GetPosition(), m_camera->GetForwardVector(), Map::MAX_RAYCAST_DISTANCE);
-
-	if (rayhit.hit)
-	{
-		DebugRenderSystem::DrawUVSphere(rayhit.position, 0.f);
-	}
-	else
-	{
-		DebugRenderSystem::Draw2DText("No hit", Window::GetInstance()->GetWindowBounds(), 0.f);
-	}
 
 	SetTarget(true, rayhit.position);
 	Tank::Update(deltaTime);
@@ -220,7 +225,7 @@ void Player::UpdateCameraOnInput(float deltaTime)
 	float wheelDelta = mouse.GetMouseWheelDelta();
 	if (wheelDelta != 0.f)
 	{
-		m_camera->MoveAlongRadius(wheelDelta * 10.f);
+		m_camera->MoveAlongRadius(-wheelDelta * 5.f);
 	}
 
 	if (mouse.WasButtonJustPressed(MOUSEBUTTON_RIGHT))

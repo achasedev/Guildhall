@@ -38,6 +38,11 @@
 //
 GameState_Playing::GameState_Playing()
 {
+	AABB2 uiBounds = Renderer::GetUIBounds();
+	Vector2 center = uiBounds.GetCenter();
+	m_crosshairBounds = AABB2(center - Vector2(25.f), center + Vector2(25.f));
+
+	m_reloadTimerBounds = AABB2(m_crosshairBounds.GetBottomRight(), m_crosshairBounds.GetBottomRight() + Vector2(200.f, 50.f));
 }
 
 
@@ -107,6 +112,36 @@ void GameState_Playing::Leave()
 
 
 //-----------------------------------------------------------------------------------------------
+// Renders the screenspace the elements of the game
+//
+void GameState_Playing::RenderUI() const
+{
+	Renderer* renderer = Renderer::GetInstance();
+
+	renderer->SetCurrentCamera(renderer->GetUICamera());
+
+	renderer->Draw2DQuad(m_crosshairBounds, AABB2::UNIT_SQUARE_OFFCENTER, Rgba::BLUE, AssetDB::GetSharedMaterial("Data/Materials/Crosshair.material"));
+
+	float playerReloadTime = Game::GetPlayer()->GetTimeUntilNextShot();
+
+	std::string reloadText;
+	Rgba textColor;
+	if (playerReloadTime > 0.f)
+	{
+		reloadText = Stringf("%.2f%s", playerReloadTime, "s");
+		textColor = Rgba::RED;
+	}
+	else
+	{
+		reloadText = "Ready";
+		textColor = Rgba::GREEN;
+	}
+
+	renderer->DrawTextInBox2D(reloadText, m_reloadTimerBounds, Vector2(0.2f, 0.5f), 20.f, TEXT_DRAW_SHRINK_TO_FIT, AssetDB::GetBitmapFont("Data/Images/Fonts/Default.png"), textColor);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Checks for input
 //
 void GameState_Playing::ProcessInput()
@@ -160,4 +195,5 @@ void GameState_Playing::Update()
 void GameState_Playing::Render() const
 {
 	ForwardRenderingPath::Render(Game::GetRenderScene());
+	RenderUI();
 }
