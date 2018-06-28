@@ -21,12 +21,6 @@ class GameObject;
 class AABB2;
 class IntVector2;
 
-enum GameObjectType
-{
-	GAMEOBJECT_TANK,
-	GAMEOBJECT_BULLET,
-	NUM_GAMEOBJECT_TYPES
-};
 
 class Game
 {
@@ -48,17 +42,13 @@ public:
 	static Clock*				GetGameClock();
 	static float				GetDeltaTime();
 
-	// Gameplay Accessors
+	// Gameplay
+	static void SetMap(Map* map);
+	static void SetPlayer(Player* player);
+	 
 	static Map*			GetMap();
-	static RenderScene*	GetRenderScene();
 	static Player*		GetPlayer();
-
-	// Gameplay Mutators
-	static void InitializePlayer();
-	static void InitializeMap(const AABB2& worldBounds, float minHeight, float maxHeight, const IntVector2& chunkLayout, const std::string& fileName);
-
-	static void DeletePlayer();
-	static void DeleteMap();
+	static RenderScene* GetRenderScene();
 
 
 private:

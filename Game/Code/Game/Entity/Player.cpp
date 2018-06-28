@@ -102,6 +102,7 @@ Player::~Player()
 	delete m_stopwatch;
 	m_stopwatch = nullptr;
 
+	Game::GetRenderScene()->RemoveCamera(m_camera);
 	delete m_camera;
 	m_camera = nullptr;
 }
@@ -175,7 +176,8 @@ void Player::Update(float deltaTime)
 	}
 
 	// Debugging - test raycast
-	RaycastHit_t rayhit = Game::GetMap()->Raycast(m_camera->GetPosition(), m_camera->GetForwardVector(), Map::MAX_RAYCAST_DISTANCE);
+	Map* map = Game::GetMap();
+	RaycastHit_t rayhit = map->Raycast(m_camera->GetPosition(), m_camera->GetForwardVector(), Map::MAX_RAYCAST_DISTANCE);
 
 	SetTarget(true, rayhit.position);
 	Tank::Update(deltaTime);
@@ -196,6 +198,13 @@ void Player::OnCollisionWithEntity(GameEntity* other)
 	}
 
 	Tank::OnCollisionWithEntity(other);
+}
+
+void Player::Respawn()
+{
+	SetMarkedForDelete(false);
+	SetHealth(10);
+	transform.position = Vector3::ZERO;
 }
 
 //-----------------------------------------------------------------------------------------------

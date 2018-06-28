@@ -14,6 +14,7 @@
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Entity/SwarmerSpawner.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
+#include "Game/GameStates/GameState_MainMenu.hpp"
 
 #include "Engine/Core/Window.hpp"
 #include "Engine/Assets/AssetDB.hpp"
@@ -29,8 +30,13 @@
 #include "Engine/Rendering/Particles/ParticleEmitter.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 #include "Engine/Rendering/Core/ForwardRenderingPath.hpp"
+#include "Engine/Core/Time/Stopwatch.hpp"
+#include "Engine/Core/Time/Clock.hpp"
 
 #include "Engine/Core/Time/ScopedProfiler.hpp"
+
+const float GameState_Playing::RESPAWN_WAIT_TIME = 5.f;
+
 
 
 //-----------------------------------------------------------------------------------------------
@@ -43,6 +49,8 @@ GameState_Playing::GameState_Playing()
 	m_crosshairBounds = AABB2(center - Vector2(25.f), center + Vector2(25.f));
 
 	m_reloadTimerBounds = AABB2(m_crosshairBounds.GetBottomRight(), m_crosshairBounds.GetBottomRight() + Vector2(200.f, 50.f));
+
+	m_respawnTimer = new Stopwatch(Clock::GetMasterClock());
 }
 
 
@@ -51,7 +59,16 @@ GameState_Playing::GameState_Playing()
 //
 GameState_Playing::~GameState_Playing()
 {
-	Game::DeleteMap();
+	delete m_respawnTimer;
+	m_respawnTimer = nullptr;
+
+	Game::SetMap(nullptr);
+	Game::SetPlayer(nullptr);
+
+	RenderScene* scene = Game::GetRenderScene();
+	scene->RemoveAll();
+
+	DebugRenderSystem::SetWorldCamera(nullptr);
 }
 
 
@@ -60,46 +77,11 @@ GameState_Playing::~GameState_Playing()
 //
 void GameState_Playing::Enter()
 {
-	Swarmer::InitializeConsoleCommands();
+	// Set up Framework
+	SetupFramework();
 
-	// Make the player
-	Game::InitializePlayer();
-
-	// Make the map
-	Game::InitializeMap(AABB2(Vector2(-500.f, -500.f), Vector2(500.f, 500.f)), 0.f, 25.f, IntVector2(16, 16), "Data/Images/Map.jpg");
-
-	Camera* playerCamera = Game::GetPlayer()->GetCamera();
-	Game::GetRenderScene()->AddCamera(playerCamera);
-	Light* directionalLight = Light::CreateDirectionalLight(Vector3(10.f, 50.f, 10.f), Vector3(-1.f, -1.f, 0.f), Rgba(200, 200, 200, 255));
-	directionalLight->SetShadowCasting(true);
-
-	Game::GetRenderScene()->AddLight(directionalLight);
-	Game::GetRenderScene()->SetAmbience(Rgba(255, 255, 255, 50));
- 
-	// Test the debug render system
- 	DebugRenderSystem::SetWorldCamera(playerCamera);
-
-	Mouse& mouse = InputSystem::GetMouse();
-
-	mouse.SetCursorMode(CURSORMODE_RELATIVE);
-	mouse.ShowMouseCursor(false);
-	mouse.LockCursorToClient(true);
-
-	// Testing
-// 	TankSpawner* spawner = new TankSpawner(Vector3(10.f, 15.f, 10.f), 1);
-// 	Game::GetMap()->AddGameEntity(spawner);
-
-	SwarmerSpawner* spawner2 = new SwarmerSpawner(Vector3(10.f, 15.f, 10.f), 1);
-	Game::GetMap()->AddGameEntity(spawner2);
-
-	SwarmerSpawner* spawner3 = new SwarmerSpawner(Vector3(-70.f, 15.f, 50.f), 1);
-	Game::GetMap()->AddGameEntity(spawner3);
-
-	SwarmerSpawner* spawner4 = new SwarmerSpawner(Vector3(100.f, 15.f, -50.f), 1);
-	Game::GetMap()->AddGameEntity(spawner4);
-
-	SwarmerSpawner* spawner5 = new SwarmerSpawner(Vector3(-30.f, 15.f, -120.f), 1);
-	Game::GetMap()->AddGameEntity(spawner5);
+	// Spawn entities
+	SpawnInitialEntities();
 }
 
 
@@ -111,18 +93,115 @@ void GameState_Playing::Leave()
 }
 
 
+void GameState_Playing::SetupFramework()
+{
+	// Make the player
+	Player* player = new Player();
+	Game::SetPlayer(player);
+
+	// Make the map
+	Map* map = new Map();
+	map->Intialize(AABB2(Vector2(-500.f, -500.f), Vector2(500.f, 500.f)), 0.f, 25.f, IntVector2(16, 16), "Data/Images/Map.jpg");
+	Game::SetMap(map);
+
+
+	//-----Render Scene-----
+	RenderScene* scene = Game::GetRenderScene();
+
+	Camera* playerCamera = player->GetCamera();
+	scene->AddCamera(playerCamera);
+
+	// Lights
+	Light* directionalLight = Light::CreateDirectionalLight(Vector3(10.f, 50.f, 10.f), Vector3(-1.f, -1.f, 0.f), Rgba(200, 200, 200, 255));
+	directionalLight->SetShadowCasting(true);
+
+	scene->AddLight(directionalLight);
+	scene->SetAmbience(Rgba(255, 255, 255, 50));
+
+
+	//-----Input and Debugging-----
+	Mouse& mouse = InputSystem::GetMouse();
+	mouse.SetCursorMode(CURSORMODE_RELATIVE);
+	mouse.ShowMouseCursor(false);
+	mouse.LockCursorToClient(true);
+
+	DebugRenderSystem::SetWorldCamera(playerCamera);
+}
+
+void GameState_Playing::SpawnInitialEntities()
+{
+	Map* map = Game::GetMap();
+
+	// 	TankSpawner* spawner = new TankSpawner(Vector3(10.f, 15.f, 10.f), 1);
+	// 	Game::GetMap()->AddGameEntity(spawner);
+
+	SwarmerSpawner* spawner2 = new SwarmerSpawner(Vector3(10.f, 25.f, 10.f), 1);
+	map->AddGameEntity(spawner2);
+
+	SwarmerSpawner* spawner3 = new SwarmerSpawner(Vector3(-70.f, 25.f, 50.f), 1);
+	map->AddGameEntity(spawner3);
+
+	SwarmerSpawner* spawner4 = new SwarmerSpawner(Vector3(100.f, 25.f, -50.f), 1);
+	map->AddGameEntity(spawner4);
+
+	SwarmerSpawner* spawner5 = new SwarmerSpawner(Vector3(-30.f, 25.f, -120.f), 1);
+	map->AddGameEntity(spawner5);
+}
+
+//-----------------------------------------------------------------------------------------------
+// Checks if any enemies are left alive on the map, and if so transitions to the victory state
+//
+bool GameState_Playing::CheckForVictory() const
+{
+	Map* map = Game::GetMap();
+	Player* player = Game::GetPlayer();
+
+	std::vector<GameEntity*>& entities = map->GetEntitiesOnMap();
+
+	unsigned int playerTeam = player->GetTeamIndex();
+
+	for (int entityIndex = 0; entityIndex < (int) entities.size(); ++entityIndex)
+	{
+		if (entities[entityIndex]->GetTeamIndex() != playerTeam)
+		{
+			return false;
+		}
+	}
+
+	// No enemies found, so you won!
+	return true;
+}
+
+
 //-----------------------------------------------------------------------------------------------
 // Renders the screenspace the elements of the game
 //
 void GameState_Playing::RenderUI() const
 {
 	Renderer* renderer = Renderer::GetInstance();
-
 	renderer->SetCurrentCamera(renderer->GetUICamera());
+
+	RenderUI_Playing();
+
+	if (m_playerWon)
+	{
+		RenderUI_Victory();
+	}
+	else if (m_playerDead)
+	{
+		RenderUI_Death();
+	}
+}
+
+
+void GameState_Playing::RenderUI_Playing() const
+{
+	Renderer* renderer = Renderer::GetInstance();
+	Player* player = Game::GetPlayer();
 
 	renderer->Draw2DQuad(m_crosshairBounds, AABB2::UNIT_SQUARE_OFFCENTER, Rgba::BLUE, AssetDB::GetSharedMaterial("Data/Materials/Crosshair.material"));
 
-	float playerReloadTime = Game::GetPlayer()->GetTimeUntilNextShot();
+	float playerReloadTime = player->GetTimeUntilNextShot();
 
 	std::string reloadText;
 	Rgba textColor;
@@ -142,40 +221,90 @@ void GameState_Playing::RenderUI() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Renders the victory screen
+//
+void GameState_Playing::RenderUI_Victory() const
+{
+	Renderer* renderer = Renderer::GetInstance();
+
+	renderer->Draw2DQuad(Renderer::GetUIBounds(), AABB2::UNIT_SQUARE_OFFCENTER, Rgba(0, 0, 255, 100), AssetDB::GetSharedMaterial("UI"));
+
+	renderer->DrawTextInBox2D("Victory!\nPress 'space' to return to the main menu", Renderer::GetUIBounds(), Vector2(0.5f), 50.f, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/Default.png"));
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Displays the death screen, with the respawn timer
+//
+void GameState_Playing::RenderUI_Death() const
+{
+	Renderer* renderer = Renderer::GetInstance();
+
+	renderer->Draw2DQuad(Renderer::GetUIBounds(), AABB2::UNIT_SQUARE_OFFCENTER, Rgba(255, 0, 0, 100), AssetDB::GetSharedMaterial("UI"));
+
+	renderer->DrawTextInBox2D("YOU DIED", Renderer::GetUIBounds(), Vector2(0.5f), 100.f, TEXT_DRAW_SHRINK_TO_FIT, AssetDB::GetBitmapFont("Data/Images/Fonts/Default.png"));
+
+	std::string respawnText;
+	if (m_respawnTimer->HasIntervalElapsed())
+	{
+		respawnText = "Press 'space' to respawn";
+	}
+	else
+	{
+		respawnText = Stringf("Respawn in %.2f seconds...", m_respawnTimer->GetTimeUntilIntervalEnds());
+	}
+
+	renderer->DrawTextInBox2D(respawnText, Renderer::GetUIBounds(), Vector2(0.5f, 1.0f), 50.f, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/Default.png"));
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Checks for input
 //
 void GameState_Playing::ProcessInput()
 {
-	Player* player = Game::GetPlayer();
-	player->ProcessInput();
-
 	InputSystem* input = InputSystem::GetInstance();
+	Player* player = Game::GetPlayer();
 
-	if (input->WasKeyJustPressed('I'))
+	if (m_playerWon)
 	{
-		Light* light = Light::CreatePointLight(player->transform.position, Rgba::WHITE, Vector3(0.f, 0.f, 0.001f));
-		Game::GetRenderScene()->AddLight(light);
-	}
-
-	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_SHIFT))
-	{
-		AudioSystem* audio = AudioSystem::GetInstance();
-
-		if (!m_songPlaying)
+		if (input->WasKeyJustPressed(InputSystem::KEYBOARD_SPACEBAR))
 		{
-			m_song = audio->PlaySound(audio->CreateOrGetSound("Data/Sound/Music/Song.mp3"));
-			m_songPlaying = true;
-		}
-		else
-		{
-			audio->SetSoundPlaybackSpeed(m_song, 1.0f);
+			Game::TransitionToGameState(new GameState_MainMenu());
 		}
 	}
-
-	if (input->WasKeyJustReleased(InputSystem::KEYBOARD_SHIFT))
+	else if (m_playerDead)
 	{
-		AudioSystem* audio = AudioSystem::GetInstance();
-		audio->SetSoundPlaybackSpeed(m_song, 0.f);
+		if (m_respawnTimer->HasIntervalElapsed() && input->WasKeyJustPressed(InputSystem::KEYBOARD_SPACEBAR))
+		{
+			player->Respawn();
+			m_playerDead = false;
+		}
+	}
+	else
+	{
+		player->ProcessInput();
+
+		if (input->WasKeyJustPressed(InputSystem::KEYBOARD_SHIFT))
+		{
+			AudioSystem* audio = AudioSystem::GetInstance();
+
+			if (!m_songPlaying)
+			{
+				m_song = audio->PlaySound(audio->CreateOrGetSound("Data/Sound/Music/Song.mp3"));
+				m_songPlaying = true;
+			}
+			else
+			{
+				audio->SetSoundPlaybackSpeed(m_song, 1.0f);
+			}
+		}
+
+		if (input->WasKeyJustReleased(InputSystem::KEYBOARD_SHIFT))
+		{
+			AudioSystem* audio = AudioSystem::GetInstance();
+			audio->SetSoundPlaybackSpeed(m_song, 0.f);
+		}
 	}
 }
 
@@ -185,7 +314,19 @@ void GameState_Playing::ProcessInput()
 //
 void GameState_Playing::Update()
 {	
-	Game::GetMap()->Update();
+	Player* player = Game::GetPlayer();
+
+	m_playerWon = CheckForVictory();
+	bool playerJustDied = player->IsMarkedForDelete();
+
+	if (!m_playerDead && playerJustDied)
+	{
+		m_playerDead = true;
+		m_respawnTimer->SetInterval(RESPAWN_WAIT_TIME);
+	}
+
+	Map* map = Game::GetMap();
+	map->Update();
 }
 
 

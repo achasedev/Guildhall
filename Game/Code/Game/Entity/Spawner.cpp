@@ -38,7 +38,19 @@ Spawner::Spawner(const Vector3& position, unsigned int teamIndex)
 	options.m_lifetime = 10000.f;
 	options.m_renderMode = DEBUG_RENDER_XRAY;
 
-	DebugRenderSystem::DrawCube(transform.position, options, Vector3(3.f));
+	m_physicsRadius = 2.f;
+
+	m_renderable = new Renderable();
+
+	RenderableDraw_t draw;
+	draw.sharedMaterial = AssetDB::GetSharedMaterial("Data/Materials/Tank.material");
+	draw.mesh = AssetDB::GetMesh("Cube");
+	draw.drawMatrix = Matrix44::MakeModelMatrix(Vector3::ZERO, Vector3::ZERO, 3.f * Vector3::ONES);
+
+	m_renderable->AddDraw(draw);
+	m_renderable->AddInstanceMatrix(transform.GetWorldMatrix());
+
+	Game::GetRenderScene()->AddRenderable(m_renderable);
 }
 
 
@@ -47,10 +59,22 @@ Spawner::Spawner(const Vector3& position, unsigned int teamIndex)
 //
 Spawner::~Spawner()
 {
+	Game::GetRenderScene()->RemoveRenderable(m_renderable);
+
 	delete m_stopwatch;
 	m_stopwatch = nullptr;
 }
 
+
+void Spawner::OnCollisionWithEntity(GameEntity* other)
+{
+	if (other->GetTeamIndex() != m_team)
+	{
+		TakeDamage(1000000);
+	}
+
+	GameEntity::OnCollisionWithEntity(other);
+}
 
 //-----------------------------------------------------------------------------------------------
 // Update

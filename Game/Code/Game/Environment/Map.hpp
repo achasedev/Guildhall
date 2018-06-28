@@ -66,6 +66,9 @@ public:
 	Vector3 GetNormalAtPosition(const Vector3& position);
 	bool	IsPositionInCellBounds(const Vector3& position);
 
+	std::vector<GameEntity*>& GetEntitiesOnMap();
+
+	void KillAllEnemies();
 	void AddGameEntity(GameEntity* entity);
 
 	// Raycasts

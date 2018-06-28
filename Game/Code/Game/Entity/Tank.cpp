@@ -155,5 +155,5 @@ void Tank::ShootCannon()
 //
 float Tank::GetTimeUntilNextShot() const
 {
-	return m_stopwatch->GetTimeUntilIntervalEnd();
+	return m_stopwatch->GetTimeUntilIntervalEnds();
 }

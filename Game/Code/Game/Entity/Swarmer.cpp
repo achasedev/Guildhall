@@ -118,7 +118,8 @@ void Swarmer::InitializeConsoleCommands()
 void Swarmer::FindAndSetTarget()
 {
 	// Get the flockmates
-	std::vector<GameEntity*> flockmates = Game::GetMap()->GetLocalSwarmers(transform.position, s_flockDistance);
+	Map* map = Game::GetMap();
+	std::vector<GameEntity*> flockmates = map->GetLocalSwarmers(transform.position, s_flockDistance);
 
 	Vector3 pursueDirection = FindPursueDirection();
 	Vector3 separationDirection = FindSeparationDirection(flockmates);
@@ -131,7 +132,8 @@ void Swarmer::FindAndSetTarget()
 
 Vector3 Swarmer::FindPursueDirection()
 {
-	Vector3 targetPos = Game::GetPlayer()->transform.position;
+	Player* player = Game::GetPlayer();
+	Vector3 targetPos = player->transform.position;
 	return (targetPos - transform.position).GetNormalized();
 }
 
@@ -196,7 +198,7 @@ Vector3 Swarmer::FindCohesionDirection(const std::vector<GameEntity*> localFlock
 
 	if (averagePosition != Vector3::ZERO)
 	{
-		averagePosition /= (int) localFlockmates.size();
+		averagePosition /= (float) localFlockmates.size();
 
 		return (averagePosition - transform.position).GetNormalized();
 	}
@@ -343,4 +345,3 @@ void Command_FlockDistance(Command& cmd)
 
 	ConsolePrintf(Rgba::GREEN, "Flock distance set to %f", newValue);
 }
-

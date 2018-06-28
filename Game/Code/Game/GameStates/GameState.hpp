@@ -13,6 +13,8 @@ class GameState
 public:
 	//-----Public Methods-----
 
+	virtual ~GameState() {};
+
 	virtual void ProcessInput() = 0;
 	virtual void Update() = 0;
 	virtual void Render() const = 0;

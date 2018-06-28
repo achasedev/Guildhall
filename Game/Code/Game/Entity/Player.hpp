@@ -24,6 +24,9 @@ public:
 
 	virtual void	OnCollisionWithEntity(GameEntity* other) override;
 
+	// Mutators
+	void Respawn();
+
 	// Accessors
 	Camera* GetCamera() const;
 

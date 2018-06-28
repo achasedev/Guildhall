@@ -13,7 +13,7 @@
 
 // Constants
 const float Bullet::BULLET_SPEED = 2.f;
-const float Bullet::BULLET_LIFETIME = 5.f;
+const float Bullet::BULLET_LIFETIME = 1.f;
 
 
 //-----------------------------------------------------------------------------------------------

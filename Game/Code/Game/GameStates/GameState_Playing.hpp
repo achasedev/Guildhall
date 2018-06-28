@@ -16,6 +16,7 @@ class Camera;
 class GameObject;
 class RenderScene;
 class ParticleEmitter;
+class Stopwatch;
 
 class GameState_Playing : public GameState
 {
@@ -36,15 +37,32 @@ public:
 private:
 	//-----Private Methods-----
 
+	// Initialization
+	void SetupFramework();
+	void SpawnInitialEntities();
+
+	// Update
+	bool CheckForVictory() const;
+
+	// Render
 	void RenderUI() const;
+		void RenderUI_Playing() const;
+		void RenderUI_Victory() const;
+		void RenderUI_Death() const;
 
 	
 private:
 	//-----Private Data-----
 
+	Stopwatch* m_respawnTimer;
+
+	bool m_playerWon = false;
+	bool m_playerDead = false;
 	bool m_songPlaying = false;
 	SoundPlaybackID m_song;
 
 	AABB2 m_crosshairBounds;
 	AABB2 m_reloadTimerBounds;
+
+	static const float RESPAWN_WAIT_TIME;
 };

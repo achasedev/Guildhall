@@ -6,8 +6,8 @@
 /************************************************************************/
 #include "Game.hpp"
 #include "Game/Entity/Tank.hpp"
-//#include "Game/Entity/Bullet.hpp"
 #include "Game/Entity/Player.hpp"
+#include "Game/Entity/Swarmer.hpp"
 #include "Game/Environment/Map.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/GameStates/GameState.hpp"
@@ -27,6 +27,9 @@
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 #include "Engine/Rendering/Materials/MaterialInstance.hpp"
 
+// Console commands
+void Command_KillAll(Command& cmd);
+
 // The singleton instance
 Game* Game::s_instance = nullptr;
 
@@ -45,9 +48,6 @@ Game::Game()
 //
 Game::~Game()
 {
-	DeleteMap();
-	DeletePlayer();
-
 	delete m_renderScene;
 	m_renderScene = nullptr;
 }
@@ -68,6 +68,9 @@ void Game::Initialize()
 	Vector4 rotation = test.Transform(Vector4(0.f, 0.f, 1.f, 0.f));
 
 	s_instance->m_renderScene = new RenderScene("Game Scene");
+
+	Swarmer::InitializeConsoleCommands();
+	Command::Register("KillAll",	"Kills all non-player entities on the map",		Command_KillAll);
 }
 
 
@@ -150,77 +153,40 @@ float Game::GetDeltaTime()
 }
 
 
-//-----------------------------------------------------------------------------------------------
-// Returns the game's render scene
-//
-RenderScene* Game::GetRenderScene()
-{
-	return s_instance->m_renderScene;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns the player character
-//
-Player* Game::GetPlayer()
-{
-	return s_instance->m_player;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Spawns the player
-//
-void Game::InitializePlayer()
-{
-	s_instance->m_player = new Player();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Initializes the map using the map parameters provided
-//
-void Game::InitializeMap(const AABB2& worldBounds, float minHeight, float maxHeight, const IntVector2& chunkLayout, const std::string& fileName)
-{
-	s_instance->m_map = new Map();
-	s_instance->m_map->Intialize(worldBounds, minHeight, maxHeight, chunkLayout, fileName);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Deletes the player character object
-//
-void Game::DeletePlayer()
-{
-	if (s_instance->m_player != nullptr)
-	{
-		delete s_instance->m_player;
-		s_instance->m_player = nullptr;
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Deletes the map
-//
-void Game::DeleteMap()
+void Game::SetMap(Map* map)
 {
 	if (s_instance->m_map != nullptr)
 	{
 		delete s_instance->m_map;
-		s_instance->m_map = nullptr;
 	}
+
+	s_instance->m_map = map;
 }
 
+void Game::SetPlayer(Player* player)
+{
+	if (s_instance->m_player != nullptr)
+	{
+		delete s_instance->m_player;
+	}
 
-//-----------------------------------------------------------------------------------------------
-// Returns the map of the playstate, or nullptr otherwise
-//
+	s_instance->m_player = player;
+}
+
 Map* Game::GetMap()
 {
 	return s_instance->m_map;
 }
 
+Player* Game::GetPlayer()
+{
+	return s_instance->m_player;
+}
+
+RenderScene* Game::GetRenderScene()
+{
+	return s_instance->m_renderScene;
+}
 
 //-----------------------------------------------------------------------------------------------
 // Returns the singleton Game instance
@@ -254,3 +220,23 @@ void Game::CheckToUpdateGameState()
 		m_currentState->Enter();
 	}
 }
+
+//////////////////////////////////////////////////////////////////////////
+//--------------------------CONSOLE COMMANDS------------------------------
+//////////////////////////////////////////////////////////////////////////
+
+void Command_KillAll(Command& cmd)
+{
+	Map* map = Game::GetMap();
+
+	if (map != nullptr)
+	{
+		map->KillAllEnemies();
+		ConsolePrintf(Rgba::GREEN, "All enemies killed");
+	}
+	else
+	{
+		ConsoleWarningf("No map initialized.");
+	}
+}
+

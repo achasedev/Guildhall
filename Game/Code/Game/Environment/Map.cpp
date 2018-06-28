@@ -46,11 +46,14 @@ Map::~Map()
 	{
 		if (m_gameEntities[index]->GetType() != ENTITY_PLAYER)
 		{
-			delete m_gameEntities[index];
+			delete m_gameEntities[index];	
 		}
 	}
 
 	m_gameEntities.clear();
+
+	Game::GetRenderScene()->RemoveRenderable(m_waterRenderable);
+	delete m_waterRenderable;
 }
 
 
@@ -86,8 +89,6 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 	// Build mesh as chunks
 	BuildTerrain(image);
 
-	delete image;
-
 	// Add the player to the map
 	m_gameEntities.push_back(Game::GetPlayer());
 }
@@ -99,7 +100,7 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 void Map::Update()
 {
 	UpdateEntities();
-	//CheckActorActorCollisions();
+	CheckActorActorCollisions();
 	CheckProjectilesAgainstActors();
 	DeleteObjectsMarkedForDelete();
 	UpdateHeightAndOrientationOnMap();
@@ -243,6 +244,31 @@ bool Map::IsPositionInCellBounds(const Vector3& position)
 	bool inYBounds = (m_worldBounds.mins.y <= position.z && m_worldBounds.maxs.y >= position.z);
 
 	return (inXBounds && inYBounds);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the map's list of entities
+//
+std::vector<GameEntity*>& Map::GetEntitiesOnMap()
+{
+	return m_gameEntities;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Marks all enemies (non-players) for deletion
+//
+void Map::KillAllEnemies()
+{
+	unsigned int playerTeam = Game::GetPlayer()->GetTeamIndex();
+	for (int index = 0; index < (int) m_gameEntities.size(); ++index)
+	{
+		if (m_gameEntities[index]->GetTeamIndex() != playerTeam)
+		{
+			m_gameEntities[index]->SetMarkedForDelete(true);
+		}
+	}
 }
 
 
@@ -673,15 +699,8 @@ void Map::DeleteObjectsMarkedForDelete()
 
 		if (currEntity->IsMarkedForDelete())
 		{
-			// Don't delete the player, just reset them
-			if (currEntity->GetType() == ENTITY_PLAYER)
-			{
-				currEntity->SetMarkedForDelete(false);
-				currEntity->SetHealth(10);
-				currEntity->transform.position = Vector3::ZERO;
-				DebugRenderSystem::Draw2DText("Player Died, respawning at (0,0)", Window::GetInstance()->GetWindowBounds(), 3.f, Rgba::RED, 50.f);
-			}
-			else
+			// Don't delete the player
+			if (currEntity->GetType() != ENTITY_PLAYER)
 			{
 				int lastIndex = (int) m_gameEntities.size() - 1;
 

@@ -17,6 +17,9 @@ public:
 	Spawner(const Vector3& position, unsigned int teamIndex);
 	~Spawner();
 
+	virtual void OnCollisionWithEntity(GameEntity* other) override;
+
+
 	virtual void Update(float deltaTime) override;
 
 	// Mutators
