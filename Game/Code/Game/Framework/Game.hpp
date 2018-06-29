@@ -26,9 +26,13 @@ class Game
 {
 	
 public:
+
+	friend class GameState_Loading;
+
 	//-----Public Methods-----
 
 	static void Initialize();
+		void SetupInitialState();
 	static void ShutDown();
 	
 	void ProcessInput();				// Process all input this frame
@@ -41,11 +45,7 @@ public:
 	static GameState*			GetCurrentGameState();
 	static Clock*				GetGameClock();
 	static float				GetDeltaTime();
-
-	// Gameplay
-	static void SetMap(Map* map);
-	static void SetPlayer(Player* player);
-	 
+ 
 	static Map*			GetMap();
 	static Player*		GetPlayer();
 	static RenderScene* GetRenderScene();
@@ -54,7 +54,7 @@ public:
 private:
 	//-----Private Methods-----
 	
-	Game();
+	Game() {}
 	~Game();
 	Game(const Game& copy) = delete;
 

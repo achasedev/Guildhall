@@ -22,6 +22,9 @@ public:
 
 	virtual void OnCollisionWithEntity(GameEntity* other) override;
 
+	// Accessors 
+	Transform GetMuzzleTransform() const;
+
 	// Mutators
 	void SetTarget(bool hasTarget, const Vector3& target = Vector3::ZERO);
 	void TakeDamage(int damageAmount);
@@ -30,7 +33,7 @@ public:
 	// Producers
 	void	ShootCannon();
 	float	GetTimeUntilNextShot() const;
-
+	
 
 protected:
 	//-----Protected Data-----

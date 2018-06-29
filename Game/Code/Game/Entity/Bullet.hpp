@@ -13,20 +13,22 @@ public:
 	//-----Public Methods-----
 
 	Bullet(const Vector3& position, const Quaternion& orientation, unsigned int team);
-	~Bullet();
+	virtual ~Bullet();
 
 	virtual void Update(float deltaTime) override;
 
 	unsigned int GetDamageAmount() const;
 
 
-private:
-	//-----Private Data-----
+protected:
+	//-----Protected Data-----
 
 	float m_timeToLive;
 	unsigned int m_damageAmount = 2; 
 
-	static const float BULLET_SPEED;
-	static const float BULLET_LIFETIME;
+	float m_speed;
+
+	static const float BULLET_DEFAULT_SPEED;
+	static const float BULLET_DEFAULT_LIFETIME;
 
 };

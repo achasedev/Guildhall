@@ -1,0 +1,35 @@
+<audio>
+   <group name="music.mainmenu">
+      <clip source="Data/Audio/Music/mainmenu.mp3" stream="true" />
+   </group>
+   <group name="music.game">
+      <clip source="audio/music/world.mp3" />
+   </group>
+   <group name="player.cannon">
+      <clip source="Data/Audio/SoundFX/Gun_Pistol_Shot01.wav" />
+      <clip source="Data/Audio/SoundFX/Gun_Pistol_Shot02.wav" />
+      <clip source="Data/Audio/SoundFX/Gun_Pistol_Shot03.wav" />
+      <clip source="Data/Audio/SoundFX/Gun_Pistol_Shot04.wav" />
+      <clip source="Data/Audio/SoundFX/Gun_Pistol_Shot05.wav" />
+   </group>
+   <group name="enemy.hit">
+      <clip source="Data/Audio/SoundFX/Hit_GunButt_PistolWhip1.wav" />
+      <clip source="Data/Audio/SoundFX/Hit_GunButt_PistolWhip2.wav" />
+      <clip source="Data/Audio/SoundFX/Hit_GunButt_PistolWhip3.wav" />
+      <clip source="Data/Audio/SoundFX/Hit_GunButt_PistolWhip4.wav" />
+   </group>
+   <group name="enemy.die">
+      <clip source="Data/Audio/SoundFX/Explo_Medium_01.wav" />
+      <clip source="Data/Audio/SoundFX/Explo_Medium_02.wav" />
+      <clip source="Data/Audio/SoundFX/Explo_Medium_03.wav" />
+   </group>
+   <group name="menu.move">
+      <clip source="Data/Audio/SoundFX/menu.move.wav" />
+   </group>
+   <group name="menu.select">
+      <clip source="Data/Audio/SoundFX/menu.select.wav" />
+   </group>
+   <group name="menu.error">
+      <clip source="Data/Audio/SoundFX/menu.error.wav" />
+   </group>
+</audio>

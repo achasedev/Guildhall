@@ -19,7 +19,7 @@ public:
 	virtual void Update(float deltaTime) override;
 
 	// Accessors
-	Matrix44 GetFireTransform();
+	Transform GetFireTransform();
 
 	// Mutators
 	void ElevateTowardsTarget(const Vector3& target);

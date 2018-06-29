@@ -4,7 +4,9 @@
 /* Date: March 24th, 2018
 /* Description: Implementation of the GameState_Loading class
 /************************************************************************/
+#include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
+#include "Game/Environment/Map.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/GameStates/GameState_Loading.hpp"
 #include "Game/GameStates/GameState_MainMenu.hpp"
@@ -99,10 +101,22 @@ void GameState_Loading::LoadResources() const
 	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Quad.material");
 	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Base.material");
 
-	AudioSystem::GetInstance()->CreateOrGetSound("Data/Sound/Music/Song.mp3");
+	// Load all sounds
+	AudioSystem* audio = AudioSystem::GetInstance();
+
+	audio->CreateOrGetSound("Data/Audio/Music/Song.mp3");
+	audio->CreateOrGetSound("Data/Audio/Music/MainMenu.mp3");
+	audio->LoadAudioGroupFile("Data/Audio/AudioGroups/SoundFX.xml");
 
 	// Load Skybox here, and set it to the scene
 	Skybox* skybox = AssetDB::CreateOrGetSkybox("Data/Images/Sky.jpg");
 	Game::GetRenderScene()->SetSkybox(skybox);
 
+	// Build the map now
+	// Make the map
+	Map* map = new Map();
+	map->Intialize(AABB2(Vector2(-500.f, -500.f), Vector2(500.f, 500.f)), 0.f, 25.f, IntVector2(16, 16), "Data/Images/Map.jpg");
+	
+	Game::s_instance->m_map = map;
+	Game::s_instance->m_map->AddGameEntity(Game::s_instance->m_player);
 }

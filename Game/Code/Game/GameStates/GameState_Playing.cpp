@@ -6,6 +6,7 @@
 /************************************************************************/
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/App.hpp"
+#include "Game/Entity/Cannon.hpp"
 #include "Game/Entity/NPCTank.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Entity/Swarmer.hpp"
@@ -50,6 +51,7 @@ GameState_Playing::GameState_Playing()
 
 	m_reloadTimerBounds = AABB2(m_crosshairBounds.GetBottomRight(), m_crosshairBounds.GetBottomRight() + Vector2(200.f, 50.f));
 
+	m_chargeTimerbounds = AABB2(m_crosshairBounds.GetBottomLeft() - Vector2(0.f, 15.f), m_crosshairBounds.GetBottomRight() - Vector2(0.f, 10.f));
 	m_respawnTimer = new Stopwatch(Clock::GetMasterClock());
 }
 
@@ -62,11 +64,8 @@ GameState_Playing::~GameState_Playing()
 	delete m_respawnTimer;
 	m_respawnTimer = nullptr;
 
-	Game::SetMap(nullptr);
-	Game::SetPlayer(nullptr);
-
-	RenderScene* scene = Game::GetRenderScene();
-	scene->RemoveAll();
+	Game::GetMap()->KillAllEnemies();
+	Game::GetMap()->DeleteObjectsMarkedForDelete();
 
 	DebugRenderSystem::SetWorldCamera(nullptr);
 }
@@ -77,8 +76,11 @@ GameState_Playing::~GameState_Playing()
 //
 void GameState_Playing::Enter()
 {
-	// Set up Framework
-	SetupFramework();
+	//-----Input-----
+	Mouse& mouse = InputSystem::GetMouse();
+	mouse.SetCursorMode(CURSORMODE_RELATIVE);
+	mouse.ShowMouseCursor(false);
+	mouse.LockCursorToClient(true);
 
 	// Spawn entities
 	SpawnInitialEntities();
@@ -93,40 +95,6 @@ void GameState_Playing::Leave()
 }
 
 
-void GameState_Playing::SetupFramework()
-{
-	// Make the player
-	Player* player = new Player();
-	Game::SetPlayer(player);
-
-	// Make the map
-	Map* map = new Map();
-	map->Intialize(AABB2(Vector2(-500.f, -500.f), Vector2(500.f, 500.f)), 0.f, 25.f, IntVector2(16, 16), "Data/Images/Map.jpg");
-	Game::SetMap(map);
-
-
-	//-----Render Scene-----
-	RenderScene* scene = Game::GetRenderScene();
-
-	Camera* playerCamera = player->GetCamera();
-	scene->AddCamera(playerCamera);
-
-	// Lights
-	Light* directionalLight = Light::CreateDirectionalLight(Vector3(10.f, 50.f, 10.f), Vector3(-1.f, -1.f, 0.f), Rgba(200, 200, 200, 255));
-	directionalLight->SetShadowCasting(true);
-
-	scene->AddLight(directionalLight);
-	scene->SetAmbience(Rgba(255, 255, 255, 50));
-
-
-	//-----Input and Debugging-----
-	Mouse& mouse = InputSystem::GetMouse();
-	mouse.SetCursorMode(CURSORMODE_RELATIVE);
-	mouse.ShowMouseCursor(false);
-	mouse.LockCursorToClient(true);
-
-	DebugRenderSystem::SetWorldCamera(playerCamera);
-}
 
 void GameState_Playing::SpawnInitialEntities()
 {
@@ -198,6 +166,7 @@ void GameState_Playing::RenderUI_Playing() const
 {
 	Renderer* renderer = Renderer::GetInstance();
 	Player* player = Game::GetPlayer();
+	Map* map = Game::GetMap();
 
 	renderer->Draw2DQuad(m_crosshairBounds, AABB2::UNIT_SQUARE_OFFCENTER, Rgba::BLUE, AssetDB::GetSharedMaterial("Data/Materials/Crosshair.material"));
 
@@ -217,6 +186,17 @@ void GameState_Playing::RenderUI_Playing() const
 	}
 
 	renderer->DrawTextInBox2D(reloadText, m_reloadTimerBounds, Vector2(0.2f, 0.5f), 20.f, TEXT_DRAW_SHRINK_TO_FIT, AssetDB::GetBitmapFont("Data/Images/Fonts/Default.png"), textColor);
+	renderer->DrawTextInBox2D(Stringf("Health: %i", player->GetHealth()), Renderer::GetUIBounds(), Vector2(0.f, 0.f), 50.f, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/Default.png"));
+	renderer->DrawTextInBox2D(Stringf("Enemy Count: %i", map->GetEnemyCount()), Renderer::GetUIBounds(), Vector2(1.f, 0.f), 50.f, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/Default.png"));
+
+	float chargeFill = ClampFloatZeroToOne(player->GetChargeTimerNormalized());
+
+	renderer->Draw2DQuad(m_chargeTimerbounds, AABB2::UNIT_SQUARE_OFFCENTER, Rgba::BLACK, AssetDB::GetSharedMaterial("UI"));
+
+	Rgba fillColor = (chargeFill == 1.0f ? Rgba::GREEN : Rgba::RED);
+
+	AABB2 fillBounds = AABB2(m_chargeTimerbounds.GetBottomLeft(), m_chargeTimerbounds.GetBottomLeft() + Vector2(m_chargeTimerbounds.GetDimensions().x * chargeFill, m_chargeTimerbounds.GetDimensions().y));
+	renderer->Draw2DQuad(fillBounds, AABB2::UNIT_SQUARE_OFFCENTER, fillColor, AssetDB::GetSharedMaterial("UI"));
 }
 
 
@@ -291,7 +271,7 @@ void GameState_Playing::ProcessInput()
 
 			if (!m_songPlaying)
 			{
-				m_song = audio->PlaySound(audio->CreateOrGetSound("Data/Sound/Music/Song.mp3"));
+				m_song = audio->PlaySound(audio->CreateOrGetSound("Data/Audio/Music/Song.mp3"));
 				m_songPlaying = true;
 			}
 			else
@@ -336,5 +316,20 @@ void GameState_Playing::Update()
 void GameState_Playing::Render() const
 {
 	ForwardRenderingPath::Render(Game::GetRenderScene());
+
+	// Render the laser sight
+	Player* player = Game::GetPlayer();
+	Transform muzzle = player->GetMuzzleTransform();
+
+	// Also show where the gun is aiming
+	Vector3 position = muzzle.GetParentsToWorldMatrix().TransformPoint(muzzle.position).xyz();
+	Vector3 direction = muzzle.GetWorldForward();
+	RaycastHit_t hit = Game::GetMap()->Raycast(position, direction, Map::MAX_RAYCAST_DISTANCE);
+
+	// Don't actually care if it hit, just render a debug to the end position
+	Renderer* renderer = Renderer::GetInstance();
+	renderer->DrawLine(position, Rgba::RED, hit.position, Rgba::WHITE);
+	renderer->DrawSphere(hit.position, 0.2f, 8, 4, Rgba::WHITE);
+
 	RenderUI();
 }

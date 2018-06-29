@@ -115,9 +115,6 @@ void App::RunFrame()
 	AudioSystem::GetInstance()->EndFrame();
 	InputSystem::GetInstance()->EndFrame();
 	Renderer::GetInstance()->EndFrame();
-
-	// Temporary sleep so this program doesn't eat resources
-	Sleep(1);
 }
 
 

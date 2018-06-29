@@ -10,12 +10,14 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Environment/Map.hpp"
+#include "Game/Entity/ChargeBullet.hpp"
 
 #include "Engine/Core/Window.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Rendering/Core/Renderable.hpp"
@@ -28,6 +30,7 @@
 // Constants
 const Vector3	Player::CAMERA_TARGET_OFFSET = Vector3(0.f, 5.f, 0.f);
 const float		Player::CAMERA_ROTATION_SPEED = 45.f;
+const float		Player::PLAYER_CHARGESHOT_CHARGE_TIME = 3.f;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -72,19 +75,19 @@ Player::Player()
 
 		draw.drawMatrix = Matrix44::MakeModelMatrix(position, Vector3::ZERO, Vector3::ONES);
 		draw.mesh = group->GetMesh(0);
-		draw.sharedMaterial = AssetDB::GetSharedMaterial("Data/Materials/Miku_Quad.material");
+		draw.sharedMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Quad.material");
 		m_mikuMeme[i]->AddDraw(draw);
 
 		draw.mesh = group->GetMesh(1);
-		draw.sharedMaterial = AssetDB::GetSharedMaterial("Data/Materials/Miku_Base.material");
+		draw.sharedMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Base.material");
 		m_mikuMeme[i]->AddDraw(draw);
 
 		draw.mesh = group->GetMesh(2);
-		draw.sharedMaterial = AssetDB::GetSharedMaterial("Data/Materials/Miku_Base.material");
+		draw.sharedMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Base.material");
 		m_mikuMeme[i]->AddDraw(draw);
 
 		draw.mesh = group->GetMesh(3);
-		draw.sharedMaterial = AssetDB::GetSharedMaterial("Data/Materials/Miku_Detail.material");
+		draw.sharedMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Miku_Detail.material");
 		m_mikuMeme[i]->AddDraw(draw);
 
 		m_mikuMeme[i]->AddInstanceMatrix(transform.GetWorldMatrix());
@@ -149,12 +152,20 @@ void Player::ProcessInput()
 		m_fireRate = TANK_DEFAULT_FIRERATE;
 	}
 
-	if (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT))
+	if (input->WasKeyJustReleased(InputSystem::KEYBOARD_SPACEBAR) && m_chargeShotTimer == PLAYER_CHARGESHOT_CHARGE_TIME)
 	{
-		if (GetTimeUntilNextShot() > 0.1)
-		{
+		ShootChargeShot();
+	}
 
-		}
+	if (input->IsKeyPressed(InputSystem::KEYBOARD_SPACEBAR))
+	{
+		float deltaAmount = (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT) ? deltaTime * 5.f : deltaTime);
+		m_chargeShotTimer = ClampFloat(m_chargeShotTimer += deltaAmount, 0.f, PLAYER_CHARGESHOT_CHARGE_TIME);
+	}
+	else
+	{
+		float deltaAmount = (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT) ? deltaTime * 5.f : deltaTime);
+		m_chargeShotTimer = ClampFloat(m_chargeShotTimer -= deltaAmount, 0.f, PLAYER_CHARGESHOT_CHARGE_TIME);
 	}
 }
 
@@ -164,17 +175,6 @@ void Player::ProcessInput()
 //
 void Player::Update(float deltaTime)
 {
-	// Drop a breadcrumb if the timer is up
-	if (m_stopwatch->DecrementByIntervalOnce())
-	{
-		DebugRenderOptions options;
-		options.m_startColor = Rgba::DARK_GREEN;
-		options.m_endColor = Rgba::RED;
-		options.m_lifetime = 4.f;
-		
-		DebugRenderSystem::DrawPoint(transform.position, options, 0.2f);
-	}
-
 	// Debugging - test raycast
 	Map* map = Game::GetMap();
 	RaycastHit_t rayhit = map->Raycast(m_camera->GetPosition(), m_camera->GetForwardVector(), Map::MAX_RAYCAST_DISTANCE);
@@ -204,7 +204,7 @@ void Player::Respawn()
 {
 	SetMarkedForDelete(false);
 	SetHealth(10);
-	transform.position = Vector3::ZERO;
+	transform.position = Game::GetMap()->GetPositionAwayFromEnemies();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -215,6 +215,11 @@ Camera* Player::GetCamera() const
 	return m_camera;
 }
 
+
+float Player::GetChargeTimerNormalized() const
+{
+	return (m_chargeShotTimer / PLAYER_CHARGESHOT_CHARGE_TIME);
+}
 
 //-----------------------------------------------------------------------------------------------
 // Updates the camera's transform based on mouse input
@@ -291,4 +296,20 @@ void Player::UpdatePositionOnInput(float deltaTime)
 	Vector3 forwardTranslation = inputOffset.z * worldForward * (1.5f * TANK_TRANSLATION_SPEED * deltaTime);
 
 	transform.TranslateWorld(forwardTranslation);
+}
+
+void Player::ShootChargeShot()
+{
+	Matrix44 fireTransform = m_turret->GetCannon()->GetFireTransform().GetWorldMatrix();
+	Vector3 position = Matrix44::ExtractTranslation(fireTransform);
+	Quaternion rotation = Quaternion::FromEuler(Matrix44::ExtractRotationDegrees(fireTransform));
+
+	ChargeBullet* bullet = new ChargeBullet(position, rotation, m_team);
+	Game::GetMap()->AddGameEntity(bullet);
+
+	m_chargeShotTimer = 0.f;
+
+	// Play an audio shot sound
+	AudioSystem* audio = AudioSystem::GetInstance();
+	audio->PlaySoundFromAudioGroup("player.cannon");
 }

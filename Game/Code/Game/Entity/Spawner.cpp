@@ -4,12 +4,14 @@
 /* Date: June 18th, 2018
 /* Description: Implementation of the NPCSpawner class
 /************************************************************************/
+#include "Game/Framework/App.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Entity/NPCTank.hpp"
 #include "Game/Environment/Map.hpp"
 #include "Game/Entity/Spawner.hpp"
 
 #include "Engine/Assets/AssetDB.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
 #include "Engine/Rendering/Materials/MaterialInstance.hpp"
@@ -63,6 +65,11 @@ Spawner::~Spawner()
 
 	delete m_stopwatch;
 	m_stopwatch = nullptr;
+
+	if (!App::GetInstance()->IsQuitting())
+	{
+		AudioSystem::GetInstance()->PlaySoundFromAudioGroup("enemy.die");
+	}
 }
 
 

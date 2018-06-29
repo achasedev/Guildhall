@@ -14,6 +14,7 @@
 
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Rendering/Core/Renderable.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
@@ -42,7 +43,7 @@ Tank::Tank(unsigned int team)
 	// Set up the tank base renderable
 	m_renderable = new Renderable();
 	RenderableDraw_t draw;
-	draw.sharedMaterial = AssetDB::GetSharedMaterial("Data/Materials/Tank.material");
+	draw.sharedMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Tank.material");
 	draw.mesh = AssetDB::GetMesh("Cube");
 
 	draw.drawMatrix = Matrix44::MakeModelMatrix(Vector3(0.f, 0.5f, 0.f), Vector3::ZERO, Vector3(3.f, 1.3f, 4.f));
@@ -99,6 +100,12 @@ void Tank::OnCollisionWithEntity(GameEntity* other)
 	GameEntity::OnCollisionWithEntity(other);
 }
 
+Transform Tank::GetMuzzleTransform() const
+{
+	return m_turret->GetCannon()->GetFireTransform();
+}
+
+
 //-----------------------------------------------------------------------------------------------
 // Sets the target to the one specified, or sets the flag for no target
 //
@@ -138,7 +145,7 @@ void Tank::ShootCannon()
 {
 	if (m_stopwatch->HasIntervalElapsed())
 	{
-		Matrix44 fireTransform = m_turret->GetCannon()->GetFireTransform();
+		Matrix44 fireTransform = m_turret->GetCannon()->GetFireTransform().GetWorldMatrix();
 		Vector3 position = Matrix44::ExtractTranslation(fireTransform);
 		Quaternion rotation = Quaternion::FromEuler(Matrix44::ExtractRotationDegrees(fireTransform));
 
@@ -146,6 +153,10 @@ void Tank::ShootCannon()
 		Game::GetMap()->AddGameEntity(bullet);
 
 		m_stopwatch->SetInterval(1.f / m_fireRate);
+
+		// Play an audio shot sound
+		AudioSystem* audio = AudioSystem::GetInstance();
+		audio->PlaySoundFromAudioGroup("player.cannon");
 	}
 }
 

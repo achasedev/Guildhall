@@ -30,6 +30,7 @@ public:
 
 	inline void		SetPhysicsRadius(float radius) { m_physicsRadius = radius; }
 	inline float	GetPhysicsRadius() const { return m_physicsRadius; }
+	inline int		GetHealth() const { return m_health; }
 
 	inline bool ShouldStickToTerrain() const { return m_shouldStickToTerrain; }
 	inline bool ShouldOrientToTerrain() const { return m_shouldOrientToTerrain; }

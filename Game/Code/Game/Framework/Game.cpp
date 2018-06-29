@@ -26,6 +26,7 @@
 #include "Engine/Core/DeveloperConsole/Command.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 #include "Engine/Rendering/Materials/MaterialInstance.hpp"
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 // Console commands
 void Command_KillAll(Command& cmd);
@@ -34,22 +35,23 @@ void Command_KillAll(Command& cmd);
 Game* Game::s_instance = nullptr;
 
 //-----------------------------------------------------------------------------------------------
-// Default constructor, initialize any game members here (private)
-//
-Game::Game()
-	: m_currentState(new GameState_Loading())
-{
-	m_gameClock = new Clock(Clock::GetMasterClock());
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Destructor - clean up any allocated members (private)
 //
 Game::~Game()
 {
+	delete m_map;
+	m_map = nullptr;
+
+	delete m_player;
+	m_player = nullptr;
+
+	delete m_gameClock;
+	m_gameClock = nullptr;
+
 	delete m_renderScene;
 	m_renderScene = nullptr;
+
+	DebugRenderSystem::SetWorldCamera(nullptr);
 }
 
 
@@ -60,19 +62,36 @@ void Game::Initialize()
 {
 	GUARANTEE_OR_DIE(s_instance == nullptr, "Error: Game::Initialize called when a Game instance already exists.");
 	s_instance = new Game();
+	s_instance->SetupInitialState();
 
 	// Set the game clock on the Renderer
 	Renderer::GetInstance()->SetRendererGameClock(s_instance->m_gameClock);
 
-	Matrix44 test = Matrix44::MakeRotation(Vector3(45.f, 45.f, 45.f));
-	Vector4 rotation = test.Transform(Vector4(0.f, 0.f, 1.f, 0.f));
-
-	s_instance->m_renderScene = new RenderScene("Game Scene");
-
 	Swarmer::InitializeConsoleCommands();
-	Command::Register("KillAll",	"Kills all non-player entities on the map",		Command_KillAll);
+	Command::Register("KillAll", "Kills all non-player entities on the map",		Command_KillAll);
 }
 
+
+void Game::SetupInitialState()
+{
+	m_currentState = new GameState_Loading();
+
+	m_renderScene = new RenderScene("Game Scene");
+	m_gameClock = new Clock(Clock::GetMasterClock());
+	m_player = new Player();
+
+	Camera* playerCamera = m_player->GetCamera();
+	m_renderScene->AddCamera(playerCamera);
+
+	// Lights
+	Light* directionalLight = Light::CreateDirectionalLight(Vector3(10.f, 50.f, 10.f), Vector3(-1.f, -1.f, 0.f), Rgba(200, 200, 200, 255));
+	directionalLight->SetShadowCasting(true);
+
+	m_renderScene->AddLight(directionalLight);
+	m_renderScene->SetAmbience(Rgba(255, 255, 255, 50));
+
+	DebugRenderSystem::SetWorldCamera(playerCamera);
+}
 
 //-----------------------------------------------------------------------------------------------
 // Deletes the singleton instance
@@ -153,26 +172,6 @@ float Game::GetDeltaTime()
 }
 
 
-void Game::SetMap(Map* map)
-{
-	if (s_instance->m_map != nullptr)
-	{
-		delete s_instance->m_map;
-	}
-
-	s_instance->m_map = map;
-}
-
-void Game::SetPlayer(Player* player)
-{
-	if (s_instance->m_player != nullptr)
-	{
-		delete s_instance->m_player;
-	}
-
-	s_instance->m_player = player;
-}
-
 Map* Game::GetMap()
 {
 	return s_instance->m_map;
@@ -227,6 +226,7 @@ void Game::CheckToUpdateGameState()
 
 void Command_KillAll(Command& cmd)
 {
+	UNUSED(cmd);
 	Map* map = Game::GetMap();
 
 	if (map != nullptr)

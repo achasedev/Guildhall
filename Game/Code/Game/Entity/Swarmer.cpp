@@ -1,10 +1,13 @@
+#include "Game/Framework/App.hpp"
 #include "Game/Entity/Player.hpp"
 #include "Game/Entity/Swarmer.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Environment/Map.hpp"
 #include "Game/Framework/GameCommon.hpp"
+
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
 #include "Engine/Rendering/Materials/Material.hpp"
 #include "Engine/Core/DeveloperConsole/Command.hpp"
@@ -76,6 +79,11 @@ Swarmer::~Swarmer()
 
 	delete m_renderable;
 	m_renderable = nullptr;
+
+	if (!App::GetInstance()->IsQuitting())
+	{
+		AudioSystem::GetInstance()->PlaySoundFromAudioGroup("enemy.die");
+	}
 }
 
 void Swarmer::Update(float deltaTime)

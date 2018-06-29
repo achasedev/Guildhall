@@ -12,8 +12,8 @@
 #include "Engine/Rendering/Core/RenderScene.hpp"
 
 // Constants
-const float Bullet::BULLET_SPEED = 2.f;
-const float Bullet::BULLET_LIFETIME = 1.f;
+const float Bullet::BULLET_DEFAULT_SPEED = 3.f;
+const float Bullet::BULLET_DEFAULT_LIFETIME = 5.f;
 
 
 //-----------------------------------------------------------------------------------------------
@@ -21,7 +21,8 @@ const float Bullet::BULLET_LIFETIME = 1.f;
 //
 Bullet::Bullet(const Vector3& position, const Quaternion& orientation, unsigned int team)
 	: GameEntity(ENTITY_BULLET)
-	, m_timeToLive(BULLET_LIFETIME)
+	, m_timeToLive(BULLET_DEFAULT_LIFETIME)
+	, m_speed(BULLET_DEFAULT_SPEED)
 {
 	m_team = team;
 
@@ -66,7 +67,7 @@ void Bullet::Update(float deltaTime)
 		m_markedForDelete = true;
 	}
 
-	transform.TranslateLocal(Vector3::DIRECTION_FORWARD * BULLET_SPEED);
+	transform.TranslateLocal(Vector3::DIRECTION_FORWARD * m_speed);
 	m_renderable->SetInstanceMatrix(0, transform.GetWorldMatrix());
 }
 

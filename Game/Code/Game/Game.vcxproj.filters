@@ -79,6 +79,9 @@
     <ClCompile Include="Entity\SwarmerSpawner.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\ChargeBullet.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -121,5 +124,6 @@
     <ClInclude Include="Entity\Spawner.hpp" />
     <ClInclude Include="Entity\TankSpawner.hpp" />
     <ClInclude Include="Entity\SwarmerSpawner.hpp" />
+    <ClInclude Include="Entity\ChargeBullet.hpp" />
   </ItemGroup>
 </Project>

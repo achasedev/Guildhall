@@ -59,17 +59,22 @@ public:
 
 
 	// Producers
-	Vector3 GetPositionAtVertexCoord(const IntVector2& vertexCoord);
-	float	GetHeightAtVertexCoord(const IntVector2& vertexCoord);
-	float	GetHeightAtPosition(const Vector3& position);
-	Vector3 GetNormalAtVertexCoord(const IntVector2& vertexCoord);
-	Vector3 GetNormalAtPosition(const Vector3& position);
-	bool	IsPositionInCellBounds(const Vector3& position);
+	Vector3 GetPositionAtVertexCoord(const IntVector2& vertexCoord) const;
+	float	GetHeightAtVertexCoord(const IntVector2& vertexCoord) const;
+	float	GetHeightAtPosition(const Vector3& position) const;
+	Vector3 GetNormalAtVertexCoord(const IntVector2& vertexCoord) const;
+	Vector3 GetNormalAtPosition(const Vector3& position) const;
+	AABB2	GetWorldBounds() const;
+	bool	IsPositionInCellBounds(const Vector3& position) const;
 
 	std::vector<GameEntity*>& GetEntitiesOnMap();
 
-	void KillAllEnemies();
 	void AddGameEntity(GameEntity* entity);
+	void KillAllEnemies();
+	void DeleteObjectsMarkedForDelete();
+	int		GetEnemyCount() const;
+	std::vector<GameEntity*> GetEntitiesInArea(const Vector3& position, float radius);
+	Vector3 GetPositionAwayFromEnemies() const;
 
 	// Raycasts
 	RaycastHit_t Raycast(const Vector3& startPosition, const Vector3& direction, float distance);
@@ -98,7 +103,6 @@ private:
 	void CheckProjectilesAgainstActors();
 	void CheckActorActorCollisions();
 	void UpdateHeightAndOrientationOnMap();
-	void DeleteObjectsMarkedForDelete();
 
 	RaycastHit_t ConvergeRaycastOnTerrain(Vector3& positionBeforeHit, Vector3& positionAfterhit);
 	RaycastHit_t ConvergeRaycastOnEntity(Vector3& positionBeforeHit, Vector3& positionAfterHit, const GameEntity* entity);

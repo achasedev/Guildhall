@@ -29,6 +29,7 @@ public:
 
 	// Accessors
 	Camera* GetCamera() const;
+	float	GetChargeTimerNormalized() const;
 
 
 private:
@@ -36,6 +37,8 @@ private:
 
 	void UpdateCameraOnInput(float deltaTime);
 	void UpdatePositionOnInput(float deltaTime);
+
+	void ShootChargeShot();
 
 
 private:
@@ -46,6 +49,9 @@ private:
 
 	Renderable* m_mikuMeme[4];
 
+	float m_chargeShotTimer;
+
+	static const float		PLAYER_CHARGESHOT_CHARGE_TIME;
 	static const Vector3	CAMERA_TARGET_OFFSET;
 	static const float		CAMERA_ROTATION_SPEED;
 

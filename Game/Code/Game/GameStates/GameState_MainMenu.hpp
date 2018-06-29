@@ -8,7 +8,7 @@
 #include <vector>
 #include "Game/GameStates/GameState.hpp"
 #include "Engine/Math/AABB2.hpp"
-
+#include "Engine/Audio/AudioSystem.hpp"
 
 class GameState_MainMenu : public GameState
 {
@@ -39,4 +39,7 @@ private:
 	
 	float m_fontHeight;
 	AABB2 m_menuBounds;
+
+	SoundPlaybackID				m_mainMenuMusic;
+
 };

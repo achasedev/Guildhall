@@ -64,23 +64,15 @@ void Cannon::Update(float deltaTime)
 {
 	UNUSED(deltaTime);
 	m_renderable->SetInstanceMatrix(0, transform.GetWorldMatrix());
-
-	// Also show where the gun is aiming
-	Vector3 position = m_muzzleTransform.GetParentsToWorldMatrix().TransformPoint(m_muzzleTransform.position).xyz();
-	Vector3 direction = m_muzzleTransform.GetWorldForward();
-	RaycastHit_t hit = Game::GetMap()->Raycast(position, direction, Map::MAX_RAYCAST_DISTANCE);
-
-	// Don't actually care if it hit, just render a debug to the end position
-	DebugRenderSystem::Draw3DLine(position, hit.position, Rgba::RED, 0.f);
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Returns the world muzzle transform, for spawning projectiles
 //
-Matrix44 Cannon::GetFireTransform()
+Transform Cannon::GetFireTransform()
 {
-	return m_muzzleTransform.GetWorldMatrix();
+	return m_muzzleTransform;
 }
 
 

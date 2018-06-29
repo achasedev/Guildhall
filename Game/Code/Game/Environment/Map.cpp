@@ -88,9 +88,6 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 
 	// Build mesh as chunks
 	BuildTerrain(image);
-
-	// Add the player to the map
-	m_gameEntities.push_back(Game::GetPlayer());
 }
 
 
@@ -110,7 +107,7 @@ void Map::Update()
 //-----------------------------------------------------------------------------------------------
 // Returns the position of the map at the given vertex coordinate
 //
-Vector3 Map::GetPositionAtVertexCoord(const IntVector2& vertexCoord)
+Vector3 Map::GetPositionAtVertexCoord(const IntVector2& vertexCoord) const
 {
 	// Clamp to edge
 	IntVector2 coord = vertexCoord;
@@ -126,7 +123,7 @@ Vector3 Map::GetPositionAtVertexCoord(const IntVector2& vertexCoord)
 //-----------------------------------------------------------------------------------------------
 // Returns the height at the map at the position of the vertex given by vertexCoord
 //
-float Map::GetHeightAtVertexCoord(const IntVector2& vertexCoord)
+float Map::GetHeightAtVertexCoord(const IntVector2& vertexCoord) const
 {
 	if (vertexCoord.x < 0 || vertexCoord.x >= m_mapVertexLayout.x || vertexCoord.y < 0 || vertexCoord.y >= m_mapVertexLayout.y)
 	{
@@ -142,7 +139,7 @@ float Map::GetHeightAtVertexCoord(const IntVector2& vertexCoord)
 //-----------------------------------------------------------------------------------------------
 // Returns the height at the map at the given position
 //
-float Map::GetHeightAtPosition(const Vector3& position)
+float Map::GetHeightAtPosition(const Vector3& position) const
 {
 	if (!IsPositionInCellBounds(position))
 	{
@@ -182,7 +179,7 @@ float Map::GetHeightAtPosition(const Vector3& position)
 //-----------------------------------------------------------------------------------------------
 // Returns the normal at the map at the position of the vertex given by vertexCoord
 //
-Vector3 Map::GetNormalAtVertexCoord(const IntVector2& vertexCoord)
+Vector3 Map::GetNormalAtVertexCoord(const IntVector2& vertexCoord) const
 {
 	if (vertexCoord.x < 0 || vertexCoord.x >= m_mapVertexLayout.x || vertexCoord.y < 0 || vertexCoord.y >= m_mapVertexLayout.y)
 	{
@@ -198,7 +195,7 @@ Vector3 Map::GetNormalAtVertexCoord(const IntVector2& vertexCoord)
 //-----------------------------------------------------------------------------------------------
 // Returns the normal of the map at the given position
 //
-Vector3 Map::GetNormalAtPosition(const Vector3& position)
+Vector3 Map::GetNormalAtPosition(const Vector3& position) const
 {
 	if (!IsPositionInCellBounds(position))
 	{
@@ -235,10 +232,15 @@ Vector3 Map::GetNormalAtPosition(const Vector3& position)
 }
 
 
+AABB2 Map::GetWorldBounds() const
+{
+	return m_worldBounds;
+}
+
 //-----------------------------------------------------------------------------------------------
 // Returns true if the given position is in the xz-bounds of the map
 //
-bool Map::IsPositionInCellBounds(const Vector3& position)
+bool Map::IsPositionInCellBounds(const Vector3& position) const
 {
 	bool inXBounds = (m_worldBounds.mins.x <= position.x && m_worldBounds.maxs.x >= position.x);
 	bool inYBounds = (m_worldBounds.mins.y <= position.z && m_worldBounds.maxs.y >= position.z);
@@ -341,8 +343,6 @@ RaycastHit_t Map::Raycast(const Vector3& startPosition, const Vector3& direction
 std::vector<GameEntity*> Map::GetLocalSwarmers(const Vector3& relativePosition, float localDistance)
 {
 	std::vector<GameEntity*> localSwarmers;
-
-	float squaredLimit = localDistance * localDistance;
 
 	for (int entityIndex = 0; entityIndex < (int) m_gameEntities.size(); ++entityIndex)
 	{
@@ -656,9 +656,12 @@ void Map::CheckActorActorCollisions()
 	{
 		GameEntity* firstEntity = m_gameEntities[firstIndex];
 
+		if (firstEntity->IsMarkedForDelete()) { continue; }
 		for (int secondIndex = 0; secondIndex < (int) m_gameEntities.size(); ++secondIndex)
 		{
 			GameEntity* secondEntity = m_gameEntities[secondIndex];
+
+			if (secondEntity->IsMarkedForDelete()) { continue; }
 
 			if (DoSpheresOverlap(firstEntity->transform.position, firstEntity->GetPhysicsRadius(), secondEntity->transform.position, secondEntity->GetPhysicsRadius()))
 			{
@@ -687,7 +690,7 @@ void Map::UpdateHeightAndOrientationOnMap()
 	}
 }
 
-
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 //-----------------------------------------------------------------------------------------------
 // Checks for entities that are marked for delete, and if so deletes and removes them
 //
@@ -713,6 +716,85 @@ void Map::DeleteObjectsMarkedForDelete()
 	}
 }
 
+
+int Map::GetEnemyCount() const
+{
+	int count = 0;
+	unsigned int playerTeam = Game::GetPlayer()->GetTeamIndex();
+
+	for (int index = 0; index < (int) m_gameEntities.size(); ++index)
+	{
+		if (m_gameEntities[index]->GetTeamIndex() != playerTeam)
+		{
+			count++;
+		}
+	}
+
+	return count;
+}
+
+std::vector<GameEntity*> Map::GetEntitiesInArea(const Vector3& position, float radius)
+{
+	std::vector<GameEntity*> entitiesInArea;
+	float radiusSquared = radius * radius;
+
+	for (int index = 0; index < (int) m_gameEntities.size(); ++index)
+	{
+		float distanceSquared = (m_gameEntities[index]->transform.position - position).GetLengthSquared();
+
+		if (distanceSquared <= radiusSquared)
+		{
+			entitiesInArea.push_back(m_gameEntities[index]);
+		}
+	}
+
+	return entitiesInArea;
+}
+
+Vector3 Map::GetPositionAwayFromEnemies() const
+{
+	std::vector<Vector3> positions;
+	for (int index = 0; index < (int) m_gameEntities.size(); ++index)
+	{
+		if (m_gameEntities[index]->GetType() == ENTITY_SWARMER)
+		{
+			positions.push_back(m_gameEntities[index]->transform.position);
+		}
+	}
+
+	Vector3 position = Vector3::ZERO;
+	bool done = false;
+
+	int count = 0;
+	while (!done)
+	{
+		count++;
+		Vector2 mapPos = m_worldBounds.GetRandomPointInside();
+		Vector3 worldPos = Vector3(mapPos.x, 0.f, mapPos.y);
+		float height = GetHeightAtPosition(worldPos);
+		worldPos.y = height;
+
+		for (int index = 0; index < (int) positions.size(); ++index)
+		{
+			float currDistSquared = (positions[index] - worldPos).GetLengthSquared();
+			
+			if (currDistSquared >= 20.f) // Spawn 20 units away from the player
+			{
+				position = worldPos;
+				done = true;
+				break;
+			}
+		}
+
+		if (!done && count > 50) // Emergency early out, in case we can't find a spawn location
+		{
+			break;
+		}
+	}
+
+	ConsolePrintf("Took %i tries", count);
+	return position;
+}
 
 //-----------------------------------------------------------------------------------------------
 // Determines the hit of a Raycast given the positions before and after when the hit occurred on the terrain

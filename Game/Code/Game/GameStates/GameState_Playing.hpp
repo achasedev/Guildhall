@@ -38,7 +38,6 @@ private:
 	//-----Private Methods-----
 
 	// Initialization
-	void SetupFramework();
 	void SpawnInitialEntities();
 
 	// Update
@@ -63,6 +62,7 @@ private:
 
 	AABB2 m_crosshairBounds;
 	AABB2 m_reloadTimerBounds;
+	AABB2 m_chargeTimerbounds;
 
 	static const float RESPAWN_WAIT_TIME;
 };

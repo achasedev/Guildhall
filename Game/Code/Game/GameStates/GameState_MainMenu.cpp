@@ -117,14 +117,20 @@ void GameState_MainMenu::Render() const
 //
 void GameState_MainMenu::Enter()
 {
+	AudioSystem* audio = AudioSystem::GetInstance();
+	SoundID sound = audio->CreateOrGetSound("Data/Audio/Music/MainMenu.mp3");
+
+	m_mainMenuMusic = AudioSystem::GetInstance()->PlaySound(sound, true);
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// Called when the game transitios out of this state, before deletion
+// Called when the game transitions out of this state, before deletion
 //
 void GameState_MainMenu::Leave()
 {
+	AudioSystem* audio = AudioSystem::GetInstance();
+	audio->StopSound(m_mainMenuMusic);
 }
 
 
