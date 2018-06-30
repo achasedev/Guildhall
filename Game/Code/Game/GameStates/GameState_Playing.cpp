@@ -34,7 +34,7 @@
 #include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Core/Time/Clock.hpp"
 
-#include "Engine/Core/Time/ScopedProfiler.hpp"
+#include "Engine/Core/Time/ProfileScoped.hpp"
 
 const float GameState_Playing::RESPAWN_WAIT_TIME = 5.f;
 

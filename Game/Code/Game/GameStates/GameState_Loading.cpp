@@ -15,7 +15,7 @@
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
-#include "Engine/Core/Time/ScopedProfiler.hpp"
+#include "Engine/Core/Time/ProfileScoped.hpp"
 #include "Engine/Rendering/Resources/Skybox.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
 #include "Engine/Rendering/Materials/Material.hpp"
@@ -81,7 +81,7 @@ void GameState_Loading::Leave()
 void GameState_Loading::LoadResources() const
 {
 	// To print the time taken
-	ScopedProfiler sp = ScopedProfiler("Game Loading"); UNUSED(sp);
+	ProfileScoped sp = ProfileScoped("Game Loading"); UNUSED(sp);
 
 	MeshBuilder mb;
 	mb.BeginBuilding(PRIMITIVE_TRIANGLES, true);

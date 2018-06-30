@@ -16,7 +16,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Core/GameObject.hpp"
-#include "Engine/Core/Time/ScopedProfiler.hpp"
+#include "Engine/Core/Time/ProfileScoped.hpp"
 #include "Engine/Rendering/Core/Renderable.hpp"
 #include "Engine/Rendering/Resources/Sampler.hpp"
 #include "Engine/Rendering/Meshes/MeshBuilder.hpp"
@@ -62,7 +62,7 @@ Map::~Map()
 //
 void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, const IntVector2& chunkLayout, const std::string& filepath)
 {
-	ScopedProfiler sp = ScopedProfiler("Map::Initialize()");
+	ProfileScoped sp = ProfileScoped("Map::Initialize()");
 	UNUSED(sp);
 
 	// Set member variables

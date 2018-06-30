@@ -5,18 +5,19 @@
 /* Description: Handles communication between the engine and the game
 /************************************************************************/
 #include "Game/Framework/App.hpp"
-#include "Game/Framework/GameCommon.hpp"
-#include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Core/Window.hpp"
-#include "Engine/Core/DeveloperConsole/Command.hpp"
 #include "Engine/Assets/AssetDB.hpp"
-#include "Engine/Core/Utility/Blackboard.hpp"
-#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+#include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Core/EngineCommon.hpp"
-#include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Game/Framework/GameCommon.hpp"
+#include "Engine/Core/Time/Profiler.hpp"
+#include "Engine/Core/Utility/Blackboard.hpp"
+#include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
+#include "Engine/Core/DeveloperConsole/Command.hpp"
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 // Static instance for singleton behavior
@@ -56,6 +57,7 @@ App::~App()
 	AudioSystem::Shutdown();
 	InputSystem::Shutdown();
 	Renderer::Shutdown();
+	Profiler::Shutdown();
 
 	delete g_gameConfigBlackboard;
 	g_gameConfigBlackboard = nullptr;
@@ -70,7 +72,7 @@ void App::Initialize()
 	if (s_instance == nullptr)
 	{
 		// To print the time taken
-		ScopedProfiler sp = ScopedProfiler("Engine Startup"); UNUSED(sp);
+		ProfileScoped sp = ProfileScoped("Engine Startup"); UNUSED(sp);
 
 		// Setting up the App
 		s_instance = new App();
@@ -78,6 +80,7 @@ void App::Initialize()
 		s_instance->RegisterAppCommands();
 
 		// Construct the Engine Systems
+		Profiler::Initialize();
 		AssetDB::CreateBuiltInAssets();
 
 		InputSystem::Initialize();
@@ -103,6 +106,7 @@ void App::Initialize()
 void App::RunFrame()
 {
 	Clock::GetMasterClock()->BeginFrame();
+	Profiler::BeginFrame();
 	Renderer::GetInstance()->BeginFrame();
 	InputSystem::GetInstance()->BeginFrame();
 	AudioSystem::GetInstance()->BeginFrame();
@@ -115,6 +119,7 @@ void App::RunFrame()
 	AudioSystem::GetInstance()->EndFrame();
 	InputSystem::GetInstance()->EndFrame();
 	Renderer::GetInstance()->EndFrame();
+	Profiler::EndFrame();
 }
 
 
