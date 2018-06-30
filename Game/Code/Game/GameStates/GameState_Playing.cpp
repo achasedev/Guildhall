@@ -288,12 +288,15 @@ void GameState_Playing::ProcessInput()
 	}
 }
 
+#include "Engine/Core/Time/ProfileLogScoped.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Updates the play state
 //
 void GameState_Playing::Update()
 {	
+	PROFILE_LOG_SCOPE("GameState_Playing:Update");
+
 	Player* player = Game::GetPlayer();
 
 	m_playerWon = CheckForVictory();

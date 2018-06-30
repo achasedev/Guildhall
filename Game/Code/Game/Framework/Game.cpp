@@ -15,6 +15,8 @@
 #include "Game/GameStates/GameState_MainMenu.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 
+#include "Engine/Core/Time/ProfileLogScoped.hpp"
+
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Core/GameObject.hpp"
 #include "Engine/Core/Time/Clock.hpp"
@@ -118,6 +120,8 @@ void Game::ProcessInput()
 //
 void Game::Update()
 {
+	PROFILE_LOG_SCOPE("Game::Update");
+
 	// Check for state change
 	CheckToUpdateGameState();
 

@@ -128,6 +128,8 @@ void App::RunFrame()
 //
 void App::Update()
 {
+	PROFILE_LOG_SCOPE("App::Update");
+
 	// Update the console before game
 	if (DevConsole::IsDevConsoleOpen())
 	{
@@ -144,12 +146,20 @@ void App::Update()
 //
 void App::Render() const
 {
+	PROFILE_LOG_SCOPE("App::Render");
+
 	// Render the game
 	Game::GetInstance()->Render();
 
 	// Update and Render debug
 	// Updating here in Render to ensure one-frame tasks are cleaned up this frame
 	DebugRenderSystem::GetInstance()->UpdateAndRender();
+
+	// Draw the Profiler if it is open
+	if (Profiler::IsProfilerOpen())
+	{
+		Profiler::GetInstance()->Render();
+	}
 
 	// Draw the DevConsole if it is open
 	if (DevConsole::IsDevConsoleOpen())
@@ -182,6 +192,8 @@ void App::RenderInitScreen() const
 //
 void App::ProcessInput()
 {
+	PROFILE_LOG_SCOPE("App::ProcessInput");
+
 	// Check to take a screenshot at the end of this frame
 	if (InputSystem::GetInstance()->WasKeyJustPressed(InputSystem::KEYBOARD_F8))
 	{

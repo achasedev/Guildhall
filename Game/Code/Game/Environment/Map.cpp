@@ -282,13 +282,14 @@ void Map::AddGameEntity(GameEntity* entity)
 	m_gameEntities.push_back(entity);
 }
 
-
+#include "Engine/Core/Time/ProfileLogScoped.hpp"
 //-----------------------------------------------------------------------------------------------
 // Performs a Raycast from the given position in the given direction, returning a hit result
 // Assumes the raycast starts above the map
 //
 RaycastHit_t Map::Raycast(const Vector3& startPosition, const Vector3& direction, float distance)
 {
+	PROFILE_LOG_SCOPE("Map::Raycast");
 	float cellWidth = m_worldBounds.GetDimensions().x / (float) m_mapCellLayout.x;
 	float cellHeight = m_worldBounds.GetDimensions().y / (float) m_mapCellLayout.y;
 
