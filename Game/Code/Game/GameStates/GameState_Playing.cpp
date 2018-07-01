@@ -75,9 +75,11 @@ void GameState_Playing::Enter()
 	//loader.LoadFile("Data/Models/Gage/Gage.fbx");
 
 	//loader.LoadFile("Data/Models/unitychan.fbx");
-	loader.LoadFile("Data/Models/lilith.fbx");
+	//loader.LoadFile("Data/Models/lilith.fbx");
 	//loader.LoadFile("Data/Models/maya.fbx");
 
+
+	loader.LoadFile("Data/Models/lilith2.fbx");
 	m_clip = loader.GetAnimationClip(0);
 
 	m_modelRenderable = loader.GetRenderable();
@@ -198,6 +200,22 @@ void GameState_Playing::ProcessInput()
 //
 void GameState_Playing::Update()
 {
+// 	int drawCount = m_modelRenderable->GetDrawCountPerInstance();
+// 	Pose* pose = m_clip->CalculatePoseAtTime(Game::GetGameClock()->GetTotalSeconds());
+// 	int numBones = pose->GetBoneCount();
+// 
+// 	for (int i = 0; i < pose->GetBoneCount(); ++i)
+// 	{
+// 		pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetBaseSkeleton()->GetBoneData(i).meshToBoneMatrix);
+// 	}
+// 
+// 	for (int i = 0; i < drawCount; ++i)
+// 	{
+// 		RenderableDraw_t draw = m_modelRenderable->GetDraw(i);
+// 		draw.sharedMaterial->SetPropertyBlock("boneUBO", pose->GetBoneTransformData(), sizeof(Matrix44) * numBones);
+// 	}
+// 
+// 	delete pose;
 }
 
 
@@ -210,7 +228,7 @@ void GameState_Playing::Render() const
 
 	if (m_renderSkeleton)
 	{
-		DebugRenderSystem::DrawSkeleton(m_skeleton, Matrix44::IDENTITY, 0.f);
+ 		DebugRenderSystem::DrawSkeleton(m_skeleton, Matrix44::IDENTITY, 0.f);
  	}
 
 	if (m_renderAnimation)
@@ -227,14 +245,10 @@ void GameState_Playing::Render() const
 
 			BoneData_t currentBone = base->GetBoneData(boneIndex);
 			Matrix44 poseTransform = pose->GetBoneTransform(boneIndex);
+
 			Vector3 currPos = Matrix44::ExtractTranslation(poseTransform);
 
 			int parentIndex = currentBone.parentIndex;
-
-
-			// Render the bind hips
-			Vector3 bindScale = Matrix44::ExtractScale(currentBone.worldTransform);
-			Vector3 animScale = Matrix44::ExtractScale(poseTransform);
 
 			// Root
 			if (parentIndex >= 0)
@@ -243,10 +257,10 @@ void GameState_Playing::Render() const
 				Vector3 parentPos = Matrix44::ExtractTranslation(parentTransform);
 
 				DebugRenderSystem::DrawCube(currPos, 0.f, Rgba::WHITE);
-				DebugRenderSystem::Draw3DLine(currPos, parentPos, DebugRenderOptions(), Rgba::RED, Rgba::RED);
+				DebugRenderSystem::Draw3DLine(currPos, parentPos, Rgba::WHITE, 0.f);
 			}
-
-
 		}
+
+		delete pose;
 	}
 }
