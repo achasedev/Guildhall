@@ -46,24 +46,24 @@ out vec3 passEyePosition;
 																									
 void main( void )												
 {	
-/*  	vec4 localPosition = vec4(0.f);
+    vec4 localPosition = vec4(0.f);
 
 	localPosition += ((BONES[BONE_IDS.x] * vec4(POSITION, 1.0f)) * BONE_WEIGHTS.x);
 	localPosition += ((BONES[BONE_IDS.y] * vec4(POSITION, 1.0f)) * BONE_WEIGHTS.y);
 	localPosition += ((BONES[BONE_IDS.z] * vec4(POSITION, 1.0f)) * BONE_WEIGHTS.z);
 	localPosition += ((BONES[BONE_IDS.w] * vec4(POSITION, 1.0f)) * BONE_WEIGHTS.w);
 	
-	localPosition = vec4(localPosition.xyz, 1.0f); */
+	localPosition = vec4(localPosition.xyz, 1.0f); 
 
-	vec4 localPosition = vec4(POSITION, 1.0f);
-
+	//vec4 localPosition = vec4(POSITION, 1.0f);
+	
 	vec4 worldPosition = MODEL * localPosition;					
 	vec4 clipPosition = PROJECTION * VIEW * worldPosition; 				
 																
-	passUV = UV;												
+	passUV = UV;											
 	passColor = COLOR;
 
-	passWorldPosition = worldPosition.xyz;
+	passWorldPosition = localPosition.xyz;
 
 	// Calculate the TBN transform
 	vec3 worldNormal = normalize((MODEL * vec4(NORMAL, 0.f)).xyz);

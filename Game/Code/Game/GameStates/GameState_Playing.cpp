@@ -200,22 +200,24 @@ void GameState_Playing::ProcessInput()
 //
 void GameState_Playing::Update()
 {
-// 	int drawCount = m_modelRenderable->GetDrawCountPerInstance();
-// 	Pose* pose = m_clip->CalculatePoseAtTime(Game::GetGameClock()->GetTotalSeconds());
-// 	int numBones = pose->GetBoneCount();
-// 
-// 	for (int i = 0; i < pose->GetBoneCount(); ++i)
-// 	{
-// 		pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetBaseSkeleton()->GetBoneData(i).meshToBoneMatrix);
-// 	}
-// 
-// 	for (int i = 0; i < drawCount; ++i)
-// 	{
-// 		RenderableDraw_t draw = m_modelRenderable->GetDraw(i);
-// 		draw.sharedMaterial->SetPropertyBlock("boneUBO", pose->GetBoneTransformData(), sizeof(Matrix44) * numBones);
-// 	}
-// 
-// 	delete pose;
+	int drawCount = m_modelRenderable->GetDrawCountPerInstance();
+	Pose* pose = m_clip->CalculatePoseAtTime(Game::GetGameClock()->GetTotalSeconds());
+	int numBones = pose->GetBoneCount();
+
+	for (int i = 0; i < pose->GetBoneCount(); ++i)
+	{
+		pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetBaseSkeleton()->GetBoneData(i).meshToBoneMatrix);
+		//pose->SetBoneTransform(i, Matrix44::IDENTITY);
+	}
+
+	for (int i = 0; i < drawCount; ++i)
+	{
+		RenderableDraw_t draw = m_modelRenderable->GetDraw(i);
+		draw.sharedMaterial->SetPropertyBlock("boneUBO", pose->GetBoneTransformData(), sizeof(Matrix44) * numBones);
+	}
+
+	delete pose;
+
 }
 
 
