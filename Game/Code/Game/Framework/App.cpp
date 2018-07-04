@@ -80,13 +80,13 @@ void App::Initialize()
 		s_instance->RegisterAppCommands();
 
 		// Construct the Engine Systems
-		Profiler::Initialize();
 		AssetDB::CreateBuiltInAssets();
 
 		InputSystem::Initialize();
 
 		Renderer::Initialize();
 		s_instance->RenderInitScreen();
+		Profiler::Initialize();
 
 		Clock::Initialize();
 		AudioSystem::Initialize();
