@@ -74,6 +74,7 @@ void GameState_Loading::Leave()
 {
 }
 
+#include "Engine/Core/Gif.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Loads external resources from disk using the Renderer
