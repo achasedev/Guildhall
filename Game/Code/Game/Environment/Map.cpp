@@ -96,6 +96,8 @@ void Map::Intialize(const AABB2& worldBounds, float minHeight, float maxHeight, 
 //
 void Map::Update()
 {
+	PROFILE_LOG_SCOPE("Map::Update");
+
 	UpdateEntities();
 	CheckActorActorCollisions();
 	CheckProjectilesAgainstActors();
@@ -141,6 +143,8 @@ float Map::GetHeightAtVertexCoord(const IntVector2& vertexCoord) const
 //
 float Map::GetHeightAtPosition(const Vector3& position) const
 {
+	PROFILE_LOG_SCOPE("Map::GetHeightAtPosition");
+
 	if (!IsPositionInCellBounds(position))
 	{
 		return 0.f;
@@ -197,6 +201,8 @@ Vector3 Map::GetNormalAtVertexCoord(const IntVector2& vertexCoord) const
 //
 Vector3 Map::GetNormalAtPosition(const Vector3& position) const
 {
+	PROFILE_LOG_SCOPE("Map::GetNormalAtPosition");
+
 	if (!IsPositionInCellBounds(position))
 	{
 		return Vector3::DIRECTION_UP;
@@ -627,6 +633,8 @@ void Map::UpdateEntities()
 //
 void Map::CheckProjectilesAgainstActors()
 {
+	PROFILE_LOG_SCOPE("Map::CheckProjectilesAgainstActors");
+
 	for (int bulletIndex = 0; bulletIndex < (int) m_gameEntities.size(); ++bulletIndex)
 	{
 		GameEntity* currBullet = m_gameEntities[bulletIndex];
@@ -652,6 +660,8 @@ void Map::CheckProjectilesAgainstActors()
 
 void Map::CheckActorActorCollisions()
 {
+	PROFILE_LOG_SCOPE("Map::CheckActorActorCollisions");
+
 	// For now, just have swarmers damage others
 	for (int firstIndex = 0; firstIndex < (int) m_gameEntities.size(); ++firstIndex)
 	{
@@ -754,6 +764,8 @@ std::vector<GameEntity*> Map::GetEntitiesInArea(const Vector3& position, float r
 
 Vector3 Map::GetPositionAwayFromEnemies() const
 {
+	PROFILE_LOG_SCOPE("Map::GetPositionAwayFromEnemies");
+
 	std::vector<Vector3> positions;
 	for (int index = 0; index < (int) m_gameEntities.size(); ++index)
 	{

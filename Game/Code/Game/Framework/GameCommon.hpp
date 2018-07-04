@@ -8,7 +8,8 @@
 #pragma once
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
-
+#include "Engine/Core/Time/ProfileLogScoped.hpp"
+#include "Engine/Core/Time/ProfileScoped.hpp"
 
 //-----Macros-----
 // Macro to make TODO's and UNIMPLEMENTED reminders appear in build output
