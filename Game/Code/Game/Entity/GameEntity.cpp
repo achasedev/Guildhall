@@ -13,6 +13,7 @@ GameEntity::GameEntity(eEntityType type)
 
 void GameEntity::Update(float deltaTime)
 {
+	PROFILE_LOG_SCOPE_FUNCTION();
 	GameObject::Update(deltaTime);
 }
 

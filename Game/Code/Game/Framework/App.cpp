@@ -6,12 +6,12 @@
 /************************************************************************/
 #include "Game/Framework/App.hpp"
 #include "Engine/Core/Window.hpp"
+#include "Game/Framework/GameCommon.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
-#include "Game/Framework/GameCommon.hpp"
 #include "Engine/Core/Time/Profiler.hpp"
 #include "Engine/Core/Utility/Blackboard.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
@@ -215,7 +215,14 @@ void App::ProcessInput()
 	// Only process game input if the DevConsole is not open
 	if (!DevConsole::IsDevConsoleOpen())
 	{
-		Game::GetInstance()->ProcessInput();
+		if (Profiler::IsProfilerOpen())
+		{
+			Profiler::GetInstance()->ProcessInput();
+		}
+		else
+		{
+			Game::GetInstance()->ProcessInput();
+		}
 	}
 }
 
