@@ -23,7 +23,7 @@ layout(binding=2, std140) uniform modelUBO
 };
 
 
-const int MAX_BONES = 52;
+const int MAX_BONES = 150;
 layout(binding=12, std140) uniform boneUBO
 {
     mat4 BONES[MAX_BONES];

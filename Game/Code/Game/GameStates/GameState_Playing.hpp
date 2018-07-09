@@ -46,7 +46,7 @@ private:
 	std::vector<GameObject*> m_gameObjects;
 
 	Renderable* m_modelRenderable;
-	const SkeletonBase* m_skeleton;
+	SkeletonBase* m_skeleton;
 	AnimationClip* m_clip = nullptr;
 
 	bool m_renderModel = true;

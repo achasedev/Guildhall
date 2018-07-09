@@ -73,17 +73,29 @@ void GameState_Playing::Enter()
 
 	AssimpLoader loader;
 	//loader.LoadFile("Data/Models/Gage/Gage.fbx");
+	//loader.LoadFile_All("Data/Models/unitychan.fbx");
 
-	//loader.LoadFile("Data/Models/unitychan.fbx");
+	loader.OpenFile("Data/Models/unitychan.fbx");
+	m_skeleton = loader.LoadFile_Skeleton();
+	m_modelRenderable = loader.LoadFile_Mesh(m_skeleton);
+
+	loader.CloseFile();
+	loader.OpenFile("Data/Models/unitychan_walk.fbx");
+	std::vector<AnimationClip*> animations = loader.LoadFile_Animation(m_skeleton);
+	if (animations.size() > 0)
+	{
+		m_clip = animations[0];
+	}
+	else
+	{
+		m_clip = nullptr;
+	}
+
 	//loader.LoadFile("Data/Models/lilith.fbx");
 	//loader.LoadFile("Data/Models/maya.fbx");
 
 
-	loader.LoadFile("Data/Models/lilith2.fbx");
-	m_clip = loader.GetAnimationClip(0);
-
-	m_modelRenderable = loader.GetRenderable();
-	m_skeleton = loader.GetSkeletonBase();
+	//loader.LoadFile_All("Data/Models/lilith2.fbx");
 
 	//Renderable* hello = AssetDB::LoadModelWithAssimp("Data/Models/unitychan_ARpose1.fbx", false);
 
@@ -200,24 +212,25 @@ void GameState_Playing::ProcessInput()
 //
 void GameState_Playing::Update()
 {
-	int drawCount = m_modelRenderable->GetDrawCountPerInstance();
-	Pose* pose = m_clip->CalculatePoseAtTime(Game::GetGameClock()->GetTotalSeconds());
-	int numBones = pose->GetBoneCount();
-
-	for (int i = 0; i < pose->GetBoneCount(); ++i)
+	if (m_clip != nullptr)
 	{
-		pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetBaseSkeleton()->GetBoneData(i).meshToBoneMatrix);
-		//pose->SetBoneTransform(i, Matrix44::IDENTITY);
+		int drawCount = m_modelRenderable->GetDrawCountPerInstance();
+		Pose* pose = m_clip->CalculatePoseAtTime(Game::GetGameClock()->GetTotalSeconds());
+		int numBones = pose->GetBoneCount();
+
+		for (int i = 0; i < pose->GetBoneCount(); ++i)
+		{
+			pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetBaseSkeleton()->GetBoneData(i).meshToBoneMatrix);
+		}
+
+		for (int i = 0; i < drawCount; ++i)
+		{
+			RenderableDraw_t draw = m_modelRenderable->GetDraw(i);
+			draw.sharedMaterial->SetPropertyBlock("boneUBO", pose->GetBoneTransformData(), sizeof(Matrix44) * numBones);
+		}
+
+		delete pose;
 	}
-
-	for (int i = 0; i < drawCount; ++i)
-	{
-		RenderableDraw_t draw = m_modelRenderable->GetDraw(i);
-		draw.sharedMaterial->SetPropertyBlock("boneUBO", pose->GetBoneTransformData(), sizeof(Matrix44) * numBones);
-	}
-
-	delete pose;
-
 }
 
 
@@ -233,7 +246,7 @@ void GameState_Playing::Render() const
  		DebugRenderSystem::DrawSkeleton(m_skeleton, Matrix44::IDENTITY, 0.f);
  	}
 
-	if (m_renderAnimation)
+	if (m_renderAnimation && m_clip != nullptr)
 	{
 		float time = Game::GetGameClock()->GetTotalSeconds();
 
