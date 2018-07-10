@@ -8,6 +8,7 @@
 #include "Game/Framework/GameCommon.hpp"
 #include "Engine/Core/Window.hpp"
 #include "Engine/Core/LogSystem.hpp"
+#include "Game/Framework/GameCommon.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Core/EngineCommon.hpp"
