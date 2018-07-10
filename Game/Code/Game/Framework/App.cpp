@@ -22,10 +22,20 @@
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
+// For testing the log system
+#include "Engine/Core/File.hpp"
+#include "Engine/Core/DeveloperConsole/Command.hpp"
+#include "Engine/Core/Threading/Threading.hpp"
+
 // Static instance for singleton behavior
 App* App::s_instance = nullptr;
 
-// Basic command for testing
+
+//////////////////////////////////////////////////////////////////////////
+// Console Commands
+//////////////////////////////////////////////////////////////////////////
+
+// Quits the system
 void Command_Quit(Command& cmd)
 {
 	UNUSED(cmd);
@@ -33,10 +43,7 @@ void Command_Quit(Command& cmd)
 	App::GetInstance()->Quit();
 }
 
-#include "Engine/Core/File.hpp"
-#include "Engine/Core/DeveloperConsole/Command.hpp"
-#include "Engine/Core/Threading/Threading.hpp"
-
+// Does time consuming work, to test thread use
 void ThreadTestWork(void *) 
 {
 	// Open a file and output about 50MB of random numbers to it; 
@@ -48,10 +55,10 @@ void ThreadTestWork(void *)
 	}
 
 	FileWriteFromBuffer("Data/garbage.dat", (const char*) buffer, sizeof(int) * 100000000);
-
 	DebuggerPrintf( "Finished ThreadTestWork" ); 
 }
 
+// Does time-consuming work on the main thread
 void Command_TestMain(Command& cmd)
 {
 	UNUSED(cmd);
@@ -59,6 +66,7 @@ void Command_TestMain(Command& cmd)
 	ThreadTestWork(nullptr);
 }
 
+// Does time consuming work on a separate thread
 void Command_TestNew(Command& cmd)
 {
 	UNUSED(cmd);
@@ -68,6 +76,8 @@ void Command_TestNew(Command& cmd)
 	handle->join();
 }
 
+// Opens a large file and parses it, printing the line to
+// the LogSystem as logs
 void ThreadOpenBig(void* arguments)
 {
 	int i = *((int*) arguments);
@@ -83,11 +93,13 @@ void ThreadOpenBig(void* arguments)
 	}
 }
 
+// Tests the threaded LogSystem by spinning up threads and having
+// them all send logs to be logged
 void Command_TestLog(Command& cmd)
 {
 	UNUSED(cmd);
 
-	for (int i = 0; i < 4; ++i)
+	for (int i = 0; i < 8; ++i)
 	{
 		Thread::CreateAndDetach(ThreadOpenBig, &i);
 	}

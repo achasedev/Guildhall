@@ -20,6 +20,7 @@
 #define ASSIMP_DLL
 
 #define UNUSED(x) (void)(x);
+TODO("Memory Leaks");
 
 //-----------------------------------------------------------------------------------------------
 // Windows message handler that is used to update the InputSystem on key state
