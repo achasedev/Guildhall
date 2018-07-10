@@ -5,13 +5,14 @@
 /* Description: Handles communication between the engine and the game
 /************************************************************************/
 #include "Game/Framework/App.hpp"
+#include "Game/Framework/GameCommon.hpp"
 #include "Engine/Core/Window.hpp"
+#include "Engine/Core/LogSystem.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
-#include "Game/Framework/GameCommon.hpp"
 #include "Engine/Core/Time/Profiler.hpp"
 #include "Engine/Core/Utility/Blackboard.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
@@ -31,6 +32,65 @@ void Command_Quit(Command& cmd)
 	App::GetInstance()->Quit();
 }
 
+#include "Engine/Core/File.hpp"
+#include "Engine/Core/DeveloperConsole/Command.hpp"
+#include "Engine/Core/Threading/Threading.hpp"
+
+void ThreadTestWork(void *) 
+{
+	// Open a file and output about 50MB of random numbers to it; 
+	int* buffer = (int*) malloc(sizeof(int) * 100000000);
+
+	for (int i = 0; i < 100000000; ++i)
+	{
+		buffer[i] = 270;
+	}
+
+	FileWriteFromBuffer("Data/garbage.dat", (const char*) buffer, sizeof(int) * 100000000);
+
+	DebuggerPrintf( "Finished ThreadTestWork" ); 
+}
+
+void Command_TestMain(Command& cmd)
+{
+	UNUSED(cmd);
+	ConsolePrintf("Called on main");
+	ThreadTestWork(nullptr);
+}
+
+void Command_TestNew(Command& cmd)
+{
+	UNUSED(cmd);
+
+	ConsolePrintf("Called on new thread");
+	ThreadHandle_t handle = Thread::Create(ThreadTestWork);
+	handle->join();
+}
+
+void ThreadOpenBig(void* arguments)
+{
+	int i = *((int*) arguments);
+	File* file = new File();
+	file->Open("Data/Logs/big.txt", "r");
+	file->LoadFileToMemory();
+
+	while (!file->IsAtEndOfFile())
+	{
+		std::string line;
+		unsigned int lineNumber = file->GetNextLine(line);
+		LogPrintf("TEST", "[%u:%u] %s", i, lineNumber, line.c_str());
+	}
+}
+
+void Command_TestLog(Command& cmd)
+{
+	UNUSED(cmd);
+
+	for (int i = 0; i < 4; ++i)
+	{
+		Thread::CreateAndDetach(ThreadOpenBig, &i);
+	}
+}
 
 //-----------------------------------------------------------------------------------------------
 // Default constructor - creates the Game and initializes it to the initial game state
@@ -58,6 +118,7 @@ App::~App()
 	InputSystem::Shutdown();
 	Renderer::Shutdown();
 	Profiler::Shutdown();
+	LogSystem::Shutdown();
 
 	delete g_gameConfigBlackboard;
 	g_gameConfigBlackboard = nullptr;
@@ -80,6 +141,7 @@ void App::Initialize()
 		s_instance->RegisterAppCommands();
 
 		// Construct the Engine Systems
+		LogSystem::Initialize();
 		AssetDB::CreateBuiltInAssets();
 
 		InputSystem::Initialize();
@@ -215,7 +277,14 @@ void App::ProcessInput()
 	// Only process game input if the DevConsole is not open
 	if (!DevConsole::IsDevConsoleOpen())
 	{
-		Game::GetInstance()->ProcessInput();
+		if (Profiler::IsProfilerOpen())
+		{
+			Profiler::GetInstance()->ProcessInput();
+		}
+		else
+		{
+			Game::GetInstance()->ProcessInput();
+		}
 	}
 }
 
@@ -245,6 +314,11 @@ void App::RegisterAppCommands() const
 {
 	Command::Register("quit", "Closes the application", Command_Quit);
 	Command::Register("exit", "Closes the application", Command_Quit);
+
+	Command::Register("main", "Runs a lot of work on the main thread", Command_TestMain);
+	Command::Register("new", "Runs a lot of work on a new thread", Command_TestNew);
+
+	Command::Register("log", "Does a thing with logs", Command_TestLog);
 }
 
 

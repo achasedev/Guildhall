@@ -5,6 +5,9 @@
 *.obj
 !**/Run_Win32/Data/Models/*.obj
 
+# Logs
+**/Run_Win32/Data/Logs/*.txt
+
 # Precompiled Headers
 *.gch
 *.pch
