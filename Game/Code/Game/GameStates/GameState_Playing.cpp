@@ -55,7 +55,7 @@ void GameState_Playing::Enter()
 	m_gameCamera = new Camera();
 	m_gameCamera->SetColorTarget(renderer->GetDefaultColorTarget());
 	m_gameCamera->SetDepthTarget(renderer->GetDefaultDepthTarget());
-	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 1000.f);
+	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 10000.f);
 	m_gameCamera->LookAt(Vector3(0.f, 0.f, -5.0f), Vector3::ZERO);
 
 	Game::GetRenderScene()->AddCamera(m_gameCamera);
@@ -72,10 +72,10 @@ void GameState_Playing::Enter()
  	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 
 	AssimpLoader loader;
-	//loader.LoadFile("Data/Models/Gage/Gage.fbx");
+	loader.OpenFile("Data/Models/unitychan.fbx");
 	//loader.LoadFile_All("Data/Models/unitychan.fbx");
 
-	loader.OpenFile("Data/Models/unitychan.fbx");
+	//loader.OpenFile("Data/Models/unitychan.fbx");
 	m_skeleton = loader.LoadFile_Skeleton();
 	m_modelRenderable = loader.LoadFile_Mesh(m_skeleton);
 
@@ -91,6 +91,7 @@ void GameState_Playing::Enter()
 		m_clip = nullptr;
 	}
 
+	DebugRenderSystem::DrawPoint(Vector3(0.f, 184.f, 0.f), 1000.f, Rgba::YELLOW);
 	//loader.LoadFile("Data/Models/lilith.fbx");
 	//loader.LoadFile("Data/Models/maya.fbx");
 
