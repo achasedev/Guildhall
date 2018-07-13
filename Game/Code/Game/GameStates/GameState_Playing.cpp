@@ -59,8 +59,8 @@ void GameState_Playing::Enter()
 	m_gameCamera->LookAt(Vector3(0.f, 0.f, -5.0f), Vector3::ZERO);
 
 	Game::GetRenderScene()->AddCamera(m_gameCamera);
-	Game::GetRenderScene()->AddLight(Light::CreateDirectionalLight(Vector3::ZERO, Vector3::DIRECTION_DOWN, Rgba(255, 255, 255, 100)));
-	Game::GetRenderScene()->SetAmbience(Rgba(255, 255, 255, 100));
+	Game::GetRenderScene()->AddLight(Light::CreateDirectionalLight(Vector3::ZERO, Vector3(1.f, -1.f, 0.f), Rgba(255, 255, 255, 0)));
+	Game::GetRenderScene()->SetAmbience(Rgba(255, 255, 255, 160));
  
  	// Set up the mouse for FPS controls
 	Mouse& mouse = InputSystem::GetMouse();
@@ -72,50 +72,83 @@ void GameState_Playing::Enter()
  	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 
 	AssimpLoader loader;
-	loader.OpenFile("Data/Models/unitychan.fbx");
-	//loader.LoadFile_All("Data/Models/unitychan.fbx");
 
-	//loader.OpenFile("Data/Models/unitychan.fbx");
-	m_skeleton = loader.LoadFile_Skeleton();
-	m_modelRenderable = loader.LoadFile_Mesh(m_skeleton);
-
-	loader.CloseFile();
-	loader.OpenFile("Data/Models/unitychan_walk.fbx");
-	std::vector<AnimationClip*> animations = loader.LoadFile_Animation(m_skeleton);
-	if (animations.size() > 0)
 	{
-		m_clip = animations[0];
+		loader.OpenFile("Data/Models/Maya.fbx");
+		m_mayaSkeleton = loader.ImportSkeleton();
+		m_mayaModel = loader.ImportMesh(m_mayaSkeleton);
+
+
+		std::vector<AnimationClip*> animations = loader.ImportAnimation(m_mayaSkeleton, 0);
+		if (animations.size() > 0)
+		{
+			m_mayaAnimation = animations[0];
+		}
+		else
+		{
+			m_mayaAnimation = nullptr;
+		}
+
+		m_mayaModel->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 1.f);
+		m_mayaModel->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.0f);
+		m_mayaModel->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(200.f, 0.f, 0.f), Vector3::ZERO, Vector3::ONES));
+
+		loader.CloseFile();
 	}
-	else
+
+	
+
 	{
-		m_clip = nullptr;
+		loader.OpenFile("Data/Models/Gage.fbx");
+		m_gageSkeleton = loader.ImportSkeleton();
+		m_gageModel = loader.ImportMesh(m_gageSkeleton);
+
+
+		std::vector<AnimationClip*> animations = loader.ImportAnimation(m_gageSkeleton, 0);
+		if (animations.size() > 0)
+		{
+			m_gageAnimation = animations[0];
+		}
+		else
+		{
+			m_gageAnimation = nullptr;
+		}
+
+		m_gageModel->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 1.f);
+		m_gageModel->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.0f);
+		m_gageModel->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(0.f, 0.f, 0.f), Vector3::ZERO, Vector3::ONES));
+
+		loader.CloseFile();
 	}
 
-	DebugRenderSystem::DrawPoint(Vector3(0.f, 184.f, 0.f), 1000.f, Rgba::YELLOW);
-	//loader.LoadFile("Data/Models/lilith.fbx");
-	//loader.LoadFile("Data/Models/maya.fbx");
+	{
+		loader.OpenFile("Data/Models/Lilith.fbx");
+		m_lilithSkeleton = loader.ImportSkeleton();
+		m_lilithModel = loader.ImportMesh(m_lilithSkeleton);
 
 
-	//loader.LoadFile_All("Data/Models/lilith2.fbx");
+		std::vector<AnimationClip*> animations = loader.ImportAnimation(m_lilithSkeleton, 0);
+		if (animations.size() > 0)
+		{
+			m_lilithAnimation = animations[0];
+		}
+		else
+		{
+			m_lilithAnimation = nullptr;
+		}
 
-	//Renderable* hello = AssetDB::LoadModelWithAssimp("Data/Models/unitychan_ARpose1.fbx", false);
+		m_lilithModel->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 1.f);
+		m_lilithModel->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.0f);
+		m_lilithModel->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(-200.f, 0.f, 0.f), Vector3::ZERO, Vector3::ONES));
 
-	//Renderable* katsuragi = AssetDB::LoadModelWithAssimp("Data/Models/Katsuragi/Katsuragi.obj", false);
+		loader.CloseFile();
+	}
+	
+	
 
-	//katsuragi->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 20.f);
-	//katsuragi->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.2f);
-	//katsuragi->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(-100.f, 0.f, 0.f), Vector3::ZERO, Vector3(500.f, 500.f, 500.f)));
-
-	m_modelRenderable->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 20.f);
-	m_modelRenderable->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.2f);
-	m_modelRenderable->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(0.f, 0.f, 0.f), Vector3::ZERO, Vector3::ONES));
-
-	//Game::GetRenderScene()->AddRenderable(katsuragi);
-	Game::GetRenderScene()->AddRenderable(m_modelRenderable);
-
-	RenderableDraw_t draw;
-	draw.mesh = AssetDB::GetMesh("Cube");
-	draw.sharedMaterial = AssetDB::GetSharedMaterial("Default_Opaque");
+	Game::GetRenderScene()->AddRenderable(m_mayaModel);
+	Game::GetRenderScene()->AddRenderable(m_gageModel);
+	Game::GetRenderScene()->AddRenderable(m_lilithModel);
 }
 
 
@@ -178,11 +211,11 @@ void GameState_Playing::CheckRenderInput()
 
 		if (m_renderModel)
 		{
-			Game::GetRenderScene()->RemoveRenderable(m_modelRenderable);
+			Game::GetRenderScene()->RemoveRenderable(m_lilithModel);
 		}
 		else
 		{
-			Game::GetRenderScene()->AddRenderable(m_modelRenderable);
+			Game::GetRenderScene()->AddRenderable(m_lilithModel);
 		}
 	}
 
@@ -213,10 +246,11 @@ void GameState_Playing::ProcessInput()
 //
 void GameState_Playing::Update()
 {
-	if (m_clip != nullptr)
+	if (m_lilithAnimation != nullptr)
 	{
-		int drawCount = m_modelRenderable->GetDrawCountPerInstance();
-		Pose* pose = m_clip->CalculatePoseAtTime(Game::GetGameClock()->GetTotalSeconds());
+		int drawCount = m_lilithModel->GetDrawCountPerInstance();
+		Pose* pose = m_lilithAnimation->CalculatePoseAtTime(Game::GetGameClock()->GetTotalSeconds());
+
 		int numBones = pose->GetBoneCount();
 
 		for (int i = 0; i < pose->GetBoneCount(); ++i)
@@ -226,7 +260,49 @@ void GameState_Playing::Update()
 
 		for (int i = 0; i < drawCount; ++i)
 		{
-			RenderableDraw_t draw = m_modelRenderable->GetDraw(i);
+			RenderableDraw_t draw = m_lilithModel->GetDraw(i);
+			draw.sharedMaterial->SetPropertyBlock("boneUBO", pose->GetBoneTransformData(), sizeof(Matrix44) * numBones);
+		}
+
+		delete pose;
+	}
+
+	if (m_mayaAnimation != nullptr)
+	{
+		int drawCount = m_mayaModel->GetDrawCountPerInstance();
+		Pose* pose = m_mayaAnimation->CalculatePoseAtTime(Game::GetGameClock()->GetTotalSeconds());
+
+		int numBones = pose->GetBoneCount();
+
+		for (int i = 0; i < pose->GetBoneCount(); ++i)
+		{
+			pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetBaseSkeleton()->GetBoneData(i).meshToBoneMatrix);
+		}
+
+		for (int i = 0; i < drawCount; ++i)
+		{
+			RenderableDraw_t draw = m_mayaModel->GetDraw(i);
+			draw.sharedMaterial->SetPropertyBlock("boneUBO", pose->GetBoneTransformData(), sizeof(Matrix44) * numBones);
+		}
+
+		delete pose;
+	}
+
+	if (m_gageAnimation != nullptr)
+	{
+		int drawCount = m_gageModel->GetDrawCountPerInstance();
+		Pose* pose = m_gageAnimation->CalculatePoseAtTime(Game::GetGameClock()->GetTotalSeconds());
+
+		int numBones = pose->GetBoneCount();
+
+		for (int i = 0; i < pose->GetBoneCount(); ++i)
+		{
+			pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetBaseSkeleton()->GetBoneData(i).meshToBoneMatrix);
+		}
+
+		for (int i = 0; i < drawCount; ++i)
+		{
+			RenderableDraw_t draw = m_gageModel->GetDraw(i);
 			draw.sharedMaterial->SetPropertyBlock("boneUBO", pose->GetBoneTransformData(), sizeof(Matrix44) * numBones);
 		}
 
@@ -242,41 +318,41 @@ void GameState_Playing::Render() const
 {
 	ForwardRenderingPath::Render(Game::GetRenderScene());
 
-	if (m_renderSkeleton)
-	{
- 		DebugRenderSystem::DrawSkeleton(m_skeleton, Matrix44::IDENTITY, 0.f);
- 	}
+// 	if (m_renderSkeleton)
+// 	{
+//  		DebugRenderSystem::DrawSkeleton(m_lilithSkeleton, Matrix44::IDENTITY, 0.f);
+//  	}
 
-	if (m_renderAnimation && m_clip != nullptr)
-	{
-		float time = Game::GetGameClock()->GetTotalSeconds();
-
-		Pose* pose = m_clip->CalculatePoseAtTime(time);
-
-		int numBones = pose->GetBoneCount();
-
-		for (int boneIndex = 0; boneIndex < numBones; ++boneIndex)
-		{
-			const SkeletonBase* base = pose->GetBaseSkeleton();
-
-			BoneData_t currentBone = base->GetBoneData(boneIndex);
-			Matrix44 poseTransform = pose->GetBoneTransform(boneIndex);
-
-			Vector3 currPos = Matrix44::ExtractTranslation(poseTransform);
-
-			int parentIndex = currentBone.parentIndex;
-
-			// Root
-			if (parentIndex >= 0)
-			{
-				Matrix44 parentTransform = pose->GetBoneTransform(parentIndex);
-				Vector3 parentPos = Matrix44::ExtractTranslation(parentTransform);
-
-				DebugRenderSystem::DrawCube(currPos, 0.f, Rgba::WHITE);
-				DebugRenderSystem::Draw3DLine(currPos, parentPos, Rgba::WHITE, 0.f);
-			}
-		}
-
-		delete pose;
-	}
+// 	if (m_renderAnimation && m_lilithAnimation != nullptr)
+// 	{
+// 		//float time = Game::GetGameClock()->GetTotalSeconds();
+// 		float time = 0.f;
+// 		Pose* pose = m_lilithAnimation->CalculatePoseAtTime(time);
+// 
+// 		int numBones = pose->GetBoneCount();
+// 
+// 		for (int boneIndex = 0; boneIndex < numBones; ++boneIndex)
+// 		{
+// 			const SkeletonBase* base = pose->GetBaseSkeleton();
+// 
+// 			BoneData_t currentBone = base->GetBoneData(boneIndex);
+// 			Matrix44 poseTransform = pose->GetBoneTransform(boneIndex);
+// 
+// 			Vector3 currPos = Matrix44::ExtractTranslation(poseTransform);
+// 
+// 			int parentIndex = currentBone.parentIndex;
+// 
+// 			// Root
+// 			if (parentIndex >= 0)
+// 			{
+// 				Matrix44 parentTransform = pose->GetBoneTransform(parentIndex);
+// 				Vector3 parentPos = Matrix44::ExtractTranslation(parentTransform);
+// 
+// 				DebugRenderSystem::DrawCube(currPos, 0.f, Rgba::WHITE);
+// 				DebugRenderSystem::Draw3DLine(currPos, parentPos, Rgba::WHITE, 0.f);
+// 			}
+// 		}
+// 
+// 		delete pose;
+// 	}
 }

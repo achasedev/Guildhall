@@ -45,9 +45,17 @@ private:
 	Camera* m_gameCamera;
 	std::vector<GameObject*> m_gameObjects;
 
-	Renderable* m_modelRenderable;
-	SkeletonBase* m_skeleton;
-	AnimationClip* m_clip = nullptr;
+	Renderable* m_lilithModel = nullptr;
+	SkeletonBase* m_lilithSkeleton = nullptr;
+	AnimationClip* m_lilithAnimation = nullptr;
+
+	Renderable* m_mayaModel = nullptr;
+	SkeletonBase* m_mayaSkeleton = nullptr;
+	AnimationClip* m_mayaAnimation = nullptr;
+
+	Renderable* m_gageModel = nullptr;
+	SkeletonBase* m_gageSkeleton = nullptr;
+	AnimationClip* m_gageAnimation = nullptr;
 
 	bool m_renderModel = true;
 	bool m_renderSkeleton = false;
