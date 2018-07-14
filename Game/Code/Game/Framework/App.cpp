@@ -43,38 +43,6 @@ void Command_Quit(Command& cmd)
 	App::GetInstance()->Quit();
 }
 
-// Does time consuming work, to test thread use
-void ThreadTestWork(void *) 
-{
-	// Open a file and output about 50MB of random numbers to it; 
-	int* buffer = (int*) malloc(sizeof(int) * 100000000);
-
-	for (int i = 0; i < 100000000; ++i)
-	{
-		buffer[i] = 270;
-	}
-
-	FileWriteFromBuffer("Data/garbage.dat", (const char*) buffer, sizeof(int) * 100000000);
-	DebuggerPrintf( "Finished ThreadTestWork" ); 
-}
-
-// Does time-consuming work on the main thread
-void Command_TestMain(Command& cmd)
-{
-	UNUSED(cmd);
-	ConsolePrintf("Called on main");
-	ThreadTestWork(nullptr);
-}
-
-// Does time consuming work on a separate thread
-void Command_TestNew(Command& cmd)
-{
-	UNUSED(cmd);
-
-	ConsolePrintf("Called on new thread");
-	ThreadHandle_t handle = Thread::Create(ThreadTestWork);
-	handle->join();
-}
 
 // Opens a large file and parses it, printing the line to
 // the LogSystem as logs
@@ -85,12 +53,17 @@ void ThreadOpenBig(void* arguments)
 	file->Open("Data/Logs/big.txt", "r");
 	file->LoadFileToMemory();
 
+	int count = 0;
 	while (!file->IsAtEndOfFile())
 	{
+		count++;
 		std::string line;
 		unsigned int lineNumber = file->GetNextLine(line);
-		LogPrintf("TEST", "[%u:%u] %s", i, lineNumber, line.c_str());
+		LogPrintf("[%u:%u] %s", i, lineNumber, line.c_str());
+		LogSystem::FlushLog();
 	}
+
+	DebuggerPrintf("");
 }
 
 // Tests the threaded LogSystem by spinning up threads and having
@@ -99,9 +72,15 @@ void Command_TestLog(Command& cmd)
 {
 	UNUSED(cmd);
 
+	ThreadHandle_t threads[8];
 	for (int i = 0; i < 8; ++i)
 	{
-		Thread::CreateAndDetach(ThreadOpenBig, &i);
+		threads[i] = Thread::Create(ThreadOpenBig, &i);
+	}
+
+	for (int i = 0; i < 8; ++i)
+	{
+		threads[i]->join();
 	}
 }
 
@@ -154,14 +133,15 @@ void App::Initialize()
 		s_instance->RegisterAppCommands();
 
 		// Construct the Engine Systems
-		LogSystem::Initialize();
 		AssetDB::CreateBuiltInAssets();
 
 		InputSystem::Initialize();
 
 		Renderer::Initialize();
 		s_instance->RenderInitScreen();
+		LogSystem::Initialize();
 		Profiler::Initialize();
+		Thread::RegisterConsoleCommands();
 
 		Clock::Initialize();
 		AudioSystem::Initialize();
@@ -327,9 +307,6 @@ void App::RegisterAppCommands() const
 {
 	Command::Register("quit", "Closes the application", Command_Quit);
 	Command::Register("exit", "Closes the application", Command_Quit);
-
-	Command::Register("main", "Runs a lot of work on the main thread", Command_TestMain);
-	Command::Register("new", "Runs a lot of work on a new thread", Command_TestNew);
 
 	Command::Register("log", "Does a thing with logs", Command_TestLog);
 }
