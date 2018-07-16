@@ -44,46 +44,6 @@ void Command_Quit(Command& cmd)
 }
 
 
-// Opens a large file and parses it, printing the line to
-// the LogSystem as logs
-void ThreadOpenBig(void* arguments)
-{
-	int i = *((int*) arguments);
-	File* file = new File();
-	file->Open("Data/Logs/big.txt", "r");
-	file->LoadFileToMemory();
-
-	int count = 0;
-	while (!file->IsAtEndOfFile())
-	{
-		count++;
-		std::string line;
-		unsigned int lineNumber = file->GetNextLine(line);
-		LogPrintf("[%u:%u] %s", i, lineNumber, line.c_str());
-		LogSystem::FlushLog();
-	}
-
-	DebuggerPrintf("");
-}
-
-// Tests the threaded LogSystem by spinning up threads and having
-// them all send logs to be logged
-void Command_TestLog(Command& cmd)
-{
-	UNUSED(cmd);
-
-	ThreadHandle_t threads[8];
-	for (int i = 0; i < 8; ++i)
-	{
-		threads[i] = Thread::Create(ThreadOpenBig, &i);
-	}
-
-	for (int i = 0; i < 8; ++i)
-	{
-		threads[i]->join();
-	}
-}
-
 //-----------------------------------------------------------------------------------------------
 // Default constructor - creates the Game and initializes it to the initial game state
 //
@@ -307,8 +267,6 @@ void App::RegisterAppCommands() const
 {
 	Command::Register("quit", "Closes the application", Command_Quit);
 	Command::Register("exit", "Closes the application", Command_Quit);
-
-	Command::Register("log", "Does a thing with logs", Command_TestLog);
 }
 
 
