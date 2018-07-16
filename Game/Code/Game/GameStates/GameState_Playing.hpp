@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include "Game/GameStates/GameState.hpp"
+#include "Engine/Rendering/Animation/Animator.hpp"
 
 class Camera;
 class GameObject;
@@ -56,6 +57,16 @@ private:
 	Renderable* m_gageModel = nullptr;
 	SkeletonBase* m_gageSkeleton = nullptr;
 	AnimationClip* m_gageAnimation = nullptr;
+
+	Renderable* m_chanModel			= nullptr;
+	SkeletonBase* m_chanSkeleton	= nullptr;
+	AnimationClip* m_chanIdle		= nullptr;
+	AnimationClip* m_chanRun		= nullptr;
+	bool m_isRunning = false;
+
+	float m_timeScale = 1.0f;
+
+	Animator m_animator;
 
 	bool m_renderModel = true;
 	bool m_renderSkeleton = false;

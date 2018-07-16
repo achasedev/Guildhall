@@ -72,83 +72,101 @@ void GameState_Playing::Enter()
  	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 
 	AssimpLoader loader;
+	loader.OpenFile("Data/Models/unitychan.fbx");
+	m_chanSkeleton = loader.ImportSkeleton();
+	m_chanModel = loader.ImportMesh(m_chanSkeleton);
+	loader.CloseFile();
 
-	{
-		loader.OpenFile("Data/Models/Maya.fbx");
-		m_mayaSkeleton = loader.ImportSkeleton();
-		m_mayaModel = loader.ImportMesh(m_mayaSkeleton);
+	loader.OpenFile("Data/Models/unitychan_idle.fbx");
+	m_chanIdle = loader.ImportAnimation(m_chanSkeleton, 1)[0];
+	loader.CloseFile();
 
+	loader.OpenFile("Data/Models/unitychan_run.fbx");
+	m_chanRun = loader.ImportAnimation(m_chanSkeleton, 2)[0];
+	loader.CloseFile();
 
-		std::vector<AnimationClip*> animations = loader.ImportAnimation(m_mayaSkeleton, 0);
-		if (animations.size() > 0)
-		{
-			m_mayaAnimation = animations[0];
-		}
-		else
-		{
-			m_mayaAnimation = nullptr;
-		}
+// 	AssimpLoader loader;
+// 
+// 	{
+// 		loader.OpenFile("Data/Models/Maya.fbx");
+// 		m_mayaSkeleton = loader.ImportSkeleton();
+// 		m_mayaModel = loader.ImportMesh(m_mayaSkeleton);
+// 
+// 
+// 		std::vector<AnimationClip*> animations = loader.ImportAnimation(m_mayaSkeleton, 0);
+// 		if (animations.size() > 0)
+// 		{
+// 			m_mayaAnimation = animations[0];
+// 		}
+// 		else
+// 		{
+// 			m_mayaAnimation = nullptr;
+// 		}
+// 
+// 		m_mayaModel->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 1.f);
+// 		m_mayaModel->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.0f);
+// 		m_mayaModel->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(200.f, 0.f, 0.f), Vector3::ZERO, Vector3::ONES));
+// 
+// 		loader.CloseFile();
+// 	}
+// 
+// 	
+// 
+// 	{
+// 		loader.OpenFile("Data/Models/Gage.fbx");
+// 		m_gageSkeleton = loader.ImportSkeleton();
+// 		m_gageModel = loader.ImportMesh(m_gageSkeleton);
+// 
+// 
+// 		std::vector<AnimationClip*> animations = loader.ImportAnimation(m_gageSkeleton, 0);
+// 		if (animations.size() > 0)
+// 		{
+// 			m_gageAnimation = animations[0];
+// 		}
+// 		else
+// 		{
+// 			m_gageAnimation = nullptr;
+// 		}
+// 
+// 		m_gageModel->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 1.f);
+// 		m_gageModel->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.0f);
+// 		m_gageModel->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(0.f, 0.f, 0.f), Vector3::ZERO, Vector3::ONES));
+// 
+// 		loader.CloseFile();
+// 	}
+// 
+// 	{
+// 		loader.OpenFile("Data/Models/Lilith.fbx");
+// 		m_lilithSkeleton = loader.ImportSkeleton();
+// 		m_lilithModel = loader.ImportMesh(m_lilithSkeleton);
+// 
+// 
+// 		std::vector<AnimationClip*> animations = loader.ImportAnimation(m_lilithSkeleton, 0);
+// 		if (animations.size() > 0)
+// 		{
+// 			m_lilithAnimation = animations[0];
+// 		}
+// 		else
+// 		{
+// 			m_lilithAnimation = nullptr;
+// 		}
+// 
+// 		m_lilithModel->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 1.f);
+// 		m_lilithModel->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.0f);
+// 		m_lilithModel->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(-200.f, 0.f, 0.f), Vector3::ZERO, Vector3::ONES));
+// 
+// 		loader.CloseFile();
+// 	}
+// 	
+// 	
+// 
+// 	Game::GetRenderScene()->AddRenderable(m_mayaModel);
+// 	Game::GetRenderScene()->AddRenderable(m_gageModel);
+// 	Game::GetRenderScene()->AddRenderable(m_lilithModel);
 
-		m_mayaModel->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 1.f);
-		m_mayaModel->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.0f);
-		m_mayaModel->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(200.f, 0.f, 0.f), Vector3::ZERO, Vector3::ONES));
-
-		loader.CloseFile();
-	}
-
-	
-
-	{
-		loader.OpenFile("Data/Models/Gage.fbx");
-		m_gageSkeleton = loader.ImportSkeleton();
-		m_gageModel = loader.ImportMesh(m_gageSkeleton);
-
-
-		std::vector<AnimationClip*> animations = loader.ImportAnimation(m_gageSkeleton, 0);
-		if (animations.size() > 0)
-		{
-			m_gageAnimation = animations[0];
-		}
-		else
-		{
-			m_gageAnimation = nullptr;
-		}
-
-		m_gageModel->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 1.f);
-		m_gageModel->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.0f);
-		m_gageModel->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(0.f, 0.f, 0.f), Vector3::ZERO, Vector3::ONES));
-
-		loader.CloseFile();
-	}
-
-	{
-		loader.OpenFile("Data/Models/Lilith.fbx");
-		m_lilithSkeleton = loader.ImportSkeleton();
-		m_lilithModel = loader.ImportMesh(m_lilithSkeleton);
-
-
-		std::vector<AnimationClip*> animations = loader.ImportAnimation(m_lilithSkeleton, 0);
-		if (animations.size() > 0)
-		{
-			m_lilithAnimation = animations[0];
-		}
-		else
-		{
-			m_lilithAnimation = nullptr;
-		}
-
-		m_lilithModel->GetSharedMaterial(0)->SetProperty("SPECULAR_POWER", 1.f);
-		m_lilithModel->GetSharedMaterial(0)->SetProperty("SPECULAR_AMOUNT", 0.0f);
-		m_lilithModel->AddInstanceMatrix(Matrix44::MakeModelMatrix(Vector3(-200.f, 0.f, 0.f), Vector3::ZERO, Vector3::ONES));
-
-		loader.CloseFile();
-	}
-	
-	
-
-	Game::GetRenderScene()->AddRenderable(m_mayaModel);
-	Game::GetRenderScene()->AddRenderable(m_gageModel);
-	Game::GetRenderScene()->AddRenderable(m_lilithModel);
+	m_animator.Play(m_chanIdle);
+	m_chanModel->AddInstanceMatrix(Matrix44::IDENTITY);
+	Game::GetRenderScene()->AddRenderable(m_chanModel);
 }
 
 
@@ -228,6 +246,23 @@ void GameState_Playing::CheckRenderInput()
 	{
 		m_renderAnimation = !m_renderAnimation;
 	}
+
+	if (input->WasKeyJustPressed('U'))
+	{
+		AnimationClip* toPlay = (m_isRunning ? m_chanIdle : m_chanRun);
+		m_animator.TransitionToClip(toPlay, 0.5f);
+		m_isRunning = !m_isRunning;
+	}
+
+	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_UP_ARROW))
+	{
+		m_timeScale += 0.1f;
+	}
+
+	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_DOWN_ARROW))
+	{
+		m_timeScale -= 0.1f;
+	}
 }
 
 
@@ -246,67 +281,84 @@ void GameState_Playing::ProcessInput()
 //
 void GameState_Playing::Update()
 {
-	if (m_lilithAnimation != nullptr)
+	Game::GetGameClock()->SetScale(m_timeScale);
+// 	if (m_lilithAnimation != nullptr)
+// 	{
+// 		int drawCount = m_lilithModel->GetDrawCountPerInstance();
+// 		Pose* pose = m_lilithAnimation->CalculatePoseAtTime(Game::GetGameClock()->GetTotalSeconds());
+// 
+// 		int numBones = pose->GetBoneCount();
+// 
+// 		for (int i = 0; i < pose->GetBoneCount(); ++i)
+// 		{
+// 			pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetBaseSkeleton()->GetBoneData(i).meshToBoneMatrix);
+// 		}
+// 
+// 		for (int i = 0; i < drawCount; ++i)
+// 		{
+// 			RenderableDraw_t draw = m_lilithModel->GetDraw(i);
+// 			draw.sharedMaterial->SetPropertyBlock("boneUBO", pose->GetBoneTransformData(), sizeof(Matrix44) * numBones);
+// 		}
+// 
+// 		delete pose;
+// 	}
+// 
+// 	if (m_mayaAnimation != nullptr)
+// 	{
+// 		int drawCount = m_mayaModel->GetDrawCountPerInstance();
+// 		Pose* pose = m_mayaAnimation->CalculatePoseAtTime(Game::GetGameClock()->GetTotalSeconds());
+// 
+// 		int numBones = pose->GetBoneCount();
+// 
+// 		for (int i = 0; i < pose->GetBoneCount(); ++i)
+// 		{
+// 			pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetBaseSkeleton()->GetBoneData(i).meshToBoneMatrix);
+// 		}
+// 
+// 		for (int i = 0; i < drawCount; ++i)
+// 		{
+// 			RenderableDraw_t draw = m_mayaModel->GetDraw(i);
+// 			draw.sharedMaterial->SetPropertyBlock("boneUBO", pose->GetBoneTransformData(), sizeof(Matrix44) * numBones);
+// 		}
+// 
+// 		delete pose;
+// 	}
+// 
+// 	if (m_gageAnimation != nullptr)
+// 	{
+// 		int drawCount = m_gageModel->GetDrawCountPerInstance();
+// 		Pose* pose = m_gageAnimation->CalculatePoseAtTime(Game::GetGameClock()->GetTotalSeconds());
+// 
+// 		int numBones = pose->GetBoneCount();
+// 
+// 		for (int i = 0; i < pose->GetBoneCount(); ++i)
+// 		{
+// 			pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetBaseSkeleton()->GetBoneData(i).meshToBoneMatrix);
+// 		}
+// 
+// 		for (int i = 0; i < drawCount; ++i)
+// 		{
+// 			RenderableDraw_t draw = m_gageModel->GetDraw(i);
+// 			draw.sharedMaterial->SetPropertyBlock("boneUBO", pose->GetBoneTransformData(), sizeof(Matrix44) * numBones);
+// 		}
+// 
+// 		delete pose;
+// 	}
+
+	int drawCount = m_chanModel->GetDrawCountPerInstance();
+	Pose* pose = m_animator.GetCurrentPose();
+	
+	int numBones = pose->GetBoneCount();
+	
+	for (int i = 0; i < pose->GetBoneCount(); ++i)
 	{
-		int drawCount = m_lilithModel->GetDrawCountPerInstance();
-		Pose* pose = m_lilithAnimation->CalculatePoseAtTime(Game::GetGameClock()->GetTotalSeconds());
-
-		int numBones = pose->GetBoneCount();
-
-		for (int i = 0; i < pose->GetBoneCount(); ++i)
-		{
-			pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetBaseSkeleton()->GetBoneData(i).meshToBoneMatrix);
-		}
-
-		for (int i = 0; i < drawCount; ++i)
-		{
-			RenderableDraw_t draw = m_lilithModel->GetDraw(i);
-			draw.sharedMaterial->SetPropertyBlock("boneUBO", pose->GetBoneTransformData(), sizeof(Matrix44) * numBones);
-		}
-
-		delete pose;
+		pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetBaseSkeleton()->GetBoneData(i).meshToBoneMatrix);
 	}
-
-	if (m_mayaAnimation != nullptr)
+	
+	for (int i = 0; i < drawCount; ++i)
 	{
-		int drawCount = m_mayaModel->GetDrawCountPerInstance();
-		Pose* pose = m_mayaAnimation->CalculatePoseAtTime(Game::GetGameClock()->GetTotalSeconds());
-
-		int numBones = pose->GetBoneCount();
-
-		for (int i = 0; i < pose->GetBoneCount(); ++i)
-		{
-			pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetBaseSkeleton()->GetBoneData(i).meshToBoneMatrix);
-		}
-
-		for (int i = 0; i < drawCount; ++i)
-		{
-			RenderableDraw_t draw = m_mayaModel->GetDraw(i);
-			draw.sharedMaterial->SetPropertyBlock("boneUBO", pose->GetBoneTransformData(), sizeof(Matrix44) * numBones);
-		}
-
-		delete pose;
-	}
-
-	if (m_gageAnimation != nullptr)
-	{
-		int drawCount = m_gageModel->GetDrawCountPerInstance();
-		Pose* pose = m_gageAnimation->CalculatePoseAtTime(Game::GetGameClock()->GetTotalSeconds());
-
-		int numBones = pose->GetBoneCount();
-
-		for (int i = 0; i < pose->GetBoneCount(); ++i)
-		{
-			pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetBaseSkeleton()->GetBoneData(i).meshToBoneMatrix);
-		}
-
-		for (int i = 0; i < drawCount; ++i)
-		{
-			RenderableDraw_t draw = m_gageModel->GetDraw(i);
-			draw.sharedMaterial->SetPropertyBlock("boneUBO", pose->GetBoneTransformData(), sizeof(Matrix44) * numBones);
-		}
-
-		delete pose;
+		RenderableDraw_t draw = m_chanModel->GetDraw(i);
+		draw.sharedMaterial->SetPropertyBlock("boneUBO", pose->GetBoneTransformData(), sizeof(Matrix44) * numBones);
 	}
 }
 
