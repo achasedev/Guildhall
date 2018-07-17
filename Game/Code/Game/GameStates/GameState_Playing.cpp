@@ -21,7 +21,7 @@
 #include "Engine/Rendering/Core/RenderScene.hpp"
 #include "Engine/Rendering/Resources/Sampler.hpp"
 #include "Engine/Rendering/Materials/Material.hpp"
-#include "Engine/Rendering/Animation/SkeletonBase.hpp"
+#include "Engine/Rendering/Animation/Skeleton.hpp"
 #include "Engine/Rendering/Animation/AnimationClip.hpp"
 #include "Engine/Rendering/Core/ForwardRenderingPath.hpp"
 #include "Engine/Rendering/Particles/ParticleEmitter.hpp"

@@ -15,7 +15,7 @@ class GameObject;
 class RenderScene;
 class Renderable;
 class AnimationClip;
-class SkeletonBase;
+class Skeleton;
 
 class GameState_Playing : public GameState
 {
@@ -47,19 +47,19 @@ private:
 	std::vector<GameObject*> m_gameObjects;
 
 	Renderable* m_lilithModel = nullptr;
-	SkeletonBase* m_lilithSkeleton = nullptr;
+	Skeleton* m_lilithSkeleton = nullptr;
 	AnimationClip* m_lilithAnimation = nullptr;
 
 	Renderable* m_mayaModel = nullptr;
-	SkeletonBase* m_mayaSkeleton = nullptr;
+	Skeleton* m_mayaSkeleton = nullptr;
 	AnimationClip* m_mayaAnimation = nullptr;
 
 	Renderable* m_gageModel = nullptr;
-	SkeletonBase* m_gageSkeleton = nullptr;
+	Skeleton* m_gageSkeleton = nullptr;
 	AnimationClip* m_gageAnimation = nullptr;
 
 	Renderable* m_chanModel			= nullptr;
-	SkeletonBase* m_chanSkeleton	= nullptr;
+	Skeleton* m_chanSkeleton	= nullptr;
 	AnimationClip* m_chanIdle		= nullptr;
 	AnimationClip* m_chanRun		= nullptr;
 	bool m_isRunning = false;
