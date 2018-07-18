@@ -1,7 +1,7 @@
 /************************************************************************/
 /* File: GameState_Playing.hpp
 /* Author: Andrew Chase
-/* Date: May 21st, 2018
+/* Date: July 17th, 2018
 /* Description: Class to represent the state when gameplay is active
 /************************************************************************/
 #pragma once
@@ -16,6 +16,7 @@ class RenderScene;
 class Renderable;
 class AnimationClip;
 class Skeleton;
+class Matrix44;
 
 class GameState_Playing : public GameState
 {
@@ -39,6 +40,18 @@ private:
 	void UpdateCameraOnInput();
 	void CheckRenderInput();
 
+	void LoadGage();
+	void LoadMaya();
+	void LoadUnityChan();
+
+	void UpdateGage();
+	void UpdateMaya();
+	void UpdateUnityChan();
+
+	void RenderGageAnim() const;
+	void RenderMayaAnim() const;
+	void RenderUnityChanAnim() const;
+
 	
 private:
 	//-----Private Data-----
@@ -46,31 +59,27 @@ private:
 	Camera* m_gameCamera;
 	std::vector<GameObject*> m_gameObjects;
 
-	Renderable* m_lilithModel = nullptr;
-	Skeleton* m_lilithSkeleton = nullptr;
-	AnimationClip* m_lilithAnimation = nullptr;
+	// Maya
+	Renderable*		m_mayaModel			= nullptr;
+	Skeleton*		m_mayaSkeleton		= nullptr;
+	AnimationClip*	m_mayaAnimation		= nullptr;
 
-	Renderable* m_mayaModel = nullptr;
-	Skeleton* m_mayaSkeleton = nullptr;
-	AnimationClip* m_mayaAnimation = nullptr;
+	// Gage
+	Renderable*		m_gageModel			= nullptr;
+	Skeleton*		m_gageSkeleton		= nullptr;
+	AnimationClip*	m_gageAnimation		= nullptr;
 
-	Renderable* m_gageModel = nullptr;
-	Skeleton* m_gageSkeleton = nullptr;
-	AnimationClip* m_gageAnimation = nullptr;
+	// Unity Chan
+	mutable Animator	m_chanAnimator;
+	Skeleton*			m_chanSkeleton		= nullptr;
+	Renderable*			m_chanModel			= nullptr;
+	AnimationClip*		m_chanIdle			= nullptr;
+	AnimationClip*		m_chanRun			= nullptr;
+	bool				m_isRunning			= false;
 
-	Renderable* m_chanModel			= nullptr;
-	Skeleton* m_chanSkeleton	= nullptr;
-	AnimationClip* m_chanIdle		= nullptr;
-	AnimationClip* m_chanRun		= nullptr;
-	bool m_isRunning = false;
-
-	float m_timeScale = 1.0f;
-
-	Animator m_animator;
-
-	bool m_renderModel = true;
-	bool m_renderSkeleton = false;
-	bool m_renderAnimation = false;
+	bool m_renderModels		= true;
+	bool m_renderSkeletons	= false;
+	bool m_renderAnimations	= false;
 	static constexpr float CAMERA_ROTATION_SPEED = 45.f;
 	static constexpr float CAMERA_TRANSLATION_SPEED = 10.f;
 
