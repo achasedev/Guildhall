@@ -69,9 +69,6 @@ void App::Initialize()
 {
 	if (s_instance == nullptr)
 	{
-		// To print the time taken
-		ScopedProfiler sp = ScopedProfiler("Engine Startup"); UNUSED(sp);
-
 		// Setting up the App
 		s_instance = new App();
 		s_instance->SetupGameConfigBlackboard();
@@ -96,7 +93,6 @@ void App::Initialize()
 	}
 }
 
-#include "Engine/Core/Time/ScopedProfiler.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Calls begin and end frame on the Render and InputSystem, as well as 

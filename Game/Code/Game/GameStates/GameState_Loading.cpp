@@ -12,7 +12,7 @@
 #include "Engine/Core/Window.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
-#include "Engine/Core/Time/ScopedProfiler.hpp"
+#include "Engine/Core/Time/ProfileScoped.hpp"
 #include "Engine/Rendering/Resources/Skybox.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
 #include "Engine/Rendering/Materials/Material.hpp"

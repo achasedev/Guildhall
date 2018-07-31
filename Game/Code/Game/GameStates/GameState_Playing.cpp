@@ -27,7 +27,6 @@
 #include "Engine/Rendering/Particles/ParticleEmitter.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
-#include "Engine/Core/Time/ScopedProfiler.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Base constructor
@@ -292,7 +291,7 @@ void GameState_Playing::UpdateGage()
 	
 	int numBones = pose->GetBoneCount();
 	
-	for (int i = 0; i < pose->GetBoneCount(); ++i)
+	for (unsigned int i = 0; i < pose->GetBoneCount(); ++i)
 	{
 		pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetSkeleton()->GetBoneData(i).meshToBoneMatrix);
 	}
@@ -313,7 +312,7 @@ void GameState_Playing::UpdateMaya()
 	
 	int numBones = pose->GetBoneCount();
 	
-	for (int i = 0; i < pose->GetBoneCount(); ++i)
+	for (unsigned int i = 0; i < pose->GetBoneCount(); ++i)
 	{
 		pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetSkeleton()->GetBoneData(i).meshToBoneMatrix);
 	}
@@ -335,7 +334,7 @@ void GameState_Playing::UpdateUnityChan()
 
 	int numBones = pose->GetBoneCount();
 
-	for (int i = 0; i < pose->GetBoneCount(); ++i)
+	for (unsigned int i = 0; i < pose->GetBoneCount(); ++i)
 	{
 		pose->SetBoneTransform(i, pose->GetBoneTransform(i) * pose->GetSkeleton()->GetBoneData(i).meshToBoneMatrix);
 	}
@@ -507,8 +506,6 @@ void GameState_Playing::Render() const
 
  	if (m_renderSkeletons)
  	{
-		Renderer* renderer = Renderer::GetInstance();
-
 		DebugRenderSystem::DrawSkeleton(m_gageSkeleton,		m_gageModel->GetInstanceMatrix(0), 0.f);
 		DebugRenderSystem::DrawSkeleton(m_mayaSkeleton,		m_mayaModel->GetInstanceMatrix(0), 0.f);
 		DebugRenderSystem::DrawSkeleton(m_chanSkeleton,		m_chanModel->GetInstanceMatrix(0), 0.f);
