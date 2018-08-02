@@ -6,18 +6,21 @@
 /*              mechanics
 /************************************************************************/
 #pragma once
-#include <map>
-#include <string>
+#include <vector>
 #include "Engine/Math/Vector2.hpp"
 
 class Clock;
+class Camera;
 class GameState;
+class GameObject;
 class RenderScene;
 
 class Game
 {
 	
 public:
+	friend class GameState_Playing;
+
 	//-----Public Methods-----
 
 	static void Initialize();
@@ -30,8 +33,8 @@ public:
 	static Game*	GetInstance();
 	static void		TransitionToGameState(GameState* newState);
 
-	static GameState*			GetCurrentGameState();
 	static Clock*				GetGameClock();
+	static Camera*				GetGameCamera();
 	static float				GetDeltaTime();
 	static RenderScene*			GetRenderScene();
 
@@ -49,11 +52,16 @@ private:
 private:
 	//-----Private Data-----
 
-	GameState*		m_currentState = nullptr;
-	GameState*		m_pendingState = nullptr;
-	Clock*			m_gameClock;
+	Camera*						m_gameCamera = nullptr;
+	GameState*					m_currentState = nullptr;
+	GameState*					m_pendingState = nullptr;
+	Clock*						m_gameClock = nullptr;
 
-	RenderScene*	m_gameScene;
+	RenderScene*				m_gameScene;
+	
+	std::vector<GameObject*>	m_gameObjects;
+
 
 	static Game* s_instance;			// The singleton Game instance
+
 };

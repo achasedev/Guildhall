@@ -4,23 +4,15 @@
 /* Date: March 24th, 2018
 /* Description: Game class for general gameplay management
 /************************************************************************/
-#include "Game.hpp"
+#include "Game/Framework/Game.hpp"
 #include "Game/Framework/GameCommon.hpp"
-#include "Game/GameStates/GameState.hpp"
 #include "Game/GameStates/GameState_Loading.hpp"
-#include "Game/GameStates/GameState_MainMenu.hpp"
-#include "Game/GameStates/GameState_Playing.hpp"
 
-#include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Core/Time/Clock.hpp"
-#include "Engine/Input/InputSystem.hpp"
+#include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
-#include "Engine/Core/Utility/StringUtils.hpp"
-#include "Engine/Rendering/Core/Renderable.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
-#include "Engine/Core/DeveloperConsole/Command.hpp"
-#include "Engine/Core/Utility/ErrorWarningAssert.hpp"
-#include "Engine/Rendering/Materials/MaterialInstance.hpp"
+
 
 // The singleton instance
 Game* Game::s_instance = nullptr;
@@ -31,7 +23,21 @@ Game* Game::s_instance = nullptr;
 Game::Game()
 	: m_currentState(new GameState_Loading())
 {
+	// Clock
 	m_gameClock = new Clock(Clock::GetMasterClock());
+
+	// Render Scene
+	m_gameScene = new RenderScene("Game Scene");
+
+	// Camera
+	Renderer* renderer = Renderer::GetInstance();
+	m_gameCamera = new Camera();
+	m_gameCamera->SetColorTarget(renderer->GetDefaultColorTarget());
+	m_gameCamera->SetDepthTarget(renderer->GetDefaultDepthTarget());
+	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 10000.f);
+	m_gameCamera->LookAt(Vector3(0.f, 200.f, -500.0f), Vector3(0.f, 200.f, 0.f));
+
+	Game::GetRenderScene()->AddCamera(Game::s_instance->m_gameCamera);
 }
 
 
@@ -55,11 +61,6 @@ void Game::Initialize()
 
 	// Set the game clock on the Renderer
 	Renderer::GetInstance()->SetRendererGameClock(s_instance->m_gameClock);
-
-	Matrix44 test = Matrix44::MakeRotation(Vector3(45.f, 45.f, 45.f));
-	Vector4 rotation = test.Transform(Vector4(0.f, 0.f, 1.f, 0.f));
-
-	s_instance->m_gameScene = new RenderScene("Game Scene");
 }
 
 
@@ -116,20 +117,20 @@ void Game::TransitionToGameState(GameState* newState)
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the current GameState of the singleton Game instance
-//
-GameState* Game::GetCurrentGameState()
-{
-	return s_instance->m_currentState;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Returns the game clock
 //
 Clock* Game::GetGameClock()
 {
 	return s_instance->m_gameClock;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the camera used to render game elements
+//
+Camera* Game::GetGameCamera()
+{
+	return s_instance->m_gameCamera;
 }
 
 
