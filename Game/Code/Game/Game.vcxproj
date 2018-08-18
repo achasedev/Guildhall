@@ -31,7 +31,7 @@
     <ProjectGuid>{B8B7E1F1-70D5-43A7-A1FA-3ABF079A8F03}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Asteroids</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
     <ProjectName>Game</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

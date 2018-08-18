@@ -57,7 +57,7 @@ private:
 	GameState*					m_pendingState = nullptr;
 	Clock*						m_gameClock = nullptr;
 
-	RenderScene*				m_gameScene;
+	RenderScene*				m_renderScene;
 	
 	std::vector<GameObject*>	m_gameObjects;
 

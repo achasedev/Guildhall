@@ -100,3 +100,4 @@ $RECYCLE.BIN/
 **/.vs/
 Temporary/
 !**/ThirdParty/**/*.*
+**/Run_Win32/Data/Logs/*.*

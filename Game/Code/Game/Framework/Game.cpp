@@ -26,9 +26,6 @@ Game::Game()
 	// Clock
 	m_gameClock = new Clock(Clock::GetMasterClock());
 
-	// Render Scene
-	m_gameScene = new RenderScene("Game Scene");
-
 	// Camera
 	Renderer* renderer = Renderer::GetInstance();
 	m_gameCamera = new Camera();
@@ -37,7 +34,9 @@ Game::Game()
 	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 10000.f);
 	m_gameCamera->LookAt(Vector3(0.f, 200.f, -500.0f), Vector3(0.f, 200.f, 0.f));
 
-	Game::GetRenderScene()->AddCamera(Game::s_instance->m_gameCamera);
+	// Render Scene
+	m_renderScene = new RenderScene("Game Scene");
+	m_renderScene->AddCamera(m_gameCamera);
 }
 
 
@@ -46,8 +45,8 @@ Game::Game()
 //
 Game::~Game()
 {
-	delete m_gameScene;
-	m_gameScene = nullptr;
+	delete m_renderScene;
+	m_renderScene = nullptr;
 }
 
 
@@ -148,7 +147,7 @@ float Game::GetDeltaTime()
 //
 RenderScene* Game::GetRenderScene()
 {
-	return s_instance->m_gameScene;
+	return s_instance->m_renderScene;
 }
 
 

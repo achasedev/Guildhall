@@ -6,23 +6,36 @@
 /************************************************************************/
 #include "Game/Framework/App.hpp"
 #include "Game/Framework/GameCommon.hpp"
-#include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Core/Window.hpp"
-#include "Engine/Core/DeveloperConsole/Command.hpp"
+#include "Engine/Core/LogSystem.hpp"
+#include "Game/Framework/GameCommon.hpp"
 #include "Engine/Assets/AssetDB.hpp"
-#include "Engine/Core/Utility/Blackboard.hpp"
-#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+#include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Core/EngineCommon.hpp"
-#include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Core/Time/Profiler.hpp"
+#include "Engine/Core/Utility/Blackboard.hpp"
+#include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
+#include "Engine/Core/DeveloperConsole/Command.hpp"
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
+
+// For testing the log system
+#include "Engine/Core/File.hpp"
+#include "Engine/Core/DeveloperConsole/Command.hpp"
+#include "Engine/Core/Threading/Threading.hpp"
 
 // Static instance for singleton behavior
 App* App::s_instance = nullptr;
 
-// Basic command for testing
+
+//////////////////////////////////////////////////////////////////////////
+// Console Commands
+//////////////////////////////////////////////////////////////////////////
+
+// Quits the system
 void Command_Quit(Command& cmd)
 {
 	UNUSED(cmd);
@@ -56,6 +69,8 @@ App::~App()
 	AudioSystem::Shutdown();
 	InputSystem::Shutdown();
 	Renderer::Shutdown();
+	Profiler::Shutdown();
+	LogSystem::Shutdown();
 
 	delete g_gameConfigBlackboard;
 	g_gameConfigBlackboard = nullptr;
@@ -69,9 +84,12 @@ void App::Initialize()
 {
 	if (s_instance == nullptr)
 	{
+		// To print the time taken
+		ProfileScoped sp = ProfileScoped("Engine Startup"); UNUSED(sp);
+
 		// Setting up the App
 		s_instance = new App();
-		s_instance->SetupGameConfigBlackboard();
+		//s_instance->SetupGameConfigBlackboard();
 		s_instance->RegisterAppCommands();
 
 		// Construct the Engine Systems
@@ -81,6 +99,9 @@ void App::Initialize()
 
 		Renderer::Initialize();
 		s_instance->RenderInitScreen();
+		LogSystem::Initialize();
+		Profiler::Initialize();
+		Thread::RegisterConsoleCommands();
 
 		Clock::Initialize();
 		AudioSystem::Initialize();
@@ -100,6 +121,7 @@ void App::Initialize()
 void App::RunFrame()
 {
 	Clock::GetMasterClock()->BeginFrame();
+	Profiler::BeginFrame();
 	Renderer::GetInstance()->BeginFrame();
 	InputSystem::GetInstance()->BeginFrame();
 	AudioSystem::GetInstance()->BeginFrame();
@@ -112,9 +134,7 @@ void App::RunFrame()
 	AudioSystem::GetInstance()->EndFrame();
 	InputSystem::GetInstance()->EndFrame();
 	Renderer::GetInstance()->EndFrame();
-
-	// Temporary sleep so this program doesn't eat resources
-	Sleep(1);
+	Profiler::EndFrame();
 }
 
 
@@ -123,6 +143,8 @@ void App::RunFrame()
 //
 void App::Update()
 {
+	PROFILE_LOG_SCOPE("App::Update");
+
 	// Update the console before game
 	if (DevConsole::IsDevConsoleOpen())
 	{
@@ -139,11 +161,20 @@ void App::Update()
 //
 void App::Render() const
 {
+	PROFILE_LOG_SCOPE("App::Render");
+
 	// Render the game
 	Game::GetInstance()->Render();
 
-	// Render debug
+	// Update and Render debug
+	// Updating here in Render to ensure one-frame tasks are cleaned up this frame
 	DebugRenderSystem::GetInstance()->UpdateAndRender();
+
+	// Draw the Profiler if it is open
+	if (Profiler::IsProfilerOpen())
+	{
+		Profiler::GetInstance()->Render();
+	}
 
 	// Draw the DevConsole if it is open
 	if (DevConsole::IsDevConsoleOpen())
@@ -176,6 +207,8 @@ void App::RenderInitScreen() const
 //
 void App::ProcessInput()
 {
+	PROFILE_LOG_SCOPE("App::ProcessInput");
+
 	// Check to take a screenshot at the end of this frame
 	if (InputSystem::GetInstance()->WasKeyJustPressed(InputSystem::KEYBOARD_F8))
 	{
@@ -197,7 +230,14 @@ void App::ProcessInput()
 	// Only process game input if the DevConsole is not open
 	if (!DevConsole::IsDevConsoleOpen())
 	{
-		Game::GetInstance()->ProcessInput();
+		if (Profiler::IsProfilerOpen())
+		{
+			Profiler::GetInstance()->ProcessInput();
+		}
+		else
+		{
+			Game::GetInstance()->ProcessInput();
+		}
 	}
 }
 
@@ -207,6 +247,8 @@ void App::ProcessInput()
 //
 void App::SetupGameConfigBlackboard()
 {
+	UNIMPLEMENTED();
+	/*
 	tinyxml2::XMLDocument configDocument;
 	configDocument.LoadFile("Data/GameConfig.xml");
 	g_gameConfigBlackboard = new Blackboard();
@@ -217,6 +259,7 @@ void App::SetupGameConfigBlackboard()
 		g_gameConfigBlackboard->PopulateFromXmlElementAttributes(*currElement);
 		currElement = currElement->NextSiblingElement();
 	}
+	*/
 }
 
 
