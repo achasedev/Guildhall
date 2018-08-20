@@ -10,6 +10,7 @@
 #include "Engine/Core/LogSystem.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Engine/Assets/AssetDB.hpp"
+#include "Engine/Networking/Net.hpp"
 #include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Input/InputSystem.hpp"
@@ -61,6 +62,7 @@ App::App()
 App::~App()
 {
 	// Shutdown in reverse order of initialization
+	Net::Shutdown();
 	Game::ShutDown();
 	DebugRenderSystem::Shutdown();
 	Command::Shutdown();
@@ -108,6 +110,9 @@ void App::Initialize()
 		DevConsole::Initialize();
 		Command::Initialize();
 		DebugRenderSystem::Initialize();
+
+		// For networking
+		Net::Initialize();
 
 		// Make the game instance
 		Game::Initialize();
