@@ -36,7 +36,6 @@ public:
 	static Clock*				GetGameClock();
 	static Camera*				GetGameCamera();
 	static float				GetDeltaTime();
-	static RenderScene*			GetRenderScene();
 
 
 private:
@@ -56,11 +55,7 @@ private:
 	GameState*					m_currentState = nullptr;
 	GameState*					m_pendingState = nullptr;
 	Clock*						m_gameClock = nullptr;
-
-	RenderScene*				m_renderScene;
 	
-	std::vector<GameObject*>	m_gameObjects;
-
 
 	static Game* s_instance;			// The singleton Game instance
 

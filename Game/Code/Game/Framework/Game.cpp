@@ -33,10 +33,6 @@ Game::Game()
 	m_gameCamera->SetDepthTarget(renderer->GetDefaultDepthTarget());
 	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 10000.f);
 	m_gameCamera->LookAt(Vector3(0.f, 200.f, -500.0f), Vector3(0.f, 200.f, 0.f));
-
-	// Render Scene
-	m_renderScene = new RenderScene("Game Scene");
-	m_renderScene->AddCamera(m_gameCamera);
 }
 
 
@@ -45,8 +41,6 @@ Game::Game()
 //
 Game::~Game()
 {
-	delete m_renderScene;
-	m_renderScene = nullptr;
 }
 
 
@@ -139,15 +133,6 @@ Camera* Game::GetGameCamera()
 float Game::GetDeltaTime()
 {
 	return s_instance->m_gameClock->GetDeltaTime();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns the game's render scene
-//
-RenderScene* Game::GetRenderScene()
-{
-	return s_instance->m_renderScene;
 }
 
 

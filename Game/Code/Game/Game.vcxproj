@@ -286,8 +286,12 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Environment\Block.cpp" />
+    <ClCompile Include="Environment\BlockDefinition.cpp" />
+    <ClCompile Include="Environment\Terrain.cpp" />
     <ClCompile Include="Framework\App.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
+    <ClCompile Include="Framework\World.cpp" />
     <ClCompile Include="GameStates\GameState.cpp" />
     <ClCompile Include="GameStates\GameState_Loading.cpp" />
     <ClCompile Include="GameStates\GameState_MainMenu.cpp" />
@@ -295,17 +299,23 @@
     <ClCompile Include="GameStates\GameState_Ready.cpp" />
     <ClCompile Include="Framework\Main_Win32.cpp" />
     <ClCompile Include="Framework\Game.cpp" />
+    <ClCompile Include="Utility\GameUtilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Environment\Block.hpp" />
+    <ClInclude Include="Environment\BlockDefinition.hpp" />
+    <ClInclude Include="Environment\Terrain.hpp" />
     <ClInclude Include="Framework\App.hpp" />
     <ClInclude Include="Framework\EngineBuildPreferences.hpp" />
     <ClInclude Include="Framework\Game.hpp" />
     <ClInclude Include="Framework\GameCommon.hpp" />
+    <ClInclude Include="Framework\World.hpp" />
     <ClInclude Include="GameStates\GameState.hpp" />
     <ClInclude Include="GameStates\GameState_Loading.hpp" />
     <ClInclude Include="GameStates\GameState_MainMenu.hpp" />
     <ClInclude Include="GameStates\GameState_Playing.hpp" />
     <ClInclude Include="GameStates\GameState_Ready.hpp" />
+    <ClInclude Include="Utility\GameUtilities.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Engine\Code\Engine\Engine.vcxproj">

@@ -5,6 +5,7 @@
 /* Description: Implementation of the GameState_Playing class
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/World.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 
@@ -20,6 +21,8 @@
 //
 GameState_Playing::GameState_Playing()
 {
+	m_world = new World();
+	m_world->Inititalize();
 }
 
 
@@ -38,9 +41,6 @@ void GameState_Playing::Enter()
 {
  	// Set up the game camera
 	Game* game = Game::GetInstance();
-
-	Game::GetRenderScene()->AddLight(Light::CreateDirectionalLight(Vector3::ZERO, Vector3(1.f, -1.f, 0.f), Rgba(255, 255, 255, 0)));
-	Game::GetRenderScene()->SetAmbience(Rgba(255, 255, 255, 160));
  
  	// Set up the mouse for FPS controls
 	Mouse& mouse = InputSystem::GetMouse();
@@ -58,7 +58,6 @@ void GameState_Playing::Enter()
 //
 void GameState_Playing::Leave()
 {
-	TODO("Clear the render scene");
 }
 
 
@@ -122,5 +121,5 @@ void GameState_Playing::Update()
 //
 void GameState_Playing::Render() const
 {
-	ForwardRenderingPath::Render(Game::GetRenderScene());
+	m_world->Render();
 }
