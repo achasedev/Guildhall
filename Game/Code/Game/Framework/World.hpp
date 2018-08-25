@@ -1,10 +1,10 @@
 #pragma once
 
 #include <vector>
+#include "Engine/Core/Rgba.hpp"
 
 class Entity;
-class Terrain;
-class RenderScene;
+class VoxelGrid;
 
 class World
 {
@@ -23,9 +23,7 @@ public:
 private:
 	//-----Private Data-----
 
-	Terrain* m_terrain;						// Collection of blocks that make up the environment
+	VoxelGrid* m_voxelGrid;
 	std::vector<Entity*> m_entities;		// Entities in the scene outside of the environment blocks
-
-	RenderScene* m_renderScene;				// Collection of things to render in the world (3D only)
 
 };
