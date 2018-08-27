@@ -5,6 +5,6 @@ out vec4 outColor;
 
 // Entry point															
 void main( void )											
-{				
+{	
 	outColor = passColor;				
 };

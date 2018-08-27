@@ -94,6 +94,7 @@ void App::Initialize()
 		//s_instance->SetupGameConfigBlackboard();
 		s_instance->RegisterAppCommands();
 
+
 		// Construct the Engine Systems
 		AssetDB::CreateBuiltInAssets();
 
@@ -166,7 +167,7 @@ void App::Update()
 //
 void App::Render() const
 {
-	PROFILE_LOG_SCOPE("App::Render");
+	PROFILE_LOG_SCOPE_FUNCTION();
 
 	// Render the game
 	Game::GetInstance()->Render();
