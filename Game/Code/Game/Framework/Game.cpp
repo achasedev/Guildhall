@@ -12,10 +12,14 @@
 #include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
-
+#include "Engine/Core/DeveloperConsole/Command.hpp"
+#include "Engine/Rendering/Thesis/RayTraceRenderer.hpp"
 
 // The singleton instance
 Game* Game::s_instance = nullptr;
+
+// Console commands
+void Command_Draw(Command& cmd);
 
 //-----------------------------------------------------------------------------------------------
 // Default constructor, initialize any game members here (private)
@@ -32,7 +36,7 @@ Game::Game()
 	m_gameCamera->SetColorTarget(renderer->GetDefaultColorTarget());
 	m_gameCamera->SetDepthTarget(renderer->GetDefaultDepthTarget());
 	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 10000.f);
-	m_gameCamera->LookAt(Vector3(0.f, 200.f, -500.0f), Vector3(0.f, 200.f, 0.f));
+	m_gameCamera->LookAt(Vector3(0.f, 5.f, -10.0f), Vector3(0.f, 0.f, 0.f));
 }
 
 
@@ -54,6 +58,8 @@ void Game::Initialize()
 
 	// Set the game clock on the Renderer
 	Renderer::GetInstance()->SetRendererGameClock(s_instance->m_gameClock);
+
+	Command::Register("ray_draw", "Creates a ray traced image", Command_Draw);
 }
 
 
@@ -95,7 +101,6 @@ void Game::Update()
 //
 void Game::Render() const
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
 	m_currentState->Render();
 }
 
@@ -168,4 +173,20 @@ void Game::CheckToUpdateGameState()
 		// Enter the new state
 		m_currentState->Enter();
 	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+// CONSOLE COMMANDS
+//////////////////////////////////////////////////////////////////////////
+
+void Command_Draw(Command& cmd)
+{
+	std::string name = "Data/Images/Test.png";
+	cmd.GetParam("n", name, &name);
+
+	RayTraceRenderer::GetInstance()->Draw(Game::GetGameCamera());
+	ConsolePrintf(Rgba::GREEN, "Draw completed");
+
+	RayTraceRenderer::GetInstance()->WriteToFile(name.c_str());
+	ConsolePrintf(Rgba::GREEN, "Write completed");
 }

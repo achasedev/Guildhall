@@ -37,8 +37,6 @@ private:
 private:
 	//-----Private Data-----
 
-	World* m_world; // Terrain and all entities in play
-
 	static constexpr float CAMERA_ROTATION_SPEED = 45.f;
 	static constexpr float CAMERA_TRANSLATION_SPEED = 10.f;
 

@@ -21,6 +21,7 @@
 #include "Engine/Rendering/Core/RenderScene.hpp"
 #include "Engine/Core/DeveloperConsole/Command.hpp"
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+#include "Engine/Rendering/Thesis/RayTraceRenderer.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 // For testing the log system
@@ -62,6 +63,7 @@ App::App()
 App::~App()
 {
 	// Shutdown in reverse order of initialization
+	RayTraceRenderer::ShutDown();
 	Net::Shutdown();
 	Game::ShutDown();
 	DebugRenderSystem::Shutdown();
@@ -114,6 +116,9 @@ void App::Initialize()
 
 		// For networking
 		Net::Initialize();
+
+		// For ray tracing
+		RayTraceRenderer::Initialize();
 
 		// Make the game instance
 		Game::Initialize();

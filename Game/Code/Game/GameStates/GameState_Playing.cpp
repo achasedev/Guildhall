@@ -21,8 +21,6 @@
 //
 GameState_Playing::GameState_Playing()
 {
-	m_world = new World();
-	m_world->Inititalize();
 }
 
 
@@ -50,6 +48,7 @@ void GameState_Playing::Enter()
 	mouse.SetCursorMode(CURSORMODE_RELATIVE);
  
  	DebugRenderSystem::SetWorldCamera(game->m_gameCamera);
+	DebugRenderSystem::DrawUVSphere(Vector3::ZERO, 10000.f);
 }
 
 
@@ -113,7 +112,6 @@ void GameState_Playing::ProcessInput()
 //
 void GameState_Playing::Update()
 {
-	m_world->Update();
 }
 
 
@@ -122,5 +120,4 @@ void GameState_Playing::Update()
 //
 void GameState_Playing::Render() const
 {
-	m_world->Render();
 }
