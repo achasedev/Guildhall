@@ -288,7 +288,6 @@
   <ItemGroup>
     <ClCompile Include="Framework\App.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
-    <ClCompile Include="Framework\VoxelGrid.cpp" />
     <ClCompile Include="Framework\World.cpp" />
     <ClCompile Include="GameStates\GameState.cpp" />
     <ClCompile Include="GameStates\GameState_Loading.cpp" />
@@ -304,7 +303,6 @@
     <ClInclude Include="Framework\EngineBuildPreferences.hpp" />
     <ClInclude Include="Framework\Game.hpp" />
     <ClInclude Include="Framework\GameCommon.hpp" />
-    <ClInclude Include="Framework\VoxelGrid.hpp" />
     <ClInclude Include="Framework\World.hpp" />
     <ClInclude Include="GameStates\GameState.hpp" />
     <ClInclude Include="GameStates\GameState_Loading.hpp" />

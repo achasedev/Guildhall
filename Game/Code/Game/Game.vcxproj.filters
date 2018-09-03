@@ -46,9 +46,6 @@
     <ClCompile Include="Framework\World.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Framework\VoxelGrid.cpp">
-      <Filter>Architecture</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -80,6 +77,5 @@
     </ClInclude>
     <ClInclude Include="Utility\GameUtilities.hpp" />
     <ClInclude Include="Framework\World.hpp" />
-    <ClInclude Include="Framework\VoxelGrid.hpp" />
   </ItemGroup>
 </Project>

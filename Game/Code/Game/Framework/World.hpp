@@ -4,7 +4,6 @@
 #include "Engine/Core/Rgba.hpp"
 
 class Entity;
-class VoxelGrid;
 
 class World
 {
@@ -23,7 +22,6 @@ public:
 private:
 	//-----Private Data-----
 
-	VoxelGrid* m_voxelGrid;
 	std::vector<Entity*> m_entities;		// Entities in the scene outside of the environment blocks
 
 };
