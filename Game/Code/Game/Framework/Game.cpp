@@ -184,7 +184,7 @@ void Command_Draw(Command& cmd)
 	std::string name = "Data/Images/Test.png";
 	cmd.GetParam("n", name, &name);
 
-	RayTraceRenderer::GetInstance()->Draw(Game::GetGameCamera());
+	RayTraceRenderer::GetInstance()->Draw();
 	ConsolePrintf(Rgba::GREEN, "Draw completed");
 
 	RayTraceRenderer::GetInstance()->WriteToFile(name.c_str());
