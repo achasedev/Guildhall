@@ -12,6 +12,7 @@
 #include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
+#include "Engine/Rendering/Thesis/VoxelGrid.hpp"
 #include "Engine/Core/DeveloperConsole/Command.hpp"
 #include "Engine/Rendering/Thesis/RayTraceRenderer.hpp"
 
@@ -37,6 +38,9 @@ Game::Game()
 	m_gameCamera->SetDepthTarget(renderer->GetDefaultDepthTarget());
 	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 10000.f);
 	m_gameCamera->LookAt(Vector3(0.f, 5.f, -10.0f), Vector3(0.f, 0.f, 0.f));
+
+	m_grid = new VoxelGrid();
+	m_grid->Initialize();
 }
 
 
@@ -143,6 +147,15 @@ float Game::GetDeltaTime()
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the voxel grid used for rendering
+//
+VoxelGrid* Game::GetVoxelGrid()
+{
+	return s_instance->m_grid;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the singleton Game instance
 //
 Game* Game::GetInstance()
@@ -184,7 +197,7 @@ void Command_Draw(Command& cmd)
 	std::string name = "Data/Images/Test.png";
 	cmd.GetParam("n", name, &name);
 
-	RayTraceRenderer::GetInstance()->Draw();
+	RayTraceRenderer::GetInstance()->Draw(Game::GetVoxelGrid());
 	ConsolePrintf(Rgba::GREEN, "Draw completed");
 
 	RayTraceRenderer::GetInstance()->WriteToFile(name.c_str());

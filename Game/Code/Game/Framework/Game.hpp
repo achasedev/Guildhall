@@ -14,6 +14,7 @@ class Camera;
 class GameState;
 class GameObject;
 class RenderScene;
+class VoxelGrid;
 
 class Game
 {
@@ -36,6 +37,7 @@ public:
 	static Clock*				GetGameClock();
 	static Camera*				GetGameCamera();
 	static float				GetDeltaTime();
+	static VoxelGrid*			GetVoxelGrid();
 
 
 private:
@@ -56,6 +58,7 @@ private:
 	GameState*					m_pendingState = nullptr;
 	Clock*						m_gameClock = nullptr;
 	
+	VoxelGrid*					m_grid = nullptr;
 
 	static Game* s_instance;			// The singleton Game instance
 
