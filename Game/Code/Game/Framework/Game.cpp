@@ -12,7 +12,7 @@
 #include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
-#include "Engine/Rendering/Thesis/VoxelGrid.hpp"
+#include "Engine/Rendering/Thesis/OctreeGrid.hpp"
 #include "Engine/Core/DeveloperConsole/Command.hpp"
 #include "Engine/Rendering/Thesis/RayTraceRenderer.hpp"
 
