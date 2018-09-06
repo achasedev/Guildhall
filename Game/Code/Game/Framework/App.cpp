@@ -20,6 +20,7 @@
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
 #include "Engine/Core/DeveloperConsole/Command.hpp"
+#include "Engine/Networking/RemoteCommandService.hpp"
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
@@ -62,6 +63,7 @@ App::App()
 App::~App()
 {
 	// Shutdown in reverse order of initialization
+	RemoteCommandService::Shutdown();
 	Net::Shutdown();
 	Game::ShutDown();
 	DebugRenderSystem::Shutdown();
@@ -113,6 +115,7 @@ void App::Initialize()
 
 		// For networking
 		Net::Initialize();
+		RemoteCommandService::Initialize();
 
 		// Make the game instance
 		Game::Initialize();
@@ -130,6 +133,7 @@ void App::RunFrame()
 	Renderer::GetInstance()->BeginFrame();
 	InputSystem::GetInstance()->BeginFrame();
 	AudioSystem::GetInstance()->BeginFrame();
+	RemoteCommandService::GetInstance()->BeginFrame();
 
 	ProcessInput();
 
