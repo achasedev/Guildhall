@@ -7,7 +7,9 @@
 /* Description: Creates a window with an OpenGL canvas to draw on
 				Serves as the entry point for the program
 /************************************************************************/
-#define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif	// Always #define this before #including <windows.h>
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
 #include "Game/Framework/App.hpp"
 #include "Game/Framework/GameCommon.hpp"
