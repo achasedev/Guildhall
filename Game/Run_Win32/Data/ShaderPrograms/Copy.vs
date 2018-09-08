@@ -5,10 +5,10 @@
 /* Description: Vertex Shader - Converts position into clip space normally
 /************************************************************************/
 #version 420 core															
-															
+
 in vec3 POSITION;												
 in vec2 UV;														
-																
+
 out vec2 passUV;												
 																													
 void main(void)											

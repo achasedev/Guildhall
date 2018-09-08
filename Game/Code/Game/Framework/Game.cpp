@@ -12,7 +12,7 @@
 #include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
-#include "Engine/Rendering/Thesis/OctreeGrid.hpp"
+#include "Engine/Rendering/Thesis/VoxelGrid.hpp"
 #include "Engine/Core/DeveloperConsole/Command.hpp"
 #include "Engine/Rendering/Thesis/RayTraceRenderer.hpp"
 
@@ -39,8 +39,8 @@ Game::Game()
 	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 10000.f);
 	m_gameCamera->LookAt(Vector3(0.f, 5.f, -10.0f), Vector3(0.f, 0.f, 0.f));
 
-// 	m_grid = new VoxelGrid();
-// 	m_grid->Initialize();
+	m_grid = new VoxelGrid();
+ 	m_grid->Initialize();
 }
 
 
@@ -64,11 +64,6 @@ void Game::Initialize()
 	Renderer::GetInstance()->SetRendererGameClock(s_instance->m_gameClock);
 
 	Command::Register("ray_draw", "Creates a ray traced image", Command_Draw);
-
-	RayTraceRenderer* rend = RayTraceRenderer::GetInstance();
-	IntVector3 singleWorkGroupDimensions = rend->GetGlobalMaxItemDimensions();
-	IntVector3 totalAmountOfWork = rend->GetSingleGroupMaxItemDimensions();
-	int maxWorkGroupUnitCount = rend->GetWorkGroupMaxItemCount();
 }
 
 

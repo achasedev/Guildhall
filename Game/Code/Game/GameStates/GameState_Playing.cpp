@@ -12,6 +12,7 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
+#include "Engine/Rendering/Thesis/VoxelGrid.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
 #include "Engine/Rendering/Thesis/RayTraceRenderer.hpp"
 #include "Engine/Rendering/Core/ForwardRenderingPath.hpp"
@@ -122,5 +123,5 @@ void GameState_Playing::Update()
 void GameState_Playing::Render() const
 {
 	RayTraceRenderer* rend = RayTraceRenderer::GetInstance();
-	rend->Draw(nullptr);
+	rend->Draw(Game::GetVoxelGrid());
 }
