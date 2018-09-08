@@ -13,6 +13,7 @@
 #include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
+#include "Engine/Rendering/Thesis/RayTraceRenderer.hpp"
 #include "Engine/Rendering/Core/ForwardRenderingPath.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
@@ -120,4 +121,6 @@ void GameState_Playing::Update()
 //
 void GameState_Playing::Render() const
 {
+	RayTraceRenderer* rend = RayTraceRenderer::GetInstance();
+	rend->Draw(nullptr);
 }

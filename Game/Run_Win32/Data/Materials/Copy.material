@@ -1,0 +1,14 @@
+<material>
+
+	<shader name="Data/Shaders/Copy.shader"/>
+
+	<textures>
+	</textures>
+
+	<samplers>
+	</samplers>
+
+	<properties>
+	</properties>
+
+</material>
