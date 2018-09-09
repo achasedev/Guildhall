@@ -19,8 +19,14 @@
 // The singleton instance
 Game* Game::s_instance = nullptr;
 
+void Command_Test(Command& cmd)
+{
+	RayTraceRenderer::GetInstance()->OfflineTest(Game::GetVoxelGrid());
+}
+
+
+
 // Console commands
-void Command_Draw(Command& cmd);
 
 //-----------------------------------------------------------------------------------------------
 // Default constructor, initialize any game members here (private)
@@ -63,7 +69,7 @@ void Game::Initialize()
 	// Set the game clock on the Renderer
 	Renderer::GetInstance()->SetRendererGameClock(s_instance->m_gameClock);
 
-	Command::Register("ray_draw", "Creates a ray traced image", Command_Draw);
+	Command::Register("test", "test", Command_Test);
 }
 
 
@@ -192,14 +198,3 @@ void Game::CheckToUpdateGameState()
 // CONSOLE COMMANDS
 //////////////////////////////////////////////////////////////////////////
 
-void Command_Draw(Command& cmd)
-{
-	std::string name = "Data/Images/Test.png";
-	cmd.GetParam("n", name, &name);
-
-	//RayTraceRenderer::GetInstance()->Draw(Game::GetVoxelGrid());
-	ConsolePrintf(Rgba::GREEN, "Draw completed");
-
-	RayTraceRenderer::GetInstance()->WriteToFile(name.c_str());
-	ConsolePrintf(Rgba::GREEN, "Write completed");
-}

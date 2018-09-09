@@ -50,7 +50,6 @@ void GameState_Playing::Enter()
 	mouse.SetCursorMode(CURSORMODE_RELATIVE);
  
  	DebugRenderSystem::SetWorldCamera(game->m_gameCamera);
-	DebugRenderSystem::DrawUVSphere(Vector3::ZERO, 10000.f);
 }
 
 
