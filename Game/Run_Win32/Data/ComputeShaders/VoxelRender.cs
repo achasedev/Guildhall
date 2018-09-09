@@ -11,8 +11,7 @@ layout(rgba8, binding = 0) uniform image2D image_output; // The image output - e
 struct OctreeNode
 {
 	vec3 color;		// The color of the voxel
-	float padding0;
-	//bool solidFlags[8];
+	int flags;
 };
 
 layout(binding=0, std140) uniform timeUBO
@@ -34,7 +33,7 @@ layout(binding=11, std140) uniform cameraUBO
 {
 	vec3 CAMERA_ORIGIN;					// Where the camera is positioned
 	float padding2;
-	vec3 CAMERA_LOWER_LEFT_CORNER;			// The lower left corner in camera space of the view plane
+	vec3 CAMERA_LOWER_LEFT_CORNER;			// The lower left corner in camera space of the view plane 383479236 306783392
 	float padding3;
 	vec3 CAMERA_HORIZONTAL;		// The "right" direction in screen space, NOT normalized
 	float padding4;
@@ -314,8 +313,8 @@ void GetColorForRay(Ray r, int level, int voxelIndex, inout RayHit hits[8], inou
 		for (int i = 0; i < 8; ++i)
 		{
 			int childVoxelIndex = 8 * voxelIndex + 1 + i;
-			//if (NODES[voxelIndex].solidFlags[i])
-			//{
+			if ((NODES[voxelIndex].flags & (1 << i)) != 0)
+			{
 				RayHit hit = GetRayHitInfo(r, level + 1, childVoxelIndex);
 
 				if (hit.hit)
@@ -323,7 +322,7 @@ void GetColorForRay(Ray r, int level, int voxelIndex, inout RayHit hits[8], inou
 					hits[totalHits] = hit;
 					totalHits++;
 				}
-			//}
+			}
 		}
 
 		if (totalHits > 0)
@@ -357,7 +356,7 @@ void main()
 	vec3 finalColor = vec3(0.f);
 
 	
-	int numSamples = 1;
+	int numSamples = 10;
 	for (int sampleNumber = 0; sampleNumber < numSamples; ++sampleNumber)
 	{
 		float u = (pixel_coords.x + GetRandomFloatZeroToOne()) / imageDimensions.x;
@@ -407,7 +406,7 @@ void main()
 	}
 
 	finalColor /= numSamples;
-	//finalColor = vec3(sqrt(finalColor.x), sqrt(finalColor.y), sqrt(finalColor.z));
+	finalColor = vec3(sqrt(finalColor.x), sqrt(finalColor.y), sqrt(finalColor.z));
 
 	// Output the color to the image
 	imageStore(image_output, pixel_coords, vec4(finalColor, 1.0));
