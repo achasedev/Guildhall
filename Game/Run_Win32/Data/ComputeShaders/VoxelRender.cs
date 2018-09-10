@@ -3,7 +3,7 @@
 #extension GL_ARB_shader_storage_buffer_object : enable
 
 // Set the work group dimensions
-layout(local_size_x = 1, local_size_y = 1) in; // Make each work group 1x1 items - a single pixel
+layout(local_size_x = 16, local_size_y = 16) in; // Make each work group 1x1 items - a single pixel
 layout(rgba8, binding = 0) uniform image2D image_output; // The image output - ensure the format matches the bound image!
 
 //-------------------------------------BUFFER DATA--------------------------------------------
@@ -127,11 +127,8 @@ vec2 GetRandomPointWithinCircle()
 
 Ray GetRay(float s, float t)
 {
-	vec2 randomDirection = CAMERA_LENS_RADIUS * GetRandomPointWithinCircle();
-	vec3 randomOffset = CAMERA_U * randomDirection.x + CAMERA_V * randomDirection.y;
-
-	vec3 origin = CAMERA_ORIGIN + randomOffset;
-	vec3 direction = CAMERA_LOWER_LEFT_CORNER + s * CAMERA_HORIZONTAL + t * CAMERA_VERTICAL - CAMERA_ORIGIN - randomOffset;
+	vec3 origin = CAMERA_ORIGIN;
+	vec3 direction = CAMERA_LOWER_LEFT_CORNER + s * CAMERA_HORIZONTAL + t * CAMERA_VERTICAL - CAMERA_ORIGIN;
 	return Ray(origin, direction);
 }
 
@@ -147,7 +144,7 @@ aabb3 GetBounds(int level, int gridID)
 	{
 		aabb3 result;
 		result.mins = vec3(0.0);
-		result.maxs = vec3(256.0);
+		result.maxs = vec3(GRID_DIMENSIONS.x);
 		return result;
 	}
 
@@ -163,7 +160,7 @@ aabb3 GetBounds(int level, int gridID)
 
 	aabb3 workingBounds;
 	workingBounds.mins = vec3(0.0);
-	workingBounds.maxs = vec3(256.0);
+	workingBounds.maxs = vec3(GRID_DIMENSIONS.x);
 
 	for (int i = 1; i <= level; i++)
 	{
@@ -214,22 +211,30 @@ RayHit DoesRayIntersectBox(Ray ray, aabb3 box)
 	float tmin = (box.mins.x - ray.m_position.x) / ray.m_direction.x;
 	float tmax = (box.maxs.x - ray.m_position.x) / ray.m_direction.x;
 
-	if (tmin > tmax)
+	float oldMin = tmin;
+	tmin = min(tmin, tmax);
+	tmax = max(oldMin, tmax);
+
+	/*if (tmin > tmax)
 	{
 		float temp = tmin;
 		tmin = tmax;
 		tmax = temp;
-	}
+	}*/
 
 	float tymin = (box.mins.y - ray.m_position.y) / ray.m_direction.y;
 	float tymax = (box.maxs.y - ray.m_position.y) / ray.m_direction.y;
 
-	if (tymin > tymax)
+	float oldYMin = tymin;
+	tymin = min(tymin, tymax);
+	tymax = max(oldYMin, tymax);
+
+	/*if (tymin > tymax)
 	{
 		float temp = tymin;
 		tymin = tymax;
 		tymax = temp;
-	}
+	}*/
 
 	if ((tmin > tymax) || (tymin > tmax))
 	{
@@ -238,21 +243,29 @@ RayHit DoesRayIntersectBox(Ray ray, aabb3 box)
 		return hit;
 	}
 
-	if (tymin > tmin)
-		tmin = tymin;
+	tmin = max(tymin, tmin);
 
-	if (tymax < tmax)
-		tmax = tymax;
+	/*if (tymin > tmin)
+		tmin = tymin;*/
+
+	tmax = min(tymax, tmax);
+
+	/*if (tymax < tmax)
+		tmax = tymax;*/
 
 	float tzmin = (box.mins.z - ray.m_position.z) / ray.m_direction.z;
 	float tzmax = (box.maxs.z - ray.m_position.z) / ray.m_direction.z;
 
-	if (tzmin > tzmax)
+	float oldZMin = tzmin;
+	tzmin = min(tzmin, tzmax);
+	tzmax = max(oldZMin, tzmax);
+
+	/*if (tzmin > tzmax)
 	{
 		float temp = tzmin;
 		tzmin = tzmax;
 		tzmax = temp;
-	}
+	}*/
 
 	if ((tmin > tzmax) || (tzmin > tmax))
 	{
@@ -261,13 +274,17 @@ RayHit DoesRayIntersectBox(Ray ray, aabb3 box)
 		return hit;
 	}
 
-	if (tzmin > tmin)
-		tmin = tzmin;
+	tmin = max(tzmin, tmin);
 
-	if (tzmax < tmax)
-		tmax = tzmax;
+	/*if (tzmin > tmin)
+		tmin = tzmin;*/
 
-	RayHit hit;
+	tmax = min(tzmax, tmax);
+
+	/*if (tzmax < tmax)
+		tmax = tzmax;*/
+
+	RayHit hit;    
 	hit.t = tmin;
 	hit.hit = true;
 	
@@ -289,7 +306,7 @@ RayHit GetRayHitInfo(Ray r, int level, int gridID)
 		hit.level = level;
 	}
 
-	hit.isFinal = (level == 8);
+	hit.isFinal = (pow(2.0, level) == GRID_DIMENSIONS.x);
 	return hit;
 }
 
@@ -297,7 +314,7 @@ void GetColorForRay(Ray r, int level, int voxelIndex, inout RayHit hits[8], inou
 {
 	totalHits = 0;
 
-	if (level == 8)
+	if (pow(2.0, level) == GRID_DIMENSIONS.x)
 	{
 		RayHit hit = GetRayHitInfo(r, level, voxelIndex);
 
@@ -325,19 +342,16 @@ void GetColorForRay(Ray r, int level, int voxelIndex, inout RayHit hits[8], inou
 			}
 		}
 
-		if (totalHits > 0)
+		// Sort
+		for (int i = 0; i < totalHits - 1; ++i)
 		{
-			// Sort
-			for (int i = 0; i < totalHits - 1; ++i)
+			for (int j = i + 1; j < totalHits; ++j)
 			{
-				for (int j = i + 1; j < totalHits; ++j)
+				if (hits[j].t < hits[i].t)
 				{
-					if (hits[j].t < hits[i].t)
-					{
-						RayHit temp = hits[j];
-						hits[j] = hits[i];
-						hits[i] = temp;
-					}
+					RayHit temp = hits[j];
+					hits[j] = hits[i];
+					hits[i] = temp;
 				}
 			}
 		}
@@ -355,58 +369,49 @@ void main()
 	// Do the pixel work here
 	vec3 finalColor = vec3(0.f);
 
-	
-	int numSamples = 10;
-	for (int sampleNumber = 0; sampleNumber < numSamples; ++sampleNumber)
+	float u = (pixel_coords.x + 0.5) / imageDimensions.x;
+	float v = (pixel_coords.y + 0.5) / imageDimensions.y;
+
+	Ray ray = GetRay(u, v);
+
+	RayHit hits[8];
+	int totalHits = 0;
+
+	bool hitFinal = false;
+	int pendingHitCount = 1;
+	PendingHit hitStack[64];
+	hitStack[0].gridID = 0;
+	hitStack[0].level = 0;
+
+	while (pendingHitCount > 0)
 	{
-		float u = (pixel_coords.x + GetRandomFloatZeroToOne()) / imageDimensions.x;
-		float v = (pixel_coords.y + GetRandomFloatZeroToOne()) / imageDimensions.y;
-
-		Ray ray = GetRay(u, v);
-
-		RayHit hits[8];
-		int totalHits = 0;
-
-		bool hitFinal = true;
-		int pendingHitCount = 1;
-		PendingHit hitStack[64];
-		hitStack[0].gridID = 0;
-		hitStack[0].level = 0;
-
-		while (pendingHitCount > 0)
+		pendingHitCount--;
+		PendingHit pHit = hitStack[pendingHitCount]; 
+		GetColorForRay(ray, pHit.level, pHit.gridID, hits, totalHits);
+		// Check for early termination
+		if (totalHits > 0 && hits[0].isFinal)
 		{
-			pendingHitCount--;
-			PendingHit pHit = hitStack[pendingHitCount]; 
-			GetColorForRay(ray, pHit.level, pHit.gridID, hits, totalHits);
-
-			// Check for early termination
-			if (totalHits > 0 && hits[0].isFinal)
-			{
-				hitFinal = true;
-				break;
-			}
-
-			for (int i = totalHits - 1; i >= 0; --i)
-			{
-				PendingHit NewPHit;
-				NewPHit.gridID = hits[i].gridID;
-				NewPHit.level = hits[i].level;
-
-				hitStack[pendingHitCount] = NewPHit;
-				pendingHitCount++;
-			}
+			hitFinal = true;
+			break;
 		}
 
-		if (hitFinal)
+		for (int i = totalHits - 1; i >= 0; --i)
 		{
-			finalColor += hits[0].color;
-			//finalColor = vec3(1.0, 1.0, 0.0);
-			break;
+			PendingHit NewPHit;
+			NewPHit.gridID = hits[i].gridID;
+			NewPHit.level = hits[i].level;
+			hitStack[pendingHitCount] = NewPHit;
+			pendingHitCount++;
 		}
 	}
 
-	finalColor /= numSamples;
-	finalColor = vec3(sqrt(finalColor.x), sqrt(finalColor.y), sqrt(finalColor.z));
+	if (hitFinal)
+	{
+		finalColor += hits[0].color;
+		//finalColor = vec3(1.0, 1.0, 0.0);
+	}
+
+	//finalColor = vec3(sqrt(finalColor.x), sqrt(finalColor.y), sqrt(finalColor.z));
 
 	// Output the color to the image
 	imageStore(image_output, pixel_coords, vec4(finalColor, 1.0));
