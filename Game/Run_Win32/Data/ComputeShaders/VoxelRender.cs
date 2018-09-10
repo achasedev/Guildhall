@@ -29,7 +29,26 @@ layout(binding=10, std140) buffer color_data
 	OctreeNode NODES[ ];
 };	
 
-layout(binding=11, std140) uniform cameraUBO
+layout(binding=1, std140) uniform cameraUBO
+{
+	mat4 VIEW;
+	mat4 PROJECTION;
+
+	mat4 CAMERA_MATRIX;
+
+	vec3	CAMERA_RIGHT;
+	float	PADDING_0;
+	vec3	CAMERA_UP;
+	float	PADDING_1;
+	vec3	CAMERA_FORWARD;
+	float	PADDING_2;
+	vec3	CAMERA_POSITION;
+	float	PADDING_3;
+
+	mat4 INVERSE_VIEW_PROJECTION;
+};
+
+/*layout(binding=11, std140) uniform cameraUBO
 {
 	vec3 CAMERA_ORIGIN;					// Where the camera is positioned
 	float padding2;
@@ -45,7 +64,7 @@ layout(binding=11, std140) uniform cameraUBO
 	float padding7;
 	vec3 CAMERA_W;
 	float CAMERA_LENS_RADIUS;				// For depth of field effects
-};
+};*/
 
 
 //-------------------------------------STRUCTS DATA--------------------------------------------
@@ -127,8 +146,18 @@ vec2 GetRandomPointWithinCircle()
 
 Ray GetRay(float s, float t)
 {
-	vec3 origin = CAMERA_ORIGIN;
-	vec3 direction = CAMERA_LOWER_LEFT_CORNER + s * CAMERA_HORIZONTAL + t * CAMERA_VERTICAL - CAMERA_ORIGIN;
+	vec3 origin = CAMERA_POSITION;
+
+	float u = s * 2.0 - 1.0;
+	float v = t * 2.0 - 1.0;
+
+	vec4 endPointPreW = vec4(u, v, -1.0, 1.0);
+
+	endPointPreW = INVERSE_VIEW_PROJECTION * endPointPreW;
+
+	vec3 rayEnd = endPointPreW.xyz / endPointPreW.w;
+
+	vec3 direction = rayEnd - origin;
 	return Ray(origin, direction);
 }
 

@@ -121,6 +121,8 @@ void GameState_Playing::Update()
 //
 void GameState_Playing::Render() const
 {
+	Game::GetGameCamera()->FinalizeUniformBuffer();
+
 	RayTraceRenderer* rend = RayTraceRenderer::GetInstance();
 	rend->Draw(Game::GetVoxelGrid());
 }

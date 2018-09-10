@@ -43,8 +43,9 @@ Game::Game()
 	m_gameCamera->SetColorTarget(renderer->GetDefaultColorTarget());
 	m_gameCamera->SetDepthTarget(renderer->GetDefaultDepthTarget());
 	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 10000.f);
-	m_gameCamera->LookAt(Vector3(0.f, 5.f, -10.0f), Vector3(0.f, 0.f, 0.f));
-
+	m_gameCamera->LookAt(Vector3(64.f, 160.f, -10.0f), Vector3(64.f, 128.f, 32.f));
+	
+	renderer->SetCurrentCamera(m_gameCamera);
 	m_grid = new VoxelGrid();
  	m_grid->Initialize();
 }
@@ -111,6 +112,9 @@ void Game::Update()
 //
 void Game::Render() const
 {
+	Renderer* renderer = Renderer::GetInstance();
+	renderer->SetCurrentCamera(m_gameCamera);
+
 	m_currentState->Render();
 }
 
