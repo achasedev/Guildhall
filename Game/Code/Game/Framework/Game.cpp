@@ -14,6 +14,65 @@
 #include "Engine/Rendering/Core/RenderScene.hpp"
 
 
+
+#include "Engine/Core/DeveloperConsole/Command.hpp"
+#include "Engine/Networking/Socket.hpp"
+
+// Test commands
+void Command_UDPTestStart(Command& cmd)
+{
+	Game::GetInstance()->m_test = new UDPTest();
+	Game::GetInstance()->m_test->start();
+}
+
+void Command_UDPTestStop(Command& cmd)
+{
+	if (Game::GetInstance()->m_test != nullptr)
+	{
+		Game::GetInstance()->m_test->stop();
+		delete Game::GetInstance()->m_test;
+		Game::GetInstance()->m_test = nullptr;
+		ConsolePrintf(Rgba::GREEN, "Test stopped");
+	}
+	else
+	{
+		ConsoleErrorf("It's already stopped");
+	}
+}
+
+void Command_UDPTestSend(Command& cmd)
+{
+	if (Game::GetInstance()->m_test == nullptr)
+	{
+		ConsoleErrorf("Start it first...");
+		return;
+	}
+
+	std::string address;
+	cmd.GetParam("a", address);
+
+	if (address.size() == 0)
+	{
+		ConsoleErrorf("No address specified");
+		return;
+	}
+
+	std::string message;
+	cmd.GetParam("m", message);
+
+	if (message.size() == 0)
+	{
+		ConsoleErrorf("No message specified");
+		return;
+	}
+
+	NetAddress_t addr(address.c_str());
+
+	ConsolePrintf("Sending Message");
+	Game::GetInstance()->m_test->send_to(addr, message.c_str(), (unsigned int)message.size());
+	ConsolePrintf(Rgba::GREEN, "Message Sent");
+}
+
 // The singleton instance
 Game* Game::s_instance = nullptr;
 
@@ -37,6 +96,10 @@ Game::Game()
 	// Render Scene
 	m_renderScene = new RenderScene("Game Scene");
 	m_renderScene->AddCamera(m_gameCamera);
+
+	Command::Register("udptest_start", "Starts the UDP test", Command_UDPTestStart);
+	Command::Register("udptest_stop", "Stops the UDP test", Command_UDPTestStop);
+	Command::Register("udptest_send", "Sends a message for the UDP test", Command_UDPTestSend);
 }
 
 
@@ -81,6 +144,7 @@ void Game::ProcessInput()
 	m_currentState->ProcessInput();
 }
 
+#include "Engine/Networking/Socket.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Update the movement variables of every entity in the world, as well as update the game state
@@ -93,6 +157,11 @@ void Game::Update()
 
 	// Update the current state
 	m_currentState->Update();
+
+	if (m_test != nullptr)
+	{
+		m_test->update();
+	}
 }
 
 
