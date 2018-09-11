@@ -73,6 +73,7 @@ struct Ray
 {
 	vec3 m_position;
 	vec3 m_direction;
+	vec3 m_inverseDirection;
 };
 
 struct RayHit
@@ -146,8 +147,6 @@ vec2 GetRandomPointWithinCircle()
 
 Ray GetRay(float s, float t)
 {
-	vec3 origin = CAMERA_POSITION;
-
 	float u = s * 2.0 - 1.0;
 	float v = t * 2.0 - 1.0;
 
@@ -156,9 +155,14 @@ Ray GetRay(float s, float t)
 	endPointPreW = INVERSE_VIEW_PROJECTION * endPointPreW;
 
 	vec3 rayEnd = endPointPreW.xyz / endPointPreW.w;
+	vec3 direction = rayEnd - CAMERA_POSITION;
 
-	vec3 direction = rayEnd - origin;
-	return Ray(origin, direction);
+	Ray ray;
+	ray.m_position = CAMERA_POSITION;
+	ray.m_direction = direction;
+	ray.m_inverseDirection = vec3(1.0f) / direction;
+
+	return ray;
 }
 
 vec3 GetPointAtPosition(Ray ray, float t)
@@ -166,16 +170,34 @@ vec3 GetPointAtPosition(Ray ray, float t)
 	return ray.m_position + t * ray.m_direction;
 }
 
+aabb3 g_boundsStack[9];
 
 aabb3 GetBounds(int level, int gridID)
 {
-	if (level == 0)
-	{
-		aabb3 result;
-		result.mins = vec3(0.0);
-		result.maxs = vec3(GRID_DIMENSIONS.x);
-		return result;
-	}
+	/*
+	int parentIndex = (gridID - 1) / 8;
+	int childOffset = gridID - (8 * parentIndex + 1); 
+
+	vec3 dimensionKey = dimensionKeys[childOffset];
+
+	aabb3 parentBounds = g_boundsStack[level - 1];
+
+	float divisor = pow(2.0f, level);
+	vec3 dimensions = vec3(GRID_DIMENSIONS.x / divisor, GRID_DIMENSIONS.y / divisor, GRID_DIMENSIONS.z / divisor);
+
+	vec3 bottomLeft;
+	bottomLeft.x = parentBounds.mins.x + dimensionKey.x * dimensions.x;
+	bottomLeft.y = parentBounds.mins.y + dimensionKey.y * dimensions.y;
+	bottomLeft.z = parentBounds.mins.z + dimensionKey.z * dimensions.z;
+
+	aabb3 currentBounds;
+	currentBounds.mins = bottomLeft;
+	currentBounds.maxs = bottomLeft + dimensions;
+
+	g_boundsStack[level] = currentBounds;
+
+	return currentBounds; */
+
 
 	int ancestry[9];
 	ancestry[level] = gridID;
@@ -210,7 +232,7 @@ aabb3 GetBounds(int level, int gridID)
 
 	return workingBounds;
 
-
+	
 
 	/*int parentIndex = (gridID - 1) / 8;
 	float divisor = pow(2.0f, level);
@@ -237,8 +259,8 @@ aabb3 GetBounds(int level, int gridID)
 
 RayHit DoesRayIntersectBox(Ray ray, aabb3 box)
 {
-	float tmin = (box.mins.x - ray.m_position.x) / ray.m_direction.x;
-	float tmax = (box.maxs.x - ray.m_position.x) / ray.m_direction.x;
+	float tmin = (box.mins.x - ray.m_position.x) * ray.m_inverseDirection.x;
+	float tmax = (box.maxs.x - ray.m_position.x) * ray.m_inverseDirection.x;
 
 	float oldMin = tmin;
 	tmin = min(tmin, tmax);
@@ -251,8 +273,8 @@ RayHit DoesRayIntersectBox(Ray ray, aabb3 box)
 		tmax = temp;
 	}*/
 
-	float tymin = (box.mins.y - ray.m_position.y) / ray.m_direction.y;
-	float tymax = (box.maxs.y - ray.m_position.y) / ray.m_direction.y;
+	float tymin = (box.mins.y - ray.m_position.y) * ray.m_inverseDirection.y;
+	float tymax = (box.maxs.y - ray.m_position.y) * ray.m_inverseDirection.y;
 
 	float oldYMin = tymin;
 	tymin = min(tymin, tymax);
@@ -265,12 +287,7 @@ RayHit DoesRayIntersectBox(Ray ray, aabb3 box)
 		tymax = temp;
 	}*/
 
-	if ((tmin > tymax) || (tymin > tmax))
-	{
-		RayHit hit;
-		hit.hit = false;
-		return hit;
-	}
+	bool yFailed = (tmin > tymax) || (tymin > tmax);
 
 	tmin = max(tymin, tmin);
 
@@ -282,8 +299,8 @@ RayHit DoesRayIntersectBox(Ray ray, aabb3 box)
 	/*if (tymax < tmax)
 		tmax = tymax;*/
 
-	float tzmin = (box.mins.z - ray.m_position.z) / ray.m_direction.z;
-	float tzmax = (box.maxs.z - ray.m_position.z) / ray.m_direction.z;
+	float tzmin = (box.mins.z - ray.m_position.z) * ray.m_inverseDirection.z;
+	float tzmax = (box.maxs.z - ray.m_position.z) * ray.m_inverseDirection.z;
 
 	float oldZMin = tzmin;
 	tzmin = min(tzmin, tzmax);
@@ -296,12 +313,7 @@ RayHit DoesRayIntersectBox(Ray ray, aabb3 box)
 		tzmax = temp;
 	}*/
 
-	if ((tmin > tzmax) || (tzmin > tmax))
-	{
-		RayHit hit;
-		hit.hit = false;
-		return hit;
-	}
+	bool zFailed = (tmin > tzmax) || (tzmin > tmax);
 
 	tmin = max(tzmin, tmin);
 
@@ -315,7 +327,7 @@ RayHit DoesRayIntersectBox(Ray ray, aabb3 box)
 
 	RayHit hit;    
 	hit.t = tmin;
-	hit.hit = true;
+	hit.hit = !(yFailed || zFailed);
 	
 	// Find the normal and the position
 
@@ -388,6 +400,12 @@ void GetColorForRay(Ray r, int level, int voxelIndex, inout RayHit hits[8], inou
 
 void main()
 {
+	aabb3 result;
+	result.mins = vec3(0.0);
+	result.maxs = GRID_DIMENSIONS;
+
+	g_boundsStack[0] = result;
+
 	// Get the index in the global work group
 	ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
 	ivec2 imageDimensions = imageSize(image_output);
