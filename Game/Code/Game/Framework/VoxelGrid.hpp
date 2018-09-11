@@ -18,11 +18,15 @@ public:
 
 	int GetVoxelCount() const;
 	int GetChunkCount() const;
+
+	int GetIndexForCoords(const IntVector3& coords) const;
 	Vector3 GetPositionForIndex(int index) const;
 
 	void BuildChunk(int chunkIndex);
 
+	bool IsVoxelEnclosed(const IntVector3& coords) const;
 
+	
 private:
 
 	Rgba*					m_currentFrame = nullptr;

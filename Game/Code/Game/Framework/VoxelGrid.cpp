@@ -83,6 +83,11 @@ int VoxelGrid::GetChunkCount() const
 	return m_chunkLayout.x * m_chunkLayout.y * m_chunkLayout.z;
 }
 
+int VoxelGrid::GetIndexForCoords(const IntVector3& coords) const
+{
+	return coords.y * (m_dimensions.x * m_dimensions.z) + coords.z * m_dimensions.x + coords.x;
+}
+
 Vector3 VoxelGrid::GetPositionForIndex(int index) const
 {
 	int numVoxelsPerLayer = m_dimensions.x * m_dimensions.z;
@@ -119,9 +124,13 @@ void VoxelGrid::BuildChunk(int chunkIndex)
 
 				if (m_currentFrame[index].a != 0.f)
 				{
-					// Get the position
-					Vector3 position = GetPositionForIndex(index);
-					mb.PushCube(position, Vector3::ONES, m_currentFrame[index]);
+					// Check if we're enclosed
+					if (!IsVoxelEnclosed(coords))
+					{
+						// Get the position
+						Vector3 position = GetPositionForIndex(index);
+						mb.PushCube(position, Vector3::ONES, m_currentFrame[index]);
+					}
 				}
 			}
 		}
@@ -129,4 +138,34 @@ void VoxelGrid::BuildChunk(int chunkIndex)
 
 	mb.FinishBuilding();
 	mb.UpdateMesh(m_chunks[chunkIndex]);
+}
+
+bool VoxelGrid::IsVoxelEnclosed(const IntVector3& coords) const
+{
+	if (coords.x == 0 || coords.y == 0 || coords.z == 0)
+	{
+		return false;
+	}
+
+	if (coords.x == m_dimensions.x - 1 || coords.y == m_dimensions.y - 1 || coords.z == m_dimensions.z - 1)
+	{
+		return false;
+	}
+
+	// Check neighbors
+	IntVector3 north = coords + IntVector3(0, 0, 1);
+	IntVector3 south = coords + IntVector3(0, 0, -1);
+	IntVector3 east = coords + IntVector3(0, 0, 1);
+	IntVector3 west = coords + IntVector3(0, 0, -1);
+	IntVector3 up = coords + IntVector3(0, 1, 0);
+	IntVector3 down = coords + IntVector3(0, -1, 0);
+
+	if (m_currentFrame[GetIndexForCoords(north)].a == 0)	{ return false; }
+	if (m_currentFrame[GetIndexForCoords(south)].a == 0)	{ return false; }
+	if (m_currentFrame[GetIndexForCoords(east)].a == 0)		{ return false; }
+	if (m_currentFrame[GetIndexForCoords(west)].a == 0)		{ return false; }
+	if (m_currentFrame[GetIndexForCoords(up)].a == 0)		{ return false; }
+	if (m_currentFrame[GetIndexForCoords(down)].a == 0)		{ return false; }
+
+	return true;
 }
