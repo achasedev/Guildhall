@@ -328,14 +328,11 @@ RayHit GetRayHitInfo(Ray r, int level, int gridID)
 
 	RayHit hit = DoesRayIntersectBox(r, bounds);
 
-	if (hit.hit)
-	{
-		hit.color = NODES[gridID].color;
-		hit.gridID = gridID;
-		hit.level = level;
-	}
+	hit.color = NODES[gridID].color;
+	hit.gridID = gridID;
+	hit.level = level;
 
-	hit.isFinal = (pow(2.0, level) == GRID_DIMENSIONS.x);
+	hit.isFinal = (1 << level == GRID_DIMENSIONS.x);
 	return hit;
 }
 
@@ -343,7 +340,7 @@ void GetColorForRay(Ray r, int level, int voxelIndex, inout RayHit hits[8], inou
 {
 	totalHits = 0;
 
-	if (pow(2.0, level) == GRID_DIMENSIONS.x)
+	if (1 << level == GRID_DIMENSIONS.x)
 	{
 		RayHit hit = GetRayHitInfo(r, level, voxelIndex);
 
@@ -407,11 +404,14 @@ void main()
 	int totalHits = 0;
 
 	bool hitFinal = false;
+
 	int pendingHitCount = 1;
 	PendingHit hitStack[64];
+
 	hitStack[0].gridID = 0;
 	hitStack[0].level = 0;
 
+	//int count = 0;
 	while (pendingHitCount > 0)
 	{
 		pendingHitCount--;
@@ -432,6 +432,9 @@ void main()
 			hitStack[pendingHitCount] = NewPHit;
 			pendingHitCount++;
 		}
+
+
+		//count++;
 	}
 
 	if (hitFinal)
@@ -441,7 +444,6 @@ void main()
 	}
 
 	//finalColor = vec3(sqrt(finalColor.x), sqrt(finalColor.y), sqrt(finalColor.z));
-
 	// Output the color to the image
 	imageStore(image_output, pixel_coords, vec4(finalColor, 1.0));
 }
