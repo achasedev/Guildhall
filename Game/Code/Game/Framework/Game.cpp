@@ -95,7 +95,7 @@ void Game::Update()
 //
 void Game::Render() const
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
+	//PROFILE_LOG_SCOPE_FUNCTION();
 	m_currentState->Render();
 }
 

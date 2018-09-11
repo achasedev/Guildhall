@@ -12,17 +12,25 @@ class VoxelGrid
 {
 public:
 
-	void Initialize(int width, int height, int length);
+	void Initialize(const IntVector3& voxelDimensions, const IntVector3& chunkLayout);
 	void BuildMesh();
 	void Render();
 
 	int GetVoxelCount() const;
+	int GetChunkCount() const;
 	Vector3 GetPositionForIndex(int index) const;
+
+	void BuildChunk(int chunkIndex);
+
 
 private:
 
-	Rgba*					m_voxels = nullptr;
+	Rgba*					m_currentFrame = nullptr;
+	Rgba*					m_previousFrame = nullptr;
 
 	IntVector3				m_dimensions;
-	Mesh					m_mesh;
+	IntVector3				m_chunkDimensions;
+	IntVector3				m_chunkLayout;
+	std::vector<Mesh>		m_chunks;
+	//Mesh					m_mesh;
 };

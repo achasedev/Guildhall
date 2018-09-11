@@ -5,6 +5,7 @@
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 World::World()
 {
@@ -13,7 +14,7 @@ World::World()
 void World::Inititalize()
 {
 	m_voxelGrid = new VoxelGrid();
-	m_voxelGrid->Initialize(16, 16, 16);
+	m_voxelGrid->Initialize(IntVector3(128, 64, 128), IntVector3(8, 8, 8));
 }
 
 void World::Update()
@@ -21,6 +22,13 @@ void World::Update()
 	ProfileLogScoped log("World::Update");
 	UNUSED(log);
 	m_voxelGrid->BuildMesh();
+
+	// Rebuild stuff
+// 	for (int i = 0; i < m_voxelGrid->GetChunkCount() / 16; ++i)
+// 	{
+// 		int index = GetRandomIntLessThan(m_voxelGrid->GetChunkCount());
+// 		m_voxelGrid->BuildChunk(index);
+// 	}
 }
 
 void World::Render() const
