@@ -287,6 +287,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Framework\App.cpp" />
+    <ClCompile Include="Framework\ChunkRebuilder.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
     <ClCompile Include="Framework\VoxelGrid.cpp" />
     <ClCompile Include="Framework\World.cpp" />
@@ -301,6 +302,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp" />
+    <ClInclude Include="Framework\ChunkRebuilder.hpp" />
     <ClInclude Include="Framework\EngineBuildPreferences.hpp" />
     <ClInclude Include="Framework\Game.hpp" />
     <ClInclude Include="Framework\GameCommon.hpp" />

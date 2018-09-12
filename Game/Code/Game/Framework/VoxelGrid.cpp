@@ -62,12 +62,14 @@ void VoxelGrid::Render()
 
 	for (int i = 0; i < GetChunkCount(); ++i)
 	{
+		if (m_chunks[i].GetVertexBuffer()->GetVertexCount() > 0)
+		{
+			RenderableDraw_t draw;
+			draw.sharedMaterial = AssetDB::GetSharedMaterial("Default_Opaque");
+			draw.mesh = &m_chunks[i];
 
-		RenderableDraw_t draw;
-		draw.sharedMaterial = AssetDB::GetSharedMaterial("Default_Opaque");
-		draw.mesh = &m_chunks[i];
-
-		renderable.AddDraw(draw);
+			renderable.AddDraw(draw);
+		}
 	}
 	
 	renderer->DrawRenderable(&renderable);
