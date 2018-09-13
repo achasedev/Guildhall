@@ -4,6 +4,7 @@
 #include "Engine/Math/IntVector3.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
+#include "Engine/Rendering/Shaders/ComputeShader.hpp"
 
 void VoxelGrid::Initialize(const IntVector3& voxelDimensions, const IntVector3& chunkDimensions)
 {
@@ -27,7 +28,20 @@ void VoxelGrid::Initialize(const IntVector3& voxelDimensions, const IntVector3& 
 	}
 
 	m_chunks.resize(GetChunkCount());
+
+	m_computeShader = new ComputeShader();
+	m_computeShader->Initialize("Data/ComputeShaders/VoxelMeshRebuild.cs");
+
+	m_colorBuffer.Bind(10);
+	m_colorBuffer.CopyToGPU(numVoxels * sizeof(Rgba), m_currentFrame);
+
+	// Preallocate
+	m_meshBuffer.Initialize();
+
+	// Build the meshes
+	//RebuildMeshes();
 }
+
 #include "Engine/Core/EngineCommon.hpp"
 
 void VoxelGrid::BuildMesh()
@@ -51,11 +65,12 @@ void VoxelGrid::BuildMesh()
 
 void VoxelGrid::Render()
 {
-	ProfileLogScoped log("VoxelGrid::Render");
-	UNUSED(log);
+	// Rebuild the meshes
+	RebuildMeshes();
+
+	// Draw
 	Renderer* renderer = Renderer::GetInstance();
 	renderer->SetCurrentCamera(Game::GetGameCamera());
-	//renderer->DrawVoxelGrid(IntVector3(GRID_SIZE, GRID_SIZE, GRID_SIZE), m_voxels, m_voxel);
 
 	Renderable renderable;
 	renderable.AddInstanceMatrix(Matrix44::IDENTITY);
@@ -170,4 +185,28 @@ bool VoxelGrid::IsVoxelEnclosed(const IntVector3& coords) const
 	if (m_currentFrame[GetIndexForCoords(down)].a == 0)		{ return false; }
 
 	return true;
+}
+
+void VoxelGrid::RebuildMeshes()
+{
+	m_colorBuffer.CopyToGPU(GetVoxelCount() * sizeof(Rgba), m_currentFrame);
+
+	m_computeShader->Execute(m_dimensions.x, m_dimensions.y, m_dimensions.z);
+
+	VoxelWorldData_t* worldData = (VoxelWorldData_t*) m_meshBuffer.MapMeshBufferData();
+
+	// Iterate across all meshes and update them
+	for (int i = 0; i < GetChunkCount(); ++i)
+	{
+		ChunkData_t* currChunk = &(worldData->chunkData[i]);
+
+		m_chunks[i].SetVertices(currChunk->vertexCount, currChunk->vertexBuffer);
+		m_chunks[i].SetIndices(currChunk->indexCount, currChunk->indexBuffer);
+
+		currChunk->vertexCount = 0;
+		currChunk->indexCount = 0;
+	}
+
+	m_meshBuffer.UnmapMeshBufferData();
+	// Meshes are now updated
 }

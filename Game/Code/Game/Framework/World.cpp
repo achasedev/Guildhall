@@ -14,7 +14,7 @@ World::World()
 void World::Inititalize()
 {
 	m_voxelGrid = new VoxelGrid();
-	m_voxelGrid->Initialize(IntVector3(128, 64, 128), IntVector3(8, 8, 8));
+	m_voxelGrid->Initialize(IntVector3(8, 8, 8), IntVector3(4, 4, 4));
 }
 
 void World::Update()
