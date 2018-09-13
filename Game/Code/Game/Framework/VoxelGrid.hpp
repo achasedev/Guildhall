@@ -1,12 +1,11 @@
 #pragma once
-
+#include "Game/Framework/VoxelGridBuffers.hpp"
 #include "Engine/Core/Rgba.hpp"
-#include "Engine/Rendering/Buffers/RenderBuffer.hpp"
-#include "Engine/Math/IntVector3.hpp"
 #include "Engine/Math/Vector3.hpp"
+#include "Engine/Math/IntVector3.hpp"
 #include "Engine/Rendering/Meshes/Mesh.hpp"
+#include "Engine/Rendering/Buffers/RenderBuffer.hpp"
 #include "Engine/Rendering/Buffers/ShaderStorageBuffer.hpp"
-#include "Game/Framework/VoxelMeshBuffer.hpp"
 
 class Renderable;
 class ComputeShader;
@@ -22,6 +21,8 @@ public:
 	int GetVoxelCount() const;
 	int GetChunkCount() const;
 
+	unsigned int GetVoxelsPerChunk() const;
+
 	int GetIndexForCoords(const IntVector3& coords) const;
 	Vector3 GetPositionForIndex(int index) const;
 
@@ -32,7 +33,9 @@ public:
 	
 private:
 
+	void UpdateBuffers();
 	void RebuildMeshes();
+	void DrawGrid();
 	
 private:
 
@@ -44,10 +47,7 @@ private:
 	IntVector3				m_chunkLayout;
 	std::vector<Mesh>		m_chunks;
 
-
-
-	VoxelMeshBuffer			m_meshBuffer;
-	ShaderStorageBuffer		m_colorBuffer;
+	VoxelGridBuffers		m_buffers;
 
 	ComputeShader* m_computeShader = nullptr;
 	//Mesh					m_mesh;

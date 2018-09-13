@@ -3,47 +3,12 @@
 #extension GL_ARB_shader_storage_buffer_object : enable
 
 // Set the work group dimensions
-layout(local_size_x = 8, local_size_y = 8, local_size_z = 8) in; 
-/*
-#define MAX_VOXELS 128*128*64
-#define MAX_CHUNKS 2048
-#define MAX_VERTICES 8*8*8*6*4
-#define MAX_INDICES 8*8*8*6*6
-
-#define WORLD_X_DIMENSIONS 128
-#define WORLD_Y_DIMENSIONS 64
-#define WORLD_Z_DIMENSIONS 128
-*/
-
-#define MAX_VOXELS 8*8*8
-#define MAX_CHUNKS 8
-#define MAX_VERTICES 4*4*4*6*4
-#define MAX_INDICES 4*4*4*6*6
-
-#define WORLD_X_DIMENSIONS 8
-#define WORLD_Y_DIMENSIONS 8
-#define WORLD_Z_DIMENSIONS 8
+layout(local_size_variable) in; 
 
 struct VertexVoxel
 {
 	vec3 position;
-	float color;
-};
-
-// Structs
-struct ChunkData_t
-{
-	VertexVoxel		vertexBuffer[MAX_VERTICES];
-	uint			indexBuffer[MAX_INDICES];
-
-	uint vertexCount;
-	uint indexCount;
-	uint dualHead;
-};
-
-layout(binding=11, std140) buffer meshSSBO
-{
-	ChunkData_t chunkData[];
+	uint color;
 };
 
 // Buffers
@@ -55,16 +20,52 @@ layout(binding=0, std140) uniform timeUBO
 	float SYSTEM_TOTAL_TIME;
 };
 
-layout(binding=10, std140) buffer colorSSBO
+layout(binding=8, std140) buffer colorSSBO
 {
-	uint VOXEL_COLORS[MAX_VOXELS];
+	uint VOXEL_COLORS[];
 };	
 
-
-
-bool IsNeighborEmpty(uvec3 currCoords, ivec3 direction)
+layout(binding=9, std140) buffer offsetSSBO
 {
-	uvec3 neighborCoords = currCoords + direction;
+	uint OFFSETS[];
+};	
+
+layout(binding=10, std140) buffer vertexSSBO
+{
+	VoxelVertex VERTICES[];
+};	
+
+layout(binding=11, std140) buffer indexSSBO
+{
+	uint INDICES[];
+};	
+
+//layout(binding=12, std140) buffer 
+//{
+//	ChunkMetaData_t CHUNK_DATA[];
+//};	
+
+// Globals
+ivec3 g_neighborDirections[6] = vec3[](
+	ivec3(0,  0, -1),  // Front
+	ivec3(0,  0,  1),  // Back
+	ivec3(-1, 0,  0),  // Left
+	ivec3(1,  0,  0),  // Right
+	ivec3(0,  1,  0),  // Top
+	ivec3(0, -1,  0)); // Bottom
+
+vec3 g_vertexOffsets[6][4] = vec3[][](
+	vec3[](vec3(-0.5f, -0.5f, -0.5f), 	vec3( 0.5f, -0.5f, -0.5f), 	vec3( 0.5f,  0.5f, -0.5f), 	vec3(-0.5f,  0.5f, -0.5)),   	// Front
+	vec3[](vec3( 0.5f, -0.5f,  0.5f), 	vec3(-0.5f, -0.5f,  0.5f), 	vec3(-0.5f,  0.5f,  0.5f), 	vec3( 0.5f,  0.5f,  0.5)),   	// Back
+	vec3[](vec3(-0.5f, -0.5f,  0.5f), 	vec3(-0.5f, -0.5f,  0.5f), 	vec3(-0.5f,  0.5f, -0.5f), 	vec3(-0.5f,  0.5f,  0.5)),   	// Left
+	vec3[](vec3( 0.5f, -0.5f, -0.5f), 	vec3( 0.5f, -0.5f,  0.5f), 	vec3( 0.5f,  0.5f,  0.5f), 	vec3( 0.5f,  0.5f, -0.5)),   	// Right
+	vec3[](vec3(-0.5f,  0.5f, -0.5f), 	vec3( 0.5f,  0.5f, -0.5f), 	vec3( 0.5f,  0.5f,  0.5f), 	vec3(-0.5f,  0.5f,  0.5)),   	// Top
+	vec3[](vec3(-0.5f, -0.5f,  0.5f), 	vec3( 0.5f, -0.5f,  0.5f), 	vec3( 0.5f, -0.5f, -0.5f), 	vec3(-0.5f, -0.5f, -0.5))); 	// Bottom
+
+bool IsNeighborEmpty(ivec3 currCoords, int directionIndex)
+{
+	ivec3 direction = g_neighborDirections[directionIndex];
+	ivec3 neighborCoords = currCoords + direction;
 
 	if (neighborCoords.x >= WORLD_X_DIMENSIONS || neighborCoords.y >= WORLD_Y_DIMENSIONS || neighborCoords.z >= WORLD_Z_DIMENSIONS)
 	{
@@ -76,14 +77,34 @@ bool IsNeighborEmpty(uvec3 currCoords, ivec3 direction)
 	return ((VOXEL_COLORS[neighborIndex] & 255) > 0);
 }
 
+void AddQuad(ivec3 coords, int directionIndex)
+{
+	//TODO: THIS
+}
+
 void main()
 {
-	uvec3 voxelCoords = gl_GlobalInvocationID;
+	ivec3 voxelCoords = gl_GlobalInvocationID;
 
-	// Check the three neighbors
-	bool addTop = IsNeighborEmpty(voxelCoords, ivec3(0,1,0));
-	bool addLeft = IsNeighborEmpty(voxelCoords, ivec3(-1,0,0));
-	bool addFront = IsNeighborEmpty(voxelCoords, ivec3(0,0,-1));
+	// Check the neighbors
+	bool shouldAddQuad[6]; // 6 directions, same order as g_neighborDirections
+
+	// Figure out which sides we have to add
+	for (int i = 0; i < 6; ++i)
+	{
+		shouldAddQuad[i] = IsNeighborEmpty(voxelCoords, i);
+	}
+
+	// Add the sides
+	for (int i = 0; i < 6; ++i)
+	{
+		if (shouldAddQuad[i])
+		{
+			AddQuad(ivec3 voxelCoords, int directionIndex);
+		}
+	}
+
+
 
 	int numFacesToAdd = 0;
 	if (addTop)
@@ -147,7 +168,7 @@ void main()
 		indexOffset += 6;
 
 	}
-
+/*
 	if (addLeft)
 	{
 		// Bottom back
@@ -207,7 +228,7 @@ void main()
 		vertexOffset += 4;
 		indexOffset += 6;
 	}
-
+*/
 	//chunkData[chunkIndex].vertexCount += vertexCountToAdd;
 	//chunkData[chunkIndex].indexCount += indexCountToAdd;
 }
