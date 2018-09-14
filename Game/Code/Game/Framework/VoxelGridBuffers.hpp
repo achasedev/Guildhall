@@ -13,7 +13,7 @@ public:
 	void Initialize(const IntVector3& worldDimensions, const IntVector3& chunkDimensions);
 
 	void SetupForDraw();
-	
+	void BindAll();
 
 public:
 	//-----Public Data-----

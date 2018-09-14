@@ -20,17 +20,35 @@ void VoxelGridBuffers::Initialize(const IntVector3& worldDimensions, const IntVe
 
 	// Color Buffer
 	m_colorBuffer.Bind(COLOR_BINDING);
-	m_colorBuffer.CopyToGPU(voxelCount, NULL);
+	//m_colorBuffer.CopyToGPU(voxelCount, NULL);
+	m_colorBuffer.Clear(voxelCount * 4);
 
 	// Offset Buffer
 	m_offsetBuffer.Bind(OFFSET_BINDING);
-	m_offsetBuffer.CopyToGPU(sizeof(unsigned int) * chunkCount, NULL);
+	//m_offsetBuffer.CopyToGPU(sizeof(unsigned int) * chunkCount, NULL);
+	m_offsetBuffer.Clear(sizeof(unsigned int) * chunkCount);
 
 	// Vertex Buffer
 	m_vertexBuffer.Bind(VERTEX_BINDING);
-	m_vertexBuffer.CopyToGPU(chunkCount * voxelsPerChunk * verticesPerVoxel * sizeof(VertexVoxel), NULL);
+	//m_vertexBuffer.CopyToGPU(chunkCount * voxelsPerChunk * verticesPerVoxel * sizeof(VertexVoxel), NULL);
+	m_vertexBuffer.Clear(chunkCount * voxelsPerChunk * verticesPerVoxel * sizeof(VertexVoxel));
 
 	// Index Buffer
 	m_indexBuffer.Bind(INDEX_BINDING);
-	m_indexBuffer.CopyToGPU(chunkCount * voxelsPerChunk * indicesPerVoxel * sizeof(unsigned int), NULL);
+	//m_indexBuffer.CopyToGPU(chunkCount * voxelsPerChunk * indicesPerVoxel * sizeof(unsigned int), NULL);
+	m_indexBuffer.Clear(chunkCount * voxelsPerChunk * indicesPerVoxel * sizeof(unsigned int));
+}
+
+void VoxelGridBuffers::BindAll()
+{
+	m_colorBuffer.Bind(COLOR_BINDING);
+
+	// Offset Buffer
+	m_offsetBuffer.Bind(OFFSET_BINDING);
+
+	// Vertex Buffer
+	m_vertexBuffer.Bind(VERTEX_BINDING);
+
+	// Index Buffer
+	m_indexBuffer.Bind(INDEX_BINDING);
 }

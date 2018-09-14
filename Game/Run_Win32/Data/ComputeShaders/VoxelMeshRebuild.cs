@@ -3,7 +3,7 @@
 #extension GL_ARB_shader_storage_buffer_object : enable
 
 // Set the work group dimensions
-layout(local_size_variable) in; 
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 8) in;
 
 struct VertexVoxel
 {
@@ -20,22 +20,22 @@ layout(binding=0, std140) uniform timeUBO
 	float SYSTEM_TOTAL_TIME;
 };
 
-layout(binding=8, std140) buffer colorSSBO
+layout(binding=8, std430) buffer colorSSBO
 {
 	uint VOXEL_COLORS[];
 };	
 
-layout(binding=9, std140) buffer offsetSSBO
+layout(binding=9, std430) buffer offsetSSBO
 {
 	uint OFFSETS[];
 };	
 
-layout(binding=10, std140) buffer vertexSSBO
+layout(binding=10, std430) buffer vertexSSBO
 {
-	VoxelVertex VERTICES[];
+	VertexVoxel VERTICES[];
 };	
 
-layout(binding=11, std140) buffer indexSSBO
+layout(binding=11, std430) buffer indexSSBO
 {
 	uint INDICES[];
 };	
@@ -46,7 +46,7 @@ layout(binding=11, std140) buffer indexSSBO
 //};	
 
 // Globals
-ivec3 g_neighborDirections[6] = vec3[](
+ivec3 g_neighborDirections[6] = ivec3[](
 	ivec3(0,  0, -1),  // Front
 	ivec3(0,  0,  1),  // Back
 	ivec3(-1, 0,  0),  // Left
@@ -55,180 +55,118 @@ ivec3 g_neighborDirections[6] = vec3[](
 	ivec3(0, -1,  0)); // Bottom
 
 vec3 g_vertexOffsets[6][4] = vec3[][](
-	vec3[](vec3(-0.5f, -0.5f, -0.5f), 	vec3( 0.5f, -0.5f, -0.5f), 	vec3( 0.5f,  0.5f, -0.5f), 	vec3(-0.5f,  0.5f, -0.5)),   	// Front
-	vec3[](vec3( 0.5f, -0.5f,  0.5f), 	vec3(-0.5f, -0.5f,  0.5f), 	vec3(-0.5f,  0.5f,  0.5f), 	vec3( 0.5f,  0.5f,  0.5)),   	// Back
-	vec3[](vec3(-0.5f, -0.5f,  0.5f), 	vec3(-0.5f, -0.5f,  0.5f), 	vec3(-0.5f,  0.5f, -0.5f), 	vec3(-0.5f,  0.5f,  0.5)),   	// Left
-	vec3[](vec3( 0.5f, -0.5f, -0.5f), 	vec3( 0.5f, -0.5f,  0.5f), 	vec3( 0.5f,  0.5f,  0.5f), 	vec3( 0.5f,  0.5f, -0.5)),   	// Right
-	vec3[](vec3(-0.5f,  0.5f, -0.5f), 	vec3( 0.5f,  0.5f, -0.5f), 	vec3( 0.5f,  0.5f,  0.5f), 	vec3(-0.5f,  0.5f,  0.5)),   	// Top
-	vec3[](vec3(-0.5f, -0.5f,  0.5f), 	vec3( 0.5f, -0.5f,  0.5f), 	vec3( 0.5f, -0.5f, -0.5f), 	vec3(-0.5f, -0.5f, -0.5))); 	// Bottom
+	vec3[](vec3(0.0f, 0.0f, 0.0f), 	vec3(1.0f, 0.0f, 0.0f), 	vec3(1.0f, 1.0f, 0.0f), 	vec3(0.0f, 1.0f, 0.0f)),   	// Front
+	vec3[](vec3(1.0f, 0.0f, 1.0f), 	vec3(0.0f, 0.0f, 1.0f), 	vec3(0.0f, 1.0f, 1.0f), 	vec3(1.0f, 1.0f, 1.0f)),   	// Back
+	vec3[](vec3(0.0f, 0.0f, 1.0f), 	vec3(0.0f, 0.0f, 0.0f), 	vec3(0.0f, 1.0f, 0.0f), 	vec3(0.0f, 1.0f, 1.0f)),   	// Left
+	vec3[](vec3(1.0f, 0.0f, 0.0f), 	vec3(1.0f, 0.0f, 1.0f), 	vec3(1.0f, 1.0f, 1.0f), 	vec3(1.0f, 1.0f, 0.0f)),   	// Right
+	vec3[](vec3(0.0f, 1.0f, 0.0f), 	vec3(1.0f, 1.0f, 0.0f), 	vec3(1.0f, 1.0f, 1.0f), 	vec3(0.0f, 1.0f, 1.0f)),   	// Top
+	vec3[](vec3(0.0f, 0.0f, 1.0f), 	vec3(1.0f, 0.0f, 1.0f), 	vec3(1.0f, 0.0f, 0.0f), 	vec3(0.0f, 0.0f, 0.0f))   	// Bottom
+);
 
-bool IsNeighborEmpty(ivec3 currCoords, int directionIndex)
+uint g_indexOffsets[6] = uint[](
+	0, 1, 2,
+	0, 2, 3);
+
+bool IsNeighborEmpty(uvec3 currCoords, uint directionIndex)
 {
 	ivec3 direction = g_neighborDirections[directionIndex];
-	ivec3 neighborCoords = currCoords + direction;
+	ivec3 neighborCoords = ivec3(currCoords) + direction;
 
-	if (neighborCoords.x >= WORLD_X_DIMENSIONS || neighborCoords.y >= WORLD_Y_DIMENSIONS || neighborCoords.z >= WORLD_Z_DIMENSIONS)
+	uvec3 globalDimensions = gl_NumWorkGroups * gl_WorkGroupSize;
+
+	bool edgeOfGrid = neighborCoords.x >= globalDimensions.x || neighborCoords.y >= globalDimensions.y || neighborCoords.z >= globalDimensions.z || neighborCoords.x < 0 || neighborCoords.y < 0 || neighborCoords.z < 0;
+	if (edgeOfGrid)
 	{
-		return false;
+		return true;
 	}
 
-	uint neighborIndex = neighborCoords.y * (WORLD_X_DIMENSIONS * WORLD_Z_DIMENSIONS) + neighborCoords.z * WORLD_X_DIMENSIONS + neighborCoords.x;
+	uint neighborIndex = neighborCoords.y * (globalDimensions.x * globalDimensions.z) + neighborCoords.z * globalDimensions.x + neighborCoords.x;
 
-	return ((VOXEL_COLORS[neighborIndex] & 255) > 0);
+	return ((VOXEL_COLORS[neighborIndex] & 0xff000000) == 0);
 }
 
-void AddQuad(ivec3 coords, int directionIndex)
+void AddQuad(uvec3 coords, uint directionIndex, uint chunkIndex, inout uint writeHead)
 {
-	//TODO: THIS
+	uint localVertexOffset = (writeHead >> 16);
+	uint localIndexOffset = (writeHead & 0xffff);
+
+	uint globalVertexOffset = (gl_WorkGroupSize.x * gl_WorkGroupSize.y * gl_WorkGroupSize.z * 24) * chunkIndex + localVertexOffset;
+	uint globalIndexOffset = (gl_WorkGroupSize.x * gl_WorkGroupSize.y * gl_WorkGroupSize.z * 36) * chunkIndex + localIndexOffset;
+
+	uvec3 globalDimensions = gl_NumWorkGroups * gl_WorkGroupSize;
+	uint voxelIndex = coords.y * (globalDimensions.x * globalDimensions.z) + coords.z * globalDimensions.x + coords.x;
+
+	// Push vertices
+	for (int i = 0; i < 4; ++i)
+	{
+		VERTICES[globalVertexOffset + i].position = coords + g_vertexOffsets[directionIndex][i];
+		//VERTICES[chunkVertexOffset + vertexOffset + i].position = vec3(vertexOffset + i);
+
+		VERTICES[globalVertexOffset + i].color = VOXEL_COLORS[voxelIndex];
+	}
+
+	// Push Indices
+	for (int i = 0; i < 6; ++i)
+	{
+		INDICES[globalIndexOffset + i] = localVertexOffset + g_indexOffsets[i];
+	}
+
+	// Update the write head for the next push
+	localVertexOffset += 4;
+	localIndexOffset += 6;
+
+	uint newWriteHead = (localVertexOffset << 16) | localIndexOffset;
+	writeHead = newWriteHead;
 }
 
 void main()
-{
-	ivec3 voxelCoords = gl_GlobalInvocationID;
+{	
+	uvec3 voxelCoords = gl_GlobalInvocationID;
+	uvec3 globalDimensions = gl_NumWorkGroups * gl_WorkGroupSize;
+
+	uint voxelIndex = voxelCoords.y * (globalDimensions.x * globalDimensions.z) + voxelCoords.z * globalDimensions.x + voxelCoords.x;
+
+	// If we're non-solid don't do anything
+	if ((VOXEL_COLORS[voxelIndex] & 255) == 0)
+	{
+		return;
+	}
 
 	// Check the neighbors
 	bool shouldAddQuad[6]; // 6 directions, same order as g_neighborDirections
+	int sideCountToAdd = 0;
 
 	// Figure out which sides we have to add
-	for (int i = 0; i < 6; ++i)
+	for (uint i = 0; i < 6; ++i)
 	{
 		shouldAddQuad[i] = IsNeighborEmpty(voxelCoords, i);
+
+		if (shouldAddQuad[i])
+		{
+			sideCountToAdd++;
+		}
 	}
+
+	// Get the offset to push into
+	int numVerticesToAdd = sideCountToAdd * 4;
+	int numIndicesToAdd = sideCountToAdd * 6;
+
+	uint offsetToAdd = (numVerticesToAdd << 16) | numIndicesToAdd;
+
+	uvec3 chunkCoords = gl_WorkGroupID;
+	uint chunkIndex = chunkCoords.y * (gl_NumWorkGroups.x * gl_NumWorkGroups.z) + chunkCoords.z * gl_NumWorkGroups.x + chunkCoords.x;
+
+	uint writeHead = atomicAdd(OFFSETS[chunkIndex], offsetToAdd);
 
 	// Add the sides
 	for (int i = 0; i < 6; ++i)
 	{
 		if (shouldAddQuad[i])
 		{
-			AddQuad(ivec3 voxelCoords, int directionIndex);
+			AddQuad(voxelCoords, i, chunkIndex, writeHead);
 		}
 	}
 
 
-
-	int numFacesToAdd = 0;
-	if (addTop)
-	{
-		numFacesToAdd += 1;
-	}
-		
-	if (addLeft)
-	{
-		numFacesToAdd += 1;
-	}
-
-	if (addFront)
-	{
-		numFacesToAdd += 1;
-	}
-
-	int vertexCountToAdd = numFacesToAdd * 4;
-	int indexCountToAdd = numFacesToAdd * 6;
-
-	uint offset = (vertexCountToAdd << 16) | indexCountToAdd;
-
-
-	uvec3 chunkCoords = gl_WorkGroupID;
-	uint chunkIndex = chunkCoords.y * (gl_NumWorkGroups.x * gl_NumWorkGroups.z) + chunkCoords.z * gl_NumWorkGroups.x + chunkCoords.x;
-
-	uint currHead = atomicAdd(chunkData[chunkIndex].dualHead, offset);
-
-	uint indexOffset = currHead & 65535;
-	uint vertexOffset = currHead >> 16;
-
-	uint voxelIndex = voxelCoords.y * (WORLD_X_DIMENSIONS * WORLD_Z_DIMENSIONS) + voxelCoords.z * WORLD_X_DIMENSIONS + voxelCoords.x;
-
-	if (addTop)
-	{
-		// Front left
-		chunkData[chunkIndex].vertexBuffer[vertexOffset].position = voxelCoords + vec3(-0.5, 0.5, -0.5);
-		chunkData[chunkIndex].vertexBuffer[vertexOffset].color = VOXEL_COLORS[voxelIndex];
-
-		// Front right
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 1].position = voxelCoords + vec3(0.5, 0.5, -0.5);
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 1].color = VOXEL_COLORS[voxelIndex];
-
-		// Back right
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 2].position = voxelCoords + vec3(0.5, 0.5, 0.5);
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 2].color = VOXEL_COLORS[voxelIndex];
-
-		// Back left
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 3].position = voxelCoords + vec3(-0.5, 0.5, 0.5);
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 3].color = VOXEL_COLORS[voxelIndex];
-
-		// Indices
-		chunkData[chunkIndex].indexBuffer[indexOffset] = vertexOffset;
-		chunkData[chunkIndex].indexBuffer[indexOffset + 1] = vertexOffset + 1;
-		chunkData[chunkIndex].indexBuffer[indexOffset + 2] = vertexOffset + 2;
-		chunkData[chunkIndex].indexBuffer[indexOffset + 3] = vertexOffset;
-		chunkData[chunkIndex].indexBuffer[indexOffset + 4] = vertexOffset + 2;
-		chunkData[chunkIndex].indexBuffer[indexOffset + 5] = vertexOffset + 3;
-
-		vertexOffset += 4;
-		indexOffset += 6;
-
-	}
-/*
-	if (addLeft)
-	{
-		// Bottom back
-		chunkData[chunkIndex].vertexBuffer[vertexOffset].position = voxelCoords + vec3(-0.5, -0.5, 0.5);
-		chunkData[chunkIndex].vertexBuffer[vertexOffset].color = VOXEL_COLORS[voxelIndex];
-
-		// Bottom front
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 1].position = voxelCoords + vec3(-0.5, -0.5, -0.5);
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 1].color = VOXEL_COLORS[voxelIndex];
-
-		// Top front
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 2].position = voxelCoords + vec3(-0.5, 0.5, -0.5);
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 2].color = VOXEL_COLORS[voxelIndex];
-
-		// Top back
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 3].position = voxelCoords + vec3(-0.5, 0.5, 0.5);
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 3].color = VOXEL_COLORS[voxelIndex];
-
-		// Indices
-		chunkData[chunkIndex].indexBuffer[indexOffset] = vertexOffset;
-		chunkData[chunkIndex].indexBuffer[indexOffset + 1] = vertexOffset + 1;
-		chunkData[chunkIndex].indexBuffer[indexOffset + 2] = vertexOffset + 2;
-		chunkData[chunkIndex].indexBuffer[indexOffset + 3] = vertexOffset;
-		chunkData[chunkIndex].indexBuffer[indexOffset + 4] = vertexOffset + 2;
-		chunkData[chunkIndex].indexBuffer[indexOffset + 5] = vertexOffset + 3;
-
-		vertexOffset += 4;
-		indexOffset += 6;
-	}
-
-	if (addFront)
-	{
-		// Bottom left
-		chunkData[chunkIndex].vertexBuffer[vertexOffset].position = voxelCoords + vec3(-0.5, -0.5, -0.5);
-		chunkData[chunkIndex].vertexBuffer[vertexOffset].color = VOXEL_COLORS[voxelIndex];
-
-		// Bottom right
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 1].position = voxelCoords + vec3(0.5, -0.5, -0.5);
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 1].color = VOXEL_COLORS[voxelIndex];
-
-		// Top right
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 2].position = voxelCoords + vec3(0.5, 0.5, -0.5);
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 2].color = VOXEL_COLORS[voxelIndex];
-
-		// Top left
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 3].position = voxelCoords + vec3(-0.5, 0.5, -0.5);
-		chunkData[chunkIndex].vertexBuffer[vertexOffset + 3].color = VOXEL_COLORS[voxelIndex];
-
-		// Indices
-		chunkData[chunkIndex].indexBuffer[indexOffset] = vertexOffset;
-		chunkData[chunkIndex].indexBuffer[indexOffset + 1] = vertexOffset + 1;
-		chunkData[chunkIndex].indexBuffer[indexOffset + 2] = vertexOffset + 2;
-		chunkData[chunkIndex].indexBuffer[indexOffset + 3] = vertexOffset;
-		chunkData[chunkIndex].indexBuffer[indexOffset + 4] = vertexOffset + 2;
-		chunkData[chunkIndex].indexBuffer[indexOffset + 5] = vertexOffset + 3;
-
-		vertexOffset += 4;
-		indexOffset += 6;
-	}
-*/
-	//chunkData[chunkIndex].vertexCount += vertexCountToAdd;
-	//chunkData[chunkIndex].indexCount += indexCountToAdd;
+	// Done!
 }

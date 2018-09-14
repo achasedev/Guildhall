@@ -15,7 +15,6 @@ class VoxelGrid
 public:
 
 	void Initialize(const IntVector3& voxelDimensions, const IntVector3& chunkDimensions);
-	void BuildMesh();
 	void Render();
 
 	int GetVoxelCount() const;
@@ -24,11 +23,6 @@ public:
 	unsigned int GetVoxelsPerChunk() const;
 
 	int GetIndexForCoords(const IntVector3& coords) const;
-	Vector3 GetPositionForIndex(int index) const;
-
-	void BuildChunk(int chunkIndex);
-
-	bool IsVoxelEnclosed(const IntVector3& coords) const;
 
 	
 private:
