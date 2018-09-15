@@ -1,7 +1,8 @@
 #pragma once
 #include "Engine/Math/Vector3.hpp"
-#include "Engine/Rendering/Buffers/ShaderStorageBuffer.hpp"
+#include "Engine/Rendering/Buffers/RenderBuffer.hpp"
 #include "Engine/Rendering/Core/Vertex.hpp"
+#include "Engine/Rendering/Meshes/Mesh.hpp"
 
 class IntVector3;
 
@@ -12,15 +13,15 @@ public:
 
 	void Initialize(const IntVector3& worldDimensions, const IntVector3& chunkDimensions);
 
-	void SetupForDraw();
-	void BindAll();
-
 public:
 	//-----Public Data-----
 
-	ShaderStorageBuffer m_colorBuffer;
-	ShaderStorageBuffer m_offsetBuffer;
-	ShaderStorageBuffer m_vertexBuffer;
-	ShaderStorageBuffer m_indexBuffer;
+	RenderBuffer m_colorBuffer;
+	RenderBuffer m_offsetBuffer;
+
+	Mesh m_mesh;
+
+	//VertexBuffer m_vertexBuffer;
+	//IndexBuffer m_indexBuffer;
 
 };

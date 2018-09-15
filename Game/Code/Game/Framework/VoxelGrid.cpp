@@ -33,7 +33,7 @@ void VoxelGrid::Initialize(const IntVector3& voxelDimensions, const IntVector3& 
 		m_currentFrame[i] = Rgba::GetRandomColor();
 		IntVector3 coords = GetCoordsForIndex(i);
 
-		if (CheckRandomChance(0.01f))
+		if ((coords.x + coords.y + coords.z) % 2 == 1)
 		{
 			m_currentFrame[i].a = 0;
 		}
@@ -100,19 +100,20 @@ void VoxelGrid::UpdateBuffers()
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
-	Rgba temp = m_currentFrame[0];
-	for (int i = 0; i < GetVoxelCount() - 1; ++i)
-	{
-		m_currentFrame[i] = m_currentFrame[i + 1];
-	}
-
-	m_currentFrame[GetVoxelCount() - 1] = temp;
+// 	Rgba temp = m_currentFrame[0];
+// 	for (int i = 0; i < GetVoxelCount() - 1; ++i)
+// 	{
+// 		m_currentFrame[i] = m_currentFrame[i + 1];
+// 	}
+// 
+// 	m_currentFrame[GetVoxelCount() - 1] = temp;
 
 	// Send down the color data
 	m_buffers.m_colorBuffer.CopyToGPU(GetVoxelCount() * sizeof(Rgba), m_currentFrame);
 
 	// Clear the offsets
-	m_buffers.m_offsetBuffer.Clear(GetChunkCount() * sizeof(unsigned int));
+	unsigned int val = 0;
+	m_buffers.m_offsetBuffer.CopyToGPU(sizeof(unsigned int), &val);
 }
 
 void VoxelGrid::RebuildMeshes()
@@ -120,44 +121,48 @@ void VoxelGrid::RebuildMeshes()
 	PROFILE_LOG_SCOPE_FUNCTION();
 
 	// Execute the build step
-	m_computeShader->Execute(m_chunkLayout.x, m_chunkLayout.y, m_chunkLayout.z);
+	{
+		PROFILE_LOG_SCOPE("Execute");
+		m_computeShader->Execute(m_chunkLayout.x, m_chunkLayout.y, m_chunkLayout.z);
+	}
 
 	// Get the data out and update the existing meshes
-	unsigned int vertexHandle = m_buffers.m_vertexBuffer.GetHandle();
-	unsigned int indexHandle = m_buffers.m_indexBuffer.GetHandle();
-	
-	unsigned int* offset = (unsigned int*)m_buffers.m_offsetBuffer.MapBufferData();
+	unsigned int* offset;
+	{
+		PROFILE_LOG_SCOPE("Get Offset Data");
+		offset = (unsigned int*)m_buffers.m_offsetBuffer.MapBufferData();
+	}
 	//VertexVoxel* vertices = (VertexVoxel*)m_buffers.m_vertexBuffer.MapBufferData();
 
 	{
 		PROFILE_LOG_SCOPE("Sending Mesh Data");
 
 		// Iterate across all meshes and update them
-		for (int chunkIndex = 0; chunkIndex < 1; ++chunkIndex)
-		{
-			unsigned int faceOffset = offset[chunkIndex];
+		unsigned int faceOffset = offset[0];
 
-			unsigned int vertexCount = faceOffset * 4;
-			unsigned int indexCount = faceOffset * 6;
+		unsigned int vertexCount = faceOffset * 4;
+		unsigned int indexCount = faceOffset * 6;
 
-			// Set the data
-			//m_chunks[chunkIndex].SetVerticesFromGPUBuffer<VertexVoxel>(vertexCount, vertexHandle);
-			//m_chunks[chunkIndex].SetIndicesFromGPUBuffer(indexCount, indexHandle);
-			m_chunks[chunkIndex].m_vertexBuffer.m_handle = vertexHandle;
-			m_chunks[chunkIndex].m_vertexBuffer.m_bufferSize = m_buffers.m_vertexBuffer.m_bufferSize;
-			m_chunks[chunkIndex].m_vertexBuffer.m_vertexCount = vertexCount;
-			m_chunks[chunkIndex].m_vertexBuffer.m_vertexLayout = &VertexVoxel::LAYOUT;
-			m_chunks[chunkIndex].m_vertexLayout = &VertexVoxel::LAYOUT;
+		// Set the data
+		//m_chunks[chunkIndex].SetVerticesFromGPUBuffer<VertexVoxel>(vertexCount, vertexHandle);
+		//m_chunks[chunkIndex].SetIndicesFromGPUBuffer(indexCount, indexHandle);
+		//m_buffers.m_mesh.GetVertexBuffer()->SetVertexCount(vertexCount);
 
-			m_chunks[chunkIndex].m_indexBuffer.m_indexCount = indexCount;
-			m_chunks[chunkIndex].m_indexBuffer.m_indexStride = sizeof(VertexVoxel);
-			m_chunks[chunkIndex].m_indexBuffer.m_handle = indexHandle;
-			m_chunks[chunkIndex].m_indexBuffer.m_bufferSize = m_chunks[chunkIndex].m_indexBuffer.m_handle;
+// 		m_chunks[chunkIndex].m_vertexBuffer.m_bufferSize = m_buffers.m_vertexBuffer.m_bufferSize;
+// 		m_chunks[chunkIndex].m_vertexBuffer.m_vertexCount = vertexCount;
+// 		m_chunks[chunkIndex].m_vertexBuffer.m_vertexLayout = &VertexVoxel::LAYOUT;
+// 		m_chunks[chunkIndex].m_vertexLayout = &VertexVoxel::LAYOUT;
+		//m_buffers.m_mesh.GetIndexBuffer()->SetIndexCount(indexCount);
+		m_buffers.m_mesh.UpdateCounts(vertexCount, indexCount);
 
-			//m_chunks[chunkIndex].SetVertices(vertexCount, vertices);
-			//m_chunks[chunkIndex].SetIndices(indexCount, currIndices);
-			m_chunks[chunkIndex].SetDrawInstruction(PRIMITIVE_TRIANGLES, true, 0, indexCount);
-		}
+// 		m_chunks[chunkIndex].m_indexBuffer.m_indexCount = indexCount;
+// 		m_chunks[chunkIndex].m_indexBuffer.m_indexStride = sizeof(VertexVoxel);
+// 		m_chunks[chunkIndex].m_indexBuffer.m_handle = indexHandle;
+// 		m_chunks[chunkIndex].m_indexBuffer.m_bufferSize = m_chunks[chunkIndex].m_indexBuffer.m_handle;
+
+		//m_chunks[chunkIndex].SetVertices(vertexCount, vertices);
+		//m_chunks[chunkIndex].SetIndices(indexCount, currIndices);
+		m_buffers.m_mesh.SetDrawInstruction(PRIMITIVE_TRIANGLES, true, 0, indexCount);
 	}
 
 	// Unmap all the buffers
@@ -166,6 +171,7 @@ void VoxelGrid::RebuildMeshes()
 
 	// Meshes are now updated
 }
+
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 
 void VoxelGrid::DrawGrid()
@@ -179,17 +185,11 @@ void VoxelGrid::DrawGrid()
 	Renderable renderable;
 	renderable.AddInstanceMatrix(Matrix44::IDENTITY);
 
-	for (int i = 0; i < 1; ++i)
-	{
-		if (m_chunks[0].GetVertexBuffer()->GetVertexCount() > 0)
-		{
-			RenderableDraw_t draw;
-			draw.sharedMaterial = AssetDB::GetSharedMaterial("Default_Opaque");
-			draw.mesh = &m_chunks[0];
+	RenderableDraw_t draw;
+	draw.sharedMaterial = AssetDB::GetSharedMaterial("Default_Opaque");
+	draw.mesh = &m_buffers.m_mesh;
 
-			renderable.AddDraw(draw);
-		}
-	}
+	renderable.AddDraw(draw);
 
 	renderer->DrawRenderable(&renderable);
 }
