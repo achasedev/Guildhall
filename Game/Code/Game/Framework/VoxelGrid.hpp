@@ -23,7 +23,7 @@ public:
 	unsigned int GetVoxelsPerChunk() const;
 
 	int GetIndexForCoords(const IntVector3& coords) const;
-
+	IntVector3 GetCoordsForIndex(unsigned int index) const;
 	
 private:
 

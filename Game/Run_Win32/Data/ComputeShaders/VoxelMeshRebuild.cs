@@ -85,13 +85,10 @@ bool IsNeighborEmpty(uvec3 currCoords, uint directionIndex)
 	return ((VOXEL_COLORS[neighborIndex] & 0xff000000) == 0);
 }
 
-void AddQuad(uvec3 coords, uint directionIndex, uint chunkIndex, inout uint writeHead)
+void AddQuad(uvec3 coords, uint directionIndex, inout uint faceIndex)
 {
-	uint localVertexOffset = (writeHead >> 16);
-	uint localIndexOffset = (writeHead & 0xffff);
-
-	uint globalVertexOffset = (gl_WorkGroupSize.x * gl_WorkGroupSize.y * gl_WorkGroupSize.z * 24) * chunkIndex + localVertexOffset;
-	uint globalIndexOffset = (gl_WorkGroupSize.x * gl_WorkGroupSize.y * gl_WorkGroupSize.z * 36) * chunkIndex + localIndexOffset;
+	uint globalVertexOffset = faceIndex * 4;
+	uint globalIndexOffset = faceIndex * 6;
 
 	uvec3 globalDimensions = gl_NumWorkGroups * gl_WorkGroupSize;
 	uint voxelIndex = coords.y * (globalDimensions.x * globalDimensions.z) + coords.z * globalDimensions.x + coords.x;
@@ -108,15 +105,10 @@ void AddQuad(uvec3 coords, uint directionIndex, uint chunkIndex, inout uint writ
 	// Push Indices
 	for (int i = 0; i < 6; ++i)
 	{
-		INDICES[globalIndexOffset + i] = localVertexOffset + g_indexOffsets[i];
+		INDICES[globalIndexOffset + i] = globalVertexOffset + g_indexOffsets[i];
 	}
 
-	// Update the write head for the next push
-	localVertexOffset += 4;
-	localIndexOffset += 6;
-
-	uint newWriteHead = (localVertexOffset << 16) | localIndexOffset;
-	writeHead = newWriteHead;
+	faceIndex++;
 }
 
 void main()
@@ -127,7 +119,7 @@ void main()
 	uint voxelIndex = voxelCoords.y * (globalDimensions.x * globalDimensions.z) + voxelCoords.z * globalDimensions.x + voxelCoords.x;
 
 	// If we're non-solid don't do anything
-	if ((VOXEL_COLORS[voxelIndex] & 255) == 0)
+	if ((VOXEL_COLORS[voxelIndex] & 0xff000000) == 0)
 	{
 		return;
 	}
@@ -147,23 +139,14 @@ void main()
 		}
 	}
 
-	// Get the offset to push into
-	int numVerticesToAdd = sideCountToAdd * 4;
-	int numIndicesToAdd = sideCountToAdd * 6;
-
-	uint offsetToAdd = (numVerticesToAdd << 16) | numIndicesToAdd;
-
-	uvec3 chunkCoords = gl_WorkGroupID;
-	uint chunkIndex = chunkCoords.y * (gl_NumWorkGroups.x * gl_NumWorkGroups.z) + chunkCoords.z * gl_NumWorkGroups.x + chunkCoords.x;
-
-	uint writeHead = atomicAdd(OFFSETS[chunkIndex], offsetToAdd);
+	uint writeHead = atomicAdd(OFFSETS[0], sideCountToAdd);
 
 	// Add the sides
 	for (int i = 0; i < 6; ++i)
 	{
 		if (shouldAddQuad[i])
 		{
-			AddQuad(voxelCoords, i, chunkIndex, writeHead);
+			AddQuad(voxelCoords, i, writeHead);
 		}
 	}
 

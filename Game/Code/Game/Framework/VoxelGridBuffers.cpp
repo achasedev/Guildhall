@@ -31,7 +31,8 @@ void VoxelGridBuffers::Initialize(const IntVector3& worldDimensions, const IntVe
 	// Vertex Buffer
 	m_vertexBuffer.Bind(VERTEX_BINDING);
 	//m_vertexBuffer.CopyToGPU(chunkCount * voxelsPerChunk * verticesPerVoxel * sizeof(VertexVoxel), NULL);
-	m_vertexBuffer.Clear(chunkCount * voxelsPerChunk * verticesPerVoxel * sizeof(VertexVoxel));
+	size_t size = chunkCount * voxelsPerChunk * verticesPerVoxel * sizeof(VertexVoxel);
+	m_vertexBuffer.Clear(size);
 
 	// Index Buffer
 	m_indexBuffer.Bind(INDEX_BINDING);

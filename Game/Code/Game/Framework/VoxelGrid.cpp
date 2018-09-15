@@ -5,6 +5,8 @@
 #include "Game/Framework/Game.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
 #include "Engine/Rendering/Shaders/ComputeShader.hpp"
+#include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 #define VERTICES_PER_VOXEL 24
 #define INDICES_PER_VOXEL 36
@@ -23,13 +25,18 @@ void VoxelGrid::Initialize(const IntVector3& voxelDimensions, const IntVector3& 
 
 	int numVoxels = m_dimensions.x * m_dimensions.y * m_dimensions.z;
 
-	m_currentFrame = (Rgba*) malloc(numVoxels * sizeof(Rgba));
+	m_currentFrame = (Rgba*)malloc(numVoxels * sizeof(Rgba));
 	m_previousFrame = (Rgba*)malloc(numVoxels * sizeof(Rgba));
 
 	for (int i = 0; i < numVoxels; ++i)
 	{
 		m_currentFrame[i] = Rgba::GetRandomColor();
-		m_previousFrame[i] = Rgba::BLUE;
+		IntVector3 coords = GetCoordsForIndex(i);
+
+		if (CheckRandomChance(0.01f))
+		{
+			m_currentFrame[i].a = 0;
+		}
 	}
 
 	m_chunks.resize(GetChunkCount());
@@ -44,19 +51,13 @@ void VoxelGrid::Initialize(const IntVector3& voxelDimensions, const IntVector3& 
 
 void VoxelGrid::Render()
 {
-	static bool test = true;
+	PROFILE_LOG_SCOPE_FUNCTION();
 
-	if (true)
-	{
-		// Set up our buffers
-		UpdateBuffers();
+	// Set up our buffers
+	UpdateBuffers();
 
-		// Rebuild the meshes
-		RebuildMeshes();
-
-		test = false;
-	}
-
+	// Rebuild the meshes
+	RebuildMeshes();
 
 	// Draw the grid
 	DrawGrid();
@@ -82,21 +83,33 @@ int VoxelGrid::GetIndexForCoords(const IntVector3& coords) const
 	return coords.y * (m_dimensions.x * m_dimensions.z) + coords.z * m_dimensions.x + coords.x;
 }
 
+IntVector3 VoxelGrid::GetCoordsForIndex(unsigned int index) const
+{
+	int y = index / (m_dimensions.x * m_dimensions.z);
+	int leftover = index % (m_dimensions.x * m_dimensions.z);
+
+	int z = leftover / m_dimensions.x;
+	int x = leftover % m_dimensions.x;
+
+	return IntVector3(x, y, z);
+}
+
 #include "Engine/Input/InputSystem.hpp"
 
 void VoxelGrid::UpdateBuffers()
 {
-	static bool test = true;
+	PROFILE_LOG_SCOPE_FUNCTION();
 
-	if (InputSystem::GetInstance()->IsKeyPressed('I'))
+	Rgba temp = m_currentFrame[0];
+	for (int i = 0; i < GetVoxelCount() - 1; ++i)
 	{
-		test = !test;
+		m_currentFrame[i] = m_currentFrame[i + 1];
 	}
 
-	Rgba* colorsource = (test ? m_currentFrame : m_previousFrame);
+	m_currentFrame[GetVoxelCount() - 1] = temp;
 
 	// Send down the color data
-	m_buffers.m_colorBuffer.CopyToGPU(GetVoxelCount() * sizeof(Rgba), colorsource);
+	m_buffers.m_colorBuffer.CopyToGPU(GetVoxelCount() * sizeof(Rgba), m_currentFrame);
 
 	// Clear the offsets
 	m_buffers.m_offsetBuffer.Clear(GetChunkCount() * sizeof(unsigned int));
@@ -104,40 +117,61 @@ void VoxelGrid::UpdateBuffers()
 
 void VoxelGrid::RebuildMeshes()
 {
+	PROFILE_LOG_SCOPE_FUNCTION();
+
 	// Execute the build step
 	m_computeShader->Execute(m_chunkLayout.x, m_chunkLayout.y, m_chunkLayout.z);
 
 	// Get the data out and update the existing meshes
-	VertexVoxel* vertices = (VertexVoxel*)m_buffers.m_vertexBuffer.MapBufferData();
-	unsigned int* indices = (unsigned int*)m_buffers.m_indexBuffer.MapBufferData();
+	unsigned int vertexHandle = m_buffers.m_vertexBuffer.GetHandle();
+	unsigned int indexHandle = m_buffers.m_indexBuffer.GetHandle();
+	
 	unsigned int* offset = (unsigned int*)m_buffers.m_offsetBuffer.MapBufferData();
+	//VertexVoxel* vertices = (VertexVoxel*)m_buffers.m_vertexBuffer.MapBufferData();
 
-	// Iterate across all meshes and update them
-	for (int chunkIndex = 0; chunkIndex < GetChunkCount(); ++chunkIndex)
 	{
-		VertexVoxel* currVertices = vertices + (chunkIndex * GetVoxelsPerChunk() * VERTICES_PER_VOXEL);
-		unsigned int* currIndices = indices + (chunkIndex * GetVoxelsPerChunk() * INDICES_PER_VOXEL);
+		PROFILE_LOG_SCOPE("Sending Mesh Data");
 
-		unsigned int combinedOffset = offset[chunkIndex];
+		// Iterate across all meshes and update them
+		for (int chunkIndex = 0; chunkIndex < 1; ++chunkIndex)
+		{
+			unsigned int faceOffset = offset[chunkIndex];
 
-		unsigned int vertexCount = combinedOffset >> 16;
-		unsigned int indexCount = combinedOffset & 0xFFFF;
+			unsigned int vertexCount = faceOffset * 4;
+			unsigned int indexCount = faceOffset * 6;
 
-		m_chunks[chunkIndex].SetVertices(vertexCount, currVertices);
-		m_chunks[chunkIndex].SetIndices(indexCount, currIndices);
-		m_chunks[chunkIndex].SetDrawInstruction(PRIMITIVE_TRIANGLES, true, 0, indexCount);
+			// Set the data
+			//m_chunks[chunkIndex].SetVerticesFromGPUBuffer<VertexVoxel>(vertexCount, vertexHandle);
+			//m_chunks[chunkIndex].SetIndicesFromGPUBuffer(indexCount, indexHandle);
+			m_chunks[chunkIndex].m_vertexBuffer.m_handle = vertexHandle;
+			m_chunks[chunkIndex].m_vertexBuffer.m_bufferSize = m_buffers.m_vertexBuffer.m_bufferSize;
+			m_chunks[chunkIndex].m_vertexBuffer.m_vertexCount = vertexCount;
+			m_chunks[chunkIndex].m_vertexBuffer.m_vertexLayout = &VertexVoxel::LAYOUT;
+			m_chunks[chunkIndex].m_vertexLayout = &VertexVoxel::LAYOUT;
+
+			m_chunks[chunkIndex].m_indexBuffer.m_indexCount = indexCount;
+			m_chunks[chunkIndex].m_indexBuffer.m_indexStride = sizeof(VertexVoxel);
+			m_chunks[chunkIndex].m_indexBuffer.m_handle = indexHandle;
+			m_chunks[chunkIndex].m_indexBuffer.m_bufferSize = m_chunks[chunkIndex].m_indexBuffer.m_handle;
+
+			//m_chunks[chunkIndex].SetVertices(vertexCount, vertices);
+			//m_chunks[chunkIndex].SetIndices(indexCount, currIndices);
+			m_chunks[chunkIndex].SetDrawInstruction(PRIMITIVE_TRIANGLES, true, 0, indexCount);
+		}
 	}
 
 	// Unmap all the buffers
 	m_buffers.m_offsetBuffer.UnmapBufferData();
-	m_buffers.m_indexBuffer.UnmapBufferData();
-	m_buffers.m_vertexBuffer.UnmapBufferData();
+	//m_buffers.m_vertexBuffer.UnmapBufferData();
 
 	// Meshes are now updated
 }
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 
 void VoxelGrid::DrawGrid()
 {
+	PROFILE_LOG_SCOPE_FUNCTION();
+
 	// Draw
 	Renderer* renderer = Renderer::GetInstance();
 	renderer->SetCurrentCamera(Game::GetGameCamera());
@@ -145,13 +179,13 @@ void VoxelGrid::DrawGrid()
 	Renderable renderable;
 	renderable.AddInstanceMatrix(Matrix44::IDENTITY);
 
-	for (int i = 0; i < GetChunkCount(); ++i)
+	for (int i = 0; i < 1; ++i)
 	{
-		if (m_chunks[i].GetVertexBuffer()->GetVertexCount() > 0)
+		if (m_chunks[0].GetVertexBuffer()->GetVertexCount() > 0)
 		{
 			RenderableDraw_t draw;
 			draw.sharedMaterial = AssetDB::GetSharedMaterial("Default_Opaque");
-			draw.mesh = &m_chunks[i];
+			draw.mesh = &m_chunks[0];
 
 			renderable.AddDraw(draw);
 		}
