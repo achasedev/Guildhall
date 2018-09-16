@@ -52,9 +52,6 @@
     <ClCompile Include="Framework\ChunkRebuilder.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Framework\VoxelGridBuffers.cpp">
-      <Filter>Architecture</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -88,6 +85,5 @@
     <ClInclude Include="Framework\World.hpp" />
     <ClInclude Include="Framework\VoxelGrid.hpp" />
     <ClInclude Include="Framework\ChunkRebuilder.hpp" />
-    <ClInclude Include="Framework\VoxelGridBuffers.hpp" />
   </ItemGroup>
 </Project>

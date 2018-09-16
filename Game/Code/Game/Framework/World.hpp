@@ -1,3 +1,9 @@
+/************************************************************************/
+/* File: World.hpp
+/* Author: Andrew Chase
+/* Date: September 15th, 2018
+/* Description: Class to represent a game scene
+/************************************************************************/
 #pragma once
 
 #include <vector>
@@ -23,7 +29,6 @@ public:
 private:
 	//-----Private Data-----
 
-	VoxelGrid* m_voxelGrid;
-	std::vector<Entity*> m_entities;		// Entities in the scene outside of the environment blocks
+	VoxelGrid* m_voxelGrid;		// Grid used for all coloring
 
 };

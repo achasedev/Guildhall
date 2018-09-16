@@ -46,21 +46,17 @@ layout(binding=11, std430) buffer indexSSBO
 //};	
 
 // Globals
-ivec3 g_neighborDirections[6] = ivec3[](
+ivec3 g_neighborDirections[4] = ivec3[](
 	ivec3(0,  0, -1),  // Front
-	ivec3(0,  0,  1),  // Back
 	ivec3(-1, 0,  0),  // Left
 	ivec3(1,  0,  0),  // Right
-	ivec3(0,  1,  0),  // Top
-	ivec3(0, -1,  0)); // Bottom
+	ivec3(0,  1,  0)); // Top
 
-vec3 g_vertexOffsets[6][4] = vec3[][](
+vec3 g_vertexOffsets[4][4] = vec3[][](
 	vec3[](vec3(0.0f, 0.0f, 0.0f), 	vec3(1.0f, 0.0f, 0.0f), 	vec3(1.0f, 1.0f, 0.0f), 	vec3(0.0f, 1.0f, 0.0f)),   	// Front
-	vec3[](vec3(1.0f, 0.0f, 1.0f), 	vec3(0.0f, 0.0f, 1.0f), 	vec3(0.0f, 1.0f, 1.0f), 	vec3(1.0f, 1.0f, 1.0f)),   	// Back
 	vec3[](vec3(0.0f, 0.0f, 1.0f), 	vec3(0.0f, 0.0f, 0.0f), 	vec3(0.0f, 1.0f, 0.0f), 	vec3(0.0f, 1.0f, 1.0f)),   	// Left
 	vec3[](vec3(1.0f, 0.0f, 0.0f), 	vec3(1.0f, 0.0f, 1.0f), 	vec3(1.0f, 1.0f, 1.0f), 	vec3(1.0f, 1.0f, 0.0f)),   	// Right
-	vec3[](vec3(0.0f, 1.0f, 0.0f), 	vec3(1.0f, 1.0f, 0.0f), 	vec3(1.0f, 1.0f, 1.0f), 	vec3(0.0f, 1.0f, 1.0f)),   	// Top
-	vec3[](vec3(0.0f, 0.0f, 1.0f), 	vec3(1.0f, 0.0f, 1.0f), 	vec3(1.0f, 0.0f, 0.0f), 	vec3(0.0f, 0.0f, 0.0f))   	// Bottom
+	vec3[](vec3(0.0f, 1.0f, 0.0f), 	vec3(1.0f, 1.0f, 0.0f), 	vec3(1.0f, 1.0f, 1.0f), 	vec3(0.0f, 1.0f, 1.0f))   	// Top
 );
 
 uint g_indexOffsets[6] = uint[](
@@ -125,11 +121,11 @@ void main()
 	}
 
 	// Check the neighbors
-	bool shouldAddQuad[6]; // 6 directions, same order as g_neighborDirections
+	bool shouldAddQuad[4]; // 6 directions, same order as g_neighborDirections
 	int sideCountToAdd = 0;
 
 	// Figure out which sides we have to add
-	for (uint i = 0; i < 6; ++i)
+	for (uint i = 0; i < 4; ++i)
 	{
 		shouldAddQuad[i] = IsNeighborEmpty(voxelCoords, i);
 
@@ -142,7 +138,7 @@ void main()
 	uint writeHead = atomicAdd(OFFSETS[0], sideCountToAdd);
 
 	// Add the sides
-	for (int i = 0; i < 6; ++i)
+	for (int i = 0; i < 4; ++i)
 	{
 		if (shouldAddQuad[i])
 		{

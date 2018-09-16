@@ -1,88 +1,96 @@
-#include "Engine/Assets/AssetDB.hpp"
-#include "Game/Framework/VoxelGrid.hpp"
-#include "Engine/Rendering/Core/Renderer.hpp"
-#include "Engine/Math/IntVector3.hpp"
+/************************************************************************/
+/* File: VoxelGrid.cpp
+/* Author: Andrew Chase
+/* Date: September 15th, 2018
+/* Description: Implementation of the VoxelGrid class
+/************************************************************************/
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/VoxelGrid.hpp"
+#include "Engine/Assets/AssetDB.hpp"
+#include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/IntVector3.hpp"
+#include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
 #include "Engine/Rendering/Shaders/ComputeShader.hpp"
-#include "Engine/Core/EngineCommon.hpp"
-#include "Engine/Math/MathUtils.hpp"
 
+// Constants for any size grid
 #define VERTICES_PER_VOXEL 24
 #define INDICES_PER_VOXEL 36
 
-void VoxelGrid::Initialize(const IntVector3& voxelDimensions, const IntVector3& chunkDimensions)
+#define COLOR_BINDING (8)
+#define COUNT_BINDING (9)
+#define VERTEX_BINDING (10)
+#define INDEX_BINDING (11)
+
+
+//-----------------------------------------------------------------------------------------------
+// Initializes the grid buffers and dimensions
+//
+void VoxelGrid::Initialize(const IntVector3& voxelDimensions)
 {
 	m_dimensions = voxelDimensions;
-	m_chunkDimensions = chunkDimensions;
-
-	m_chunkLayout = IntVector3(
-		m_dimensions.x / m_chunkDimensions.x,
-		m_dimensions.y / m_chunkDimensions.y, 
-		m_dimensions.z / m_chunkDimensions.z
-	);
-
 
 	int numVoxels = m_dimensions.x * m_dimensions.y * m_dimensions.z;
 
-	m_currentFrame = (Rgba*)malloc(numVoxels * sizeof(Rgba));
-	m_previousFrame = (Rgba*)malloc(numVoxels * sizeof(Rgba));
+	m_gridColors = (Rgba*)malloc(numVoxels * sizeof(Rgba));
+	memset(m_gridColors, 0, numVoxels * sizeof(Rgba));
 
 	for (int i = 0; i < numVoxels; ++i)
 	{
-		m_currentFrame[i] = Rgba::GetRandomColor();
+		m_gridColors[i] = Rgba::GetRandomColor();
 		IntVector3 coords = GetCoordsForIndex(i);
 
 		if ((coords.x + coords.y + coords.z) % 2 == 1)
 		{
-			m_currentFrame[i].a = 0;
+			m_gridColors[i].a = 0;
 		}
 	}
 
-	m_chunks.resize(GetChunkCount());
-
+	// Initialize mesh building steps
 	m_computeShader = new ComputeShader();
 	m_computeShader->Initialize("Data/ComputeShaders/VoxelMeshRebuild.cs");
 
-	m_buffers.Initialize(m_dimensions, chunkDimensions);
+	InitializeBuffers();
 }
 
-#include "Engine/Core/EngineCommon.hpp"
 
-void VoxelGrid::Render()
+//-----------------------------------------------------------------------------------------------
+// Constructs the mesh for the grid and draws the mesh to screen
+//
+void VoxelGrid::BuildMeshAndDraw()
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
-	// Set up our buffers
-	UpdateBuffers();
+	// Rebuild the mesh
+	RebuildMesh();
 
-	// Rebuild the meshes
-	RebuildMeshes();
-
-	// Draw the grid
+	// Draw the mesh
 	DrawGrid();
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Returns the number of voxels in this grid (solid and non-solid)
+//
 int VoxelGrid::GetVoxelCount() const
 {
 	return m_dimensions.x * m_dimensions.y * m_dimensions.z;
 }
 
-int VoxelGrid::GetChunkCount() const
-{
-	return m_chunkLayout.x * m_chunkLayout.y * m_chunkLayout.z;
-}
 
-unsigned int VoxelGrid::GetVoxelsPerChunk() const
-{
-	return m_chunkDimensions.x * m_chunkDimensions.y * m_chunkDimensions.z;
-}
-
+//-----------------------------------------------------------------------------------------------
+// Returns the linear index for the voxel given by coords
+//
 int VoxelGrid::GetIndexForCoords(const IntVector3& coords) const
 {
 	return coords.y * (m_dimensions.x * m_dimensions.z) + coords.z * m_dimensions.x + coords.x;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Returns the coordinates in the grid for the voxel given by index
+//
 IntVector3 VoxelGrid::GetCoordsForIndex(unsigned int index) const
 {
 	int y = index / (m_dimensions.x * m_dimensions.z);
@@ -94,86 +102,96 @@ IntVector3 VoxelGrid::GetCoordsForIndex(unsigned int index) const
 	return IntVector3(x, y, z);
 }
 
-#include "Engine/Input/InputSystem.hpp"
 
+//-----------------------------------------------------------------------------------------------
+// Binds and initializes the buffer data for the buffers used for GPU operations
+//
+void VoxelGrid::InitializeBuffers()
+{
+	int voxelCount = GetVoxelCount();
+
+	// Color Buffer
+	m_colorBuffer.Bind(COLOR_BINDING);
+	m_colorBuffer.CopyToGPU(voxelCount * sizeof(Rgba), nullptr);
+
+	// Count Buffer
+	m_countBuffer.Bind(COUNT_BINDING);
+
+	int val = 0;
+	m_countBuffer.CopyToGPU(sizeof(unsigned int), &val); // Initialize it to 0 so compute can start incrementing
+
+	unsigned int vertexCount = voxelCount * VERTICES_PER_VOXEL;
+	unsigned int indexCount = voxelCount * INDICES_PER_VOXEL;
+
+	// Setup the mesh so the compute shader can directly write to its buffers
+	m_mesh.InitializeBuffersForCompute<VertexVoxel>((unsigned int)VERTEX_BINDING, vertexCount, (unsigned int)INDEX_BINDING, indexCount);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Updates the GPU-side buffers in preparation for the next build
+//
 void VoxelGrid::UpdateBuffers()
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
-// 	Rgba temp = m_currentFrame[0];
-// 	for (int i = 0; i < GetVoxelCount() - 1; ++i)
-// 	{
-// 		m_currentFrame[i] = m_currentFrame[i + 1];
-// 	}
-// 
-// 	m_currentFrame[GetVoxelCount() - 1] = temp;
+	unsigned int voxelCount = GetVoxelCount();
+	memset(m_gridColors, 0, voxelCount * sizeof(Rgba));
+
+	static int offset = 0;
+	for (int i = 0; i < voxelCount; ++i)
+	{
+		m_gridColors[i] = (offset == 0 ? Rgba::RED : Rgba::BLUE);
+		IntVector3 coords = GetCoordsForIndex(i);
+
+		if ((coords.x + coords.y + coords.z) % 2 == offset)
+		{
+			m_gridColors[i].a = 0;
+		}
+	}
+
+	offset = ((offset + 1) % 2);
 
 	// Send down the color data
-	m_buffers.m_colorBuffer.CopyToGPU(GetVoxelCount() * sizeof(Rgba), m_currentFrame);
+	m_colorBuffer.CopyToGPU(GetVoxelCount() * sizeof(Rgba), m_gridColors);
 
-	// Clear the offsets
+	// Clear the face count
 	unsigned int val = 0;
-	m_buffers.m_offsetBuffer.CopyToGPU(sizeof(unsigned int), &val);
+	m_countBuffer.CopyToGPU(sizeof(unsigned int), &val);
 }
 
-void VoxelGrid::RebuildMeshes()
+
+//-----------------------------------------------------------------------------------------------
+// Initializes the grid buffers and dimensions
+//
+void VoxelGrid::RebuildMesh()
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
+	// Update the GPU-side buffers
+	UpdateBuffers();
+
 	// Execute the build step
-	{
-		PROFILE_LOG_SCOPE("Execute");
-		m_computeShader->Execute(m_chunkLayout.x, m_chunkLayout.y, m_chunkLayout.z);
-	}
+	m_computeShader->Execute(m_dimensions.x / 8, m_dimensions.y / 8, m_dimensions.z / 8);
 
-	// Get the data out and update the existing meshes
-	unsigned int* offset;
-	{
-		PROFILE_LOG_SCOPE("Get Offset Data");
-		offset = (unsigned int*)m_buffers.m_offsetBuffer.MapBufferData();
-	}
-	//VertexVoxel* vertices = (VertexVoxel*)m_buffers.m_vertexBuffer.MapBufferData();
+	// Get the vertex and index count from the buffer
+	unsigned int* offset = (unsigned int*) m_countBuffer.MapBufferData();
+	unsigned int faceOffset = offset[0];
+	m_countBuffer.UnmapBufferData();
 
-	{
-		PROFILE_LOG_SCOPE("Sending Mesh Data");
+	// Get the counts
+	unsigned int vertexCount = faceOffset * 4;
+	unsigned int indexCount = faceOffset * 6;
 
-		// Iterate across all meshes and update them
-		unsigned int faceOffset = offset[0];
-
-		unsigned int vertexCount = faceOffset * 4;
-		unsigned int indexCount = faceOffset * 6;
-
-		// Set the data
-		//m_chunks[chunkIndex].SetVerticesFromGPUBuffer<VertexVoxel>(vertexCount, vertexHandle);
-		//m_chunks[chunkIndex].SetIndicesFromGPUBuffer(indexCount, indexHandle);
-		//m_buffers.m_mesh.GetVertexBuffer()->SetVertexCount(vertexCount);
-
-// 		m_chunks[chunkIndex].m_vertexBuffer.m_bufferSize = m_buffers.m_vertexBuffer.m_bufferSize;
-// 		m_chunks[chunkIndex].m_vertexBuffer.m_vertexCount = vertexCount;
-// 		m_chunks[chunkIndex].m_vertexBuffer.m_vertexLayout = &VertexVoxel::LAYOUT;
-// 		m_chunks[chunkIndex].m_vertexLayout = &VertexVoxel::LAYOUT;
-		//m_buffers.m_mesh.GetIndexBuffer()->SetIndexCount(indexCount);
-		m_buffers.m_mesh.UpdateCounts(vertexCount, indexCount);
-
-// 		m_chunks[chunkIndex].m_indexBuffer.m_indexCount = indexCount;
-// 		m_chunks[chunkIndex].m_indexBuffer.m_indexStride = sizeof(VertexVoxel);
-// 		m_chunks[chunkIndex].m_indexBuffer.m_handle = indexHandle;
-// 		m_chunks[chunkIndex].m_indexBuffer.m_bufferSize = m_chunks[chunkIndex].m_indexBuffer.m_handle;
-
-		//m_chunks[chunkIndex].SetVertices(vertexCount, vertices);
-		//m_chunks[chunkIndex].SetIndices(indexCount, currIndices);
-		m_buffers.m_mesh.SetDrawInstruction(PRIMITIVE_TRIANGLES, true, 0, indexCount);
-	}
-
-	// Unmap all the buffers
-	m_buffers.m_offsetBuffer.UnmapBufferData();
-	//m_buffers.m_vertexBuffer.UnmapBufferData();
-
-	// Meshes are now updated
+	// Update the mesh's CPU side data
+	m_mesh.UpdateCounts(vertexCount, indexCount);
+	m_mesh.SetDrawInstruction(PRIMITIVE_TRIANGLES, true, 0, indexCount);
 }
 
-#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 
+//-----------------------------------------------------------------------------------------------
+// Draws the grid mesh to the screen
+//
 void VoxelGrid::DrawGrid()
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
@@ -182,14 +200,14 @@ void VoxelGrid::DrawGrid()
 	Renderer* renderer = Renderer::GetInstance();
 	renderer->SetCurrentCamera(Game::GetGameCamera());
 
-	Renderable renderable;
-	renderable.AddInstanceMatrix(Matrix44::IDENTITY);
+	Renderable rend;
+	rend.AddInstanceMatrix(Matrix44::IDENTITY);
 
 	RenderableDraw_t draw;
-	draw.sharedMaterial = AssetDB::GetSharedMaterial("Default_Opaque");
-	draw.mesh = &m_buffers.m_mesh;
+	draw.mesh = &m_mesh;
+	draw.sharedMaterial = AssetDB::CreateOrGetSharedMaterial("Default_Opaque");
 
-	renderable.AddDraw(draw);
+	rend.AddDraw(draw);
 
-	renderer->DrawRenderable(&renderable);
+	renderer->DrawRenderable(&rend);
 }
