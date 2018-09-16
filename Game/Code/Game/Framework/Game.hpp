@@ -14,6 +14,7 @@ class Camera;
 class GameState;
 class GameObject;
 class RenderScene;
+class NetSession;
 
 class UDPTest;
 
@@ -62,6 +63,8 @@ private:
 
 	RenderScene*				m_renderScene;
 	
+	NetSession*					m_netSession = nullptr;
+
 	std::vector<GameObject*>	m_gameObjects;
 
 

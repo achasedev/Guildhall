@@ -9,14 +9,15 @@
 #include "Game/GameStates/GameState_Loading.hpp"
 
 #include "Engine/Core/Time/Clock.hpp"
+#include "Engine/Networking/NetSession.hpp"
 #include "Engine/Rendering/Core/Camera.hpp"
+#include "Engine/Networking/NetMessage.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
+#include "Engine/Networking/NetConnection.hpp"
 
-
-
-#include "Engine/Core/DeveloperConsole/Command.hpp"
 #include "Engine/Networking/Socket.hpp"
+#include "Engine/Core/DeveloperConsole/Command.hpp"
 
 // Test commands
 void Command_UDPTestStart(Command& cmd)
@@ -73,6 +74,63 @@ void Command_UDPTestSend(Command& cmd)
 	ConsolePrintf(Rgba::GREEN, "Message Sent");
 }
 
+
+bool OnPing(NetMessage* msg, NetConnection* sender)
+{
+	std::string str;
+	msg->ReadString(str);
+
+	ConsolePrintf("Received ping from %s: %s", sender->GetTargetAddress().ToString().c_str(), str.c_str());
+
+	// Respond with a pong
+	NetMessage message("pong");
+	int amountSent = sender->Send(&message);
+
+	// all messages serve double duty
+	// do some work, and also validate
+	// if a message ends up being malformed, we return false
+	// to notify the session we may want to kick this connection; 
+	return (amountSent >= 0);
+}
+
+bool OnPong(NetMessage* msg, NetConnection* sender)
+{
+	std::string str;
+	msg->ReadString(str);
+
+	ConsolePrintf("Received pong from %s: %s", sender->GetTargetAddress().ToString().c_str(), str.c_str());
+
+	return true;
+}
+
+bool OnAdd(NetMessage* msg, NetConnection* sender)
+{
+	float a;
+	float b;
+
+	// Adding requires two values, ensure we can read them
+	if (msg->Read(a) <= 0 || msg->Read(b) <= 0)
+	{
+		return false;
+	}
+
+	float sum = a + b;
+
+	std::string result = Stringf("Add: %f + %f = %f", a, b, sum);
+	ConsolePrintf(result.c_str());
+
+	// Send a response, don't worry about checking if it sent
+	NetMessage message(result.c_str());
+	sender->Send(&message);
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------------------------
+//--------------------------------- Game Class --------------------------------------------------
+//-----------------------------------------------------------------------------------------------
+
+
 // The singleton instance
 Game* Game::s_instance = nullptr;
 
@@ -96,6 +154,16 @@ Game::Game()
 	// Render Scene
 	m_renderScene = new RenderScene("Game Scene");
 	m_renderScene->AddCamera(m_gameCamera);
+
+	// Net Session
+	m_netSession = new NetSession(128);
+
+	// Link messages to callbacks
+	m_netSession->RegisterMessageCallback("ping", OnPing);
+	m_netSession->RegisterMessageCallback("pong", OnPong);
+	m_netSession->RegisterMessageCallback("add", OnAdd);
+
+	m_netSession->AddBinding(GAME_PORT);
 
 	Command::Register("udptest_start", "Starts the UDP test", Command_UDPTestStart);
 	Command::Register("udptest_stop", "Stops the UDP test", Command_UDPTestStop);
