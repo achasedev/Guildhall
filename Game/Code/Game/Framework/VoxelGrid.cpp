@@ -12,6 +12,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
+#include "Engine/Rendering/Resources/Texture3D.hpp"
 #include "Engine/Rendering/Shaders/ComputeShader.hpp"
 
 // Constants for any size grid
@@ -36,16 +37,16 @@ void VoxelGrid::Initialize(const IntVector3& voxelDimensions)
 	m_gridColors = (Rgba*)malloc(numVoxels * sizeof(Rgba));
 	memset(m_gridColors, 0, numVoxels * sizeof(Rgba));
 
-	for (int i = 0; i < numVoxels; ++i)
-	{
-		m_gridColors[i] = Rgba::GetRandomColor();
-		IntVector3 coords = GetCoordsForIndex(i);
-
-		if ((coords.x + coords.y + coords.z) % 2 == 1)
-		{
-			m_gridColors[i].a = 0;
-		}
-	}
+// 	for (int i = 0; i < numVoxels; ++i)
+// 	{
+// 		m_gridColors[i] = Rgba::GetRandomColor();
+// 		IntVector3 coords = GetCoordsForIndex(i);
+// 
+// 		if ((coords.x + coords.y + coords.z) % 2 == 1)
+// 		{
+// 			m_gridColors[i].a = 0;
+// 		}
+// 	}
 
 	// Initialize mesh building steps
 	m_computeShader = new ComputeShader();
@@ -67,6 +68,36 @@ void VoxelGrid::BuildMeshAndDraw()
 
 	// Draw the mesh
 	DrawGrid();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Draws the 3D texture to the grid
+//
+void VoxelGrid::Write3DTexture(const Vector3& position, float rotation, Texture3D* texture)
+{
+	IntVector3 dimensions = texture->GetDimensions();
+	IntVector3 halfDimensions = dimensions / 2;
+
+	// Position the object occupies
+	IntVector3 coordinatePosition = IntVector3(position.x, position.y, position.z);
+
+	IntVector3 bottomLeft = coordinatePosition - halfDimensions;
+
+	for (int xOff = 0; xOff < dimensions.x; ++xOff)
+	{
+		for (int yOff = 0; yOff < dimensions.y; ++yOff)
+		{
+			for (int zOff = 0; zOff < dimensions.z; ++zOff)
+			{
+				IntVector3 localCoords = IntVector3(xOff, yOff, zOff);
+				IntVector3 currCoords = bottomLeft + localCoords;
+
+				int index = GetIndexForCoords(currCoords);
+				m_gridColors[index] = texture->GetColorAtCoords(localCoords);
+			}
+		}
+	}
 }
 
 
@@ -136,21 +167,7 @@ void VoxelGrid::UpdateBuffers()
 	PROFILE_LOG_SCOPE_FUNCTION();
 
 	unsigned int voxelCount = GetVoxelCount();
-	memset(m_gridColors, 0, voxelCount * sizeof(Rgba));
-
-	static int offset = 0;
-	for (int i = 0; i < voxelCount; ++i)
-	{
-		m_gridColors[i] = (offset == 0 ? Rgba::RED : Rgba::BLUE);
-		IntVector3 coords = GetCoordsForIndex(i);
-
-		if ((coords.x + coords.y + coords.z) % 2 == offset)
-		{
-			m_gridColors[i].a = 0;
-		}
-	}
-
-	offset = ((offset + 1) % 2);
+	//memset(m_gridColors, 0, voxelCount * sizeof(Rgba));
 
 	// Send down the color data
 	m_colorBuffer.CopyToGPU(GetVoxelCount() * sizeof(Rgba), m_gridColors);

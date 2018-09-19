@@ -52,6 +52,12 @@
     <ClCompile Include="Framework\ChunkRebuilder.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\Entity.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\DynamicEntity.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -85,5 +91,7 @@
     <ClInclude Include="Framework\World.hpp" />
     <ClInclude Include="Framework\VoxelGrid.hpp" />
     <ClInclude Include="Framework\ChunkRebuilder.hpp" />
+    <ClInclude Include="Entity\Entity.hpp" />
+    <ClInclude Include="Entity\DynamicEntity.hpp" />
   </ItemGroup>
 </Project>

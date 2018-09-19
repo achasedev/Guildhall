@@ -6,7 +6,7 @@
 /************************************************************************/
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
-
+#include "Game/Entity/Entity.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -30,8 +30,11 @@ World::~World()
 //
 void World::Inititalize()
 {
+	m_testEntity = new Entity();
 	m_voxelGrid = new VoxelGrid();
-	m_voxelGrid->Initialize(IntVector3(128, 32, 128));
+	m_voxelGrid->Initialize(IntVector3(128, 64, 128));
+
+	m_voxelGrid->Write3DTexture(Vector3(20.f), 0.f, m_testEntity->GetTexture());
 }
 
 

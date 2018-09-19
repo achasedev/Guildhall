@@ -30,5 +30,6 @@ private:
 	//-----Private Data-----
 
 	VoxelGrid* m_voxelGrid;		// Grid used for all coloring
+	Entity* m_testEntity;
 
 };

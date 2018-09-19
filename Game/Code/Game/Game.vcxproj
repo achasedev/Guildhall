@@ -286,6 +286,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Entity\DynamicEntity.cpp" />
+    <ClCompile Include="Entity\Entity.cpp" />
     <ClCompile Include="Framework\App.cpp" />
     <ClCompile Include="Framework\ChunkRebuilder.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
@@ -301,6 +303,8 @@
     <ClCompile Include="Utility\GameUtilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Entity\DynamicEntity.hpp" />
+    <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Framework\App.hpp" />
     <ClInclude Include="Framework\ChunkRebuilder.hpp" />
     <ClInclude Include="Framework\EngineBuildPreferences.hpp" />

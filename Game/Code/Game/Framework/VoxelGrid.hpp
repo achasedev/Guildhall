@@ -13,6 +13,7 @@
 
 class Renderable;
 class ComputeShader;
+class Texture3D;
 
 class VoxelGrid
 {
@@ -22,6 +23,9 @@ public:
 	// Initializers
 	void				Initialize(const IntVector3& voxelDimensions);
 	void				BuildMeshAndDraw();
+
+	// Mutators
+	void				Write3DTexture(const Vector3& position, float rotation, Texture3D* texture);
 
 	// Accessors
 	int					GetVoxelCount() const;
