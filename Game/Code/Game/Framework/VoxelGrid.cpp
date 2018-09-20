@@ -24,6 +24,18 @@
 #define VERTEX_BINDING (10)
 #define INDEX_BINDING (11)
 
+bool AreCoordsOnEdge(const IntVector3& coords, const IntVector3& dimensions)
+{
+	bool xOnEdge = coords.x == 0 || coords.x == dimensions.x - 1;
+	bool yOnEdge = coords.y == 0 || coords.y == dimensions.y - 1;
+	bool zOnEdge = coords.z == 0 || coords.z == dimensions.z - 1;
+
+	if (xOnEdge && yOnEdge && !zOnEdge) { return true; }
+	if (xOnEdge && !yOnEdge && zOnEdge) { return true; }
+	if (!xOnEdge && yOnEdge && zOnEdge) { return true; }
+
+	return false;
+}
 
 //-----------------------------------------------------------------------------------------------
 // Initializes the grid buffers and dimensions
@@ -37,16 +49,15 @@ void VoxelGrid::Initialize(const IntVector3& voxelDimensions)
 	m_gridColors = (Rgba*)malloc(numVoxels * sizeof(Rgba));
 	memset(m_gridColors, 0, numVoxels * sizeof(Rgba));
 
-// 	for (int i = 0; i < numVoxels; ++i)
-// 	{
-// 		m_gridColors[i] = Rgba::GetRandomColor();
-// 		IntVector3 coords = GetCoordsForIndex(i);
-// 
-// 		if ((coords.x + coords.y + coords.z) % 2 == 1)
-// 		{
-// 			m_gridColors[i].a = 0;
-// 		}
-// 	}
+	for (int i = 0; i < numVoxels; ++i)
+	{
+		IntVector3 coords = GetCoordsForIndex(i);
+
+		if (AreCoordsOnEdge(coords, m_dimensions))
+		{
+			m_gridColors[i] = Rgba::GetRandomColor();
+		}
+	}
 
 	// Initialize mesh building steps
 	m_computeShader = new ComputeShader();
@@ -82,7 +93,9 @@ void VoxelGrid::Write3DTexture(const Vector3& position, float rotation, Texture3
 	// Position the object occupies
 	IntVector3 coordinatePosition = IntVector3(position.x, position.y, position.z);
 
-	IntVector3 bottomLeft = coordinatePosition - halfDimensions;
+	IntVector3 bottomLeft = coordinatePosition;
+	bottomLeft.x -= halfDimensions.x;
+	bottomLeft.z -= halfDimensions.z;
 
 	for (int xOff = 0; xOff < dimensions.x; ++xOff)
 	{
@@ -94,7 +107,12 @@ void VoxelGrid::Write3DTexture(const Vector3& position, float rotation, Texture3
 				IntVector3 currCoords = bottomLeft + localCoords;
 
 				int index = GetIndexForCoords(currCoords);
-				m_gridColors[index] = texture->GetColorAtCoords(localCoords);
+
+				Rgba colorToRender = texture->GetColorAtCoords(localCoords);
+				if (colorToRender.a > 0)
+				{
+					m_gridColors[index] = texture->GetColorAtCoords(localCoords);
+				}
 			}
 		}
 	}

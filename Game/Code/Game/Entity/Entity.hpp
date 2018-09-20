@@ -1,8 +1,15 @@
 #pragma once
 #include "Engine/Math/Vector3.hpp"
+#include "Engine/Rendering/Resources/Texture3D.hpp"
 
-class Texture3D;
-
+enum FACING_DIRECTION
+{
+	DIRECTION_NORTH,
+	DIRECTION_SOUTH,
+	DIRECTION_EAST,
+	DIRECTION_WEST, 
+	NUM_DIRECTIONS
+};
 
 class Entity
 {
@@ -17,12 +24,18 @@ public:
 	Texture3D* GetTexture() const;
 
 
+private:
+	//-----Private Methods-----
+
+	Rgba* RotateTextureToOrientation() const;
+
+
 protected:
 	//-----Protected Data-----
 
 	Vector3		m_position;
 	float		m_orientation;
 
-	Texture3D*	m_texture; // 8x8x8
+	Texture3D*	m_textures[NUM_DIRECTIONS];
 
 };

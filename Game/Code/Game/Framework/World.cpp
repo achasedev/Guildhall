@@ -32,9 +32,9 @@ void World::Inititalize()
 {
 	m_testEntity = new Entity();
 	m_voxelGrid = new VoxelGrid();
-	m_voxelGrid->Initialize(IntVector3(128, 64, 128));
+	m_voxelGrid->Initialize(IntVector3(256, 64, 256));
 
-	m_voxelGrid->Write3DTexture(Vector3(20.f), 0.f, m_testEntity->GetTexture());
+	m_voxelGrid->Write3DTexture(Vector3(20.f, 0.f, 20.f), 0.f, m_testEntity->GetTexture());
 }
 
 
