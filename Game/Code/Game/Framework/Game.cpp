@@ -19,61 +19,6 @@
 #include "Engine/Networking/Socket.hpp"
 #include "Engine/Core/DeveloperConsole/Command.hpp"
 
-// Test commands
-void Command_UDPTestStart(Command& cmd)
-{
-	Game::GetInstance()->m_test = new UDPTest();
-	Game::GetInstance()->m_test->start();
-}
-
-void Command_UDPTestStop(Command& cmd)
-{
-	if (Game::GetInstance()->m_test != nullptr)
-	{
-		Game::GetInstance()->m_test->stop();
-		delete Game::GetInstance()->m_test;
-		Game::GetInstance()->m_test = nullptr;
-		ConsolePrintf(Rgba::GREEN, "Test stopped");
-	}
-	else
-	{
-		ConsoleErrorf("It's already stopped");
-	}
-}
-
-void Command_UDPTestSend(Command& cmd)
-{
-	if (Game::GetInstance()->m_test == nullptr)
-	{
-		ConsoleErrorf("Start it first...");
-		return;
-	}
-
-	std::string address;
-	cmd.GetParam("a", address);
-
-	if (address.size() == 0)
-	{
-		ConsoleErrorf("No address specified");
-		return;
-	}
-
-	std::string message;
-	cmd.GetParam("m", message);
-
-	if (message.size() == 0)
-	{
-		ConsoleErrorf("No message specified");
-		return;
-	}
-
-	NetAddress_t addr(address.c_str());
-
-	ConsolePrintf("Sending Message");
-	Game::GetInstance()->m_test->send_to(addr, message.c_str(), (unsigned int)message.size());
-	ConsolePrintf(Rgba::GREEN, "Message Sent");
-}
-
 
 bool OnPing(NetMessage* msg, NetConnection* sender)
 {
@@ -164,10 +109,6 @@ Game::Game()
 	m_netSession->RegisterMessageCallback("add", OnAdd);
 
 	m_netSession->AddBinding(GAME_PORT);
-
-	Command::Register("udptest_start", "Starts the UDP test", Command_UDPTestStart);
-	Command::Register("udptest_stop", "Stops the UDP test", Command_UDPTestStop);
-	Command::Register("udptest_send", "Sends a message for the UDP test", Command_UDPTestSend);
 }
 
 
@@ -225,11 +166,6 @@ void Game::Update()
 
 	// Update the current state
 	m_currentState->Update();
-
-	if (m_test != nullptr)
-	{
-		m_test->update();
-	}
 }
 
 

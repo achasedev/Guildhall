@@ -16,8 +16,6 @@ class GameObject;
 class RenderScene;
 class NetSession;
 
-class UDPTest;
-
 class Game
 {
 	
@@ -41,7 +39,6 @@ public:
 	static float				GetDeltaTime();
 	static RenderScene*			GetRenderScene();
 
-	UDPTest* m_test = nullptr;
 
 private:
 	//-----Private Methods-----
