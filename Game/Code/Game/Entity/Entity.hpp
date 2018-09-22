@@ -5,8 +5,8 @@
 enum FACING_DIRECTION
 {
 	DIRECTION_NORTH,
-	DIRECTION_SOUTH,
 	DIRECTION_EAST,
+	DIRECTION_SOUTH,
 	DIRECTION_WEST, 
 	NUM_DIRECTIONS
 };
@@ -21,13 +21,12 @@ public:
 
 	virtual void Update();
 
-	Texture3D* GetTexture() const;
+	Texture3D* GetTextureForOrientation() const;
 
 
 private:
 	//-----Private Methods-----
 
-	Rgba* RotateTextureToOrientation() const;
 
 
 protected:

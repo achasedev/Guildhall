@@ -12,6 +12,7 @@
 #include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 
 // The singleton instance
@@ -33,6 +34,8 @@ Game::Game()
 	m_gameCamera->SetDepthTarget(renderer->GetDefaultDepthTarget());
 	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 10000.f);
 	m_gameCamera->LookAt(Vector3(0.f, 200.f, -500.0f), Vector3(0.f, 200.f, 0.f));
+
+	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 }
 
 

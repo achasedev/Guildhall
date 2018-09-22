@@ -1,7 +1,7 @@
 #include "Game/Entity/DynamicEntity.hpp"
 #include "Game/Framework/Game.hpp"
 
-#define GRAVITY_MAGNITUDE (9.81);
+#define GRAVITY_MAGNITUDE (9.81f);
 
 DynamicEntity::DynamicEntity()
 	: Entity()

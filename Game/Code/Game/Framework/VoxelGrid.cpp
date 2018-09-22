@@ -14,6 +14,7 @@
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
 #include "Engine/Rendering/Resources/Texture3D.hpp"
 #include "Engine/Rendering/Shaders/ComputeShader.hpp"
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 // Constants for any size grid
 #define VERTICES_PER_VOXEL 24
@@ -64,6 +65,15 @@ void VoxelGrid::Initialize(const IntVector3& voxelDimensions)
 	m_computeShader->Initialize("Data/ComputeShaders/VoxelMeshRebuild.cs");
 
 	InitializeBuffers();
+
+	DebugRenderOptions options;
+	options.m_isWireFrame = true;
+	options.m_startColor = Rgba::RED;
+	options.m_endColor = Rgba::RED;
+	options.m_lifetime = 1000.f;
+	options.m_renderMode = DEBUG_RENDER_IGNORE_DEPTH;
+
+	DebugRenderSystem::DrawCube(Vector3(m_dimensions / 2), options, Vector3(m_dimensions));
 }
 
 
@@ -83,10 +93,22 @@ void VoxelGrid::BuildMeshAndDraw()
 
 
 //-----------------------------------------------------------------------------------------------
+// Clears the grid to be empty, used at the start of each frame
+//
+void VoxelGrid::Clear()
+{
+	PROFILE_LOG_SCOPE_FUNCTION();
+	memset(m_gridColors, 0, GetVoxelCount() * sizeof(Rgba));
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Draws the 3D texture to the grid
 //
 void VoxelGrid::Write3DTexture(const Vector3& position, float rotation, Texture3D* texture)
 {
+	PROFILE_LOG_SCOPE_FUNCTION();
+
 	IntVector3 dimensions = texture->GetDimensions();
 	IntVector3 halfDimensions = dimensions / 2;
 
@@ -183,9 +205,6 @@ void VoxelGrid::InitializeBuffers()
 void VoxelGrid::UpdateBuffers()
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
-
-	unsigned int voxelCount = GetVoxelCount();
-	//memset(m_gridColors, 0, voxelCount * sizeof(Rgba));
 
 	// Send down the color data
 	m_colorBuffer.CopyToGPU(GetVoxelCount() * sizeof(Rgba), m_gridColors);

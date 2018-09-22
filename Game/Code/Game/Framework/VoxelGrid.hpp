@@ -25,6 +25,7 @@ public:
 	void				BuildMeshAndDraw();
 
 	// Mutators
+	void				Clear();
 	void				Write3DTexture(const Vector3& position, float rotation, Texture3D* texture);
 
 	// Accessors
