@@ -25,17 +25,18 @@ bool OnPing(NetMessage* msg, NetConnection* sender)
 	std::string str;
 	msg->ReadString(str);
 
-	ConsolePrintf("Received ping from %s: %s", sender->GetTargetAddress().ToString().c_str(), str.c_str());
+	ConsolePrintf("Received ping from %s: %s", sender->GetAddress().ToString().c_str(), str.c_str());
 
 	// Respond with a pong
-	NetMessage message("pong");
-	int amountSent = sender->Send(&message);
+	const NetMessageDefinition_t* definition = Game::GetNetSession()->GetMessageDefinition("pong");
+	NetMessage message(definition);
+	sender->Send(&message);
 
 	// all messages serve double duty
 	// do some work, and also validate
 	// if a message ends up being malformed, we return false
 	// to notify the session we may want to kick this connection; 
-	return (amountSent >= 0);
+	return true;
 }
 
 bool OnPong(NetMessage* msg, NetConnection* sender)
@@ -43,7 +44,7 @@ bool OnPong(NetMessage* msg, NetConnection* sender)
 	std::string str;
 	msg->ReadString(str);
 
-	ConsolePrintf("Received pong from %s: %s", sender->GetTargetAddress().ToString().c_str(), str.c_str());
+	ConsolePrintf("Received pong from %s: %s", sender->GetAddress().ToString().c_str(), str.c_str());
 
 	return true;
 }
@@ -63,10 +64,6 @@ bool OnAdd(NetMessage* msg, NetConnection* sender)
 
 	std::string result = Stringf("Add: %f + %f = %f", a, b, sum);
 	ConsolePrintf(result.c_str());
-
-	// Send a response, don't worry about checking if it sent
-	NetMessage message(result.c_str());
-	sender->Send(&message);
 
 	return true;
 }
@@ -104,11 +101,11 @@ Game::Game()
 	m_netSession = new NetSession(128);
 
 	// Link messages to callbacks
-	m_netSession->RegisterMessageCallback("ping", OnPing);
-	m_netSession->RegisterMessageCallback("pong", OnPong);
-	m_netSession->RegisterMessageCallback("add", OnAdd);
+	m_netSession->RegisterMessageDefinition("ping", OnPing);
+	m_netSession->RegisterMessageDefinition("pong", OnPong);
+	m_netSession->RegisterMessageDefinition("add", OnAdd);
 
-	m_netSession->AddBinding(GAME_PORT);
+	m_netSession->Bind(GAME_PORT);
 }
 
 
@@ -221,6 +218,15 @@ float Game::GetDeltaTime()
 RenderScene* Game::GetRenderScene()
 {
 	return s_instance->m_renderScene;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the net session of the instance
+//
+NetSession* Game::GetNetSession()
+{
+	return s_instance->m_netSession;
 }
 
 

@@ -38,6 +38,7 @@ public:
 	static Camera*				GetGameCamera();
 	static float				GetDeltaTime();
 	static RenderScene*			GetRenderScene();
+	static NetSession*			GetNetSession();
 
 
 private:
