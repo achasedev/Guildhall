@@ -66,6 +66,7 @@ Entity::Entity()
 		}
 	}
 
+	m_position = Vector3(128.f, 0.f, 128.f);
 	m_orientation = 0;
 	DebugRenderSystem::DrawBasis(Vector3(20.f, 0.f, 20.f), Vector3::ZERO, 10000.f, 16.f);
 }
@@ -84,7 +85,11 @@ Entity::~Entity()
 
 void Entity::Update()
 {
-	m_orientation += Game::GetDeltaTime() * 90.f;
+}
+
+Vector3 Entity::GetPosition() const
+{
+	return m_position;
 }
 
 Texture3D* Entity::GetTextureForOrientation() const

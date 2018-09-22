@@ -58,6 +58,9 @@
     <ClCompile Include="Entity\DynamicEntity.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\Player.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -93,5 +96,6 @@
     <ClInclude Include="Framework\ChunkRebuilder.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\DynamicEntity.hpp" />
+    <ClInclude Include="Entity\Player.hpp" />
   </ItemGroup>
 </Project>

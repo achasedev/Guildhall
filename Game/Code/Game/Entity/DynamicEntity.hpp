@@ -21,14 +21,14 @@ private:
 
 
 
-private:
-	//-----Private Data-----
+protected:
+	//-----Protected Data-----
 
 	Vector3 m_velocity			= Vector3::ZERO;
 	Vector3 m_acceleration		= Vector3::ZERO;
 	Vector3 m_force				= Vector3::ZERO;
 	float	m_mass				= 1.f;
 	float	m_inverseMass		= 1.f;
-	bool	m_affectedByGravity	= true;
+	bool	m_affectedByGravity	= false;
 
 };

@@ -9,7 +9,7 @@
 #include <vector>
 #include "Engine/Core/Rgba.hpp"
 
-class Entity;
+class Player;
 class VoxelGrid;
 
 class World
@@ -30,6 +30,6 @@ private:
 	//-----Private Data-----
 
 	VoxelGrid* m_voxelGrid;		// Grid used for all coloring
-	Entity* m_testEntity;
+	Player* m_testPlayer;
 
 };

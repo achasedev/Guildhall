@@ -288,6 +288,7 @@
   <ItemGroup>
     <ClCompile Include="Entity\DynamicEntity.cpp" />
     <ClCompile Include="Entity\Entity.cpp" />
+    <ClCompile Include="Entity\Player.cpp" />
     <ClCompile Include="Framework\App.cpp" />
     <ClCompile Include="Framework\ChunkRebuilder.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
@@ -305,6 +306,7 @@
   <ItemGroup>
     <ClInclude Include="Entity\DynamicEntity.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />
+    <ClInclude Include="Entity\Player.hpp" />
     <ClInclude Include="Framework\App.hpp" />
     <ClInclude Include="Framework\ChunkRebuilder.hpp" />
     <ClInclude Include="Framework\EngineBuildPreferences.hpp" />

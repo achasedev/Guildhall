@@ -21,6 +21,7 @@ public:
 
 	virtual void Update();
 
+	Vector3 GetPosition() const;
 	Texture3D* GetTextureForOrientation() const;
 
 
