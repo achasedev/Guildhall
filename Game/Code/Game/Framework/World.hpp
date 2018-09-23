@@ -5,12 +5,16 @@
 /* Description: Class to represent a game scene
 /************************************************************************/
 #pragma once
-
 #include <vector>
 #include "Engine/Core/Rgba.hpp"
 
+#define MAX_PLAYERS (4)
+
 class Player;
 class VoxelGrid;
+class Entity;
+class DynamicEntity;
+class StaticEntity;
 
 class World
 {
@@ -23,13 +27,37 @@ public:
 	void Inititalize();
 
 	void Update();
-	void Render() const;
+	void Render();
+
+
+private:
+	//-----Private Methods-----
+
+	void ProcessPlayerInput();
+	void UpdateStaticEntities();
+	void UpdateDynamicEntities();
+
+	void ApplyPhysicsStep();
+
+	void CheckStaticEntityCollisions();
+	void CheckDynamicEntityCollisions();
+
+	void DeleteMarkedEntities();
+
+	void DrawStaticEntitiesToGrid();
+	void DrawDynamicEntitiesToGrid();
+
+	// Utility
+	float GetEntityOverlap(Entity* first, Entity* second);
 
 
 private:
 	//-----Private Data-----
 
-	VoxelGrid* m_voxelGrid;		// Grid used for all coloring
-	Player* m_testPlayer;
+	VoxelGrid*	m_voxelGrid;		
+	Player*		m_players[MAX_PLAYERS];
+
+	std::vector<DynamicEntity*> m_dynamicEntities;
+	std::vector<StaticEntity*>	m_staticEntities;
 
 };

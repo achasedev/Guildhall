@@ -1,15 +1,23 @@
+/************************************************************************/
+/* File: Entity.cpp
+/* Author: Andrew Chase
+/* Date: September 22nd, 2017
+/* Description: Implementation of the Entity class
+/************************************************************************/
 #include "Game/Entity/Entity.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
-
 #include <stdlib.h>
 
-#define MAX_ENTITY_VOXEL_COUNT 8*8*8
 
-Entity::Entity()
+//-----------------------------------------------------------------------------------------------
+// Constructor
+//
+Entity::Entity(eEntityType type)
+	: m_entityType(type)
 {
 	m_textures[0] = AssetDB::CreateOrGet3DVoxelTextureInstance("Data/3DTextures/TestCube.qef");
 
@@ -66,11 +74,13 @@ Entity::Entity()
 		}
 	}
 
-	m_position = Vector3(128.f, 0.f, 128.f);
 	m_orientation = 0;
-	DebugRenderSystem::DrawBasis(Vector3(20.f, 0.f, 20.f), Vector3::ZERO, 10000.f, 16.f);
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Destructor
+//
 Entity::~Entity()
 {
 	for (int i = 0; i < NUM_DIRECTIONS; ++i)
@@ -83,21 +93,69 @@ Entity::~Entity()
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Update
+//
 void Entity::Update()
+{
+	DebugRenderSystem::DrawUVSphere(m_position, 0.f, Rgba::WHITE, m_collisionRadius);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Callback for when collision is detected
+//
+void Entity::OnCollision(Entity* other)
 {
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Hard sets the position of the entity
+//
+void Entity::SetPosition(const Vector3& newPosition)
+{
+	m_position = newPosition;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the world position of the entity
+//
 Vector3 Entity::GetPosition() const
 {
 	return m_position;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Returns the 3D texture to used for rendering, based on the current 2D orientation of the entity
+//
 Texture3D* Entity::GetTextureForOrientation() const
 {
 	float cardinalAngle = GetNearestCardinalAngle(m_orientation);
 
-	if		(cardinalAngle == 0.f) { return m_textures[DIRECTION_EAST]; }
-	else if (cardinalAngle == 90.f) { return m_textures[DIRECTION_NORTH]; }
-	else if (cardinalAngle == 180.f) { return m_textures[DIRECTION_WEST]; }
-	else	{ return m_textures[DIRECTION_SOUTH]; }
+	if		(cardinalAngle == 0.f)		{ return m_textures[DIRECTION_EAST]; }
+	else if (cardinalAngle == 90.f)		{ return m_textures[DIRECTION_NORTH]; }
+	else if (cardinalAngle == 180.f)	{ return m_textures[DIRECTION_WEST]; }
+	else								{ return m_textures[DIRECTION_SOUTH]; }
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the collision radius of the entity
+//
+float Entity::GetCollisionRadius() const
+{
+	return m_collisionRadius;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether this entity has been marked to be deleted at the end of the frame
+//
+bool Entity::IsMarkedForDelete() const
+{
+	return m_isMarkedForDelete;
 }

@@ -289,8 +289,8 @@
     <ClCompile Include="Entity\DynamicEntity.cpp" />
     <ClCompile Include="Entity\Entity.cpp" />
     <ClCompile Include="Entity\Player.cpp" />
+    <ClCompile Include="Entity\StaticEntity.cpp" />
     <ClCompile Include="Framework\App.cpp" />
-    <ClCompile Include="Framework\ChunkRebuilder.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
     <ClCompile Include="Framework\VoxelGrid.cpp" />
     <ClCompile Include="Framework\World.cpp" />
@@ -307,8 +307,8 @@
     <ClInclude Include="Entity\DynamicEntity.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\Player.hpp" />
+    <ClInclude Include="Entity\StaticEntity.hpp" />
     <ClInclude Include="Framework\App.hpp" />
-    <ClInclude Include="Framework\ChunkRebuilder.hpp" />
     <ClInclude Include="Framework\EngineBuildPreferences.hpp" />
     <ClInclude Include="Framework\Game.hpp" />
     <ClInclude Include="Framework\GameCommon.hpp" />

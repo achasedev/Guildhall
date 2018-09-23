@@ -9,6 +9,7 @@
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/IntVector3.hpp"
+#include "Game/Entity/Entity.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
@@ -105,10 +106,12 @@ void VoxelGrid::Clear()
 //-----------------------------------------------------------------------------------------------
 // Draws the 3D texture to the grid
 //
-void VoxelGrid::Write3DTexture(const Vector3& position, float rotation, Texture3D* texture)
+void VoxelGrid::DrawEntity(const Entity* entity)
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
+	Texture3D* texture = entity->GetTextureForOrientation();
+	Vector3 position = entity->GetPosition();
 	IntVector3 dimensions = texture->GetDimensions();
 	IntVector3 halfDimensions = dimensions / 2;
 
