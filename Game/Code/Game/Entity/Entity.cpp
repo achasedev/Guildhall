@@ -112,6 +112,15 @@ void Entity::OnCollision(Entity* other)
 
 
 //-----------------------------------------------------------------------------------------------
+// Adds an offset (translates) to the player
+//
+void Entity::AddPositionOffset(const Vector3& offset)
+{
+	m_position += offset;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Hard sets the position of the entity
 //
 void Entity::SetPosition(const Vector3& newPosition)

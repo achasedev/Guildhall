@@ -42,6 +42,7 @@ public:
 	virtual void OnCollision(Entity* other);
 
 	// Mutators
+	void			AddPositionOffset(const Vector3& offset);
 	void			SetPosition(const Vector3& newPosition);
 
 	// Accessors

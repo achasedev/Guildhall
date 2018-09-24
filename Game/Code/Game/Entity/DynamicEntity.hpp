@@ -18,28 +18,43 @@ public:
 	~DynamicEntity();
 
 	// Core
-	virtual void Update() override;
+	virtual void	Update() override;
 
-	// Physics
-	void AddForce(const Vector3& force);
-	void ApplyPhysicsStep();
+	// Physics		
+	void			AddForce(const Vector3& force);
+	void			AddVelocity(const Vector3& velocity);
 
-	// Collision
+	void			SetForce(const Vector3& force);
+	void			SetVelocity(const Vector3& velocity);
+
+	void			ApplyPhysicsStep();
+
+	// Collision	
 	virtual void	OnCollision(Entity* other) override;
 	void			AddCollisionCorrection(const Vector3& correction);
-	
-	// Accessors
-	float GetMass() const;
-	float GetInverseMass() const;
+
+	// Accessors	
+	float			GetMass() const;
+	float			GetInverseMass() const;
+
 
 protected:
 	//-----Protected Data-----
 
-	Vector3 m_velocity			= Vector3::ZERO;
-	Vector3 m_acceleration		= Vector3::ZERO;
-	Vector3 m_force				= Vector3::ZERO;
-	float	m_mass				= 1.f;
-	float	m_inverseMass		= 1.f;
-	bool	m_affectedByGravity	= false;
+	// State
+	Vector3 m_velocity									= Vector3::ZERO;
+	Vector3 m_force										= Vector3::ZERO;
+
+	// Data set members
+	float	m_mass										= DEFAULT_MASS;					// Mass of the Entity
+	float	m_inverseMass								= 1.f / DEFAULT_MASS;			// Cache off inverse for efficiency
+	float	m_maxSpeed									= DEFAULT_MAX_SPEED;			// Max speed this entity can move
+	float	m_maxAcceleration							= DEFAULT_MAX_ACCELERATION;		// Max change in velocity per second
+	bool	m_affectedByGravity							= false;
+
+	// Defaults
+	static constexpr float DEFAULT_MAX_ACCELERATION		= 100000.f;
+	static constexpr float DEFAULT_MAX_SPEED			= 100.f;
+	static constexpr float DEFAULT_MASS					= 1.0f;
 
 };

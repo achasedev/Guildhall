@@ -82,43 +82,72 @@ void DynamicEntity::AddForce(const Vector3& force)
 	m_force += force;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Adds the given velocity immediately
+//
+void DynamicEntity::AddVelocity(const Vector3& velocity)
+{
+	m_velocity += velocity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the force to the given force
+//
+void DynamicEntity::SetForce(const Vector3& force)
+{
+	m_force = force;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the velocity to the given velocity
+//
+void DynamicEntity::SetVelocity(const Vector3& velocity)
+{
+	m_velocity = velocity;
+}
+
+
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 //-----------------------------------------------------------------------------------------------
 // Performs the forward Euler physics step on the entity
 //
 void DynamicEntity::ApplyPhysicsStep()
 {
+	float deltaTime = Game::GetDeltaTime();
+
 	if (m_affectedByGravity)
 	{
 		m_force += Vector3::DIRECTION_DOWN * m_mass * GRAVITY_MAGNITUDE;
 	}
 
-	// Apply force
-	m_acceleration = (m_force * m_inverseMass);
-	float currAcceleration = m_acceleration.GetLength();
-	//currAcceleration -= 20.f * m_inverseMass * Game::GetDeltaTime();
-	//currAcceleration = ClampFloat(currAcceleration, 0.f, 1000.f);
-	//m_acceleration *= currAcceleration;
+	// Apply force, clamping
+	Vector3 acceleration = (m_force * m_inverseMass);
+	float currAcceleration = acceleration.NormalizeAndGetLength();
+	currAcceleration = ClampFloat(currAcceleration, 0.f, m_maxAcceleration);
 
-	// Apply acceleration
-	float deltaTime = Game::GetDeltaTime();
-
-	m_velocity += (m_acceleration * deltaTime);
-
-	float currSpeed = m_velocity.NormalizeAndGetLength();
-	float newSpeed = currSpeed;
+	// Apply deceleration
 	if (currAcceleration == 0.f)
 	{
-		newSpeed -= 10.f * m_inverseMass * Game::GetDeltaTime();
-	}
 
-	newSpeed = ClampFloat(newSpeed, 0.f, 100.f);
-	m_velocity *= newSpeed;
+	}
+	else
+	{
+		acceleration *= currAcceleration;
+
+		// Apply acceleration
+		m_velocity += (acceleration * deltaTime);
+
+		float currSpeed = m_velocity.NormalizeAndGetLength();
+		currSpeed = ClampFloat(currSpeed, 0.f, m_maxSpeed);
+		m_velocity *= currSpeed;
+	}
 
 	// Apply velocity
 	m_position += (m_velocity * deltaTime);
 
-	ConsolePrintf("Speed: %f", newSpeed);
-
+	// Zero out force
 	m_force = Vector3::ZERO;
 }

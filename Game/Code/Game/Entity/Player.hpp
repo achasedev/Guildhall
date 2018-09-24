@@ -23,12 +23,16 @@ public:
 	virtual void	Update() override;
 
 	// Collision
-	virtual void OnCollision(Entity* other) override;
+	virtual void	OnCollision(Entity* other) override;
 
 
 private:
 	//-----Private Data-----
 
-	int m_playerID = 0;
+	int		m_playerID = 0;
+
+	float	m_maxMoveAcceleration = 200.f;
+	float	m_maxMoveSpeed = 20.f;
+	float	m_maxMoveDeceleration = 100.f;
 
 };
