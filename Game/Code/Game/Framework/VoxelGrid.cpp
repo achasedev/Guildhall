@@ -133,10 +133,13 @@ void VoxelGrid::DrawEntity(const Entity* entity)
 
 				int index = GetIndexForCoords(currCoords);
 
-				Rgba colorToRender = texture->GetColorAtCoords(localCoords);
-				if (colorToRender.a > 0)
+				if (index != -1)
 				{
-					m_gridColors[index] = texture->GetColorAtCoords(localCoords);
+					Rgba colorToRender = texture->GetColorAtCoords(localCoords);
+					if (colorToRender.a > 0)
+					{
+						m_gridColors[index] = texture->GetColorAtCoords(localCoords);
+					}
 				}
 			}
 		}
@@ -158,6 +161,12 @@ int VoxelGrid::GetVoxelCount() const
 //
 int VoxelGrid::GetIndexForCoords(const IntVector3& coords) const
 {
+	// Check if it's in bounds first
+	if (coords.x >= m_dimensions.x || coords.x < 0 || coords.y >= m_dimensions.y || coords.y < 0 || coords.z >= m_dimensions.z || coords.z < 0)
+	{
+		return -1;
+	}
+
 	return coords.y * (m_dimensions.x * m_dimensions.z) + coords.z * m_dimensions.x + coords.x;
 }
 
@@ -172,6 +181,12 @@ IntVector3 VoxelGrid::GetCoordsForIndex(unsigned int index) const
 
 	int z = leftover / m_dimensions.x;
 	int x = leftover % m_dimensions.x;
+
+	// Check if in bounds
+	if (x >= m_dimensions.x || x < 0 || y >= m_dimensions.y || y < 0 || z >= m_dimensions.z || z < 0)
+	{
+		return IntVector3(-1, -1, -1);
+	}
 
 	return IntVector3(x, y, z);
 }

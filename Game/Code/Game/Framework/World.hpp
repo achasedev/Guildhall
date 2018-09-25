@@ -29,6 +29,9 @@ public:
 	void Update();
 	void Render();
 
+	void AddDynamicEntity(DynamicEntity* entity);
+	void AddStaticEntity(StaticEntity* entity);
+
 
 private:
 	//-----Private Methods-----

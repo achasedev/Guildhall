@@ -10,6 +10,7 @@
 #include "Engine/Math/Vector2.hpp"
 
 class Clock;
+class World;
 class Camera;
 class GameState;
 class GameObject;
@@ -36,6 +37,7 @@ public:
 	static Clock*				GetGameClock();
 	static Camera*				GetGameCamera();
 	static float				GetDeltaTime();
+	static World*				GetWorld();
 
 
 private:
@@ -55,7 +57,7 @@ private:
 	GameState*					m_currentState = nullptr;
 	GameState*					m_pendingState = nullptr;
 	Clock*						m_gameClock = nullptr;
-	
+	World*						m_world = nullptr;
 
 	static Game* s_instance;			// The singleton Game instance
 

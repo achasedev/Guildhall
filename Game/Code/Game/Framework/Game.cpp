@@ -5,6 +5,7 @@
 /* Description: Game class for general gameplay management
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/World.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/GameStates/GameState_Loading.hpp"
 
@@ -13,7 +14,20 @@
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
+#include "Engine/Core/DeveloperConsole/Command.hpp"
+#include "Engine/Core/Utility/XmlUtilities.hpp"
 
+// void Command_ReloadPlayerData(Command& cmd)
+// {
+// 	XMLDocument document;
+// 	document.LoadFile("Data/Definitions/Player.xml");
+// 
+// 	const XMLElement* root = document.RootElement();
+// 	
+// 	if (root == nullptr) { return; }
+// 
+// 	const XMLElement* curr = root->FirstChildElement("MaxMoveAcceleration)
+// }
 
 // The singleton instance
 Game* Game::s_instance = nullptr;
@@ -36,6 +50,10 @@ Game::Game()
 	m_gameCamera->LookAt(Vector3(0.f, 200.f, -500.0f), Vector3(0.f, 200.f, 0.f));
 
 	DebugRenderSystem::SetWorldCamera(m_gameCamera);
+
+	// Game world
+	m_world = new World();
+	m_world->Inititalize();
 }
 
 
@@ -137,6 +155,15 @@ Camera* Game::GetGameCamera()
 float Game::GetDeltaTime()
 {
 	return s_instance->m_gameClock->GetDeltaTime();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the world used for all entities and terrain
+//
+World* Game::GetWorld()
+{
+	return s_instance->m_world;
 }
 
 

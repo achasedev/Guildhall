@@ -15,6 +15,9 @@ public:
 	// Collision
 	virtual void OnCollision(Entity* other) override;
 
+protected:
+	//-----Protected Methods-----
+
 
 private:
 	//-----Private Data-----

@@ -57,6 +57,33 @@ void DynamicEntity::AddCollisionCorrection(const Vector3& correction)
 
 
 //-----------------------------------------------------------------------------------------------
+// Called when the entity takes damage, for custom behavior
+//
+void DynamicEntity::OnDamageTaken(int damageAmount)
+{
+	Entity::OnDamageTaken(damageAmount);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Called when the entity's health is <= 0
+//
+void DynamicEntity::OnDeath()
+{
+	Entity::OnDeath();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Called when the entity is spawned into the world
+//
+void DynamicEntity::OnSpawn()
+{
+	Entity::OnSpawn();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the mass of the entity
 //
 float DynamicEntity::GetMass() const
@@ -128,22 +155,14 @@ void DynamicEntity::ApplyPhysicsStep()
 	float currAcceleration = acceleration.NormalizeAndGetLength();
 	currAcceleration = ClampFloat(currAcceleration, 0.f, m_maxAcceleration);
 
-	// Apply deceleration
-	if (currAcceleration == 0.f)
-	{
+	acceleration *= currAcceleration;
 
-	}
-	else
-	{
-		acceleration *= currAcceleration;
+	// Apply acceleration
+	m_velocity += (acceleration * deltaTime);
 
-		// Apply acceleration
-		m_velocity += (acceleration * deltaTime);
-
-		float currSpeed = m_velocity.NormalizeAndGetLength();
-		currSpeed = ClampFloat(currSpeed, 0.f, m_maxSpeed);
-		m_velocity *= currSpeed;
-	}
+	float currSpeed = m_velocity.NormalizeAndGetLength();
+	currSpeed = ClampFloat(currSpeed, 0.f, m_maxSpeed);
+	m_velocity *= currSpeed;
 
 	// Apply velocity
 	m_position += (m_velocity * deltaTime);

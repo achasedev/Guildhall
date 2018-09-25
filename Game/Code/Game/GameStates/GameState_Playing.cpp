@@ -21,8 +21,6 @@
 //
 GameState_Playing::GameState_Playing()
 {
-	m_world = new World();
-	m_world->Inititalize();
 }
 
 
@@ -113,7 +111,7 @@ void GameState_Playing::ProcessInput()
 //
 void GameState_Playing::Update()
 {
-	m_world->Update();
+	Game::GetWorld()->Update();
 }
 
 
@@ -122,5 +120,5 @@ void GameState_Playing::Update()
 //
 void GameState_Playing::Render() const
 {
-	m_world->Render();
+	Game::GetWorld()->Render();
 }

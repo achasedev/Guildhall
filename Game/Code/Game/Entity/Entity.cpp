@@ -19,7 +19,115 @@
 Entity::Entity(eEntityType type)
 	: m_entityType(type)
 {
-	m_textures[0] = AssetDB::CreateOrGet3DVoxelTextureInstance("Data/3DTextures/TestCube.qef");
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Destructor
+//
+Entity::~Entity()
+{
+	for (int i = 0; i < NUM_DIRECTIONS; ++i)
+	{
+		if (m_textures[i] != nullptr)
+		{
+			delete m_textures[i];
+			m_textures[i] = nullptr;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Update
+//
+void Entity::Update()
+{
+	//DebugRenderSystem::DrawUVSphere(m_position, 0.f, Rgba::WHITE, m_collisionRadius);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Callback for when collision is detected
+//
+void Entity::OnCollision(Entity* other)
+{
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds an offset (translates) to the player
+//
+void Entity::AddPositionOffset(const Vector3& offset)
+{
+	m_position += offset;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Hard sets the position of the entity
+//
+void Entity::SetPosition(const Vector3& newPosition)
+{
+	m_position = newPosition;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the orientation of the entity to the provided value
+//
+void Entity::SetOrientation(float orientation)
+{
+	m_orientation = orientation;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Subtracts the amount to the entity's health
+//
+void Entity::TakeDamage(int damageAmount)
+{
+	m_health -= damageAmount;
+
+	OnDamageTaken(damageAmount);
+
+	if (m_health <= 0)
+	{
+		OnDeath();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Called when the entity takes damage, for custom behavior
+//
+void Entity::OnDamageTaken(int damageAmount)
+{
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Called when the entity's health is <= 0
+//
+void Entity::OnDeath()
+{
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Called when the entity is spawned
+//
+void Entity::OnSpawn()
+{
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Gets the voxel texture given by filename and sets it up for use with this entity
+//
+void Entity::SetupVoxelTextures(const char* filename)
+{
+	m_textures[0] = AssetDB::CreateOrGet3DVoxelTextureInstance(filename);
 
 	// Rotate to get the other 3
 	IntVector3 dimensions = m_textures[0]->GetDimensions();
@@ -75,57 +183,6 @@ Entity::Entity(eEntityType type)
 	}
 
 	m_orientation = 0;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Destructor
-//
-Entity::~Entity()
-{
-	for (int i = 0; i < NUM_DIRECTIONS; ++i)
-	{
-		if (m_textures[i] != nullptr)
-		{
-			delete m_textures[i];
-			m_textures[i] = nullptr;
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Update
-//
-void Entity::Update()
-{
-	DebugRenderSystem::DrawUVSphere(m_position, 0.f, Rgba::WHITE, m_collisionRadius);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Callback for when collision is detected
-//
-void Entity::OnCollision(Entity* other)
-{
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Adds an offset (translates) to the player
-//
-void Entity::AddPositionOffset(const Vector3& offset)
-{
-	m_position += offset;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Hard sets the position of the entity
-//
-void Entity::SetPosition(const Vector3& newPosition)
-{
-	m_position = newPosition;
 }
 
 

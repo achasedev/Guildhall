@@ -25,14 +25,24 @@ public:
 	// Collision
 	virtual void	OnCollision(Entity* other) override;
 
+	// Behavior
+	void Shoot();
+
+
+private:
+	//-----Private Methods-----
+
+	void UpdateMovementParamsOnInput();
+	void DebugRenderMovementParams();
+
 
 private:
 	//-----Private Data-----
 
 	int		m_playerID = 0;
 
-	float	m_maxMoveAcceleration = 200.f;
-	float	m_maxMoveSpeed = 20.f;
-	float	m_maxMoveDeceleration = 100.f;
+	float	m_maxMoveAcceleration	= 200.f;
+	float	m_maxMoveSpeed			= 20.f;
+	float	m_maxMoveDeceleration	= 100.f;
 
 };

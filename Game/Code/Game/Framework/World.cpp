@@ -43,9 +43,9 @@ void World::Inititalize()
 
 	m_dynamicEntities.push_back(m_players[0]);
 
-	DynamicEntity* test = new DynamicEntity();
-	test->SetPosition(Vector3(50.f, 0.f, 50.f));
-	m_dynamicEntities.push_back(test);
+// 	DynamicEntity* test = new DynamicEntity();
+// 	test->SetPosition(Vector3(50.f, 0.f, 50.f));
+// 	m_dynamicEntities.push_back(test);
 }
 
 
@@ -67,6 +67,9 @@ void World::Update()
 	// Collision
 	CheckStaticEntityCollisions();
 	CheckDynamicEntityCollisions();
+
+	// Clean Up
+	DeleteMarkedEntities();
 }
 
 
@@ -88,6 +91,18 @@ void World::Render()
 
 	// Rebuild the mesh and draw it to screen
 	m_voxelGrid->BuildMeshAndDraw();
+}
+
+void World::AddDynamicEntity(DynamicEntity* entity)
+{
+	m_dynamicEntities.push_back(entity);
+	entity->OnSpawn();
+}
+
+void World::AddStaticEntity(StaticEntity* entity)
+{
+	m_staticEntities.push_back(entity);
+	entity->OnSpawn();
 }
 
 void World::ProcessPlayerInput()
@@ -229,6 +244,7 @@ void World::DeleteMarkedEntities()
 
 		if (currStatic->IsMarkedForDelete())
 		{
+			m_staticEntities[i]->OnDeath();
 			delete m_staticEntities[i];
 
 			if (i < (int)m_staticEntities.size() - 1)
@@ -246,6 +262,7 @@ void World::DeleteMarkedEntities()
 
 		if (currDynamic->IsMarkedForDelete())
 		{
+			m_dynamicEntities[i]->OnDeath();
 			delete m_dynamicEntities[i];
 
 			if (i < (int)m_dynamicEntities.size() - 1)

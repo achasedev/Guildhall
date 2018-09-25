@@ -30,8 +30,13 @@ public:
 	void			ApplyPhysicsStep();
 
 	// Collision	
-	virtual void	OnCollision(Entity* other) override;
 	void			AddCollisionCorrection(const Vector3& correction);
+
+	// Events
+	virtual void	OnCollision(Entity* other) override;
+	virtual void	OnDamageTaken(int damageAmount) override;
+	virtual void	OnDeath() override;
+	virtual void	OnSpawn() override;
 
 	// Accessors	
 	float			GetMass() const;
@@ -39,11 +44,15 @@ public:
 
 
 protected:
+	//-----Protected Methods-----
+
+
+protected:
 	//-----Protected Data-----
 
 	// State
-	Vector3 m_velocity									= Vector3::ZERO;
 	Vector3 m_force										= Vector3::ZERO;
+	Vector3 m_velocity									= Vector3::ZERO;
 
 	// Data set members
 	float	m_mass										= DEFAULT_MASS;					// Mass of the Entity
