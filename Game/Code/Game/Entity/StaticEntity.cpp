@@ -3,6 +3,8 @@
 StaticEntity::StaticEntity()
 	: Entity(ENTITY_TYPE_STATIC)
 {
+	// Make it unmovable from collisions
+	m_mass = REALLY_BIG_MASS;
 }
 
 StaticEntity::~StaticEntity()

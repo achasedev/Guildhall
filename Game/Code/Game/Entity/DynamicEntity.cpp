@@ -48,15 +48,6 @@ void DynamicEntity::OnCollision(Entity* other)
 
 
 //-----------------------------------------------------------------------------------------------
-// Adds the correction to the entity's position to fix a collision
-//
-void DynamicEntity::AddCollisionCorrection(const Vector3& correction)
-{
-	m_position += correction;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Called when the entity takes damage, for custom behavior
 //
 void DynamicEntity::OnDamageTaken(int damageAmount)
@@ -80,24 +71,6 @@ void DynamicEntity::OnDeath()
 void DynamicEntity::OnSpawn()
 {
 	Entity::OnSpawn();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns the mass of the entity
-//
-float DynamicEntity::GetMass() const
-{
-	return m_mass;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns one over the mass of the entity
-//
-float DynamicEntity::GetInverseMass() const
-{
-	return m_inverseMass;
 }
 
 

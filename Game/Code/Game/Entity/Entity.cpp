@@ -123,6 +123,15 @@ void Entity::OnSpawn()
 
 
 //-----------------------------------------------------------------------------------------------
+// Adds the correction to the entity's position to fix a collision
+//
+void Entity::AddCollisionCorrection(const Vector3& correction)
+{
+	m_position += correction;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Gets the voxel texture given by filename and sets it up for use with this entity
 //
 void Entity::SetupVoxelTextures(const char* filename)
@@ -210,11 +219,29 @@ Texture3D* Entity::GetTextureForOrientation() const
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the collision radius of the entity
+// Returns the collision definition of this entity
 //
-float Entity::GetCollisionRadius() const
+CollisionDefinition_t Entity::GetCollisionDefinition() const
 {
-	return m_collisionRadius;
+	return m_collisionDef;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the mass of the entity
+//
+float Entity::GetMass() const
+{
+	return m_mass;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns one over the mass of the entity
+//
+float Entity::GetInverseMass() const
+{
+	return m_inverseMass;
 }
 
 

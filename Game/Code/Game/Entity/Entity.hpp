@@ -34,6 +34,32 @@ enum eEntityTeam
 	ENTITY_TEAM_UNASSIGNED
 };
 
+enum eCollisionType
+{
+	COLLISION_TYPE_DISC,
+	COLLISION_TYPE_CYLINDER,
+	COLLISION_TYPE_BOX,
+	COLLISION_TYPE_RECTANGLE,
+	NUM_COLLISION_TYPES
+};
+
+struct CollisionDefinition_t
+{
+	eCollisionType m_type;
+
+	float m_width;
+	float m_length;
+	float m_height;
+
+};
+
+struct CollisionResult_t
+{
+	bool collisionOccurred = false;
+	Vector3 firstCorrection;
+	Vector3 secondCorrection;
+};
+
 class Entity
 {
 public:
@@ -44,47 +70,64 @@ public:
 	virtual ~Entity();
 
 	// Core loop
-	virtual void	Update();
+	virtual void			Update();
 
 	// Mutators
-	void			AddPositionOffset(const Vector3& offset);
-	void			SetPosition(const Vector3& newPosition);
-	void			SetOrientation(float orientation);
+	void					AddPositionOffset(const Vector3& offset);
+	void					SetPosition(const Vector3& newPosition);
+	void					SetOrientation(float orientation);
 
-	void			TakeDamage(int damageAmount);
+	void					TakeDamage(int damageAmount);
 
 	// Accessors
-	Vector3			GetPosition() const;
-	Texture3D*		GetTextureForOrientation() const;
-	float			GetCollisionRadius() const;
+	Vector3					GetPosition() const;
+	Texture3D*				GetTextureForOrientation() const;
+	float					GetCollisionRadius() const;
+	CollisionDefinition_t	GetCollisionDefinition() const;
+
+	float					GetMass() const;
+	float					GetInverseMass() const;
 
 	// Producers
-	bool			IsMarkedForDelete() const;
+	bool					IsMarkedForDelete() const;
 
 
 	// Events
-	virtual void	OnCollision(Entity* other);
-	virtual void	OnDamageTaken(int damageAmount);
-	virtual void	OnDeath();
-	virtual void	OnSpawn();
+	virtual void			OnCollision(Entity* other);
+	virtual void			OnDamageTaken(int damageAmount);
+	virtual void			OnDeath();
+	virtual void			OnSpawn();
+
+	// Collision	
+	void					AddCollisionCorrection(const Vector3& correction);
 
 
 protected:
 	//-----Protected Methods-----
 
-	virtual void	SetupVoxelTextures(const char* filename);
+	virtual void			SetupVoxelTextures(const char* filename);
 
 
 protected:
 	//-----Protected Data-----
 
-	Vector3			m_position = Vector3::ZERO;
-	float			m_orientation = 0.f;
-	bool			m_isMarkedForDelete = false;
-	float			m_collisionRadius = 4.f;
-	int				m_health = 1;
-	eEntityTeam		m_entityTeam = ENTITY_TEAM_UNASSIGNED;
-	eEntityType		m_entityType = ENTITY_TYPE_UNASSIGNED;
-	Texture3D*		m_textures[NUM_DIRECTIONS];
+	Vector3					m_position = Vector3::ZERO;
+	float					m_orientation = 0.f;
+	bool					m_isMarkedForDelete = false;
+
+	CollisionDefinition_t	m_collisionDef;
+
+	//float					m_collisionRadius = 4.f;
+	float					m_mass = 1.0f;
+
+	float					m_mass = DEFAULT_MASS;					// Mass of the Entity
+	float					m_inverseMass = 1.f / DEFAULT_MASS;		// Cache off inverse for efficiency
+
+	int						m_health = 1;
+	eEntityTeam				m_entityTeam = ENTITY_TEAM_UNASSIGNED;
+	eEntityType				m_entityType = ENTITY_TYPE_UNASSIGNED;
+	Texture3D*				m_textures[NUM_DIRECTIONS];
+
+	static constexpr float DEFAULT_MASS = 1.0f;
 
 };
