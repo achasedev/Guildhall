@@ -94,7 +94,7 @@ void World::Render()
 	DrawStaticEntitiesToGrid();
 
 	// Color in each entity (shouldn't overlap, this is after physics step)
-	//DrawDynamicEntitiesToGrid();
+	DrawDynamicEntitiesToGrid();
 
 	// Rebuild the mesh and draw it to screen
 	m_voxelGrid->BuildMeshAndDraw();
@@ -295,20 +295,20 @@ bool World::CheckAndCorrectEntityCollision(Entity* first, Entity* second)
 			// Disc vs. Disc
 			return CheckAndCorrect_DiscDisc(first, second);
 		}
-		else
+		else if (secondDef.m_type == COLLISION_TYPE_BOX)
 		{
 			// Disc vs. Box
 			return CheckAndCorrect_BoxDisc(first, second);
 		}
 	}
-	else
+	else if (firstDef.m_type == COLLISION_TYPE_BOX)
 	{
 		if (secondDef.m_type == COLLISION_TYPE_DISC)
 		{
 			// Box vs. Disc
 			return CheckAndCorrect_BoxDisc(first, second);
 		}
-		else
+		else if (secondDef.m_type == COLLISION_TYPE_BOX)
 		{
 			// Box vs. Box
 			return CheckAndCorrect_BoxBox(first, second);
@@ -548,6 +548,7 @@ bool World::CheckAndCorrect_BoxDisc(Entity* first, Entity* second)
 	return false;
 }
 
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 bool World::CheckAndCorrect_BoxBox(Entity* first, Entity* second)
 {
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
@@ -556,29 +557,35 @@ bool World::CheckAndCorrect_BoxBox(Entity* first, Entity* second)
 	Vector3 firstPosition = first->GetPosition();
 	Vector3 secondPosition = second->GetPosition();
 
-	Vector2 firstDimensions = Vector2(firstDef.m_width, firstDef.m_height);
+	Vector2 firstDimensions = Vector2(firstDef.m_width, firstDef.m_length);
 	AABB2 firstBounds = AABB2(firstPosition.xz() - 0.5f * firstDimensions, firstPosition.xz() + 0.5f * firstDimensions);
 
-	Vector2 secondDimensions = Vector2(secondDef.m_width, secondDef.m_height);
+	Vector2 secondDimensions = Vector2(secondDef.m_width, secondDef.m_length);
 	AABB2 secondBounds = AABB2(secondPosition.xz() - 0.5f * secondDimensions, secondPosition.xz() + 0.5f * secondDimensions);
 
 	if (DoAABBsOverlap(firstBounds, secondBounds))
 	{
-		Vector2 diff = firstPosition.xz() - secondPosition.xz();
-		diff.x = AbsoluteValue(diff.x);
-		diff.y = AbsoluteValue(diff.y);
+		Vector2 diff = (firstPosition.xz() - secondPosition.xz());
+		Vector2 absDiff = Vector2(AbsoluteValue(diff.x), AbsoluteValue(diff.y));
+		
+		float sumOfX = 0.5f * (firstDimensions.x + secondDimensions.x);
+		float sumOfY = 0.5f * (firstDimensions.y + secondDimensions.y);
 
-		float sumOfX = firstDimensions.x + secondDimensions.x;
-		float sumOfY = firstDimensions.y + secondDimensions.y;
+		float xOverlap = (sumOfX - absDiff.x);
+		float yOverlap = (sumOfY - absDiff.y);
 
-		float x = sumOfX - diff.x;
-		float y = sumOfY - diff.y;
+		Vector3 finalCorrection;
+		if (xOverlap < yOverlap)
+		{
+			float sign = (diff.x < 0.f ? -1.f : 1.f);
+			finalCorrection = Vector3(sign * xOverlap, 0.f, 0.f);
+		}
+		else
+		{
+			float sign = (diff.y < 0.f ? -1.f : 1.f);
+			finalCorrection = Vector3(0.f, 0.f, sign * yOverlap);
+		}
 
-		float correctionMagnitude = Sqrt(x * x + y * y);
-		Vector2 correctionDirection = Vector2::MakeDirectionAtDegrees(Atan2Degrees(y, x));
-		Vector2 correction = correctionDirection * correctionMagnitude;
-
-		Vector3 finalCorrection = Vector3(correction.x, 0.f, correction.y);
 		float firstScalar = GetFirstMassScalar(first, second);
 		float secondScalar = 1.0f - firstScalar;
 

@@ -43,21 +43,21 @@ Entity::~Entity()
 //
 void Entity::Update()
 {
-	DebugRenderOptions options;
-	options.m_startColor = Rgba::WHITE;
-	options.m_endColor = Rgba::WHITE;
-	options.m_lifetime = 0.f;
-	options.m_renderMode = DEBUG_RENDER_USE_DEPTH;
-	options.m_isWireFrame = true;
-
-	if (m_collisionDef.m_type == COLLISION_TYPE_DISC)
-	{
-		DebugRenderSystem::DrawUVSphere(m_position, options, m_collisionDef.m_width);
-	}
-	else
-	{
-		DebugRenderSystem::DrawCube(m_position, options, Vector3(m_collisionDef.m_width, m_collisionDef.m_height, m_collisionDef.m_length));
-	}
+// 	DebugRenderOptions options;
+// 	options.m_startColor = Rgba::WHITE;
+// 	options.m_endColor = Rgba::WHITE;
+// 	options.m_lifetime = 0.f;
+// 	options.m_renderMode = DEBUG_RENDER_USE_DEPTH;
+// 	options.m_isWireFrame = true;
+// 
+// 	if (m_collisionDef.m_type == COLLISION_TYPE_DISC)
+// 	{
+// 		DebugRenderSystem::DrawUVSphere(m_position, options, m_collisionDef.m_width);
+// 	}
+// 	else
+// 	{
+// 		DebugRenderSystem::DrawCube(m_position, options, Vector3(m_collisionDef.m_width, m_collisionDef.m_height, m_collisionDef.m_length));
+// 	}
 }
 
 

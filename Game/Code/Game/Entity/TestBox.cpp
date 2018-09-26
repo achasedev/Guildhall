@@ -2,7 +2,7 @@
 
 TestBox::TestBox()
 {
-	m_collisionDef = CollisionDefinition_t(COLLISION_TYPE_BOX, 4.f, 4.f, 4.f);
+	m_collisionDef = CollisionDefinition_t(COLLISION_TYPE_BOX, 8.f, 8.f, 8.f);
 	SetupVoxelTextures("Data/3DTextures/TestBox.qef");
 }
 
