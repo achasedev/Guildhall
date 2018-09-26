@@ -291,6 +291,7 @@
     <ClCompile Include="Entity\Player.cpp" />
     <ClCompile Include="Entity\Projectile.cpp" />
     <ClCompile Include="Entity\StaticEntity.cpp" />
+    <ClCompile Include="Entity\TestBox.cpp" />
     <ClCompile Include="Framework\App.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
     <ClCompile Include="Framework\VoxelGrid.cpp" />
@@ -310,6 +311,7 @@
     <ClInclude Include="Entity\Player.hpp" />
     <ClInclude Include="Entity\Projectile.hpp" />
     <ClInclude Include="Entity\StaticEntity.hpp" />
+    <ClInclude Include="Entity\TestBox.hpp" />
     <ClInclude Include="Framework\App.hpp" />
     <ClInclude Include="Framework\EngineBuildPreferences.hpp" />
     <ClInclude Include="Framework\Game.hpp" />

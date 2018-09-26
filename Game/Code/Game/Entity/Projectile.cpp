@@ -4,8 +4,8 @@
 
 Projectile::Projectile()
 {
-	m_collisionRadius = 0.5f;
 	m_stopwatch = new Stopwatch(Game::GetGameClock());
+	m_collisionDef = CollisionDefinition_t(COLLISION_TYPE_DISC, 1.f, 1.f, 1.f);
 
 	SetupVoxelTextures("Data/3DTextures/TestProjectile.qef");
 }

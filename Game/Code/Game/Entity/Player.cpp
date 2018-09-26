@@ -22,6 +22,8 @@ Player::Player(unsigned int playerID)
 	: DynamicEntity()
 	, m_playerID(playerID)
 {
+	m_collisionDef = CollisionDefinition_t(COLLISION_TYPE_BOX, 4.f, 4.f, 4.f);
+
 	SetupVoxelTextures("Data/3DTextures/TestCube.qef");
 }
 

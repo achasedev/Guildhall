@@ -8,6 +8,8 @@
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Entity/StaticEntity.hpp"
+#include "Game/Entity/TestBox.hpp"
+
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
@@ -43,6 +45,10 @@ void World::Inititalize()
 	m_voxelGrid->Initialize(IntVector3(256, 64, 256));
 
 	m_dynamicEntities.push_back(m_players[0]);
+
+	TestBox* box = new TestBox();
+	box->SetPosition(Vector3(50.f, 0.f, 50.f));
+	m_dynamicEntities.push_back(box);
 
 // 	DynamicEntity* test = new DynamicEntity();
 // 	test->SetPosition(Vector3(50.f, 0.f, 50.f));
@@ -88,7 +94,7 @@ void World::Render()
 	DrawStaticEntitiesToGrid();
 
 	// Color in each entity (shouldn't overlap, this is after physics step)
-	DrawDynamicEntitiesToGrid();
+	//DrawDynamicEntitiesToGrid();
 
 	// Rebuild the mesh and draw it to screen
 	m_voxelGrid->BuildMeshAndDraw();
@@ -205,20 +211,7 @@ void World::CheckDynamicEntityCollisions()
 				if (secondEntity->IsMarkedForDelete()) { continue; }
 
 				// Do detection and fix here
-				CheckAndCorrectEntityCollision(firstEntity, secondEntity);
-
-				if (overlap > 0)
-				{
-					// Split the difference in the overlap, based on mass
-					float firstScalar = firstEntity->GetMass() / (firstEntity->GetMass() + secondEntity->GetMass());
-					float secondScalar = 1.0f - firstScalar;
-
-					Vector3 totalCorrection = overlap * (firstEntity->GetPosition() - secondEntity->GetPosition()).GetNormalized();
-					firstEntity->AddCollisionCorrection(firstScalar * totalCorrection);
-					secondEntity->AddCollisionCorrection(-secondScalar * totalCorrection);
-
-					collisionDetected = true;
-				}
+				collisionDetected = collisionDetected || CheckAndCorrectEntityCollision(firstEntity, secondEntity);
 			}
 		}
 
@@ -557,5 +550,42 @@ bool World::CheckAndCorrect_BoxDisc(Entity* first, Entity* second)
 
 bool World::CheckAndCorrect_BoxBox(Entity* first, Entity* second)
 {
+	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
+	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
 
+	Vector3 firstPosition = first->GetPosition();
+	Vector3 secondPosition = second->GetPosition();
+
+	Vector2 firstDimensions = Vector2(firstDef.m_width, firstDef.m_height);
+	AABB2 firstBounds = AABB2(firstPosition.xz() - 0.5f * firstDimensions, firstPosition.xz() + 0.5f * firstDimensions);
+
+	Vector2 secondDimensions = Vector2(secondDef.m_width, secondDef.m_height);
+	AABB2 secondBounds = AABB2(secondPosition.xz() - 0.5f * secondDimensions, secondPosition.xz() + 0.5f * secondDimensions);
+
+	if (DoAABBsOverlap(firstBounds, secondBounds))
+	{
+		Vector2 diff = firstPosition.xz() - secondPosition.xz();
+		diff.x = AbsoluteValue(diff.x);
+		diff.y = AbsoluteValue(diff.y);
+
+		float sumOfX = firstDimensions.x + secondDimensions.x;
+		float sumOfY = firstDimensions.y + secondDimensions.y;
+
+		float x = sumOfX - diff.x;
+		float y = sumOfY - diff.y;
+
+		float correctionMagnitude = Sqrt(x * x + y * y);
+		Vector2 correctionDirection = Vector2::MakeDirectionAtDegrees(Atan2Degrees(y, x));
+		Vector2 correction = correctionDirection * correctionMagnitude;
+
+		Vector3 finalCorrection = Vector3(correction.x, 0.f, correction.y);
+		float firstScalar = GetFirstMassScalar(first, second);
+		float secondScalar = 1.0f - firstScalar;
+
+		first->AddCollisionCorrection(firstScalar * finalCorrection);
+		second->AddCollisionCorrection(-secondScalar * finalCorrection);
+		return true;
+	}
+
+	return false;
 }

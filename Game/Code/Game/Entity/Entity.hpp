@@ -37,20 +37,22 @@ enum eEntityTeam
 enum eCollisionType
 {
 	COLLISION_TYPE_DISC,
-	COLLISION_TYPE_CYLINDER,
 	COLLISION_TYPE_BOX,
-	COLLISION_TYPE_RECTANGLE,
 	NUM_COLLISION_TYPES
 };
 
 struct CollisionDefinition_t
 {
-	eCollisionType m_type;
+	CollisionDefinition_t()
+	 : m_type(COLLISION_TYPE_DISC), m_width(4.f), m_length(4.f), m_height(4.f) {}
 
-	float m_width;
-	float m_length;
-	float m_height;
+	CollisionDefinition_t(eCollisionType type, float width, float length, float height)
+	: m_type(type), m_width(width), m_length(length), m_height(height) {}
 
+	eCollisionType	m_type;
+	float			m_width;
+	float			m_length;
+	float			m_height;
 };
 
 struct CollisionResult_t
@@ -118,7 +120,6 @@ protected:
 	CollisionDefinition_t	m_collisionDef;
 
 	//float					m_collisionRadius = 4.f;
-	float					m_mass = 1.0f;
 
 	float					m_mass = DEFAULT_MASS;					// Mass of the Entity
 	float					m_inverseMass = 1.f / DEFAULT_MASS;		// Cache off inverse for efficiency
