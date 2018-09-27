@@ -19,6 +19,7 @@
 #include "Engine/Networking/Socket.hpp"
 #include "Engine/Core/DeveloperConsole/Command.hpp"
 
+#define GAME_PORT 10083
 
 bool OnPing(NetMessage* msg, NetConnection* sender)
 {
@@ -28,8 +29,14 @@ bool OnPing(NetMessage* msg, NetConnection* sender)
 	ConsolePrintf("Received ping from %s: %s", sender->GetAddress().ToString().c_str(), str.c_str());
 
 	// Respond with a pong
-	const NetMessageDefinition_t* definition = Game::GetNetSession()->GetMessageDefinition("pong");
-	NetMessage message(definition);
+	uint8_t definitionIndex;
+	if (!Game::GetNetSession()->GetMessageDefinitionIndex("pong", definitionIndex))
+	{
+		ConsoleErrorf("OnPing couldn't find definition for message named \"pong\"");
+		return false;
+	}
+
+	NetMessage message(definitionIndex);
 	sender->Send(&message);
 
 	// all messages serve double duty
@@ -68,6 +75,124 @@ bool OnAdd(NetMessage* msg, NetConnection* sender)
 	return true;
 }
 
+
+void Command_AddConnection(Command& cmd)
+{
+	int index = -1;
+	if (!cmd.GetParam("i", index))
+	{
+		ConsoleErrorf("No index specified");
+		return;
+	}
+
+	if (index < 0)
+	{
+		ConsoleErrorf("Invalid index");
+		return;
+	}
+
+	std::string addr;
+	if (!cmd.GetParam("a", addr))
+	{
+		ConsoleErrorf("No address specified");
+		return;
+	}
+
+	NetAddress_t netAddr(addr.c_str());
+	NetSession* session = Game::GetNetSession();
+
+	if (session == nullptr)
+	{
+		ConsoleErrorf("No Session set up in game");
+		return;
+	}
+
+	bool added = session->AddConnection((uint8_t)index, netAddr);
+
+	if (added)
+	{
+		ConsolePrintf(Rgba::GREEN, "Connection to %s added at index %i", addr.c_str(), (uint8_t)index);
+	}
+	else
+	{
+		ConsoleErrorf("Couldn't add connection to %s at index %i", addr.c_str(), (uint8_t)index);
+	}
+}
+
+
+void Command_SendPing(Command& cmd)
+{
+	int connectionIndex = -1;
+	if (!cmd.GetParam("i", connectionIndex))
+	{
+		ConsoleErrorf("No connection index specified");
+		return;
+	}
+
+	NetConnection* connection = Game::GetNetSession()->GetConnection(connectionIndex);
+
+	if (connection == nullptr)
+	{
+		ConsoleErrorf("Could not find connection at index %i", connectionIndex);
+		return;
+	}
+
+	uint8_t definitionIndex;
+	bool definitionExists = Game::GetNetSession()->GetMessageDefinitionIndex("ping", definitionIndex);
+
+	if (!definitionExists)
+	{
+		ConsoleErrorf("Definition does not exist on NetSession for message \"ping\"");
+		return;
+	}
+
+	NetMessage* msg = new NetMessage(definitionIndex);
+	msg->WriteString("Hello, World!");
+
+	connection->Send(msg);
+}
+
+void Command_SendAdd(Command& cmd)
+{
+	int connectionIndex = -1;
+	if (!cmd.GetParam("i", connectionIndex))
+	{
+		ConsoleErrorf("No connection index specified");
+		return;
+	}
+
+	float a = 1.0f;
+	float b = 1.0f;
+
+	cmd.GetParam("a", a, &a);
+	cmd.GetParam("b", b, &b);
+
+	NetConnection* connection = Game::GetNetSession()->GetConnection(connectionIndex);
+
+	if (connection == nullptr)
+	{
+		ConsoleErrorf("Could not find connection at index %i", connectionIndex);
+		return;
+	}
+
+	uint8_t definitionIndex;
+	bool definitionExists = Game::GetNetSession()->GetMessageDefinitionIndex("ping", definitionIndex);
+
+	if (!definitionExists)
+	{
+		ConsoleErrorf("Definition does not exist on NetSession for message \"ping\"");
+		return;
+	}
+
+	NetMessage* msg = new NetMessage(definitionIndex);
+
+	msg->Write(a);
+	msg->Write(b);
+
+	connection->Send(msg);
+}
+
+
 //-----------------------------------------------------------------------------------------------
 //--------------------------------- Game Class --------------------------------------------------
 //-----------------------------------------------------------------------------------------------
@@ -98,14 +223,14 @@ Game::Game()
 	m_renderScene->AddCamera(m_gameCamera);
 
 	// Net Session
-	m_netSession = new NetSession(128);
+	m_netSession = new NetSession();
 
 	// Link messages to callbacks
 	m_netSession->RegisterMessageDefinition("ping", OnPing);
 	m_netSession->RegisterMessageDefinition("pong", OnPong);
 	m_netSession->RegisterMessageDefinition("add", OnAdd);
 
-	m_netSession->Bind(GAME_PORT);
+	m_netSession->Bind(GAME_PORT, 10);
 }
 
 
@@ -129,6 +254,10 @@ void Game::Initialize()
 
 	// Set the game clock on the Renderer
 	Renderer::GetInstance()->SetRendererGameClock(s_instance->m_gameClock);
+
+	Command::Register("add_connection", "Adds a connection to the game session for the given index and address", Command_AddConnection);
+	Command::Register("send_ping", "Sends a ping on the current net session to the given connection index", Command_SendPing);
+	Command::Register("send_add", "Sends an add message the given index", Command_SendAdd);
 }
 
 
@@ -158,11 +287,15 @@ void Game::ProcessInput()
 //
 void Game::Update()
 {
+	m_netSession->ProcessIncoming();
+
 	// Check for state change
 	CheckToUpdateGameState();
 
 	// Update the current state
 	m_currentState->Update();
+
+	m_netSession->ProcessOutgoing();
 }
 
 
