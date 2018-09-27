@@ -19,14 +19,14 @@
 #include "Engine/Networking/Socket.hpp"
 #include "Engine/Core/DeveloperConsole/Command.hpp"
 
-#define GAME_PORT 10083
+#define GAME_PORT 10084
 
-bool OnPing(NetMessage* msg, NetConnection* sender)
+bool OnPing(NetMessage* msg, const NetSender_t& sender)
 {
 	std::string str;
 	msg->ReadString(str);
 
-	ConsolePrintf("Received ping from %s: %s", sender->GetAddress().ToString().c_str(), str.c_str());
+	ConsolePrintf("Received ping from %s: %s", sender.address.ToString().c_str(), str.c_str());
 
 	// Respond with a pong
 	uint8_t definitionIndex;
@@ -37,7 +37,19 @@ bool OnPing(NetMessage* msg, NetConnection* sender)
 	}
 
 	NetMessage message(definitionIndex);
-	sender->Send(&message);
+	NetConnection* connection = Game::GetNetSession()->GetConnection(sender.connectionIndex);
+
+
+	if (connection != nullptr)
+	{
+		connection->Send(&message);
+		ConsolePrintf(Rgba::GREEN, "Sent a message to connection %i", sender.connectionIndex);
+	}
+	else
+	{
+		Game::GetNetSession()->SendMessageDirect(&message, sender);
+		ConsolePrintf(Rgba::GREEN, "Sent an indirect message to address %s", sender.address.ToString().c_str());
+	}
 
 	// all messages serve double duty
 	// do some work, and also validate
@@ -46,17 +58,17 @@ bool OnPing(NetMessage* msg, NetConnection* sender)
 	return true;
 }
 
-bool OnPong(NetMessage* msg, NetConnection* sender)
+bool OnPong(NetMessage* msg, const NetSender_t& sender)
 {
 	std::string str;
 	msg->ReadString(str);
 
-	ConsolePrintf("Received pong from %s: %s", sender->GetAddress().ToString().c_str(), str.c_str());
+	ConsolePrintf("Received pong from %s: %s", sender.address.ToString().c_str(), str.c_str());
 
 	return true;
 }
 
-bool OnAdd(NetMessage* msg, NetConnection* sender)
+bool OnAdd(NetMessage* msg, const NetSender_t& sender)
 {
 	float a;
 	float b;
@@ -69,7 +81,55 @@ bool OnAdd(NetMessage* msg, NetConnection* sender)
 
 	float sum = a + b;
 
-	std::string result = Stringf("Add: %f + %f = %f", a, b, sum);
+	std::string result = Stringf("Received add request for \"%f + %f = %f\"", a, b, sum);
+	ConsolePrintf(result.c_str());
+	ConsolePrintf("Sending result back to sender...");
+
+	// Respond with a pong
+	uint8_t definitionIndex;
+	if (!Game::GetNetSession()->GetMessageDefinitionIndex("add_response", definitionIndex))
+	{
+		ConsoleErrorf("OnPing couldn't find definition for message named \"add_response\"");
+		return false;
+	}
+
+	NetMessage* response = new NetMessage(definitionIndex);
+	response->Write(a);
+	response->Write(b);
+	response->Write(sum);
+
+	NetConnection* connection = Game::GetNetSession()->GetConnection(sender.connectionIndex);
+
+	if (connection != nullptr)
+	{
+		connection->Send(response);
+		ConsolePrintf(Rgba::GREEN, "Sent a message to connection %i", sender.connectionIndex);
+	}
+	else
+	{
+		Game::GetNetSession()->SendMessageDirect(response, sender);
+		ConsolePrintf(Rgba::GREEN, "Sent an indirect message to address %s", sender.address.ToString().c_str());
+	}
+
+	return true;
+}
+
+
+bool OnAddResponse(NetMessage* msg, const NetSender_t& sender)
+{
+	float a;
+	float b;
+	float sum;
+
+	// Adding requires two values, ensure we can read them
+	if (msg->Read(a) <= 0 || msg->Read(b) <= 0 || msg->Read(sum) <= 0)
+	{
+		ConsoleErrorf("Received bad add response message");
+		return false;
+	}
+
+
+	std::string result = Stringf("Received add response: \"%f + %f = %f\"", a, b, sum);
 	ConsolePrintf(result.c_str());
 
 	return true;
@@ -176,7 +236,7 @@ void Command_SendAdd(Command& cmd)
 	}
 
 	uint8_t definitionIndex;
-	bool definitionExists = Game::GetNetSession()->GetMessageDefinitionIndex("ping", definitionIndex);
+	bool definitionExists = Game::GetNetSession()->GetMessageDefinitionIndex("add", definitionIndex);
 
 	if (!definitionExists)
 	{
@@ -229,6 +289,7 @@ Game::Game()
 	m_netSession->RegisterMessageDefinition("ping", OnPing);
 	m_netSession->RegisterMessageDefinition("pong", OnPong);
 	m_netSession->RegisterMessageDefinition("add", OnAdd);
+	m_netSession->RegisterMessageDefinition("add_response", OnAddResponse);
 
 	m_netSession->Bind(GAME_PORT, 10);
 }
