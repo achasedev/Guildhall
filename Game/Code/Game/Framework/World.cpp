@@ -21,6 +21,10 @@
 //
 World::World()
 {
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		m_players[i] = nullptr;
+	}
 }
 
 
@@ -49,10 +53,6 @@ void World::Inititalize()
 	TestBox* box = new TestBox();
 	box->SetPosition(Vector3(50.f, 0.f, 50.f));
 	m_dynamicEntities.push_back(box);
-
-// 	DynamicEntity* test = new DynamicEntity();
-// 	test->SetPosition(Vector3(50.f, 0.f, 50.f));
-// 	m_dynamicEntities.push_back(test);
 }
 
 
@@ -72,8 +72,8 @@ void World::Update()
 	ApplyPhysicsStep();
 
 	// Collision
-	CheckStaticEntityCollisions();
 	CheckDynamicEntityCollisions();
+	CheckStaticEntityCollisions();
 
 	// Clean Up
 	DeleteMarkedEntities();
@@ -100,18 +100,30 @@ void World::Render()
 	m_voxelGrid->BuildMeshAndDraw();
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Adds the given dynamic entity to the world
+//
 void World::AddDynamicEntity(DynamicEntity* entity)
 {
 	m_dynamicEntities.push_back(entity);
 	entity->OnSpawn();
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Adds the given static entity to the world
+//
 void World::AddStaticEntity(StaticEntity* entity)
 {
 	m_staticEntities.push_back(entity);
 	entity->OnSpawn();
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Calls process input on all players
+//
 void World::ProcessPlayerInput()
 {
 	for (int i = 0; i < MAX_PLAYERS; ++i)
@@ -123,9 +135,13 @@ void World::ProcessPlayerInput()
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Updates the static entities in the scene
+//
 void World::UpdateStaticEntities()
 {
-	int numStatics = m_staticEntities.size();
+	int numStatics = (int) m_staticEntities.size();
 
 	for (int i = 0; i < numStatics; ++i)
 	{
@@ -138,9 +154,13 @@ void World::UpdateStaticEntities()
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Updates the dynamic entities in the scene
+//
 void World::UpdateDynamicEntities()
 {
-	int numDynamics = m_dynamicEntities.size();
+	int numDynamics = (int) m_dynamicEntities.size();
 
 	for (int i = 0; i < numDynamics; ++i)
 	{
@@ -153,9 +173,13 @@ void World::UpdateDynamicEntities()
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Applies the physics step to all dynamic entities
+//
 void World::ApplyPhysicsStep()
 {
-	int numDynamics = m_dynamicEntities.size();
+	int numDynamics = (int) m_dynamicEntities.size();
 
 	for (int i = 0; i < numDynamics; ++i)
 	{
@@ -168,6 +192,10 @@ void World::ApplyPhysicsStep()
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Checks for all dynamic vs. static collisions in the scene, and corrects them
+//
 void World::CheckStaticEntityCollisions()
 {
 	for (int dynamicIndex = 0; dynamicIndex < (int)m_dynamicEntities.size(); ++dynamicIndex)
@@ -189,6 +217,10 @@ void World::CheckStaticEntityCollisions()
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Checks for all dynamic vs. dynamic collisions in the scene, and corrects them
+//
 void World::CheckDynamicEntityCollisions()
 {
 	bool collisionDetected;
@@ -222,6 +254,10 @@ void World::CheckDynamicEntityCollisions()
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Deletes all entities marked for delete this frame, except for the players
+//
 void World::DeleteMarkedEntities()
 {
 	// Static first
@@ -243,6 +279,17 @@ void World::DeleteMarkedEntities()
 		}
 	}
 
+	// Check for players before going into the dynamic list
+	// Players will set themselves back to not marked, preventing deletion
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		if (m_players[i] != nullptr && m_players[i]->IsMarkedForDelete())
+		{
+			m_players[i]->OnDeath();
+		}
+	}
+
+	// Check dynamics
 	for (int i = (int)m_dynamicEntities.size() - 1; i >= 0; --i)
 	{
 		DynamicEntity* currDynamic = m_dynamicEntities[i];
@@ -263,6 +310,9 @@ void World::DeleteMarkedEntities()
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Draws all static entities into the voxel grid
+//
 void World::DrawStaticEntitiesToGrid()
 {
 	int numStatics = (int)m_staticEntities.size();
@@ -273,9 +323,13 @@ void World::DrawStaticEntitiesToGrid()
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Draws all dynamic entities into the grid
+//
 void World::DrawDynamicEntitiesToGrid()
 {
-	int numDynamics = m_dynamicEntities.size();
+	int numDynamics = (int) m_dynamicEntities.size();
 
 	for (int i = 0; i < numDynamics; ++i)
 	{
@@ -283,6 +337,10 @@ void World::DrawDynamicEntitiesToGrid()
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Checks if the two given entities are colliding, and pushes them out if so
+//
 bool World::CheckAndCorrectEntityCollision(Entity* first, Entity* second)
 {
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
@@ -314,26 +372,40 @@ bool World::CheckAndCorrectEntityCollision(Entity* first, Entity* second)
 			return CheckAndCorrect_BoxBox(first, second);
 		}
 	}
+
+	// Else we don't check collision, so just return false
+	return false;
 }
 
-float GetFirstMassScalar(Entity* first, Entity* second)
+
+//-----------------------------------------------------------------------------------------------
+// Returns the two scalars to use during a collision correction, based on the entities' masses
+//
+void GetMassScalars(Entity* first, Entity* second, float& out_firstScalar, float& out_secondScalar)
 {
 	float firstMass = first->GetMass();
 	float secondMass = second->GetMass();
 
 	if (firstMass > 100.f * secondMass)
 	{
-		return 0.f;
+		out_firstScalar = 0.f;
+		out_secondScalar = 1.f;
 	}
 	else if (secondMass > 100.f * firstMass)
 	{
-		return 1.0f;
+		out_secondScalar = 0.f;
+		out_firstScalar = 1.f;
 	}
 
-	return (firstMass / (firstMass + secondMass));
+	// Else return the proportion of each to the total mass
+	out_firstScalar = firstMass / (firstMass + secondMass);
+	out_secondScalar = 1.0f - out_firstScalar;
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Checks if two disc-collision entities overlap, and corrects them if so
+//
 bool World::CheckAndCorrect_DiscDisc(Entity* first, Entity* second)
 {
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
@@ -352,8 +424,8 @@ bool World::CheckAndCorrect_DiscDisc(Entity* first, Entity* second)
 	{
 		// Split the difference in the overlap, based on mass
 		float overlap = (firstRadius + secondRadius) - (firstPosition - secondPosition).GetLength();
-		float firstScalar = GetFirstMassScalar(first, second);
-		float secondScalar = 1.0f - firstScalar;
+		float firstScalar, secondScalar;
+		GetMassScalars(first, second, firstScalar, secondScalar);
 
 		Vector3 totalCorrection = overlap * (firstPosition - secondPosition).GetNormalized();
 		first->AddCollisionCorrection(firstScalar * totalCorrection);
@@ -365,6 +437,10 @@ bool World::CheckAndCorrect_DiscDisc(Entity* first, Entity* second)
 	return false;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Checks if a disc and a box entity are overlapping, and corrects them if so
+//
 bool World::CheckAndCorrect_BoxDisc(Entity* first, Entity* second)
 {
 	bool isFirstBox = first->GetCollisionDefinition().m_type == COLLISION_TYPE_BOX;
@@ -393,7 +469,6 @@ bool World::CheckAndCorrect_BoxDisc(Entity* first, Entity* second)
 	AABB2 boxBounds = AABB2(boxPosition.xz() - 0.5f * boxDimensions, boxPosition.xz() + 0.5f * boxDimensions);
 
 	// Figure out which region the disc is in
-
 	Vector2 edgePoint;
 	if (discPosition.x < boxBounds.mins.x)	// Disc "to the left" of box
 	{
@@ -517,9 +592,8 @@ bool World::CheckAndCorrect_BoxDisc(Entity* first, Entity* second)
 			direction *= totalCorrection;
 
 			// Correct, since we definitely have collision
-			float overlap = discRadius - (discPosition.xz() - edgePoint).GetLength();
-			float firstScalar = GetFirstMassScalar(first, second);
-			float secondScalar = 1.0f - firstScalar;
+			float firstScalar, secondScalar;
+			GetMassScalars(first, second, firstScalar, secondScalar);
 
 			Vector3 finalCorrection = Vector3(direction.x, 0.f, direction.y);
 			first->AddCollisionCorrection(firstScalar * finalCorrection);
@@ -536,8 +610,8 @@ bool World::CheckAndCorrect_BoxDisc(Entity* first, Entity* second)
 	{
 		// Collision Occurred, correct
 		float overlap = discRadius - (discPosition.xz() - edgePoint).GetLength();
-		float firstScalar = GetFirstMassScalar(first, second);
-		float secondScalar = 1.0f - firstScalar;
+		float firstScalar, secondScalar;
+		GetMassScalars(first, second, firstScalar, secondScalar);
 
 		Vector3 totalCorrection = overlap * (discPosition - boxPosition).GetNormalized();
 		first->AddCollisionCorrection(firstScalar * totalCorrection);
@@ -548,7 +622,10 @@ bool World::CheckAndCorrect_BoxDisc(Entity* first, Entity* second)
 	return false;
 }
 
-#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+
+//-----------------------------------------------------------------------------------------------
+// Checks if 2 box-collision entities are overlapping, and corrects them if so
+//
 bool World::CheckAndCorrect_BoxBox(Entity* first, Entity* second)
 {
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
@@ -586,8 +663,8 @@ bool World::CheckAndCorrect_BoxBox(Entity* first, Entity* second)
 			finalCorrection = Vector3(0.f, 0.f, sign * yOverlap);
 		}
 
-		float firstScalar = GetFirstMassScalar(first, second);
-		float secondScalar = 1.0f - firstScalar;
+		float firstScalar, secondScalar;
+		GetMassScalars(first, second, firstScalar, secondScalar);
 
 		first->AddCollisionCorrection(firstScalar * finalCorrection);
 		second->AddCollisionCorrection(-secondScalar * finalCorrection);

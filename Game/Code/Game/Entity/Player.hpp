@@ -24,6 +24,9 @@ public:
 
 	// Collision
 	virtual void	OnCollision(Entity* other) override;
+	virtual void	OnDamageTaken(int damageAmount) override;
+	virtual void	OnDeath() override;
+	virtual void	OnSpawn() override;
 
 	// Behavior
 	void Shoot();

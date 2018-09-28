@@ -1,3 +1,9 @@
+/************************************************************************/
+/* File: Projectile.hpp
+/* Author: Andrew Chase
+/* Date: September 28th 2018
+/* Description: Class to represent a flying projectile
+/************************************************************************/
 #pragma once
 #include "Game/Entity/DynamicEntity.hpp"
 

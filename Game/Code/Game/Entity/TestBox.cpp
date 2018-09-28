@@ -1,4 +1,5 @@
 #include "Game/Entity/TestBox.hpp"
+#include "Game/Framework/GameCommon.hpp"
 
 TestBox::TestBox()
 {
@@ -13,10 +14,12 @@ void TestBox::Update()
 
 void TestBox::OnCollision(Entity* other)
 {
+	UNUSED(other);
 }
 
 void TestBox::OnDamageTaken(int damageAmount)
 {
+	UNUSED(damageAmount);
 }
 
 void TestBox::OnDeath()

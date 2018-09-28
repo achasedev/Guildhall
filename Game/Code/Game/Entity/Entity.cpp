@@ -6,6 +6,7 @@
 /************************************************************************/
 #include "Game/Entity/Entity.hpp"
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/GameCommon.hpp"
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -66,6 +67,7 @@ void Entity::Update()
 //
 void Entity::OnCollision(Entity* other)
 {
+	UNUSED(other);
 }
 
 
@@ -117,6 +119,7 @@ void Entity::TakeDamage(int damageAmount)
 //
 void Entity::OnDamageTaken(int damageAmount)
 {
+	UNUSED(damageAmount);
 }
 
 

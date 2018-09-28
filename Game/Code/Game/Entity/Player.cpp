@@ -52,7 +52,6 @@ void Player::ProcessInput()
 
 	float currSpeed = m_velocity.GetLength();
 	Vector3 inputDirection = Vector3(leftStick.x, 0.f, leftStick.y);
-	//Vector3 inputDirection = Vector3(1.0f, 0.f, 0.f);
 
 	if (inputDirection != Vector3::ZERO)
 	{
@@ -97,7 +96,7 @@ void Player::ProcessInput()
 
 	if (controller.WasButtonJustPressed(XBOX_BUTTON_X))
 	{
-		AddForce(inputDirection * -10000.f);
+		AddForce(inputDirection * -1000.f);
 	}
 
 	if (controller.IsButtonPressed(XBOX_BUTTON_A))
@@ -123,6 +122,33 @@ void Player::Update()
 void Player::OnCollision(Entity* other)
 {
 	DynamicEntity::OnCollision(other);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// On damage callback
+//
+void Player::OnDamageTaken(int damageAmount)
+{
+	DynamicEntity::OnDamageTaken(damageAmount);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// On death callback
+//
+void Player::OnDeath()
+{
+	DynamicEntity::OnDeath();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// On spawn callback
+//
+void Player::OnSpawn()
+{
+	DynamicEntity::OnSpawn();
 }
 
 

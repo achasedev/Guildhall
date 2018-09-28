@@ -85,7 +85,6 @@ public:
 	// Accessors
 	Vector3					GetPosition() const;
 	Texture3D*				GetTextureForOrientation() const;
-	float					GetCollisionRadius() const;
 	CollisionDefinition_t	GetCollisionDefinition() const;
 
 	float					GetMass() const;
@@ -119,8 +118,6 @@ protected:
 	bool					m_isMarkedForDelete = false;
 
 	CollisionDefinition_t	m_collisionDef;
-
-	//float					m_collisionRadius = 4.f;
 
 	float					m_mass = DEFAULT_MASS;					// Mass of the Entity
 	float					m_inverseMass = 1.f / DEFAULT_MASS;		// Cache off inverse for efficiency

@@ -56,7 +56,7 @@ protected:
 	bool	m_affectedByGravity							= false;
 
 	// Defaults
-	static constexpr float DEFAULT_MAX_ACCELERATION		= 100000.f;
+	static constexpr float DEFAULT_MAX_ACCELERATION		= 1000000.f;
 	static constexpr float DEFAULT_MAX_SPEED			= 100.f;
 
 

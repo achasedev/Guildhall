@@ -36,6 +36,7 @@ public:
 private:
 	//-----Private Methods-----
 
+	// -- Update Loop -- 
 	void ProcessPlayerInput();
 	void UpdateStaticEntities();
 	void UpdateDynamicEntities();
@@ -47,10 +48,11 @@ private:
 
 	void DeleteMarkedEntities();
 
+	// Render
 	void DrawStaticEntitiesToGrid();
 	void DrawDynamicEntitiesToGrid();
 
-	// Utility
+	// Collision
 	bool CheckAndCorrectEntityCollision(Entity* first, Entity* second);
 	bool CheckAndCorrect_DiscDisc(Entity* first, Entity* second);
 	bool CheckAndCorrect_BoxDisc(Entity* first, Entity* second);
