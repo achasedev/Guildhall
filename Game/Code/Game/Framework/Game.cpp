@@ -19,8 +19,14 @@
 #include "Engine/Networking/Socket.hpp"
 #include "Engine/Core/DeveloperConsole/Command.hpp"
 
+// Port the net session will run on
 #define GAME_PORT 10084
 
+// Message callbacks for NetSession Testing
+
+//-----------------------------------------------------------------------------------------------
+// Called when a ping is received, responds with a pong
+//
 bool OnPing(NetMessage* msg, const NetSender_t& sender)
 {
 	std::string str;
@@ -58,6 +64,10 @@ bool OnPing(NetMessage* msg, const NetSender_t& sender)
 	return true;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Called when a pong message is received, after a ping is sent
+//
 bool OnPong(NetMessage* msg, const NetSender_t& sender)
 {
 	std::string str;
@@ -68,6 +78,10 @@ bool OnPong(NetMessage* msg, const NetSender_t& sender)
 	return true;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Called when an add message is received, responds with an add message response
+//
 bool OnAdd(NetMessage* msg, const NetSender_t& sender)
 {
 	float a;
@@ -115,6 +129,9 @@ bool OnAdd(NetMessage* msg, const NetSender_t& sender)
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Called when an add response is called, prints the result to console
+//
 bool OnAddResponse(NetMessage* msg, const NetSender_t& sender)
 {
 	float a;
@@ -136,6 +153,11 @@ bool OnAddResponse(NetMessage* msg, const NetSender_t& sender)
 }
 
 
+// Commands for testing the NetSession
+
+//-----------------------------------------------------------------------------------------------
+// Sends an add request message to the given connection index
+//
 void Command_AddConnection(Command& cmd)
 {
 	int index = -1;
@@ -180,6 +202,9 @@ void Command_AddConnection(Command& cmd)
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Sends a ping message to the given connection index
+//
 void Command_SendPing(Command& cmd)
 {
 	int connectionIndex = -1;
@@ -212,6 +237,10 @@ void Command_SendPing(Command& cmd)
 	connection->Send(msg);
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Sends an add message to the given connection index
+//
 void Command_SendAdd(Command& cmd)
 {
 	int connectionIndex = -1;

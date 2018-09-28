@@ -101,3 +101,4 @@ $RECYCLE.BIN/
 Temporary/
 !**/ThirdParty/**/*.*
 **/Run_Win32/Data/Logs/*.*
+**/Run_Win32/Data/RenderDoc_Snapshots/*.*
