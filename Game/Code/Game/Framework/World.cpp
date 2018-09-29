@@ -11,8 +11,8 @@
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Entity/StaticEntity.hpp"
 #include "Game/Framework/GameCamera.hpp"
-
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
 
@@ -38,10 +38,15 @@ World::~World()
 //-----------------------------------------------------------------------------------------------
 // Initializes the grid and any other setup
 //
-void World::Inititalize()
+void World::Inititalize(const char* filename)
 {
+	//m_terrain = AssetDB::CreateOrGet3DVoxelTextureInstance(filename);
+
+	m_dimensions = IntVector3(256, 64, 256);
+	//m_dimensions = m_terrain->GetDimensions();
+
 	m_voxelGrid = new VoxelGrid();
-	m_voxelGrid->Initialize(IntVector3(256, 64, 256));
+	m_voxelGrid->Initialize(m_dimensions);
 
 	m_groundElevation = 4;
 }
@@ -79,6 +84,9 @@ void World::Render()
 
 	// Clear grid
 	m_voxelGrid->Clear();
+
+	// Color in the terrain
+	//DrawTerrainToGrid();
 
 	// Color in static geometry
 	DrawStaticEntitiesToGrid();
@@ -302,10 +310,22 @@ void World::DeleteMarkedEntities()
 
 
 //-----------------------------------------------------------------------------------------------
+// Draws the terrain to the grid
+//
+void World::DrawTerrainToGrid()
+{
+	PROFILE_LOG_SCOPE_FUNCTION();
+	m_voxelGrid->Draw3DTexture(m_terrain, IntVector3(0, 0, 0));
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Draws all static entities into the voxel grid
 //
 void World::DrawStaticEntitiesToGrid()
 {
+	PROFILE_LOG_SCOPE_FUNCTION();
+
 	int numStatics = (int)m_staticEntities.size();
 
 	for (int staticIndex = 0; staticIndex < numStatics; ++staticIndex)
@@ -320,6 +340,8 @@ void World::DrawStaticEntitiesToGrid()
 //
 void World::DrawDynamicEntitiesToGrid()
 {
+	PROFILE_LOG_SCOPE_FUNCTION();
+
 	int numDynamics = (int) m_dynamicEntities.size();
 
 	for (int i = 0; i < numDynamics; ++i)
@@ -387,10 +409,12 @@ void GetMassScalars(Entity* first, Entity* second, float& out_firstScalar, float
 		out_secondScalar = 0.f;
 		out_firstScalar = 1.f;
 	}
-
-	// Else return the proportion of each to the total mass
-	out_firstScalar = firstMass / (firstMass + secondMass);
-	out_secondScalar = 1.0f - out_firstScalar;
+	else
+	{
+		// Else return the proportion of each to the total mass
+		out_firstScalar = firstMass / (firstMass + secondMass);
+		out_secondScalar = 1.0f - out_firstScalar;
+	}
 }
 
 
@@ -402,11 +426,20 @@ bool World::CheckAndCorrect_DiscDisc(Entity* first, Entity* second)
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
 
-	float firstRadius = firstDef.m_width;
-	float secondRadius = secondDef.m_width;
+	float firstRadius = firstDef.m_xExtent;
+	float secondRadius = secondDef.m_xExtent;
 
 	Vector3 firstPosition = first->GetPosition();
 	Vector3 secondPosition = second->GetPosition();
+
+	// Height check
+	bool firstAboveSecond = (secondPosition.y + secondDef.m_height) < (firstPosition.y);
+	bool secondAboveFirst = (firstPosition.y + firstDef.m_height) < (secondPosition.y);
+
+	if (firstAboveSecond || secondAboveFirst)
+	{
+		return false;
+	}
 
 	float radiiSquared = (firstRadius + secondRadius) * (firstRadius + secondRadius);
 	float distanceSquared = (firstPosition - secondPosition).GetLengthSquared();
@@ -455,9 +488,18 @@ bool World::CheckAndCorrect_BoxDisc(Entity* first, Entity* second)
 	Vector3 discPosition = discEntity->GetPosition();
 	Vector3 boxPosition = boxEntity->GetPosition();
 
-	float discRadius = discDef.m_width;
-	Vector2 boxDimensions = Vector2(boxDef.m_width, boxDef.m_height);
-	AABB2 boxBounds = AABB2(boxPosition.xz() - 0.5f * boxDimensions, boxPosition.xz() + 0.5f * boxDimensions);
+	float discRadius	= discDef.m_xExtent;
+	Vector2 boxExtents	= Vector2(boxDef.m_xExtent, boxDef.m_zExtent);
+	AABB2 boxBounds		= AABB2(boxPosition.xz() - boxExtents, boxPosition.xz() + boxExtents);
+
+	// Height check
+	bool discAboveBox = ((boxPosition.y + boxDef.m_height) < (discPosition.y - discDef.m_height));
+	bool boxAboveDisc = (boxPosition.y > (discPosition.y + discDef.m_height));
+
+	if (discAboveBox || boxAboveDisc)
+	{
+		return false;
+	}
 
 	// Figure out which region the disc is in
 	Vector2 edgePoint;
@@ -622,22 +664,31 @@ bool World::CheckAndCorrect_BoxBox(Entity* first, Entity* second)
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
 
-	Vector3 firstPosition = first->GetPosition();
-	Vector3 secondPosition = second->GetPosition();
+	Vector3 firstPosition	= first->GetPosition();
+	Vector3 secondPosition	= second->GetPosition();
 
-	Vector2 firstDimensions = Vector2(firstDef.m_width, firstDef.m_length);
-	AABB2 firstBounds = AABB2(firstPosition.xz() - 0.5f * firstDimensions, firstPosition.xz() + 0.5f * firstDimensions);
+	Vector2 firstExtents	= Vector2(firstDef.m_xExtent, firstDef.m_zExtent);
+	Vector2 secondExtents	= Vector2(secondDef.m_xExtent, secondDef.m_zExtent);
 
-	Vector2 secondDimensions = Vector2(secondDef.m_width, secondDef.m_length);
-	AABB2 secondBounds = AABB2(secondPosition.xz() - 0.5f * secondDimensions, secondPosition.xz() + 0.5f * secondDimensions);
+	AABB2 firstBounds	= AABB2(firstPosition.xz() - firstExtents, firstPosition.xz() + firstExtents);
+	AABB2 secondBounds	= AABB2(secondPosition.xz() - secondExtents, secondPosition.xz() + secondExtents);
+
+	// Height check
+	bool firstAboveSecond = (secondPosition.y + secondDef.m_height) < (firstPosition.y);
+	bool secondAboveFirst = (firstPosition.y + firstDef.m_height) < (secondPosition.y);
+
+	if (firstAboveSecond || secondAboveFirst)
+	{
+		return false;
+	}
 
 	if (DoAABBsOverlap(firstBounds, secondBounds))
 	{
 		Vector2 diff = (firstPosition.xz() - secondPosition.xz());
 		Vector2 absDiff = Vector2(AbsoluteValue(diff.x), AbsoluteValue(diff.y));
 		
-		float sumOfX = 0.5f * (firstDimensions.x + secondDimensions.x);
-		float sumOfY = 0.5f * (firstDimensions.y + secondDimensions.y);
+		float sumOfX = (firstExtents.x + secondExtents.x);
+		float sumOfY = (firstExtents.y + secondExtents.y);
 
 		float xOverlap = (sumOfX - absDiff.x);
 		float yOverlap = (sumOfY - absDiff.y);

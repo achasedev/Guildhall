@@ -7,9 +7,11 @@
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
+#include "Game/Entity/StaticEntity.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
@@ -50,6 +52,11 @@ void GameState_Playing::Enter()
 	players[0]->SetPosition(Vector3(60.f, 0.f, 60.f));
 
 	Game::GetWorld()->AddDynamicEntity(players[0]);
+
+	for (int i = 0; i < 10; ++i)
+	{
+		Game::GetWorld()->AddStaticEntity(new StaticEntity());
+	}
 
 // 	players[1] = new Player(1);
 // 	players[1]->SetPosition(Vector3(80.f, 0.f, 80.f));

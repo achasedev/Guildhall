@@ -7,6 +7,7 @@
 #pragma once
 #include <vector>
 #include "Engine/Core/Rgba.hpp"
+#include "Engine/Math/IntVector3.hpp"
 
 #define MAX_PLAYERS (4)
 
@@ -15,6 +16,7 @@ class VoxelGrid;
 class Entity;
 class DynamicEntity;
 class StaticEntity;
+class Texture3D;
 
 class World
 {
@@ -24,7 +26,7 @@ public:
 	World();
 	~World();
 
-	void Inititalize();
+	void Inititalize(const char* filename);
 
 	void Update();
 	void Render();
@@ -48,6 +50,7 @@ private:
 	void DeleteMarkedEntities();
 
 	// Render
+	void DrawTerrainToGrid();
 	void DrawStaticEntitiesToGrid();
 	void DrawDynamicEntitiesToGrid();
 
@@ -61,9 +64,11 @@ private:
 private:
 	//-----Private Data-----
 
+	IntVector3 m_dimensions;
 	VoxelGrid*	m_voxelGrid;		
 	unsigned int m_groundElevation = 0;
 
+	Texture3D* m_terrain = nullptr;
 	std::vector<DynamicEntity*> m_dynamicEntities;
 	std::vector<StaticEntity*>	m_staticEntities;
 

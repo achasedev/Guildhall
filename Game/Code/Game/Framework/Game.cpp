@@ -54,7 +54,7 @@ Game::Game()
 
 	// Game world
 	m_world = new World();
-	m_world->Inititalize();
+	m_world->Inititalize("Data/3DTextures/Ground.qef");
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{

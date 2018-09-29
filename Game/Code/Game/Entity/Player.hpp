@@ -7,8 +7,9 @@
 #pragma once
 #include "Game/Entity/DynamicEntity.hpp"
 
+#define INVALID_PLAYER_ID (4)
+
 class Vector3;
-class Stopwatch;
 
 class Player : public DynamicEntity
 {
@@ -46,9 +47,7 @@ private:
 private:
 	//-----Private Data-----
 
-	int		m_playerID = 0;
-	Stopwatch* m_test;
-	bool another = false;
+	int		m_playerID = INVALID_PLAYER_ID;
 
 	float	m_maxMoveAcceleration	= 300.f;
 	float	m_maxMoveSpeed			= 40.f;

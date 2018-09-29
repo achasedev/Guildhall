@@ -45,14 +45,14 @@ enum eCollisionType
 struct CollisionDefinition_t
 {
 	CollisionDefinition_t()
-	 : m_type(COLLISION_TYPE_DISC), m_width(4.f), m_length(4.f), m_height(4.f) {}
+	 : m_type(COLLISION_TYPE_DISC), m_xExtent(4.f), m_zExtent(4.f), m_height(8.f) {}
 
 	CollisionDefinition_t(eCollisionType type, float width, float length, float height)
-	: m_type(type), m_width(width), m_length(length), m_height(height) {}
+	: m_type(type), m_xExtent(width), m_zExtent(length), m_height(height) {}
 
 	eCollisionType	m_type;
-	float			m_width;
-	float			m_length;
+	float			m_xExtent;
+	float			m_zExtent;
 	float			m_height;
 };
 

@@ -116,12 +116,23 @@ void VoxelGrid::DrawEntity(const Entity* entity)
 	IntVector3 dimensions = texture->GetDimensions();
 	IntVector3 halfDimensions = dimensions / 2;
 
-	// Position the object occupies
+	// Coordinate the object occupies (object bottom center)
 	IntVector3 coordinatePosition = IntVector3(position.x, position.y, position.z);
 
 	IntVector3 bottomLeft = coordinatePosition;
 	bottomLeft.x -= halfDimensions.x;
 	bottomLeft.z -= halfDimensions.z;
+
+	Draw3DTexture(texture, bottomLeft);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Draws the 3D texture to the grid
+//
+void VoxelGrid::Draw3DTexture(const Texture3D* texture, const IntVector3& bottomLeft)
+{
+	IntVector3 dimensions = texture->GetDimensions();
 
 	for (int xOff = 0; xOff < dimensions.x; ++xOff)
 	{
@@ -139,7 +150,7 @@ void VoxelGrid::DrawEntity(const Entity* entity)
 					Rgba colorToRender = texture->GetColorAtCoords(localCoords);
 					if (colorToRender.a > 0)
 					{
-						m_gridColors[index] = texture->GetColorAtCoords(localCoords);
+						m_gridColors[index] = colorToRender;
 					}
 				}
 			}

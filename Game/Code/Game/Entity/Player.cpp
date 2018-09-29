@@ -15,9 +15,7 @@
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
-#include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
-#include "Engine/Core/LogSystem.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -26,11 +24,9 @@ Player::Player(unsigned int playerID)
 	: DynamicEntity()
 	, m_playerID(playerID)
 {
-	m_collisionDef = CollisionDefinition_t(COLLISION_TYPE_BOX, 8.f, 8.f, 8.f);
+	m_collisionDef = CollisionDefinition_t(COLLISION_TYPE_BOX, 4.f, 4.f, 8.f);
 	m_affectedByGravity = true;
 	SetupVoxelTextures("Data/3DTextures/TestCube.qef");
-
-	m_test = new Stopwatch(Game::GetGameClock());
 }
 
 
@@ -82,10 +78,7 @@ void Player::ProcessInput()
 	// Test Jumping
 	if (controller.WasButtonJustPressed(XBOX_BUTTON_A))
 	{
-		LogTaggedPrintf("GAME", "I jumped!");
 		AddImpulse(Vector3::DIRECTION_UP * m_jumpImpulse);
-		m_test->Reset();
-		another = true;
 	}
 }
 
@@ -105,13 +98,6 @@ void Player::Update()
 void Player::OnCollision(Entity* other)
 {
 	DynamicEntity::OnCollision(other);
-
-	if (another)
-	{
-		ConsolePrintf(Rgba::LIGHT_BLUE, "Time: %f", m_test->GetElapsedTime());
-		LogTaggedPrintf("TIME", "TIME: %f", m_test->GetElapsedTime());
-		another = false;
-	}
 }
 
 
@@ -148,7 +134,7 @@ void Player::OnSpawn()
 void Player::Shoot()
 {
 	Projectile* proj = new Projectile();
-	proj->SetPosition(m_position);
+	proj->SetPosition(m_position + Vector3(0.f, 4.f, 0.f));
 	proj->SetOrientation(m_orientation);
 
 	Vector2 direction = Vector2::MakeDirectionAtDegrees(m_orientation);	
@@ -156,8 +142,6 @@ void Player::Shoot()
 	
 	World* world = Game::GetWorld();
 	world->AddDynamicEntity(proj);
-
-	ConsolePrintf("Angle: %f", m_orientation);
 }
 
 
