@@ -8,6 +8,7 @@
 #include "Game/Entity/DynamicEntity.hpp"
 
 class Vector3;
+class Stopwatch;
 
 class Player : public DynamicEntity
 {
@@ -38,7 +39,7 @@ private:
 	void UpdateMovementParamsOnInput();
 	void DebugRenderMovementParams();
 	
-	void ApplyInputAcceleration(const Vector3& inputDirection);
+	void ApplyInputAcceleration(const Vector2& inputDirection);
 	void ApplyDeceleration();
 
 
@@ -46,9 +47,12 @@ private:
 	//-----Private Data-----
 
 	int		m_playerID = 0;
+	Stopwatch* m_test;
+	bool another = false;
 
 	float	m_maxMoveAcceleration	= 300.f;
 	float	m_maxMoveSpeed			= 40.f;
 	float	m_maxMoveDeceleration	= 100.f;
+	float	m_jumpImpulse			= 80.f;
 
 };

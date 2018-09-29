@@ -62,6 +62,7 @@ private:
 	//-----Private Data-----
 
 	VoxelGrid*	m_voxelGrid;		
+	unsigned int m_groundElevation = 0;
 
 	std::vector<DynamicEntity*> m_dynamicEntities;
 	std::vector<StaticEntity*>	m_staticEntities;

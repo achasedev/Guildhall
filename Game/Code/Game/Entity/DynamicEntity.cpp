@@ -9,7 +9,7 @@
 #include "Engine/Math/MathUtils.hpp"
 
 // Default acceleration due to gravity
-#define GRAVITY_MAGNITUDE (9.81f);
+#define GRAVITY_MAGNITUDE (100.f);
 
 
 //-----------------------------------------------------------------------------------------------
@@ -75,11 +75,30 @@ void DynamicEntity::OnSpawn()
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the velocity of the entity
+//
+Vector3 DynamicEntity::GetVelocity() const
+{
+	return m_velocity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Adds the given force, to be applied during the physics step
 //
 void DynamicEntity::AddForce(const Vector3& force)
 {
 	m_force += force;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the given impulse, to be applied during the physics step (force that ignores delta time,
+// immediate change in velocity with mass consideration)
+//
+void DynamicEntity::AddImpulse(const Vector3& impulse)
+{
+	m_impulse += impulse;
 }
 
 
@@ -111,35 +130,42 @@ void DynamicEntity::SetVelocity(const Vector3& velocity)
 
 
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+#include "Engine/Core/LogSystem.hpp"
 //-----------------------------------------------------------------------------------------------
 // Performs the forward Euler physics step on the entity
 //
 void DynamicEntity::ApplyPhysicsStep()
 {
-	float deltaTime = Game::GetDeltaTime();
+	// Apply impulse, no delta time applied
+	Vector3 deltaVelocityFromImpulse = (m_impulse * m_inverseMass);
+	m_velocity += deltaVelocityFromImpulse;
 
+	// Apply force
 	if (m_affectedByGravity)
 	{
 		m_force += Vector3::DIRECTION_DOWN * m_mass * GRAVITY_MAGNITUDE;
 	}
 
-	// Apply force, clamping
 	Vector3 acceleration = (m_force * m_inverseMass);
 	float currAcceleration = acceleration.NormalizeAndGetLength();
 	currAcceleration = ClampFloat(currAcceleration, 0.f, m_maxAcceleration);
-
 	acceleration *= currAcceleration;
 
-	// Apply acceleration
+	float deltaTime = Game::GetDeltaTime();
 	m_velocity += (acceleration * deltaTime);
 
-	float currSpeed = m_velocity.NormalizeAndGetLength();
-	currSpeed = ClampFloat(currSpeed, 0.f, m_maxSpeed);
-	m_velocity *= currSpeed;
+	// Clamp velocity - component wise
+// 	Vector2 lateralVelocity = m_velocity.xz();
+// 	float lateralSpeed = lateralVelocity.NormalizeAndGetLength();
+// 	lateralSpeed = ClampFloat(lateralSpeed, 0.f, m_maxSpeed);
+// 	lateralVelocity *= lateralSpeed;
+// 	m_velocity = Vector3(lateralVelocity.x, m_velocity.y, lateralVelocity.y);
+	m_velocity = ClampVector3(m_velocity, -m_maxSpeed, m_maxSpeed);
 
 	// Apply velocity
 	m_position += (m_velocity * deltaTime);
 
-	// Zero out force
+	// Zero out force and impulse
 	m_force = Vector3::ZERO;
+	m_impulse = Vector3::ZERO;
 }

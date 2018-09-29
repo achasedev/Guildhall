@@ -22,6 +22,7 @@ public:
 
 	// Physics		
 	void			AddForce(const Vector3& force);
+	void			AddImpulse(const Vector3& impulse);
 	void			AddVelocity(const Vector3& velocity);
 
 	void			SetForce(const Vector3& force);
@@ -36,7 +37,7 @@ public:
 	virtual void	OnSpawn() override;
 
 	// Accessors	
-
+	Vector3			GetVelocity() const;
 
 
 protected:
@@ -48,6 +49,7 @@ protected:
 
 	// State
 	Vector3 m_force										= Vector3::ZERO;
+	Vector3 m_impulse									= Vector3::ZERO;
 	Vector3 m_velocity									= Vector3::ZERO;
 
 	// Data set members
@@ -57,7 +59,7 @@ protected:
 
 	// Defaults
 	static constexpr float DEFAULT_MAX_ACCELERATION		= 1000000.f;
-	static constexpr float DEFAULT_MAX_SPEED			= 100.f;
+	static constexpr float DEFAULT_MAX_SPEED			= 1000.f;
 
 
 };

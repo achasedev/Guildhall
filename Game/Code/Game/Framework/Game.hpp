@@ -52,7 +52,6 @@ private:
 	Game(const Game& copy) = delete;
 
 	void		CheckToUpdateGameState();
-	void		UpdateEjectedCamera();
 
 
 private:

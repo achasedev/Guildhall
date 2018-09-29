@@ -51,10 +51,10 @@ void GameState_Playing::Enter()
 
 	Game::GetWorld()->AddDynamicEntity(players[0]);
 
-	players[1] = new Player(1);
-	players[1]->SetPosition(Vector3(80.f, 0.f, 80.f));
-
-	Game::GetWorld()->AddDynamicEntity(players[1]);
+// 	players[1] = new Player(1);
+// 	players[1]->SetPosition(Vector3(80.f, 0.f, 80.f));
+// 
+// 	Game::GetWorld()->AddDynamicEntity(players[1]);
  }
 
 

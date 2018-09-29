@@ -42,6 +42,8 @@ void World::Inititalize()
 {
 	m_voxelGrid = new VoxelGrid();
 	m_voxelGrid->Initialize(IntVector3(256, 64, 256));
+
+	m_groundElevation = 4;
 }
 
 
@@ -186,6 +188,20 @@ void World::CheckStaticEntityCollisions()
 
 			// Do detection and fix here
 			CheckAndCorrectEntityCollision(currDynamic, currStatic);
+		}
+
+		// Also check for clipping into the ground
+		Vector3 position = currDynamic->GetPosition();
+		if (position.y < (float)m_groundElevation)
+		{
+			position.y = (float) m_groundElevation;
+			currDynamic->SetPosition(position);
+
+			Vector3 velocity = currDynamic->GetVelocity();
+			velocity.y = 0.f;
+			currDynamic->SetVelocity(velocity);
+
+			currDynamic->OnCollision(nullptr);
 		}
 	}
 }

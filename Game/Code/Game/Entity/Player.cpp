@@ -15,6 +15,10 @@
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
+#include "Engine/Core/Time/Stopwatch.hpp"
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+#include "Engine/Core/LogSystem.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
@@ -23,8 +27,10 @@ Player::Player(unsigned int playerID)
 	, m_playerID(playerID)
 {
 	m_collisionDef = CollisionDefinition_t(COLLISION_TYPE_BOX, 8.f, 8.f, 8.f);
-
+	m_affectedByGravity = true;
 	SetupVoxelTextures("Data/3DTextures/TestCube.qef");
+
+	m_test = new Stopwatch(Game::GetGameClock());
 }
 
 
@@ -48,14 +54,11 @@ void Player::ProcessInput()
 	Vector2 leftStick = controller.GetCorrectedStickPosition(XBOX_STICK_LEFT);
 
 	float currSpeed = m_velocity.GetLength();
-	float deltaTime = Game::GetDeltaTime();
-
-	Vector3 inputDirection = Vector3(leftStick.x, 0.f, leftStick.y);
 
 	// If we have input, apply a movement force
-	if (inputDirection != Vector3::ZERO)
+	if (leftStick != Vector2::ZERO)
 	{
-		ApplyInputAcceleration(inputDirection);
+		ApplyInputAcceleration(leftStick);
 	}
 
 	// If we have no input or are moving too fast, decelerate
@@ -67,13 +70,22 @@ void Player::ProcessInput()
 	// Test adding a force
 	if (controller.WasButtonJustPressed(XBOX_BUTTON_X))
 	{
-		AddForce(inputDirection * -10000.f);
+		AddForce(Vector3(leftStick.x, 0.f, leftStick.y) * -1000.f);
 	}
 
 	// Test shooting
-	if (controller.IsButtonPressed(XBOX_BUTTON_A))
+	if (controller.IsButtonPressed(XBOX_BUTTON_B))
 	{
 		Shoot();
+	}
+
+	// Test Jumping
+	if (controller.WasButtonJustPressed(XBOX_BUTTON_A))
+	{
+		LogTaggedPrintf("GAME", "I jumped!");
+		AddImpulse(Vector3::DIRECTION_UP * m_jumpImpulse);
+		m_test->Reset();
+		another = true;
 	}
 }
 
@@ -93,6 +105,13 @@ void Player::Update()
 void Player::OnCollision(Entity* other)
 {
 	DynamicEntity::OnCollision(other);
+
+	if (another)
+	{
+		ConsolePrintf(Rgba::LIGHT_BLUE, "Time: %f", m_test->GetElapsedTime());
+		LogTaggedPrintf("TIME", "TIME: %f", m_test->GetElapsedTime());
+		another = false;
+	}
 }
 
 
@@ -137,6 +156,8 @@ void Player::Shoot()
 	
 	World* world = Game::GetWorld();
 	world->AddDynamicEntity(proj);
+
+	ConsolePrintf("Angle: %f", m_orientation);
 }
 
 
@@ -202,44 +223,53 @@ void Player::DebugRenderMovementParams()
 	DebugRenderSystem::Draw2DText(toPrint, bounds, 0.f, Rgba::WHITE, 30.f);
 }
 
-void Player::ApplyInputAcceleration(const Vector3& inputDirection)
+
+//-----------------------------------------------------------------------------------------------
+// Applies the acceleration from the player's input to move them
+//
+void Player::ApplyInputAcceleration(const Vector2& inputDirection)
 {
-	float currSpeed = m_velocity.GetLength();
+	float currLateralSpeed = m_velocity.xz().GetLength();
 	float deltaTime = Game::GetDeltaTime();
 
-	Vector3 finalVelocity = (m_velocity + (m_maxMoveAcceleration * deltaTime) * inputDirection);
-	float finalSpeed = finalVelocity.NormalizeAndGetLength();
+	Vector2 maxLateralVelocity = (m_velocity.xz() + (m_maxMoveAcceleration * deltaTime) * inputDirection);
+	float maxLateralSpeed = maxLateralVelocity.NormalizeAndGetLength();
 
-	finalSpeed = (currSpeed > m_maxMoveSpeed ? ClampFloat(finalSpeed, 0.f, currSpeed) : ClampFloat(finalSpeed, 0.f, m_maxMoveSpeed));
-	finalVelocity *= finalSpeed;
+	maxLateralSpeed = (currLateralSpeed > m_maxMoveSpeed ? ClampFloat(maxLateralSpeed, 0.f, currLateralSpeed) : ClampFloat(maxLateralSpeed, 0.f, m_maxMoveSpeed));
+	maxLateralVelocity *= maxLateralSpeed;
 
-	Vector3 inputVelocityResult = finalVelocity - m_velocity;
+	Vector3 inputVelocityResult = Vector3(maxLateralVelocity.x, m_velocity.y, maxLateralVelocity.y) - m_velocity;
 	Vector3 acceleration = inputVelocityResult / deltaTime;
 	Vector3 force = acceleration * m_mass;
 
 	AddForce(force);
 
 	// Reorient the player
-	m_orientation = inputDirection.xz().GetOrientationDegrees();
+	m_orientation = inputDirection.GetOrientationDegrees();
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Applies a deceleration to the player so they slow down
+//
 void Player::ApplyDeceleration()
 {
 	float deltaTime = Game::GetDeltaTime();
-	float currSpeed = m_velocity.GetLength();
+	float currSpeed = m_velocity.xz().GetLength();
 	float amountCanBeDecreased = currSpeed;
 
 	if (amountCanBeDecreased > 0.f)
 	{
-		Vector3 direction = -1.0f * m_velocity.GetNormalized();
+		Vector2 direction = -1.0f * m_velocity.xz().GetNormalized();
 
 		float decelMag = amountCanBeDecreased / deltaTime;
 		decelMag = ClampFloat(decelMag, 0.f, m_maxMoveDeceleration);
 
 		float forceMag = decelMag * m_mass;
 
-		Vector3 force = forceMag * direction;
-		AddForce(force);
+		direction *= forceMag;
+		Vector3 finalForce = Vector3(direction.x, 0.f, direction.y);
+
+		AddForce(finalForce);
 	}
 }
