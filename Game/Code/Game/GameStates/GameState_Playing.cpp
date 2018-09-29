@@ -4,13 +4,13 @@
 /* Date: May 21st, 2018
 /* Description: Implementation of the GameState_Playing class
 /************************************************************************/
+#include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/GameCommon.hpp"
+#include "Game/Framework/GameCamera.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
-
 #include "Engine/Input/InputSystem.hpp"
-#include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
 #include "Engine/Rendering/Core/ForwardRenderingPath.hpp"
@@ -37,18 +37,25 @@ GameState_Playing::~GameState_Playing()
 //
 void GameState_Playing::Enter()
 {
- 	// Set up the game camera
-	Game* game = Game::GetInstance();
- 
  	// Set up the mouse for FPS controls
 	Mouse& mouse = InputSystem::GetMouse();
 
 	mouse.ShowMouseCursor(false);
 	mouse.LockCursorToClient(true);
 	mouse.SetCursorMode(CURSORMODE_RELATIVE);
- 
- 	DebugRenderSystem::SetWorldCamera(game->m_gameCamera);
-}
+
+	Player** players = Game::GetPlayers();
+
+	players[0] = new Player(0);
+	players[0]->SetPosition(Vector3(60.f, 0.f, 60.f));
+
+	Game::GetWorld()->AddDynamicEntity(players[0]);
+
+	players[1] = new Player(1);
+	players[1]->SetPosition(Vector3(80.f, 0.f, 80.f));
+
+	Game::GetWorld()->AddDynamicEntity(players[1]);
+ }
 
 
 //-----------------------------------------------------------------------------------------------
@@ -83,7 +90,7 @@ void GameState_Playing::UpdateCameraOnInput()
 
 	translationOffset *= CAMERA_TRANSLATION_SPEED * deltaTime;
 
-	Camera* gameCamera = Game::GetGameCamera();
+	GameCamera* gameCamera = Game::GetGameCamera();
 	gameCamera->TranslateLocal(translationOffset);
 
 	// Rotating the camera
@@ -102,7 +109,27 @@ void GameState_Playing::UpdateCameraOnInput()
 //
 void GameState_Playing::ProcessInput()
 {
-	UpdateCameraOnInput();
+	if (InputSystem::GetInstance()->WasKeyJustPressed('B'))
+	{
+		m_cameraEjected = !m_cameraEjected;
+	}
+
+	if (!m_cameraEjected)
+	{
+		Player** players = Game::GetPlayers();
+
+		for (int i = 0; i < MAX_PLAYERS; ++i)
+		{
+			if (players[i] != nullptr)
+			{
+				players[i]->ProcessInput();
+			}
+		}
+	}
+	else
+	{
+		UpdateCameraOnInput();
+	}
 }
 
 
@@ -112,6 +139,12 @@ void GameState_Playing::ProcessInput()
 void GameState_Playing::Update()
 {
 	Game::GetWorld()->Update();
+
+	// Camera
+	if (!m_cameraEjected)
+	{
+		Game::GetGameCamera()->UpdatePositionBasedOnPlayers();
+	}
 }
 
 

@@ -293,6 +293,7 @@
     <ClCompile Include="Entity\StaticEntity.cpp" />
     <ClCompile Include="Entity\TestBox.cpp" />
     <ClCompile Include="Framework\App.cpp" />
+    <ClCompile Include="Framework\GameCamera.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
     <ClCompile Include="Framework\VoxelGrid.cpp" />
     <ClCompile Include="Framework\World.cpp" />
@@ -315,6 +316,7 @@
     <ClInclude Include="Framework\App.hpp" />
     <ClInclude Include="Framework\EngineBuildPreferences.hpp" />
     <ClInclude Include="Framework\Game.hpp" />
+    <ClInclude Include="Framework\GameCamera.hpp" />
     <ClInclude Include="Framework\GameCommon.hpp" />
     <ClInclude Include="Framework\VoxelGrid.hpp" />
     <ClInclude Include="Framework\World.hpp" />

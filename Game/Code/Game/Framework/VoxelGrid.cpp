@@ -5,11 +5,12 @@
 /* Description: Implementation of the VoxelGrid class
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
+#include "Game/Entity/Entity.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
+#include "Game/Framework/GameCamera.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/IntVector3.hpp"
-#include "Game/Entity/Entity.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"

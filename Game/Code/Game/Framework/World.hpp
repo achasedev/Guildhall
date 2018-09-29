@@ -37,7 +37,6 @@ private:
 	//-----Private Methods-----
 
 	// -- Update Loop -- 
-	void ProcessPlayerInput();
 	void UpdateStaticEntities();
 	void UpdateDynamicEntities();
 
@@ -63,7 +62,6 @@ private:
 	//-----Private Data-----
 
 	VoxelGrid*	m_voxelGrid;		
-	Player*		m_players[MAX_PLAYERS];
 
 	std::vector<DynamicEntity*> m_dynamicEntities;
 	std::vector<StaticEntity*>	m_staticEntities;

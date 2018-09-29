@@ -67,6 +67,9 @@
     <ClCompile Include="Entity\TestBox.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\GameCamera.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -105,5 +108,6 @@
     <ClInclude Include="Entity\StaticEntity.hpp" />
     <ClInclude Include="Entity\Projectile.hpp" />
     <ClInclude Include="Entity\TestBox.hpp" />
+    <ClInclude Include="Framework\GameCamera.hpp" />
   </ItemGroup>
 </Project>

@@ -45,60 +45,32 @@ void Player::ProcessInput()
 	DebugRenderMovementParams();
 
 	XboxController& controller = InputSystem::GetInstance()->GetController(m_playerID);
-
 	Vector2 leftStick = controller.GetCorrectedStickPosition(XBOX_STICK_LEFT);
 
+	float currSpeed = m_velocity.GetLength();
 	float deltaTime = Game::GetDeltaTime();
 
-	float currSpeed = m_velocity.GetLength();
 	Vector3 inputDirection = Vector3(leftStick.x, 0.f, leftStick.y);
 
+	// If we have input, apply a movement force
 	if (inputDirection != Vector3::ZERO)
 	{
-		Vector3 finalVelocity = (m_velocity + (m_maxMoveAcceleration * deltaTime) * inputDirection);
-		float finalSpeed = finalVelocity.NormalizeAndGetLength();
-
-		finalSpeed = (currSpeed > m_maxMoveSpeed ? ClampFloat(finalSpeed, 0.f, currSpeed) : ClampFloat(finalSpeed, 0.f, m_maxMoveSpeed));
-
-		finalVelocity *= finalSpeed;
-
-		Vector3 inputVelocityResult = finalVelocity - m_velocity;
-
-		Vector3 acceleration = inputVelocityResult / deltaTime;
-
-		Vector3 force = acceleration * m_mass;
-		AddForce(force);	
+		ApplyInputAcceleration(inputDirection);
 	}
 
 	// If we have no input or are moving too fast, decelerate
 	if (leftStick == Vector2::ZERO || (currSpeed > m_maxMoveSpeed))
 	{
-		float amountCanBeDecreased = currSpeed;
-
-		if (amountCanBeDecreased > 0.f)
-		{
-			Vector3 direction = -1.0f * m_velocity.GetNormalized();
-
-			float decelMag = amountCanBeDecreased / deltaTime;
-			decelMag = ClampFloat(decelMag, 0.f, m_maxMoveDeceleration);
-
-			float forceMag = decelMag * m_mass;
-
-			Vector3 force = forceMag * direction;
-			AddForce(force);
-		}
+		ApplyDeceleration();
 	}
 
-	if (leftStick.GetLengthSquared() > 0.f)
-	{
-		m_orientation = leftStick.GetOrientationDegrees();
-	}
-
+	// Test adding a force
 	if (controller.WasButtonJustPressed(XBOX_BUTTON_X))
 	{
-		AddForce(inputDirection * -1000.f);
+		AddForce(inputDirection * -10000.f);
 	}
 
+	// Test shooting
 	if (controller.IsButtonPressed(XBOX_BUTTON_A))
 	{
 		Shoot();
@@ -112,7 +84,6 @@ void Player::ProcessInput()
 void Player::Update()
 {
 	DynamicEntity::Update();
-	//DebugRenderSystem::Draw2DText(Stringf("Force: %f\nAcceleration: %f\nVelocity: %f", m_force.GetLength(), m_force.GetLength() * m_inverseMass, m_velocity.GetLength()), AABB2(Vector2::ZERO, Vector2(1600.f, 800.f)), 0.f);
 }
 
 
@@ -229,4 +200,46 @@ void Player::DebugRenderMovementParams()
 	toPrint += Stringf("\n(O,P) Max Speed: %.2f", m_maxMoveSpeed);
 
 	DebugRenderSystem::Draw2DText(toPrint, bounds, 0.f, Rgba::WHITE, 30.f);
+}
+
+void Player::ApplyInputAcceleration(const Vector3& inputDirection)
+{
+	float currSpeed = m_velocity.GetLength();
+	float deltaTime = Game::GetDeltaTime();
+
+	Vector3 finalVelocity = (m_velocity + (m_maxMoveAcceleration * deltaTime) * inputDirection);
+	float finalSpeed = finalVelocity.NormalizeAndGetLength();
+
+	finalSpeed = (currSpeed > m_maxMoveSpeed ? ClampFloat(finalSpeed, 0.f, currSpeed) : ClampFloat(finalSpeed, 0.f, m_maxMoveSpeed));
+	finalVelocity *= finalSpeed;
+
+	Vector3 inputVelocityResult = finalVelocity - m_velocity;
+	Vector3 acceleration = inputVelocityResult / deltaTime;
+	Vector3 force = acceleration * m_mass;
+
+	AddForce(force);
+
+	// Reorient the player
+	m_orientation = inputDirection.xz().GetOrientationDegrees();
+}
+
+
+void Player::ApplyDeceleration()
+{
+	float deltaTime = Game::GetDeltaTime();
+	float currSpeed = m_velocity.GetLength();
+	float amountCanBeDecreased = currSpeed;
+
+	if (amountCanBeDecreased > 0.f)
+	{
+		Vector3 direction = -1.0f * m_velocity.GetNormalized();
+
+		float decelMag = amountCanBeDecreased / deltaTime;
+		decelMag = ClampFloat(decelMag, 0.f, m_maxMoveDeceleration);
+
+		float forceMag = decelMag * m_mass;
+
+		Vector3 force = forceMag * direction;
+		AddForce(force);
+	}
 }

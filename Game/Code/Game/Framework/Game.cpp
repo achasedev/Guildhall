@@ -7,6 +7,7 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/GameCommon.hpp"
+#include "Game/Framework/GameCamera.hpp"
 #include "Game/GameStates/GameState_Loading.hpp"
 
 #include "Engine/Core/Time/Clock.hpp"
@@ -43,17 +44,22 @@ Game::Game()
 
 	// Camera
 	Renderer* renderer = Renderer::GetInstance();
-	m_gameCamera = new Camera();
+	m_gameCamera = new GameCamera();
 	m_gameCamera->SetColorTarget(renderer->GetDefaultColorTarget());
 	m_gameCamera->SetDepthTarget(renderer->GetDefaultDepthTarget());
-	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 10000.f);
-	m_gameCamera->LookAt(Vector3(0.f, 200.f, -500.0f), Vector3(0.f, 200.f, 0.f));
+	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 1000.f);
+	m_gameCamera->LookAt(Vector3(128.f, 200.f, -50.0f), Vector3(0.f, 200.f, 0.f));
 
 	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 
 	// Game world
 	m_world = new World();
 	m_world->Inititalize();
+
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		m_players[i] = nullptr;
+	}
 }
 
 
@@ -143,7 +149,7 @@ Clock* Game::GetGameClock()
 //-----------------------------------------------------------------------------------------------
 // Returns the camera used to render game elements
 //
-Camera* Game::GetGameCamera()
+GameCamera* Game::GetGameCamera()
 {
 	return s_instance->m_gameCamera;
 }
@@ -164,6 +170,15 @@ float Game::GetDeltaTime()
 World* Game::GetWorld()
 {
 	return s_instance->m_world;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the players array (not necessarily full)
+//
+Player** Game::GetPlayers()
+{
+	return &s_instance->m_players[0];
 }
 
 

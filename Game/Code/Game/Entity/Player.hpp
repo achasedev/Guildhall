@@ -7,7 +7,7 @@
 #pragma once
 #include "Game/Entity/DynamicEntity.hpp"
 
-class VoxelGrid;
+class Vector3;
 
 class Player : public DynamicEntity
 {
@@ -37,6 +37,9 @@ private:
 
 	void UpdateMovementParamsOnInput();
 	void DebugRenderMovementParams();
+	
+	void ApplyInputAcceleration(const Vector3& inputDirection);
+	void ApplyDeceleration();
 
 
 private:
@@ -44,8 +47,8 @@ private:
 
 	int		m_playerID = 0;
 
-	float	m_maxMoveAcceleration	= 200.f;
-	float	m_maxMoveSpeed			= 20.f;
+	float	m_maxMoveAcceleration	= 300.f;
+	float	m_maxMoveSpeed			= 40.f;
 	float	m_maxMoveDeceleration	= 100.f;
 
 };

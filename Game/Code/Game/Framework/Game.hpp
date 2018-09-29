@@ -9,9 +9,12 @@
 #include <vector>
 #include "Engine/Math/Vector2.hpp"
 
+#define MAX_PLAYERS (4)
+
 class Clock;
 class World;
-class Camera;
+class GameCamera;
+class Player;
 class GameState;
 class GameObject;
 class RenderScene;
@@ -35,9 +38,10 @@ public:
 	static void		TransitionToGameState(GameState* newState);
 
 	static Clock*				GetGameClock();
-	static Camera*				GetGameCamera();
+	static GameCamera*			GetGameCamera();
 	static float				GetDeltaTime();
 	static World*				GetWorld();
+	static Player**				GetPlayers();
 
 
 private:
@@ -48,16 +52,19 @@ private:
 	Game(const Game& copy) = delete;
 
 	void		CheckToUpdateGameState();
+	void		UpdateEjectedCamera();
 
 
 private:
 	//-----Private Data-----
 
-	Camera*						m_gameCamera = nullptr;
+	GameCamera*					m_gameCamera = nullptr;
 	GameState*					m_currentState = nullptr;
 	GameState*					m_pendingState = nullptr;
 	Clock*						m_gameClock = nullptr;
 	World*						m_world = nullptr;
+
+	Player*						m_players[MAX_PLAYERS];
 
 	static Game* s_instance;			// The singleton Game instance
 

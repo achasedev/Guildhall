@@ -5,10 +5,12 @@
 /* Description: Implementation of the world class
 /************************************************************************/
 #include "Game/Entity/Player.hpp"
+#include "Game/Entity/TestBox.hpp"
+#include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Entity/StaticEntity.hpp"
-#include "Game/Entity/TestBox.hpp"
+#include "Game/Framework/GameCamera.hpp"
 
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -21,10 +23,6 @@
 //
 World::World()
 {
-	for (int i = 0; i < MAX_PLAYERS; ++i)
-	{
-		m_players[i] = nullptr;
-	}
 }
 
 
@@ -42,17 +40,8 @@ World::~World()
 //
 void World::Inititalize()
 {
-	m_players[0] = new Player(0);
-	m_players[0]->SetPosition(Vector3(60.f, 0.f, 60.f));
-
 	m_voxelGrid = new VoxelGrid();
 	m_voxelGrid->Initialize(IntVector3(256, 64, 256));
-
-	m_dynamicEntities.push_back(m_players[0]);
-
-	TestBox* box = new TestBox();
-	box->SetPosition(Vector3(50.f, 0.f, 50.f));
-	m_dynamicEntities.push_back(box);
 }
 
 
@@ -64,7 +53,6 @@ void World::Update()
 	PROFILE_LOG_SCOPE_FUNCTION();
 
 	// "Thinking" and other general updating (animation)
-	ProcessPlayerInput();
 	UpdateStaticEntities();
 	UpdateDynamicEntities();
 
@@ -118,21 +106,6 @@ void World::AddStaticEntity(StaticEntity* entity)
 {
 	m_staticEntities.push_back(entity);
 	entity->OnSpawn();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Calls process input on all players
-//
-void World::ProcessPlayerInput()
-{
-	for (int i = 0; i < MAX_PLAYERS; ++i)
-	{
-		if (m_players[i] != nullptr)
-		{
-			m_players[i]->ProcessInput();
-		}
-	}
 }
 
 
@@ -281,11 +254,13 @@ void World::DeleteMarkedEntities()
 
 	// Check for players before going into the dynamic list
 	// Players will set themselves back to not marked, preventing deletion
+	Player** players = Game::GetPlayers();
+
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
-		if (m_players[i] != nullptr && m_players[i]->IsMarkedForDelete())
+		if (players[i] != nullptr && players[i]->IsMarkedForDelete())
 		{
-			m_players[i]->OnDeath();
+			players[i]->OnDeath();
 		}
 	}
 

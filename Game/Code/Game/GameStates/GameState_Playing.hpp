@@ -5,10 +5,10 @@
 /* Description: Class to represent the state when gameplay is active
 /************************************************************************/
 #pragma once
-#include <string>
-#include <vector>
 #include "Game/GameStates/GameState.hpp"
 #include "Engine/Rendering/Animation/Animator.hpp"
+#include <string>
+#include <vector>
 
 class World;
 
@@ -36,6 +36,8 @@ private:
 	
 private:
 	//-----Private Data-----
+
+	bool m_cameraEjected = false;
 
 	static constexpr float CAMERA_ROTATION_SPEED = 45.f;
 	static constexpr float CAMERA_TRANSLATION_SPEED = 10.f;
