@@ -11,6 +11,7 @@
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Entity/StaticEntity.hpp"
 #include "Game/Framework/GameCamera.hpp"
+#include "Game/Entity/Particle.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -40,7 +41,7 @@ World::~World()
 //
 void World::Inititalize(const char* filename)
 {
-	//m_terrain = AssetDB::CreateOrGet3DVoxelTextureInstance(filename);
+	m_terrain = AssetDB::CreateOrGet3DVoxelTextureInstance(filename);
 
 	m_dimensions = IntVector3(256, 64, 256);
 	//m_dimensions = m_terrain->GetDimensions();
@@ -62,6 +63,7 @@ void World::Update()
 	// "Thinking" and other general updating (animation)
 	UpdateStaticEntities();
 	UpdateDynamicEntities();
+	UpdateParticles();
 
 	// Moving the entities (Forward Euler)
 	ApplyPhysicsStep();
@@ -86,13 +88,16 @@ void World::Render()
 	m_voxelGrid->Clear();
 
 	// Color in the terrain
-	//DrawTerrainToGrid();
+	DrawTerrainToGrid();
 
 	// Color in static geometry
 	DrawStaticEntitiesToGrid();
 
 	// Color in each entity (shouldn't overlap, this is after physics step)
 	DrawDynamicEntitiesToGrid();
+
+	// Color in the particles
+	DrawParticlesToGrid();
 
 	// Rebuild the mesh and draw it to screen
 	m_voxelGrid->BuildMeshAndDraw();
@@ -116,6 +121,42 @@ void World::AddStaticEntity(StaticEntity* entity)
 {
 	m_staticEntities.push_back(entity);
 	entity->OnSpawn();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Blows up the given entity
+//
+void World::ParticalizeEntity()
+{
+	DynamicEntity* entity = m_dynamicEntities[1];
+
+	m_dynamicEntities.erase(m_dynamicEntities.begin() + 1);
+
+	Texture3D* texture = entity->GetTextureForOrientation();
+	Vector3 entityPosition = entity->GetEntityPosition();
+
+	unsigned int voxelCount = texture->GetVoxelCount();
+	for (unsigned int i = 0; i < voxelCount; ++i)
+	{
+		//Rgba color = texture->GetColorAtIndex(i);
+		Rgba color = Rgba::GetRandomColor();
+
+		if (color.a != 0)
+		{
+			Vector3 voxelPosition = entity->GetPositionForLocalIndex(i);
+
+			Vector3 velocity = (voxelPosition - entityPosition).GetNormalized();
+			velocity *= 50.f;
+
+			Particle* particle = new Particle(color, 300.0f, voxelPosition, velocity);
+			particle->OnSpawn();
+
+			m_particles.push_back(particle);
+		}
+	}
+
+	delete entity;
 }
 
 
@@ -158,6 +199,23 @@ void World::UpdateDynamicEntities()
 
 
 //-----------------------------------------------------------------------------------------------
+// Updates all particles in the game
+//
+void World::UpdateParticles()
+{
+	int numParticles = (int)m_particles.size();
+
+	for (int i = 0; i < numParticles; ++i)
+	{
+		if (!m_particles[i]->IsMarkedForDelete())
+		{
+			m_particles[i]->Update();
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Applies the physics step to all dynamic entities
 //
 void World::ApplyPhysicsStep()
@@ -173,6 +231,17 @@ void World::ApplyPhysicsStep()
 			m_dynamicEntities[i]->ApplyPhysicsStep();
 		}
 	}
+
+	// Apply it to particles too
+	int numParticles = (int)m_particles.size();
+
+	for (int i = 0; i < numParticles; ++i)
+	{
+		if (!m_particles[i]->IsMarkedForDelete())
+		{
+			m_particles[i]->ApplyPhysicsStep();
+		}
+	}
 }
 
 
@@ -181,9 +250,9 @@ void World::ApplyPhysicsStep()
 //
 void World::CheckStaticEntityCollisions()
 {
-	for (int dynamicIndex = 0; dynamicIndex < (int)m_dynamicEntities.size(); ++dynamicIndex)
+	for (int particleIndex = 0; particleIndex < (int)m_dynamicEntities.size(); ++particleIndex)
 	{
-		DynamicEntity* currDynamic = m_dynamicEntities[dynamicIndex];
+		DynamicEntity* currDynamic = m_dynamicEntities[particleIndex];
 		
 		// Don't bother with an entity marked for delete
 		if (currDynamic->IsMarkedForDelete()) { continue; }
@@ -199,7 +268,7 @@ void World::CheckStaticEntityCollisions()
 		}
 
 		// Also check for clipping into the ground
-		Vector3 position = currDynamic->GetPosition();
+		Vector3 position = currDynamic->GetEntityPosition();
 		if (position.y < (float)m_groundElevation)
 		{
 			position.y = (float) m_groundElevation;
@@ -208,8 +277,24 @@ void World::CheckStaticEntityCollisions()
 			Vector3 velocity = currDynamic->GetVelocity();
 			velocity.y = 0.f;
 			currDynamic->SetVelocity(velocity);
+		}
+	}
 
-			currDynamic->OnCollision(nullptr);
+	// Check particles for ground collisions
+	for (int particleIndex = 0; particleIndex < (int)m_particles.size(); ++particleIndex)
+	{
+		DynamicEntity* currParticle = m_particles[particleIndex];
+
+		// Don't bother with particles marked for delete
+		if (currParticle->IsMarkedForDelete()) { continue; }
+
+		// Also check for clipping into the ground
+		Vector3 position = currParticle->GetEntityPosition();
+		if (position.y < (float)m_groundElevation)
+		{
+			position.y = (float)m_groundElevation;
+			currParticle->SetPosition(position);
+			currParticle->SetVelocity(Vector3::ZERO);
 		}
 	}
 }
@@ -236,6 +321,35 @@ void World::CheckDynamicEntityCollisions()
 			for (int secondIndex = firstIndex + 1; secondIndex < (int)m_dynamicEntities.size(); ++secondIndex)
 			{
 				DynamicEntity* secondEntity = m_dynamicEntities[secondIndex];
+
+				if (secondEntity->IsMarkedForDelete()) { continue; }
+
+				// Do detection and fix here
+				collisionDetected = collisionDetected || CheckAndCorrectEntityCollision(firstEntity, secondEntity);
+			}
+		}
+
+		if (!collisionDetected)
+		{
+			break;
+		}
+	}
+
+	// Check against particles
+	for (int iteration = 0; iteration < (int)DYNAMIC_COLLISION_MAX_ITERATION_COUNT; ++iteration)
+	{
+		collisionDetected = false;
+
+		for (int firstIndex = 0; firstIndex < (int)m_dynamicEntities.size(); ++firstIndex)
+		{
+			DynamicEntity* firstEntity = m_dynamicEntities[firstIndex];
+
+			// Don't bother with an entity marked for delete
+			if (firstEntity->IsMarkedForDelete()) { continue; }
+
+			for (int secondIndex = 0; secondIndex < (int)m_particles.size(); ++secondIndex)
+			{
+				DynamicEntity* secondEntity = m_particles[secondIndex];
 
 				if (secondEntity->IsMarkedForDelete()) { continue; }
 
@@ -306,6 +420,25 @@ void World::DeleteMarkedEntities()
 			m_dynamicEntities.pop_back();
 		}
 	}
+
+	// Check particles
+	int numParticles = (int)m_particles.size();
+
+	for (int i = numParticles - 1; i >= 0; --i)
+	{
+		if (m_particles[i]->IsMarkedForDelete())
+		{
+			m_particles[i]->OnDeath();
+			delete m_particles[i];
+
+			if (i < (int)m_particles.size() - 1)
+			{
+				m_particles[i] = m_particles.back();
+			}
+
+			m_particles.pop_back();
+		}
+	}
 }
 
 
@@ -352,6 +485,23 @@ void World::DrawDynamicEntitiesToGrid()
 
 
 //-----------------------------------------------------------------------------------------------
+// Draws the particles to the voxel grid
+//
+void World::DrawParticlesToGrid()
+{
+	int numParticles = (int)m_particles.size();
+
+	for (int i = 0; i < numParticles; ++i)
+	{
+		if (!m_particles[i]->IsMarkedForDelete())
+		{
+			m_voxelGrid->DrawEntity(m_particles[i]);
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Checks if the two given entities are colliding, and pushes them out if so
 //
 bool World::CheckAndCorrectEntityCollision(Entity* first, Entity* second)
@@ -359,27 +509,27 @@ bool World::CheckAndCorrectEntityCollision(Entity* first, Entity* second)
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
 
-	if (firstDef.m_type == COLLISION_TYPE_DISC)
+	if (firstDef.m_shape == COLLISION_SHAPE_DISC)
 	{
-		if (secondDef.m_type == COLLISION_TYPE_DISC)
+		if (secondDef.m_shape == COLLISION_SHAPE_DISC)
 		{
 			// Disc vs. Disc
 			return CheckAndCorrect_DiscDisc(first, second);
 		}
-		else if (secondDef.m_type == COLLISION_TYPE_BOX)
+		else if (secondDef.m_shape == COLLISION_SHAPE_BOX)
 		{
 			// Disc vs. Box
 			return CheckAndCorrect_BoxDisc(first, second);
 		}
 	}
-	else if (firstDef.m_type == COLLISION_TYPE_BOX)
+	else if (firstDef.m_shape == COLLISION_SHAPE_BOX)
 	{
-		if (secondDef.m_type == COLLISION_TYPE_DISC)
+		if (secondDef.m_shape == COLLISION_SHAPE_DISC)
 		{
 			// Box vs. Disc
 			return CheckAndCorrect_BoxDisc(first, second);
 		}
-		else if (secondDef.m_type == COLLISION_TYPE_BOX)
+		else if (secondDef.m_shape == COLLISION_SHAPE_BOX)
 		{
 			// Box vs. Box
 			return CheckAndCorrect_BoxBox(first, second);
@@ -396,24 +546,66 @@ bool World::CheckAndCorrectEntityCollision(Entity* first, Entity* second)
 //
 void GetMassScalars(Entity* first, Entity* second, float& out_firstScalar, float& out_secondScalar)
 {
+	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
+	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
+
 	float firstMass = first->GetMass();
 	float secondMass = second->GetMass();
+	float massSum = firstMass + secondMass;
 
-	if (firstMass > 100.f * secondMass)
+	if (firstDef.m_response == COLLISION_RESPONSE_NO_CORRECTION)
 	{
-		out_firstScalar = 0.f;
-		out_secondScalar = 1.f;
+		if (secondDef.m_response == COLLISION_RESPONSE_NO_CORRECTION)
+		{
+			out_firstScalar = 0.f;
+			out_secondScalar = 0.f;
+		}
+		else if (secondDef.m_response == COLLISION_RESPONSE_FULL_CORRECTION)
+		{
+			out_firstScalar = 0.f;
+			out_secondScalar = 1.0f;
+		}
+		else if (secondDef.m_response == COLLISION_RESPONSE_SHARE_CORRECTION)
+		{
+			out_firstScalar = 0.f;
+			out_secondScalar = 1.0f;
+		}
 	}
-	else if (secondMass > 100.f * firstMass)
+	else if (firstDef.m_response == COLLISION_RESPONSE_FULL_CORRECTION)
 	{
-		out_secondScalar = 0.f;
-		out_firstScalar = 1.f;
+		if (secondDef.m_response == COLLISION_RESPONSE_NO_CORRECTION)
+		{
+			out_firstScalar = 1.0f;
+			out_secondScalar = 0.f;
+		}
+		else if (secondDef.m_response == COLLISION_RESPONSE_FULL_CORRECTION)
+		{
+			out_firstScalar = firstMass / massSum;
+			out_secondScalar = 1.0f - out_firstScalar;
+		}
+		else if (secondDef.m_response == COLLISION_RESPONSE_SHARE_CORRECTION)
+		{
+			out_firstScalar = 1.0f;
+			out_secondScalar = 0.f;
+		}
 	}
-	else
+	else if (firstDef.m_response == COLLISION_RESPONSE_SHARE_CORRECTION)
 	{
-		// Else return the proportion of each to the total mass
-		out_firstScalar = firstMass / (firstMass + secondMass);
-		out_secondScalar = 1.0f - out_firstScalar;
+		if (secondDef.m_response == COLLISION_RESPONSE_NO_CORRECTION)
+		{
+			out_firstScalar = 1.0f;
+			out_secondScalar = 0.f;
+		}
+		else if (secondDef.m_response == COLLISION_RESPONSE_FULL_CORRECTION)
+		{
+			out_firstScalar = 0.f;
+			out_secondScalar = 1.0f;
+		}
+		else if (secondDef.m_response == COLLISION_RESPONSE_SHARE_CORRECTION)
+		{
+			out_firstScalar = firstMass / massSum;
+			out_secondScalar = 1.0f - out_firstScalar;
+		}
 	}
 }
 
@@ -429,8 +621,8 @@ bool World::CheckAndCorrect_DiscDisc(Entity* first, Entity* second)
 	float firstRadius = firstDef.m_xExtent;
 	float secondRadius = secondDef.m_xExtent;
 
-	Vector3 firstPosition = first->GetPosition();
-	Vector3 secondPosition = second->GetPosition();
+	Vector3 firstPosition = first->GetEntityPosition();
+	Vector3 secondPosition = second->GetEntityPosition();
 
 	// Height check
 	bool firstAboveSecond = (secondPosition.y + secondDef.m_height) < (firstPosition.y);
@@ -467,7 +659,7 @@ bool World::CheckAndCorrect_DiscDisc(Entity* first, Entity* second)
 //
 bool World::CheckAndCorrect_BoxDisc(Entity* first, Entity* second)
 {
-	bool isFirstBox = first->GetCollisionDefinition().m_type == COLLISION_TYPE_BOX;
+	bool isFirstBox = first->GetCollisionDefinition().m_shape == COLLISION_SHAPE_BOX;
 	Entity* boxEntity;
 	Entity* discEntity;
 
@@ -485,8 +677,8 @@ bool World::CheckAndCorrect_BoxDisc(Entity* first, Entity* second)
 	CollisionDefinition_t boxDef = boxEntity->GetCollisionDefinition();
 	CollisionDefinition_t discDef = discEntity->GetCollisionDefinition();
 
-	Vector3 discPosition = discEntity->GetPosition();
-	Vector3 boxPosition = boxEntity->GetPosition();
+	Vector3 discPosition = discEntity->GetEntityPosition();
+	Vector3 boxPosition = boxEntity->GetEntityPosition();
 
 	float discRadius	= discDef.m_xExtent;
 	Vector2 boxExtents	= Vector2(boxDef.m_xExtent, boxDef.m_zExtent);
@@ -664,8 +856,8 @@ bool World::CheckAndCorrect_BoxBox(Entity* first, Entity* second)
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
 
-	Vector3 firstPosition	= first->GetPosition();
-	Vector3 secondPosition	= second->GetPosition();
+	Vector3 firstPosition	= first->GetEntityPosition();
+	Vector3 secondPosition	= second->GetEntityPosition();
 
 	Vector2 firstExtents	= Vector2(firstDef.m_xExtent, firstDef.m_zExtent);
 	Vector2 secondExtents	= Vector2(secondDef.m_xExtent, secondDef.m_zExtent);

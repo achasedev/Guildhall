@@ -18,6 +18,7 @@
 #include "Engine/Rendering/Core/ForwardRenderingPath.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
+#include "Game/Entity/TestBox.hpp"
 //-----------------------------------------------------------------------------------------------
 // Base constructor
 //
@@ -57,6 +58,11 @@ void GameState_Playing::Enter()
 	{
 		Game::GetWorld()->AddStaticEntity(new StaticEntity());
 	}
+
+	TestBox* entity = new TestBox();
+	entity->SetPosition(Vector3(128.f, 4.f, 128.f));
+
+	Game::GetWorld()->AddDynamicEntity(entity);
 
 // 	players[1] = new Player(1);
 // 	players[1]->SetPosition(Vector3(80.f, 0.f, 80.f));
@@ -121,21 +127,24 @@ void GameState_Playing::ProcessInput()
 		m_cameraEjected = !m_cameraEjected;
 	}
 
-	if (!m_cameraEjected)
-	{
-		Player** players = Game::GetPlayers();
+	Player** players = Game::GetPlayers();
 
-		for (int i = 0; i < MAX_PLAYERS; ++i)
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		if (players[i] != nullptr)
 		{
-			if (players[i] != nullptr)
-			{
-				players[i]->ProcessInput();
-			}
+			players[i]->ProcessInput();
 		}
 	}
-	else
+
+	if (m_cameraEjected)
 	{
 		UpdateCameraOnInput();
+	}
+
+	if (InputSystem::GetInstance()->WasKeyJustPressed('L'))
+	{
+		Game::GetWorld()->ParticalizeEntity();
 	}
 }
 

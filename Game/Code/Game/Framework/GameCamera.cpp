@@ -43,7 +43,7 @@ void GameCamera::UpdatePositionBasedOnPlayers()
 	{
 		if (players[i] != nullptr)
 		{
-			targetPos += players[i]->GetPosition();
+			targetPos += players[i]->GetEntityPosition();
 			playerCount += 1.0f;
 		}
 	}

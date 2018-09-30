@@ -112,7 +112,7 @@ void VoxelGrid::DrawEntity(const Entity* entity)
 	PROFILE_LOG_SCOPE_FUNCTION();
 
 	Texture3D* texture = entity->GetTextureForOrientation();
-	Vector3 position = entity->GetPosition();
+	Vector3 position = entity->GetEntityPosition();
 	IntVector3 dimensions = texture->GetDimensions();
 	IntVector3 halfDimensions = dimensions / 2;
 

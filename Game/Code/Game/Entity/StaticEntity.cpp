@@ -18,7 +18,7 @@ StaticEntity::StaticEntity()
 	m_mass = REALLY_BIG_MASS;
 
 	SetPosition(Vector3(GetRandomFloatInRange(10.f, 250.f), 4.f, GetRandomIntInRange(10.f, 250.f)));
-	m_collisionDef = CollisionDefinition_t(COLLISION_TYPE_BOX, 4.f, 4.f, 8.f);
+	m_collisionDef = CollisionDefinition_t(COLLISION_SHAPE_BOX, COLLISION_RESPONSE_FULL_CORRECTION, 4.f, 4.f, 8.f);
 
 	SetupVoxelTextures("Data/3DTextures/TestBox.qef");
 }

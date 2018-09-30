@@ -34,23 +34,33 @@ enum eEntityTeam
 	ENTITY_TEAM_UNASSIGNED
 };
 
-enum eCollisionType
+enum eCollisionShape
 {
-	COLLISION_TYPE_NONE,
-	COLLISION_TYPE_DISC,
-	COLLISION_TYPE_BOX,
-	NUM_COLLISION_TYPES
+	COLLISION_SHAPE_NONE,
+	COLLISION_SHAPE_DISC,
+	COLLISION_SHAPE_BOX,
+	NUM_COLLISION_SHAPES
+};
+
+enum eCollisionResponse
+{
+	COLLISION_RESPONSE_NO_CORRECTION,
+	COLLISION_RESPONSE_SHARE_CORRECTION,
+	COLLISION_RESPONSE_FULL_CORRECTION,
+	NUM_COLLISION_RESPONSES
 };
 
 struct CollisionDefinition_t
 {
 	CollisionDefinition_t()
-	 : m_type(COLLISION_TYPE_DISC), m_xExtent(4.f), m_zExtent(4.f), m_height(8.f) {}
+	 : m_shape(COLLISION_SHAPE_DISC), m_response(COLLISION_RESPONSE_FULL_CORRECTION), m_xExtent(4.f), m_zExtent(4.f), m_height(8.f) {}
 
-	CollisionDefinition_t(eCollisionType type, float width, float length, float height)
-	: m_type(type), m_xExtent(width), m_zExtent(length), m_height(height) {}
+	CollisionDefinition_t(eCollisionShape shape, eCollisionResponse type, float width, float length, float height)
+	: m_shape(shape), m_response(type), m_xExtent(width), m_zExtent(length), m_height(height) {}
 
-	eCollisionType	m_type;
+	eCollisionShape	m_shape;
+	eCollisionResponse	m_response;
+
 	float			m_xExtent;
 	float			m_zExtent;
 	float			m_height;
@@ -83,7 +93,7 @@ public:
 	void					TakeDamage(int damageAmount);
 
 	// Accessors
-	Vector3					GetPosition() const;
+	Vector3					GetEntityPosition() const;
 	Texture3D*				GetTextureForOrientation() const;
 	CollisionDefinition_t	GetCollisionDefinition() const;
 
@@ -92,7 +102,10 @@ public:
 
 	// Producers
 	bool					IsMarkedForDelete() const;
+	Vector3					GetPositionForLocalCoords(const IntVector3& localCoords) const;
+	Vector3					GetPositionForLocalIndex(unsigned int index) const;
 
+	IntVector3				GetEntityCoordinatePosition() const;
 
 	// Events
 	virtual void			OnCollision(Entity* other);

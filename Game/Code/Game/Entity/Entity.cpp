@@ -215,7 +215,7 @@ void Entity::SetupVoxelTextures(const char* filename)
 //-----------------------------------------------------------------------------------------------
 // Returns the world position of the entity
 //
-Vector3 Entity::GetPosition() const
+Vector3 Entity::GetEntityPosition() const
 {
 	return m_position;
 }
@@ -268,4 +268,49 @@ float Entity::GetInverseMass() const
 bool Entity::IsMarkedForDelete() const
 {
 	return m_isMarkedForDelete;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the position of the entity's voxel at the given local coords
+//
+Vector3 Entity::GetPositionForLocalCoords(const IntVector3& localCoords) const
+{
+	IntVector3 dimensions = m_textures[0]->GetDimensions();
+	IntVector3 halfDimensions = dimensions / 2;
+
+	IntVector3 entityPositionCoords = GetEntityCoordinatePosition();
+
+	IntVector3 bottomLeft = entityPositionCoords - IntVector3(halfDimensions.x, 0, halfDimensions.z);
+
+	Vector3 position = Vector3(bottomLeft + localCoords);
+	position += Vector3(0.5f, 0.f, 0.5f);
+
+	return position;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the position of the entity's voxel at the given index
+//
+Vector3 Entity::GetPositionForLocalIndex(unsigned int index) const
+{
+	IntVector3 dimensions = m_textures[0]->GetDimensions();
+
+	int y = index / (dimensions.x * dimensions.z);
+	int leftOver = index % (dimensions.x * dimensions.z);
+
+	int z = leftOver / (dimensions.x);
+	int x = leftOver % (dimensions.x);
+
+	return GetPositionForLocalCoords(IntVector3(x, y, z));
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the coordinate position that this entity occupies
+//
+IntVector3 Entity::GetEntityCoordinatePosition() const
+{
+	return IntVector3(m_position);
 }

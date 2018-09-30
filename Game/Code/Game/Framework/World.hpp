@@ -17,6 +17,7 @@ class Entity;
 class DynamicEntity;
 class StaticEntity;
 class Texture3D;
+class Particle;
 
 class World
 {
@@ -34,6 +35,8 @@ public:
 	void AddDynamicEntity(DynamicEntity* entity);
 	void AddStaticEntity(StaticEntity* entity);
 
+	void ParticalizeEntity();
+
 
 private:
 	//-----Private Methods-----
@@ -41,6 +44,7 @@ private:
 	// -- Update Loop -- 
 	void UpdateStaticEntities();
 	void UpdateDynamicEntities();
+	void UpdateParticles();
 
 	void ApplyPhysicsStep();
 
@@ -53,6 +57,7 @@ private:
 	void DrawTerrainToGrid();
 	void DrawStaticEntitiesToGrid();
 	void DrawDynamicEntitiesToGrid();
+	void DrawParticlesToGrid();
 
 	// Collision
 	bool CheckAndCorrectEntityCollision(Entity* first, Entity* second);
@@ -71,5 +76,6 @@ private:
 	Texture3D* m_terrain = nullptr;
 	std::vector<DynamicEntity*> m_dynamicEntities;
 	std::vector<StaticEntity*>	m_staticEntities;
+	std::vector<Particle*> m_particles;
 
 };

@@ -288,6 +288,7 @@
   <ItemGroup>
     <ClCompile Include="Entity\DynamicEntity.cpp" />
     <ClCompile Include="Entity\Entity.cpp" />
+    <ClCompile Include="Entity\Particle.cpp" />
     <ClCompile Include="Entity\Player.cpp" />
     <ClCompile Include="Entity\Projectile.cpp" />
     <ClCompile Include="Entity\StaticEntity.cpp" />
@@ -309,6 +310,7 @@
   <ItemGroup>
     <ClInclude Include="Entity\DynamicEntity.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />
+    <ClInclude Include="Entity\Particle.hpp" />
     <ClInclude Include="Entity\Player.hpp" />
     <ClInclude Include="Entity\Projectile.hpp" />
     <ClInclude Include="Entity\StaticEntity.hpp" />
