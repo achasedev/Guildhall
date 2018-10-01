@@ -70,10 +70,7 @@ bool OnPing(NetMessage* msg, const NetSender_t& sender)
 //
 bool OnPong(NetMessage* msg, const NetSender_t& sender)
 {
-	std::string str;
-	msg->ReadString(str);
-
-	ConsolePrintf("Received pong from %s: %s", sender.address.ToString().c_str(), str.c_str());
+	ConsolePrintf("Received pong from %s", sender.address.ToString().c_str());
 
 	return true;
 }
