@@ -23,7 +23,7 @@ class AnimationFrame
 public:
 	//-----Public Methods-----
 	
-	AnimationFrame(Texture3D* frame, float duration);
+	AnimationFrame(const std::string& name, Texture3D* east, Texture3D* north, Texture3D* west, Texture3D* south);
 
 	
 public:
@@ -37,9 +37,9 @@ private:
 private:
 	//-----Private Data-----
 	
-	std::string m_name;
-	Texture3D* m_textures[NUM_DIRECTIONS];
+	std::string		m_name;
+	Texture3D*		m_textures[NUM_DIRECTIONS];
 
-	float m_duration = 0.f;
+	float			m_duration = 0.f;
 	
 };

@@ -5,9 +5,12 @@
 /* Description: Class to represent animation data for a single animation
 /************************************************************************/
 #pragma once
+#include <map>
 #include <string>
+#include "Engine/Core/Utility/XmlUtilities.hpp"
 
 class Texture3D;
+class AnimationFrame;
 
 enum ePlayMode
 {
@@ -28,7 +31,8 @@ class AnimationClip
 public:
 	//-----Public Methods-----
 	
-	bool LoadFromFile(const char* filename);
+
+	std::string GetName() const;
 
 public:
 	//-----Public Data-----
@@ -37,13 +41,15 @@ public:
 private:
 	//-----Private Methods-----
 	
+	AnimationClip(const XMLElement& animElement);
 	
+
 private:
 	//-----Private Data-----
 	
-	std::string m_name;
-	ePlayMode	m_playMode = PLAYMODE_DEFAULT;
+	std::string			m_name;
+	ePlayMode			m_playMode = PLAYMODE_DEFAULT;
+	AnimationFrame*		m_frames = nullptr;
 
-	Texture3D* m_sprites = nullptr;
-
+	static std::map<std::string, AnimationClip*> s_clipPrototypes;
 };
