@@ -5,31 +5,31 @@
 /* Description: Class to represent the animation state of an entity
 /************************************************************************/
 #pragma once
+#include "Game/Animation/VoxelAnimation.hpp"
 
 class Stopwatch;
 class Texture3D;
 class AnimationSet;
+class VoxelAnimation;
 
-class Animator
+class VoxelAnimator
 {
 public:
 	//-----Public Methods-----
 	
-	
-public:
-	//-----Public Data-----
+	void			Play(const std::string& animationAlias, ePlayMode modeOverride = PLAYMODE_DEFAULT);
+
+	VoxelSprite*	GetCurrentSprite() const;
+	bool			IsCurrentAnimationFinished() const;
 	
 
-private:
-	//-----Private Methods-----
-	
-	
 private:
 	//-----Private Data-----
 	
 	Stopwatch*				m_stopwatch = nullptr;
 	const AnimationSet*		m_animationSet = nullptr;
-
+	ePlayMode				m_defaultPlayMode = PLAYMODE_DEFAULT;
 	Texture3D*				m_defaultFrame = nullptr;
-	
+	VoxelAnimation*			m_currentAnimation = nullptr;
+
 };

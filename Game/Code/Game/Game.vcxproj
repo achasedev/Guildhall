@@ -286,10 +286,10 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Animation\AnimationClip.cpp" />
-    <ClCompile Include="Animation\AnimationFrame.cpp" />
+    <ClCompile Include="Animation\VoxelAnimation.cpp" />
+    <ClCompile Include="Animation\VoxelSprite.cpp" />
     <ClCompile Include="Animation\AnimationSet.cpp" />
-    <ClCompile Include="Animation\Animator.cpp" />
+    <ClCompile Include="Animation\VoxelAnimator.cpp" />
     <ClCompile Include="Entity\DynamicEntity.cpp" />
     <ClCompile Include="Entity\Entity.cpp" />
     <ClCompile Include="Entity\Particle.cpp" />
@@ -312,10 +312,10 @@
     <ClCompile Include="Utility\GameUtilities.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Animation\AnimationClip.hpp" />
-    <ClInclude Include="Animation\AnimationFrame.hpp" />
+    <ClInclude Include="Animation\VoxelAnimation.hpp" />
+    <ClInclude Include="Animation\VoxelSprite.hpp" />
     <ClInclude Include="Animation\AnimationSet.hpp" />
-    <ClInclude Include="Animation\Animator.hpp" />
+    <ClInclude Include="Animation\VoxelAnimator.hpp" />
     <ClInclude Include="Entity\DynamicEntity.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\Particle.hpp" />

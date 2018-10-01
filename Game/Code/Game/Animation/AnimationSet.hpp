@@ -14,13 +14,11 @@ class AnimationSet
 {
 public:
 	//-----Public Methods-----
-	
-	void						LoadFromFile(const char* filename);
 
 	std::string					GetName() const;
 	bool						TranslateAlias(const std::string& alias, std::string& out_translation) const;
 
-	static void					LoadAnimationSet(const std::string& filename);
+	static const AnimationSet*	LoadSetFromFile(const std::string& filename);
 	static const AnimationSet*	GetAnimationSet(const std::string& setName);
 
 
@@ -29,9 +27,6 @@ private:
 
 	// Construction only allowed in LoadAnimationSet()
 	AnimationSet(const XMLElement& setElement);
-
-	// Only used in LoadAnimationSet()
-	static void AddAnimation(const AnimationSet* animationSet);
 
 
 private:

@@ -10,7 +10,7 @@
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 
 class Texture3D;
-class AnimationFrame;
+class VoxelSprite;
 
 enum ePlayMode
 {
@@ -20,19 +20,24 @@ enum ePlayMode
 	NUM_PLAYMODES
 };
 
-struct AnimFrame
+struct VoxelAnimFrame
 {
-	Texture3D* m_texture = nullptr;
+	VoxelAnimFrame(VoxelSprite* _sprite, float _duration)
+	 : sprite(_sprite), duration(_duration) {}
 
+	VoxelSprite*	sprite = nullptr;
+	float			duration = 0.f;
 };
 
-class AnimationClip
+class VoxelAnimation
 {
 public:
 	//-----Public Methods-----
 	
 
-	std::string GetName() const;
+	std::string		GetName() const;
+	VoxelAnimation*	CloneAnimationClip(const std::string& name);
+
 
 public:
 	//-----Public Data-----
@@ -41,7 +46,7 @@ public:
 private:
 	//-----Private Methods-----
 	
-	AnimationClip(const XMLElement& animElement);
+	VoxelAnimation(const XMLElement& animElement);
 	
 
 private:
@@ -49,7 +54,8 @@ private:
 	
 	std::string			m_name;
 	ePlayMode			m_playMode = PLAYMODE_DEFAULT;
-	AnimationFrame*		m_frames = nullptr;
+	VoxelAnimFrame*		m_frames = nullptr;
 
-	static std::map<std::string, AnimationClip*> s_clipPrototypes;
+	static std::map<std::string, VoxelAnimation*> s_clipPrototypes;
+
 };

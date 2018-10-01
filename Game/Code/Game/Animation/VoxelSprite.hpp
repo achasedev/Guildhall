@@ -18,12 +18,12 @@ enum eFrameDirection
 
 class Texture3D;
 
-class AnimationFrame
+class VoxelSprite
 {
 public:
 	//-----Public Methods-----
 	
-	AnimationFrame(const std::string& name, Texture3D* east, Texture3D* north, Texture3D* west, Texture3D* south);
+	VoxelSprite(const std::string& name, Texture3D* east, Texture3D* north, Texture3D* west, Texture3D* south);
 
 	
 public:
@@ -39,7 +39,5 @@ private:
 	
 	std::string		m_name;
 	Texture3D*		m_textures[NUM_DIRECTIONS];
-
-	float			m_duration = 0.f;
 	
 };
