@@ -286,6 +286,10 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Animation\AnimationClip.cpp" />
+    <ClCompile Include="Animation\AnimationFrame.cpp" />
+    <ClCompile Include="Animation\AnimationSet.cpp" />
+    <ClCompile Include="Animation\Animator.cpp" />
     <ClCompile Include="Entity\DynamicEntity.cpp" />
     <ClCompile Include="Entity\Entity.cpp" />
     <ClCompile Include="Entity\Particle.cpp" />
@@ -308,6 +312,10 @@
     <ClCompile Include="Utility\GameUtilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animation\AnimationClip.hpp" />
+    <ClInclude Include="Animation\AnimationFrame.hpp" />
+    <ClInclude Include="Animation\AnimationSet.hpp" />
+    <ClInclude Include="Animation\Animator.hpp" />
     <ClInclude Include="Entity\DynamicEntity.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\Particle.hpp" />
