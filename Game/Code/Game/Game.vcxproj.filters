@@ -73,9 +73,6 @@
     <ClCompile Include="Entity\Particle.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Animation\AnimationSet.cpp">
-      <Filter>Architecture</Filter>
-    </ClCompile>
     <ClCompile Include="Animation\VoxelSprite.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
@@ -83,6 +80,9 @@
       <Filter>Architecture</Filter>
     </ClCompile>
     <ClCompile Include="Animation\VoxelAnimator.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation\VoxelAnimationSet.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
   </ItemGroup>
@@ -125,9 +125,9 @@
     <ClInclude Include="Entity\TestBox.hpp" />
     <ClInclude Include="Framework\GameCamera.hpp" />
     <ClInclude Include="Entity\Particle.hpp" />
-    <ClInclude Include="Animation\AnimationSet.hpp" />
     <ClInclude Include="Animation\VoxelSprite.hpp" />
     <ClInclude Include="Animation\VoxelAnimation.hpp" />
     <ClInclude Include="Animation\VoxelAnimator.hpp" />
+    <ClInclude Include="Animation\VoxelAnimationSet.hpp" />
   </ItemGroup>
 </Project>

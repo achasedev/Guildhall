@@ -41,7 +41,7 @@ World::~World()
 //
 void World::Inititalize(const char* filename)
 {
-	m_terrain = AssetDB::CreateOrGet3DVoxelTextureInstance(filename);
+	m_terrain = AssetDB::CreateOrGetVoxelTexture(filename);
 
 	m_dimensions = IntVector3(256, 64, 256);
 	//m_dimensions = m_terrain->GetDimensions();
@@ -133,7 +133,7 @@ void World::ParticalizeEntity()
 
 	m_dynamicEntities.erase(m_dynamicEntities.begin() + 1);
 
-	VoxelTexture* texture = entity->GetTextureForOrientation();
+	const VoxelTexture* texture = entity->GetTextureForOrientation();
 	Vector3 entityPosition = entity->GetEntityPosition();
 
 	unsigned int voxelCount = texture->GetVoxelCount();

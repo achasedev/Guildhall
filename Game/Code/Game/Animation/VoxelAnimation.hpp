@@ -23,11 +23,11 @@ enum ePlayMode
 
 struct VoxelAnimFrame
 {
-	VoxelAnimFrame(VoxelSprite* _sprite, float _duration)
+	VoxelAnimFrame(const VoxelSprite* _sprite, float _duration)
 	 : sprite(_sprite), duration(_duration) {}
 
-	VoxelSprite*	sprite = nullptr;
-	float			duration = 0.f;
+	const VoxelSprite*	sprite = nullptr;
+	float				duration = 0.f;
 };
 
 class VoxelAnimation
@@ -39,12 +39,13 @@ public:
 	std::string		GetName() const;
 
 	// Producers
-	VoxelSprite*	Evaluate(float timeIntoAnimation, ePlayMode modeOverride) const;
-	float			GetTotalDuration() const;
+	const VoxelSprite*	Evaluate(float timeIntoAnimation, ePlayMode modeOverride) const;
+	float				GetTotalDuration() const;
 
 	// Statics
-	static const VoxelAnimation* GetAnimationClip(const std::string& name);
-	
+	static void						LoadVoxelAnimations(const std::string& filename);
+	static const VoxelAnimation*	GetAnimationClip(const std::string& name);
+
 
 private:
 	//-----Private Methods-----
@@ -60,6 +61,6 @@ private:
 	ePlayMode						m_playMode = PLAYMODE_DEFAULT;
 	std::vector<VoxelAnimFrame>		m_frames;
 
-	static std::map<std::string, const VoxelAnimation*> s_clipPrototypes;
+	static std::map<std::string, const VoxelAnimation*> s_voxelAnimations;
 
 };

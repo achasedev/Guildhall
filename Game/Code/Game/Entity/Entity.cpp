@@ -155,10 +155,9 @@ Vector3 Entity::GetEntityPosition() const
 //-----------------------------------------------------------------------------------------------
 // Returns the 3D texture to used for rendering, based on the current 2D orientation of the entity
 //
-VoxelTexture* Entity::GetTextureForOrientation() const
+const VoxelTexture* Entity::GetTextureForOrientation() const
 {
-	VoxelSprite* sprite = m_animator->GetCurrentSprite();
-
+	const VoxelSprite* sprite = m_animator->GetCurrentSprite();
 	return sprite->GetTextureForOrientation(m_orientation);
 }
 

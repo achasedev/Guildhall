@@ -10,16 +10,6 @@
 
 class VoxelAnimator;
 
-// Direction the entity is facing, used for rendering
-enum eFacingDirection
-{
-	DIRECTION_NORTH,
-	DIRECTION_EAST,
-	DIRECTION_SOUTH,
-	DIRECTION_WEST, 
-	NUM_DIRECTIONS
-};
-
 // Convenience type to know what kind of entity we are
 enum eEntityType
 {
@@ -96,7 +86,7 @@ public:
 
 	// Accessors
 	Vector3					GetEntityPosition() const;
-	VoxelTexture*				GetTextureForOrientation() const;
+	const VoxelTexture*			GetTextureForOrientation() const;
 	CollisionDefinition_t	GetCollisionDefinition() const;
 
 	float					GetMass() const;

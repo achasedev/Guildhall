@@ -288,7 +288,7 @@
   <ItemGroup>
     <ClCompile Include="Animation\VoxelAnimation.cpp" />
     <ClCompile Include="Animation\VoxelSprite.cpp" />
-    <ClCompile Include="Animation\AnimationSet.cpp" />
+    <ClCompile Include="Animation\VoxelAnimationSet.cpp" />
     <ClCompile Include="Animation\VoxelAnimator.cpp" />
     <ClCompile Include="Entity\DynamicEntity.cpp" />
     <ClCompile Include="Entity\Entity.cpp" />
@@ -314,7 +314,7 @@
   <ItemGroup>
     <ClInclude Include="Animation\VoxelAnimation.hpp" />
     <ClInclude Include="Animation\VoxelSprite.hpp" />
-    <ClInclude Include="Animation\AnimationSet.hpp" />
+    <ClInclude Include="Animation\VoxelAnimationSet.hpp" />
     <ClInclude Include="Animation\VoxelAnimator.hpp" />
     <ClInclude Include="Entity\DynamicEntity.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />

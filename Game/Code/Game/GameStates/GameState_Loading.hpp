@@ -26,7 +26,7 @@ private:
 	//-----Private Methods-----
 
 	void LoadResources() const;	// CreateOrGets resources
-
+	void LoadVoxelResources() const;
 
 private:
 	//-----Private Data-----

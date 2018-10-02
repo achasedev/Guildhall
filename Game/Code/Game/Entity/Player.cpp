@@ -8,6 +8,10 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Entity/Projectile.hpp"
+#include "Game/Animation/VoxelSprite.hpp"
+#include "Game/Animation/VoxelAnimator.hpp"
+#include "Game/Animation/VoxelAnimationSet.hpp"
+
 #include "Engine/Core/Window.hpp"
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -26,6 +30,8 @@ Player::Player(unsigned int playerID)
 {
 	m_collisionDef = CollisionDefinition_t(COLLISION_SHAPE_BOX, COLLISION_RESPONSE_SHARE_CORRECTION, 4.f, 4.f, 8.f);
 	m_affectedByGravity = true;
+
+	m_animator = new VoxelAnimator(VoxelAnimationSet::GetAnimationSet("Robot"), VoxelSprite::GetVoxelSprite("Robot_idle_0"));
 }
 
 
@@ -54,6 +60,11 @@ void Player::ProcessInput()
 	if (leftStick != Vector2::ZERO)
 	{
 		ApplyInputAcceleration(leftStick);
+		m_animator->Play("walk");
+	}
+	else
+	{
+		m_animator->Play("idle");
 	}
 
 	// If we have no input or are moving too fast, decelerate
@@ -124,6 +135,8 @@ void Player::OnDeath()
 void Player::OnSpawn()
 {
 	DynamicEntity::OnSpawn();
+
+	m_animator->Play("idle", PLAYMODE_LOOP);
 }
 
 

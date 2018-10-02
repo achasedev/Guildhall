@@ -1,0 +1,17 @@
+<VoxelAssets>
+
+	<VoxelSprites>
+		<VoxelSprite file="Data/VoxelSprites/Robot.sprite"/>
+	</VoxelSprites>
+
+
+	<VoxelAnimationSets>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Robot.animset"/>
+	</VoxelAnimationSets>
+
+
+	<VoxelAnimations>
+		<VoxelAnimation file="Data/VoxelAnimations/Robot.animation"/>
+	</VoxelAnimations>
+
+</VoxelAssets>

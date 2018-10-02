@@ -1,10 +1,10 @@
 #include "Game/Framework/Game.hpp"
-#include "Game/Animation/AnimationSet.hpp"
+#include "Game/Animation/VoxelAnimationSet.hpp"
 #include "Game/Animation/VoxelAnimator.hpp"
 #include "Game/Animation/VoxelAnimation.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
 
-VoxelAnimator::VoxelAnimator(const AnimationSet* animSet, VoxelSprite* defaultSprite)
+VoxelAnimator::VoxelAnimator(const VoxelAnimationSet* animSet, const VoxelSprite* defaultSprite)
 	: m_animationSet(animSet)
 	, m_defaultSprite(defaultSprite)
 {
@@ -26,17 +26,24 @@ void VoxelAnimator::Play(const std::string& animationAlias, ePlayMode modeOverri
 		}
 	}
 
-	m_currentAnimation = VoxelAnimation::GetAnimationClip(nameToUse);
-	m_stopwatch->Reset();
+	const VoxelAnimation* animation = VoxelAnimation::GetAnimationClip(nameToUse);
+	if (animation != m_currentAnimation)
+	{
+		m_currentAnimation = animation;
+		m_stopwatch->Reset();
+	}
+
 	m_playmode = modeOverride;
 }
 
-VoxelSprite* VoxelAnimator::GetCurrentSprite() const
+const VoxelSprite* VoxelAnimator::GetCurrentSprite() const
 {
 	if (m_currentAnimation != nullptr)
 	{
 		return m_currentAnimation->Evaluate(m_stopwatch->GetElapsedTime(), m_playmode);
 	}
+
+	return m_defaultSprite;
 }
 
 bool VoxelAnimator::IsCurrentAnimationFinished() const

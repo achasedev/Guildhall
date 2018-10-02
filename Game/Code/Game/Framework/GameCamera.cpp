@@ -13,8 +13,8 @@
 // Constructor
 //
 GameCamera::GameCamera()
-	: m_offsetDirection(Vector3(0.f, 1.f, -1.f))
-	, m_offsetDistance(200.f)
+	: m_offsetDirection(Vector3(0.f, 0.75f, -1.f))
+	, m_offsetDistance(150.f)
 {
 }
 

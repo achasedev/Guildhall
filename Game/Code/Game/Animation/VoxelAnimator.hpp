@@ -9,7 +9,7 @@
 
 class Stopwatch;
 class VoxelTexture;
-class AnimationSet;
+class VoxelAnimationSet;
 class VoxelAnimation;
 
 class VoxelAnimator
@@ -17,21 +17,21 @@ class VoxelAnimator
 public:
 	//-----Public Methods-----
 	
-	VoxelAnimator(const AnimationSet* animSet, VoxelSprite* defaultSprite);
+	VoxelAnimator(const VoxelAnimationSet* animSet, const VoxelSprite* defaultSprite);
+	
+	void				Play(const std::string& animationAlias, ePlayMode modeOverride = PLAYMODE_DEFAULT);
 
-	void			Play(const std::string& animationAlias, ePlayMode modeOverride = PLAYMODE_DEFAULT);
-
-	VoxelSprite*	GetCurrentSprite() const;
-	bool			IsCurrentAnimationFinished() const;
+	const VoxelSprite*	GetCurrentSprite() const;
+	bool				IsCurrentAnimationFinished() const;
 	
 
 private:
 	//-----Private Data-----
 	
-	Stopwatch*				m_stopwatch = nullptr;
-	const AnimationSet*		m_animationSet = nullptr;
-	ePlayMode				m_playmode = PLAYMODE_DEFAULT;
-	VoxelSprite*			m_defaultSprite = nullptr;
-	const VoxelAnimation*	m_currentAnimation = nullptr;
+	Stopwatch*					m_stopwatch			= nullptr;
+	const VoxelAnimationSet*	m_animationSet		= nullptr;
+	ePlayMode					m_playmode			= PLAYMODE_DEFAULT;
+	const VoxelSprite*			m_defaultSprite		= nullptr;
+	const VoxelAnimation*		m_currentAnimation	= nullptr;
 
 };

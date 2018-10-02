@@ -8,6 +8,10 @@
 #include "Game/Framework/Game.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
+#include "Game/Animation/VoxelAnimationSet.hpp"
+#include "Game/Animation/VoxelAnimator.hpp"
+#include "Game/Animation/VoxelSprite.hpp"
+
 // Default acceleration due to gravity
 #define GRAVITY_MAGNITUDE (100.f);
 
@@ -18,6 +22,9 @@
 DynamicEntity::DynamicEntity()
 	: Entity(ENTITY_TYPE_DYNAMIC)
 {
+	SetPosition(Vector3(GetRandomFloatInRange(10.f, 250.f), 4.f, GetRandomFloatInRange(10.f, 250.f)));
+	m_collisionDef = CollisionDefinition_t(COLLISION_SHAPE_BOX, COLLISION_RESPONSE_FULL_CORRECTION, 4.f, 4.f, 8.f);
+	m_animator = new VoxelAnimator(VoxelAnimationSet::GetAnimationSet("Robot"), VoxelSprite::GetVoxelSprite("Robot_idle_0"));
 }
 
 
@@ -71,6 +78,7 @@ void DynamicEntity::OnDeath()
 void DynamicEntity::OnSpawn()
 {
 	Entity::OnSpawn();
+	m_animator->Play("idle");
 }
 
 

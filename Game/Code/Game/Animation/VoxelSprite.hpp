@@ -7,6 +7,7 @@
 #pragma once
 #include <map>
 #include <string>
+#include "Engine/Core/Utility/XmlUtilities.hpp"
 
 enum eFrameDirection
 {
@@ -24,12 +25,13 @@ class VoxelSprite
 public:
 	//-----Public Methods-----
 	
-	VoxelSprite(const std::string& name, VoxelTexture* east, VoxelTexture* north, VoxelTexture* west, VoxelTexture* south);
+	VoxelSprite(const std::string& name, const std::string& filename);
 
-	VoxelTexture* GetTextureForOrientation(float angle);
+	// Accessors
+	const VoxelTexture*			GetTextureForOrientation(float angle) const;
 
 	// Statics
-	static void					LoadVoxelSpriteFromFile(const std::string& filename);
+	static void					LoadVoxelSprites(const std::string& filename);
 	static const VoxelSprite*	GetVoxelSprite(const std::string& name);
 	
 

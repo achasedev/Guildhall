@@ -7,40 +7,18 @@
 
 std::map<std::string, const VoxelSprite*> VoxelSprite::s_sprites;
 
-VoxelSprite::VoxelSprite(const std::string& name, VoxelTexture* east, VoxelTexture* north, VoxelTexture* west, VoxelTexture* south)
+VoxelSprite::VoxelSprite(const std::string& name, const std::string& filename)
+	: m_name(name)
 {
-	m_name = name;
-	m_textures[DIRECTION_EAST] = east;
-	m_textures[DIRECTION_NORTH] = north;
-	m_textures[DIRECTION_WEST] = west;
-	m_textures[DIRECTION_SOUTH] = south;
-}
+	VoxelTexture* northTexture = AssetDB::CreateOrGetVoxelTexture(filename);
 
-VoxelTexture* VoxelSprite::GetTextureForOrientation(float angle)
-{
-	float cardinalAngle = GetNearestCardinalAngle(angle);
-
-	if		(cardinalAngle == 0.f)		{ return m_textures[DIRECTION_EAST]; }
-	else if (cardinalAngle == 90.f)		{ return m_textures[DIRECTION_NORTH]; }
-	else if (cardinalAngle == 180.f)	{ return m_textures[DIRECTION_WEST]; }
-	else								{ return m_textures[DIRECTION_SOUTH]; }
-}
-
-void VoxelSprite::LoadVoxelSpriteFromFile(const std::string& filename)
-{
-	VoxelTexture* northTexture = AssetDB::CreateOrGet3DVoxelTextureInstance(filename);
-
-	if (northTexture == nullptr)
-	{
-		return;
-	}
+	ASSERT_OR_DIE(northTexture != nullptr, Stringf("Error: VoxelSprite::VoxelSprite() couldn't open file %s", filename.c_str()));
 
 	IntVector3 dimensions = northTexture->GetDimensions();
 
 	// Rotate to get the other 3
 	dimensions = northTexture->GetDimensions();
-
-	ASSERT_OR_DIE(dimensions.x == dimensions.z, Stringf("Error: VoxelSprite::CreateOrGetVoxelSprite() had a texture with unequal xz dimensions, file was %s", filename));
+	ASSERT_OR_DIE(dimensions.x == dimensions.z, Stringf("Error: VoxelSprite::VoxelSprite() had a texture with unequal xz dimensions, file was %s", filename.c_str()));
 
 	// South
 	int destIndex = 0;
@@ -90,6 +68,52 @@ void VoxelSprite::LoadVoxelSpriteFromFile(const std::string& filename)
 				destIndex++;
 			}
 		}
+	}
+
+	m_textures[DIRECTION_EAST] = eastTexture;
+	m_textures[DIRECTION_NORTH] = northTexture;
+	m_textures[DIRECTION_WEST] = westTexture;
+	m_textures[DIRECTION_SOUTH] = southTexture;
+}
+
+const VoxelTexture* VoxelSprite::GetTextureForOrientation(float angle) const
+{
+	float cardinalAngle = GetNearestCardinalAngle(angle);
+
+	if		(cardinalAngle == 0.f)		{ return m_textures[DIRECTION_EAST]; }
+	else if (cardinalAngle == 90.f)		{ return m_textures[DIRECTION_NORTH]; }
+	else if (cardinalAngle == 180.f)	{ return m_textures[DIRECTION_WEST]; }
+	else								{ return m_textures[DIRECTION_SOUTH]; }
+}
+
+void VoxelSprite::LoadVoxelSprites(const std::string& filename)
+{
+	// Load the document
+	XMLDocument document;
+	XMLError error = document.LoadFile(filename.c_str());
+	ASSERT_OR_DIE(error == tinyxml2::XML_SUCCESS, Stringf("Error: VoxelSprite::LoadVoxelSpriteFromFile() couldn't load file %s", filename.c_str()));
+
+	// Get the texture file and the name out of the xml document
+	const XMLElement* rootElement = document.RootElement();
+	ASSERT_OR_DIE(rootElement != nullptr, Stringf("Error: VoxelSprite::LoadVoxelSpriteFromFile() loaded file with no root element: %s", filename.c_str()));
+
+	const XMLElement* spriteElement = rootElement->FirstChildElement();
+	while (spriteElement != nullptr)
+	{
+		// Get the sprite name
+		std::string spriteName = ParseXmlAttribute(*spriteElement, "name");
+		ASSERT_OR_DIE(spriteName.size() > 0, Stringf("Error: VoxelSprite::LoadVoxelSpritesFromFile() found sprite with no name in %s", filename.c_str()));
+
+		// Get the sprite texture file
+		std::string fileName = ParseXmlAttribute(*spriteElement, "file");
+		ASSERT_OR_DIE(fileName.size() > 0, Stringf("Error: VoxelSprite::LoadVoxelSpritesFromFile() found sprite with no file in %s", filename.c_str()));
+
+		// Construct the sprite
+		VoxelSprite* sprite = new VoxelSprite(spriteName, fileName);
+		s_sprites[spriteName] = sprite;
+
+		// Move to the next element
+		spriteElement = spriteElement->NextSiblingElement();
 	}
 }
 
