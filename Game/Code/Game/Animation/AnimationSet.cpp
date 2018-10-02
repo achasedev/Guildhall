@@ -1,6 +1,9 @@
 #include "Game/Animation/AnimationSet.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
+
+std::map<std::string, const AnimationSet*> AnimationSet::s_animationSets;
 
 AnimationSet::AnimationSet(const XMLElement& setElement)
 {
@@ -8,7 +11,7 @@ AnimationSet::AnimationSet(const XMLElement& setElement)
 
 	if (setName.size() == 0)
 	{
-		ERROR_AND_DIE("AnimationSet::AnimationSet() read file %s with no name specified in root element", filename.c_str());
+		ERROR_AND_DIE("AnimationSet::AnimationSet() parsed file with no name specified in root element");
 	}
 
 	m_name = setName;
@@ -22,7 +25,7 @@ AnimationSet::AnimationSet(const XMLElement& setElement)
 
 		if (alias.size() == 0)
 		{
-			ERROR_AND_DIE("AnimationSet::AnimationSet() found alias element with no alias specified - set was %s", setName.c_str());
+			ERROR_AND_DIE(Stringf("AnimationSet::AnimationSet() found alias element with no alias specified - set was %s", setName.c_str()));
 		}
 
 		const XMLElement* animationElement = aliasElement->FirstChildElement();
@@ -33,7 +36,7 @@ AnimationSet::AnimationSet(const XMLElement& setElement)
 
 			if (animationName.size() == 0)
 			{
-				ERROR_AND_DIE("AnimationSet::AnimationSet() found animation element with no name specified - set was %s", setName.c_str());
+				ERROR_AND_DIE(Stringf("AnimationSet::AnimationSet() found animation element with no name specified - set was %s", setName.c_str()));
 			}
 
 			m_translations[alias].push_back(animationName);
@@ -74,7 +77,7 @@ const AnimationSet* AnimationSet::LoadSetFromFile(const std::string& filename)
 
 	if (error != tinyxml2::XML_SUCCESS)
 	{
-		ERROR_AND_DIE("AnimationSet::LoadSetFromFile() couldn't open file %s", filename.c_str());
+		ERROR_AND_DIE(Stringf("AnimationSet::LoadSetFromFile() couldn't open file %s", filename.c_str()));
 		return nullptr;
 	}
 

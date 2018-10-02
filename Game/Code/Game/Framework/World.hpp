@@ -16,7 +16,7 @@ class VoxelGrid;
 class Entity;
 class DynamicEntity;
 class StaticEntity;
-class Texture3D;
+class VoxelTexture;
 class Particle;
 
 class World
@@ -73,7 +73,7 @@ private:
 	VoxelGrid*	m_voxelGrid;		
 	unsigned int m_groundElevation = 0;
 
-	Texture3D* m_terrain = nullptr;
+	VoxelTexture* m_terrain = nullptr;
 	std::vector<DynamicEntity*> m_dynamicEntities;
 	std::vector<StaticEntity*>	m_staticEntities;
 	std::vector<Particle*> m_particles;

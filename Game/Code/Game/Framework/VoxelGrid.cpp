@@ -14,8 +14,8 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
-#include "Engine/Rendering/Resources/Texture3D.hpp"
 #include "Engine/Rendering/Shaders/ComputeShader.hpp"
+#include "Engine/Rendering/Resources/VoxelTexture.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 // Constants for any size grid
@@ -111,7 +111,7 @@ void VoxelGrid::DrawEntity(const Entity* entity)
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
-	Texture3D* texture = entity->GetTextureForOrientation();
+	VoxelTexture* texture = entity->GetTextureForOrientation();
 	Vector3 position = entity->GetEntityPosition();
 	IntVector3 dimensions = texture->GetDimensions();
 	IntVector3 halfDimensions = dimensions / 2;
@@ -130,7 +130,7 @@ void VoxelGrid::DrawEntity(const Entity* entity)
 //-----------------------------------------------------------------------------------------------
 // Draws the 3D texture to the grid
 //
-void VoxelGrid::Draw3DTexture(const Texture3D* texture, const IntVector3& bottomLeft)
+void VoxelGrid::Draw3DTexture(const VoxelTexture* texture, const IntVector3& bottomLeft)
 {
 	IntVector3 dimensions = texture->GetDimensions();
 

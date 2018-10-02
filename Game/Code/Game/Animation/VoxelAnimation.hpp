@@ -5,12 +5,13 @@
 /* Description: Class to represent animation data for a single animation
 /************************************************************************/
 #pragma once
-#include <map>
-#include <string>
+#include "Game/Animation/VoxelSprite.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
+#include <map>
+#include <vector>
+#include <string>
 
-class Texture3D;
-class VoxelSprite;
+class VoxelTexture;
 
 enum ePlayMode
 {
@@ -34,28 +35,31 @@ class VoxelAnimation
 public:
 	//-----Public Methods-----
 	
-
+	// Accessors
 	std::string		GetName() const;
-	VoxelAnimation*	CloneAnimationClip(const std::string& name);
 
+	// Producers
+	VoxelSprite*	Evaluate(float timeIntoAnimation, ePlayMode modeOverride) const;
+	float			GetTotalDuration() const;
 
-public:
-	//-----Public Data-----
+	// Statics
+	static const VoxelAnimation* GetAnimationClip(const std::string& name);
 	
 
 private:
 	//-----Private Methods-----
 	
 	VoxelAnimation(const XMLElement& animElement);
-	
+	VoxelAnimation(const VoxelAnimation& copy) = delete;
+
 
 private:
 	//-----Private Data-----
 	
-	std::string			m_name;
-	ePlayMode			m_playMode = PLAYMODE_DEFAULT;
-	VoxelAnimFrame*		m_frames = nullptr;
+	std::string						m_name;
+	ePlayMode						m_playMode = PLAYMODE_DEFAULT;
+	std::vector<VoxelAnimFrame>		m_frames;
 
-	static std::map<std::string, VoxelAnimation*> s_clipPrototypes;
+	static std::map<std::string, const VoxelAnimation*> s_clipPrototypes;
 
 };

@@ -160,7 +160,7 @@ void Entity::SetupVoxelTextures(const char* filename)
 
 	// South
 	int destIndex = 0;
-	m_textures[DIRECTION_SOUTH] = m_textures[0]->Copy();
+	m_textures[DIRECTION_SOUTH] = m_textures[0]->Clone();
 	for (int y = 0; y < dimensions.y; ++y)
 	{
 		for (int z = dimensions.z - 1; z >= 0; --z)
@@ -175,7 +175,7 @@ void Entity::SetupVoxelTextures(const char* filename)
 	}
 
 	// East
-	m_textures[DIRECTION_EAST] = m_textures[0]->Copy();
+	m_textures[DIRECTION_EAST] = m_textures[0]->Clone();
 	destIndex = 0;
 	for (int y = 0; y < dimensions.y; ++y)
 	{
@@ -192,7 +192,7 @@ void Entity::SetupVoxelTextures(const char* filename)
 	}
 
 	// West
-	m_textures[DIRECTION_WEST] = m_textures[0]->Copy();
+	m_textures[DIRECTION_WEST] = m_textures[0]->Clone();
 	destIndex = 0;
 	for (int y = 0; y < dimensions.y; ++y)
 	{
@@ -224,7 +224,7 @@ Vector3 Entity::GetEntityPosition() const
 //-----------------------------------------------------------------------------------------------
 // Returns the 3D texture to used for rendering, based on the current 2D orientation of the entity
 //
-Texture3D* Entity::GetTextureForOrientation() const
+VoxelTexture* Entity::GetTextureForOrientation() const
 {
 	float cardinalAngle = GetNearestCardinalAngle(m_orientation);
 

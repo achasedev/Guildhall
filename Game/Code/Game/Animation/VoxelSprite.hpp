@@ -16,14 +16,14 @@ enum eFrameDirection
 	NUM_DIRECTIONS
 };
 
-class Texture3D;
+class VoxelTexture;
 
 class VoxelSprite
 {
 public:
 	//-----Public Methods-----
 	
-	VoxelSprite(const std::string& name, Texture3D* east, Texture3D* north, Texture3D* west, Texture3D* south);
+	VoxelSprite(const std::string& name, VoxelTexture* east, VoxelTexture* north, VoxelTexture* west, VoxelTexture* south);
 
 	
 public:
@@ -33,11 +33,13 @@ public:
 private:
 	//-----Private Methods-----
 	
+	VoxelSprite(const VoxelSprite& copy) = delete;
+
 	
 private:
 	//-----Private Data-----
 	
 	std::string		m_name;
-	Texture3D*		m_textures[NUM_DIRECTIONS];
+	VoxelTexture*	m_textures[NUM_DIRECTIONS];
 	
 };

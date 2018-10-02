@@ -6,7 +6,7 @@
 /************************************************************************/
 #pragma once
 #include "Engine/Math/Vector3.hpp"
-#include "Engine/Rendering/Resources/Texture3D.hpp"
+#include "Engine/Rendering/Resources/VoxelTexture.hpp"
 
 // Direction the entity is facing, used for rendering
 enum eFacingDirection
@@ -94,7 +94,7 @@ public:
 
 	// Accessors
 	Vector3					GetEntityPosition() const;
-	Texture3D*				GetTextureForOrientation() const;
+	VoxelTexture*				GetTextureForOrientation() const;
 	CollisionDefinition_t	GetCollisionDefinition() const;
 
 	float					GetMass() const;
@@ -138,7 +138,7 @@ protected:
 	int						m_health = 1;
 	eEntityTeam				m_entityTeam = ENTITY_TEAM_UNASSIGNED;
 	eEntityType				m_entityType = ENTITY_TYPE_UNASSIGNED;
-	Texture3D*				m_textures[NUM_DIRECTIONS];
+	VoxelTexture*			m_textures[NUM_DIRECTIONS];
 
 	static constexpr float DEFAULT_MASS = 1.0f;
 

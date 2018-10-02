@@ -13,7 +13,7 @@
 
 class Renderable;
 class ComputeShader;
-class Texture3D;
+class VoxelTexture;
 class Entity;
 
 class VoxelGrid
@@ -28,7 +28,7 @@ public:
 	// Mutators
 	void				Clear();
 	void				DrawEntity(const Entity* entity);
-	void				Draw3DTexture(const Texture3D* texture, const IntVector3& position);
+	void				Draw3DTexture(const VoxelTexture* texture, const IntVector3& position);
 
 	// Accessors
 	int					GetVoxelCount() const;

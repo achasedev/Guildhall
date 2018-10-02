@@ -8,7 +8,7 @@
 #include "Game/Animation/VoxelAnimation.hpp"
 
 class Stopwatch;
-class Texture3D;
+class VoxelTexture;
 class AnimationSet;
 class VoxelAnimation;
 
@@ -17,6 +17,8 @@ class VoxelAnimator
 public:
 	//-----Public Methods-----
 	
+	VoxelAnimator(const AnimationSet* animSet, VoxelSprite* defaultSprite);
+
 	void			Play(const std::string& animationAlias, ePlayMode modeOverride = PLAYMODE_DEFAULT);
 
 	VoxelSprite*	GetCurrentSprite() const;
@@ -28,8 +30,8 @@ private:
 	
 	Stopwatch*				m_stopwatch = nullptr;
 	const AnimationSet*		m_animationSet = nullptr;
-	ePlayMode				m_defaultPlayMode = PLAYMODE_DEFAULT;
-	Texture3D*				m_defaultFrame = nullptr;
-	VoxelAnimation*			m_currentAnimation = nullptr;
+	ePlayMode				m_playmode = PLAYMODE_DEFAULT;
+	VoxelSprite*			m_defaultSprite = nullptr;
+	const VoxelAnimation*	m_currentAnimation = nullptr;
 
 };

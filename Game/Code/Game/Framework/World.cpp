@@ -133,7 +133,7 @@ void World::ParticalizeEntity()
 
 	m_dynamicEntities.erase(m_dynamicEntities.begin() + 1);
 
-	Texture3D* texture = entity->GetTextureForOrientation();
+	VoxelTexture* texture = entity->GetTextureForOrientation();
 	Vector3 entityPosition = entity->GetEntityPosition();
 
 	unsigned int voxelCount = texture->GetVoxelCount();
