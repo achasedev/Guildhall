@@ -5,6 +5,7 @@
 /* Description: Class to represent a single frame of an animation
 /************************************************************************/
 #pragma once
+#include <map>
 #include <string>
 
 enum eFrameDirection
@@ -25,7 +26,13 @@ public:
 	
 	VoxelSprite(const std::string& name, VoxelTexture* east, VoxelTexture* north, VoxelTexture* west, VoxelTexture* south);
 
+	VoxelTexture* GetTextureForOrientation(float angle);
+
+	// Statics
+	static void					LoadVoxelSpriteFromFile(const std::string& filename);
+	static const VoxelSprite*	GetVoxelSprite(const std::string& name);
 	
+
 public:
 	//-----Public Data-----
 	
@@ -41,5 +48,7 @@ private:
 	
 	std::string		m_name;
 	VoxelTexture*	m_textures[NUM_DIRECTIONS];
+
+	static std::map<std::string, const VoxelSprite*> s_sprites;
 	
 };

@@ -8,6 +8,8 @@
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Rendering/Resources/VoxelTexture.hpp"
 
+class VoxelAnimator;
+
 // Direction the entity is facing, used for rendering
 enum eFacingDirection
 {
@@ -120,14 +122,13 @@ public:
 protected:
 	//-----Protected Methods-----
 
-	virtual void			SetupVoxelTextures(const char* filename);
-
 
 protected:
 	//-----Protected Data-----
 
 	Vector3					m_position = Vector3::ZERO;
 	float					m_orientation = 0.f;
+	IntVector3				m_dimensions;
 	bool					m_isMarkedForDelete = false;
 
 	CollisionDefinition_t	m_collisionDef;
@@ -138,7 +139,8 @@ protected:
 	int						m_health = 1;
 	eEntityTeam				m_entityTeam = ENTITY_TEAM_UNASSIGNED;
 	eEntityType				m_entityType = ENTITY_TYPE_UNASSIGNED;
-	VoxelTexture*			m_textures[NUM_DIRECTIONS];
+
+	VoxelAnimator*			m_animator = nullptr;
 
 	static constexpr float DEFAULT_MASS = 1.0f;
 

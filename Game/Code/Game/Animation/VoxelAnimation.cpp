@@ -4,7 +4,7 @@ std::map<std::string, const VoxelAnimation*> VoxelAnimation::s_clipPrototypes;
 
 VoxelAnimation::VoxelAnimation(const XMLElement& animElement)
 {
-
+	fds
 }
 
 std::string VoxelAnimation::GetName() const

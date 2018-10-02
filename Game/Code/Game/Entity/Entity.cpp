@@ -7,6 +7,8 @@
 #include "Game/Entity/Entity.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/GameCommon.hpp"
+#include "Game/Animation/VoxelSprite.hpp"
+#include "Game/Animation/VoxelAnimator.hpp"
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -19,6 +21,7 @@
 //
 Entity::Entity(eEntityType type)
 	: m_entityType(type)
+	, m_dimensions(IntVector3(8, 8, 8))
 {
 }
 
@@ -28,14 +31,6 @@ Entity::Entity(eEntityType type)
 //
 Entity::~Entity()
 {
-	for (int i = 0; i < NUM_DIRECTIONS; ++i)
-	{
-		if (m_textures[i] != nullptr)
-		{
-			delete m_textures[i];
-			m_textures[i] = nullptr;
-		}
-	}
 }
 
 
@@ -149,70 +144,6 @@ void Entity::AddCollisionCorrection(const Vector3& correction)
 
 
 //-----------------------------------------------------------------------------------------------
-// Gets the voxel texture given by filename and sets it up for use with this entity
-//
-void Entity::SetupVoxelTextures(const char* filename)
-{
-	m_textures[0] = AssetDB::CreateOrGet3DVoxelTextureInstance(filename);
-
-	// Rotate to get the other 3
-	IntVector3 dimensions = m_textures[0]->GetDimensions();
-
-	// South
-	int destIndex = 0;
-	m_textures[DIRECTION_SOUTH] = m_textures[0]->Clone();
-	for (int y = 0; y < dimensions.y; ++y)
-	{
-		for (int z = dimensions.z - 1; z >= 0; --z)
-		{
-			for (int x = dimensions.x - 1; x >= 0; --x)
-			{
-				int sourceIndex = y * (dimensions.x * dimensions.z) + z * dimensions.x + x;
-				m_textures[DIRECTION_SOUTH]->SetColorAtIndex(destIndex, m_textures[0]->GetColorAtIndex(sourceIndex));
-				destIndex++;
-			}
-		}
-	}
-
-	// East
-	m_textures[DIRECTION_EAST] = m_textures[0]->Clone();
-	destIndex = 0;
-	for (int y = 0; y < dimensions.y; ++y)
-	{
-		for (int x = dimensions.x - 1; x >= 0; --x)
-		{
-			for (int z = 0; z < dimensions.z; ++z)
-			{
-				int sourceIndex = y * (dimensions.x * dimensions.z) + z * dimensions.x + x;
-				m_textures[DIRECTION_EAST]->SetColorAtIndex(destIndex, m_textures[0]->GetColorAtIndex(sourceIndex));
-
-				destIndex++;
-			}
-		}
-	}
-
-	// West
-	m_textures[DIRECTION_WEST] = m_textures[0]->Clone();
-	destIndex = 0;
-	for (int y = 0; y < dimensions.y; ++y)
-	{
-		for (int x = 0; x < dimensions.x; ++x)
-		{
-			for (int z = dimensions.z - 1; z >= 0; --z)
-			{
-				int sourceIndex = y * (dimensions.x * dimensions.z) + z * dimensions.x + x;
-				m_textures[DIRECTION_WEST]->SetColorAtIndex(destIndex, m_textures[0]->GetColorAtIndex(sourceIndex));
-
-				destIndex++;
-			}
-		}
-	}
-
-	m_orientation = 0;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Returns the world position of the entity
 //
 Vector3 Entity::GetEntityPosition() const
@@ -226,12 +157,9 @@ Vector3 Entity::GetEntityPosition() const
 //
 VoxelTexture* Entity::GetTextureForOrientation() const
 {
-	float cardinalAngle = GetNearestCardinalAngle(m_orientation);
+	VoxelSprite* sprite = m_animator->GetCurrentSprite();
 
-	if		(cardinalAngle == 0.f)		{ return m_textures[DIRECTION_EAST]; }
-	else if (cardinalAngle == 90.f)		{ return m_textures[DIRECTION_NORTH]; }
-	else if (cardinalAngle == 180.f)	{ return m_textures[DIRECTION_WEST]; }
-	else								{ return m_textures[DIRECTION_SOUTH]; }
+	return sprite->GetTextureForOrientation(m_orientation);
 }
 
 
@@ -276,8 +204,7 @@ bool Entity::IsMarkedForDelete() const
 //
 Vector3 Entity::GetPositionForLocalCoords(const IntVector3& localCoords) const
 {
-	IntVector3 dimensions = m_textures[0]->GetDimensions();
-	IntVector3 halfDimensions = dimensions / 2;
+	IntVector3 halfDimensions = m_dimensions / 2;
 
 	IntVector3 entityPositionCoords = GetEntityCoordinatePosition();
 
@@ -295,13 +222,11 @@ Vector3 Entity::GetPositionForLocalCoords(const IntVector3& localCoords) const
 //
 Vector3 Entity::GetPositionForLocalIndex(unsigned int index) const
 {
-	IntVector3 dimensions = m_textures[0]->GetDimensions();
+	int y = index / (m_dimensions.x * m_dimensions.z);
+	int leftOver = index % (m_dimensions.x * m_dimensions.z);
 
-	int y = index / (dimensions.x * dimensions.z);
-	int leftOver = index % (dimensions.x * dimensions.z);
-
-	int z = leftOver / (dimensions.x);
-	int x = leftOver % (dimensions.x);
+	int z = leftOver / (m_dimensions.x);
+	int x = leftOver % (m_dimensions.x);
 
 	return GetPositionForLocalCoords(IntVector3(x, y, z));
 }

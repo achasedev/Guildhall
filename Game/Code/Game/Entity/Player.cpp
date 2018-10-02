@@ -26,7 +26,6 @@ Player::Player(unsigned int playerID)
 {
 	m_collisionDef = CollisionDefinition_t(COLLISION_SHAPE_BOX, COLLISION_RESPONSE_SHARE_CORRECTION, 4.f, 4.f, 8.f);
 	m_affectedByGravity = true;
-	SetupVoxelTextures("Data/3DTextures/TestCube.qef");
 }
 
 

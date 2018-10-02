@@ -16,8 +16,6 @@ Projectile::Projectile()
 {
 	m_stopwatch = new Stopwatch(Game::GetGameClock());
 	m_collisionDef = CollisionDefinition_t(COLLISION_SHAPE_BOX, COLLISION_RESPONSE_NO_CORRECTION, 1.f, 1.f, 1.f);
-
-	SetupVoxelTextures("Data/3DTextures/TestProjectile.qef");
 }
 
 
