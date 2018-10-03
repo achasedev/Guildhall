@@ -19,14 +19,13 @@
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
-DynamicEntity::DynamicEntity()
-	: Entity(ENTITY_TYPE_DYNAMIC)
+DynamicEntity::DynamicEntity(const EntityDefinition* definition)
+	: Entity(definition)
 {
 	SetPosition(Vector3(GetRandomFloatInRange(10.f, 250.f), 4.f, GetRandomFloatInRange(10.f, 250.f)));
-	m_collisionDef = CollisionDefinition_t(COLLISION_SHAPE_BOX, COLLISION_RESPONSE_FULL_CORRECTION, 4.f, 4.f, 8.f);
-	m_animator = new VoxelAnimator(VoxelAnimationSet::GetAnimationSet("Robot"), VoxelSprite::GetVoxelSprite("Robot_idle_0"));
+	//m_collisionDef = CollisionDefinition_t(COLLISION_SHAPE_BOX, COLLISION_RESPONSE_FULL_CORRECTION, 4.f, 4.f, 8.f);
+	//m_animator = new VoxelAnimator(VoxelAnimationSet::GetAnimationSet("Robot"), VoxelSprite::GetVoxelSprite("Robot_idle_0"));
 }
-
 
 //-----------------------------------------------------------------------------------------------
 // Destructor

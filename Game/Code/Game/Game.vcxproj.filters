@@ -85,6 +85,12 @@
     <ClCompile Include="Animation\VoxelAnimationSet.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\EntityDefinition.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\AIEntity.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -129,5 +135,7 @@
     <ClInclude Include="Animation\VoxelAnimation.hpp" />
     <ClInclude Include="Animation\VoxelAnimator.hpp" />
     <ClInclude Include="Animation\VoxelAnimationSet.hpp" />
+    <ClInclude Include="Entity\EntityDefinition.hpp" />
+    <ClInclude Include="Entity\AIEntity.hpp" />
   </ItemGroup>
 </Project>

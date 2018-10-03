@@ -19,9 +19,18 @@
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
-Entity::Entity(eEntityType type)
+Entity::Entity(ePhysicsType type)
 	: m_entityType(type)
 	, m_dimensions(IntVector3(8, 8, 8))
+{
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Constructor - takes the definition for its constant data characteristics
+//
+Entity::Entity(const EntityDefinition* definition)
+	: m_definition(definition)
 {
 }
 
@@ -167,7 +176,7 @@ const VoxelTexture* Entity::GetTextureForOrientation() const
 //
 CollisionDefinition_t Entity::GetCollisionDefinition() const
 {
-	return m_collisionDef;
+	return m_definition->m_collisionDef;
 }
 
 

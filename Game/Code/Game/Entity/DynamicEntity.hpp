@@ -14,7 +14,7 @@ public:
 	//-----Public Methods-----
 
 	// Initialization
-	DynamicEntity();
+	DynamicEntity(const EntityDefinition* definition);
 	~DynamicEntity();
 
 	// Core

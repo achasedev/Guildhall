@@ -5,18 +5,11 @@
 /* Description: Abstract class to represent a single voxel object
 /************************************************************************/
 #pragma once
+#include "Game/Entity/EntityDefinition.hpp"
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Rendering/Resources/VoxelTexture.hpp"
 
 class VoxelAnimator;
-
-// Convenience type to know what kind of entity we are
-enum eEntityType
-{
-	ENTITY_TYPE_STATIC,
-	ENTITY_TYPE_DYNAMIC,
-	ENTITY_TYPE_UNASSIGNED
-};
 
 // Team the entity is on
 enum eEntityTeam
@@ -26,41 +19,6 @@ enum eEntityTeam
 	ENTITY_TEAM_UNASSIGNED
 };
 
-// Shape of the collision boundary
-enum eCollisionShape
-{
-	COLLISION_SHAPE_NONE,
-	COLLISION_SHAPE_DISC,
-	COLLISION_SHAPE_BOX,
-	NUM_COLLISION_SHAPES
-};
-
-// How the entity should react to collision corrections
-enum eCollisionResponse
-{
-	COLLISION_RESPONSE_NO_CORRECTION,
-	COLLISION_RESPONSE_SHARE_CORRECTION,
-	COLLISION_RESPONSE_FULL_CORRECTION,
-	NUM_COLLISION_RESPONSES
-};
-
-// Collision state for a single entity
-struct CollisionDefinition_t
-{
-	CollisionDefinition_t()
-	 : m_shape(COLLISION_SHAPE_DISC), m_response(COLLISION_RESPONSE_FULL_CORRECTION), m_xExtent(4.f), m_zExtent(4.f), m_height(8.f) {}
-
-	CollisionDefinition_t(eCollisionShape shape, eCollisionResponse type, float width, float length, float height)
-	: m_shape(shape), m_response(type), m_xExtent(width), m_zExtent(length), m_height(height) {}
-
-	eCollisionShape	m_shape;
-	eCollisionResponse	m_response;
-
-	float			m_xExtent;
-	float			m_zExtent;
-	float			m_height;
-};
-
 
 class Entity
 {
@@ -68,7 +26,7 @@ public:
 	//-----Public Methods-----
 
 	// Initialization
-	Entity(eEntityType type);
+	Entity(const EntityDefinition* definition);
 	virtual ~Entity();
 
 	// Core loop
@@ -114,14 +72,13 @@ protected:
 	IntVector3				m_dimensions;
 	bool					m_isMarkedForDelete = false;
 
-	CollisionDefinition_t	m_collisionDef;
-
 	float					m_mass = DEFAULT_MASS;					// Mass of the Entity
 	float					m_inverseMass = 1.f / DEFAULT_MASS;		// Cache off inverse for efficiency
 
 	int						m_health = 1;
 	eEntityTeam				m_entityTeam = ENTITY_TEAM_UNASSIGNED;
-	eEntityType				m_entityType = ENTITY_TYPE_UNASSIGNED;
+
+	const EntityDefinition* m_definition = nullptr;
 
 	VoxelAnimator*			m_animator = nullptr;
 
