@@ -26,6 +26,7 @@ enum eEntityTeam
 	ENTITY_TEAM_UNASSIGNED
 };
 
+// Shape of the collision boundary
 enum eCollisionShape
 {
 	COLLISION_SHAPE_NONE,
@@ -34,6 +35,7 @@ enum eCollisionShape
 	NUM_COLLISION_SHAPES
 };
 
+// How the entity should react to collision corrections
 enum eCollisionResponse
 {
 	COLLISION_RESPONSE_NO_CORRECTION,
@@ -42,6 +44,7 @@ enum eCollisionResponse
 	NUM_COLLISION_RESPONSES
 };
 
+// Collision state for a single entity
 struct CollisionDefinition_t
 {
 	CollisionDefinition_t()
@@ -58,12 +61,6 @@ struct CollisionDefinition_t
 	float			m_height;
 };
 
-struct CollisionResult_t
-{
-	bool collisionOccurred = false;
-	Vector3 firstCorrection;
-	Vector3 secondCorrection;
-};
 
 class Entity
 {
@@ -86,7 +83,7 @@ public:
 
 	// Accessors
 	Vector3					GetEntityPosition() const;
-	const VoxelTexture*			GetTextureForOrientation() const;
+	const VoxelTexture*		GetTextureForOrientation() const;
 	CollisionDefinition_t	GetCollisionDefinition() const;
 
 	float					GetMass() const;
@@ -107,10 +104,6 @@ public:
 
 	// Collision	
 	void					AddCollisionCorrection(const Vector3& correction);
-
-
-protected:
-	//-----Protected Methods-----
 
 
 protected:

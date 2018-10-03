@@ -1,14 +1,24 @@
+/************************************************************************/
+/* File: VoxelAnimationSet.cpp
+/* Author: Andrew Chase
+/* Date: October 2nd, 2018
+/* Description: Implementation of the VoxelAnimationSet class
+/************************************************************************/
 #include "Game/Animation/VoxelAnimationSet.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
+// Global list of animation sets in the game
 std::map<std::string, const VoxelAnimationSet*> VoxelAnimationSet::s_animationSets;
 
+
+//-----------------------------------------------------------------------------------------------
+// Constructor from an XML element
+//
 VoxelAnimationSet::VoxelAnimationSet(const XMLElement& setElement)
 {
 	std::string setName = ParseXmlAttribute(setElement, "name");
-
 	if (setName.size() == 0)
 	{
 		ERROR_AND_DIE("AnimationSet::AnimationSet() parsed file with no name specified in root element");
@@ -30,6 +40,7 @@ VoxelAnimationSet::VoxelAnimationSet(const XMLElement& setElement)
 
 		const XMLElement* animationElement = aliasElement->FirstChildElement();
 
+		// Get each animation name for this alias
 		while (animationElement != nullptr)
 		{
 			std::string animationName = ParseXmlAttribute(*animationElement, "name");
@@ -49,11 +60,19 @@ VoxelAnimationSet::VoxelAnimationSet(const XMLElement& setElement)
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Returns the name of this set
+//
 std::string VoxelAnimationSet::GetName() const
 {
 	return m_name;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Picks a given translation (animation name) associated with the given alias
+// Returns true if a translation was found, false otherwise
+//
 bool VoxelAnimationSet::TranslateAlias(const std::string& alias, std::string& out_translation) const
 {
 	bool aliasExists = m_translations.find(alias) != m_translations.end();
@@ -69,6 +88,10 @@ bool VoxelAnimationSet::TranslateAlias(const std::string& alias, std::string& ou
 	return aliasExists;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Loads an animation set from the XML file given by filename
+//
 const VoxelAnimationSet* VoxelAnimationSet::LoadSet(const std::string& filename)
 {
 	// Load the document
@@ -89,6 +112,10 @@ const VoxelAnimationSet* VoxelAnimationSet::LoadSet(const std::string& filename)
 	return newSet;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Returns the animation set given by setName, nullptr if it doesn't exist
+//
 const VoxelAnimationSet* VoxelAnimationSet::GetAnimationSet(const std::string& setName)
 {
 	bool setExists = s_animationSets.find(setName) != s_animationSets.end();
@@ -100,4 +127,3 @@ const VoxelAnimationSet* VoxelAnimationSet::GetAnimationSet(const std::string& s
 
 	return nullptr;
 }
-

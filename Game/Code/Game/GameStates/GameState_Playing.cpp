@@ -54,20 +54,11 @@ void GameState_Playing::Enter()
 
 	Game::GetWorld()->AddDynamicEntity(players[0]);
 
+	// Spawn some test entities
 	for (int i = 0; i < 10; ++i)
 	{
 		Game::GetWorld()->AddDynamicEntity(new DynamicEntity());
 	}
-// 
-// 	TestBox* entity = new TestBox();
-// 	entity->SetPosition(Vector3(128.f, 4.f, 128.f));
-// 
-// 	Game::GetWorld()->AddDynamicEntity(entity);
-
-// 	players[1] = new Player(1);
-// 	players[1]->SetPosition(Vector3(80.f, 0.f, 80.f));
-// 
-// 	Game::GetWorld()->AddDynamicEntity(players[1]);
  }
 
 

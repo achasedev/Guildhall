@@ -9,6 +9,7 @@
 #include <string>
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 
+// For directionality
 enum eFrameDirection
 {
 	DIRECTION_EAST = 0,
@@ -35,13 +36,10 @@ public:
 	static const VoxelSprite*	GetVoxelSprite(const std::string& name);
 	
 
-public:
-	//-----Public Data-----
-	
-
 private:
 	//-----Private Methods-----
 	
+	// No copying for now
 	VoxelSprite(const VoxelSprite& copy) = delete;
 
 	
@@ -51,6 +49,7 @@ private:
 	std::string		m_name;
 	VoxelTexture*	m_textures[NUM_DIRECTIONS];
 
+	// All sprites in the game are stored here
 	static std::map<std::string, const VoxelSprite*> s_sprites;
 	
 };

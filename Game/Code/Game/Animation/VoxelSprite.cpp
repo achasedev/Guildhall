@@ -1,3 +1,9 @@
+/************************************************************************/
+/* File: VoxelSprite.cpp
+/* Author: Andrew Chase
+/* Date: October 2nd, 2018
+/* Description: Implementation of the VoxelSprite class
+/************************************************************************/
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -5,20 +11,24 @@
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 #include "Engine/Rendering/Resources/VoxelTexture.hpp"
 
+// Global map of sprites
 std::map<std::string, const VoxelSprite*> VoxelSprite::s_sprites;
 
+
+//-----------------------------------------------------------------------------------------------
+// Constructor - takes the file name of the xml file
+//
 VoxelSprite::VoxelSprite(const std::string& name, const std::string& filename)
 	: m_name(name)
 {
 	VoxelTexture* northTexture = AssetDB::CreateOrGetVoxelTexture(filename);
-
 	ASSERT_OR_DIE(northTexture != nullptr, Stringf("Error: VoxelSprite::VoxelSprite() couldn't open file %s", filename.c_str()));
 
+	// Dimensions check, so we can rotate and have it work
 	IntVector3 dimensions = northTexture->GetDimensions();
-
-	// Rotate to get the other 3
-	dimensions = northTexture->GetDimensions();
 	ASSERT_OR_DIE(dimensions.x == dimensions.z, Stringf("Error: VoxelSprite::VoxelSprite() had a texture with unequal xz dimensions, file was %s", filename.c_str()));
+
+	// Rotate to get the other 3 directions
 
 	// South
 	int destIndex = 0;
@@ -70,12 +80,17 @@ VoxelSprite::VoxelSprite(const std::string& name, const std::string& filename)
 		}
 	}
 
+	// Set the textures
 	m_textures[DIRECTION_EAST] = eastTexture;
 	m_textures[DIRECTION_NORTH] = northTexture;
 	m_textures[DIRECTION_WEST] = westTexture;
 	m_textures[DIRECTION_SOUTH] = southTexture;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Returns the texture representing the direction to render for the given angle
+//
 const VoxelTexture* VoxelSprite::GetTextureForOrientation(float angle) const
 {
 	float cardinalAngle = GetNearestCardinalAngle(angle);
@@ -86,6 +101,10 @@ const VoxelTexture* VoxelSprite::GetTextureForOrientation(float angle) const
 	else								{ return m_textures[DIRECTION_SOUTH]; }
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Loads a VoxelSprite xml file given the filename and constructs the sprites
+//
 void VoxelSprite::LoadVoxelSprites(const std::string& filename)
 {
 	// Load the document
@@ -117,6 +136,10 @@ void VoxelSprite::LoadVoxelSprites(const std::string& filename)
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Returns the VoxelSprite given by name if it exists, nullptr otherwise
+//
 const VoxelSprite* VoxelSprite::GetVoxelSprite(const std::string& name)
 {
 	bool spriteExists = s_sprites.find(name) != s_sprites.end();

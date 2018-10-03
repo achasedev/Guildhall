@@ -19,8 +19,10 @@ public:
 	
 	VoxelAnimator(const VoxelAnimationSet* animSet, const VoxelSprite* defaultSprite);
 	
+	// Mutators
 	void				Play(const std::string& animationAlias, ePlayMode modeOverride = PLAYMODE_DEFAULT);
 
+	// Producers
 	const VoxelSprite*	GetCurrentSprite() const;
 	bool				IsCurrentAnimationFinished() const;
 	
@@ -29,9 +31,10 @@ private:
 	//-----Private Data-----
 	
 	Stopwatch*					m_stopwatch			= nullptr;
+	const VoxelAnimation*		m_currentAnimation	= nullptr;
+
 	const VoxelAnimationSet*	m_animationSet		= nullptr;
 	ePlayMode					m_playmode			= PLAYMODE_DEFAULT;
 	const VoxelSprite*			m_defaultSprite		= nullptr;
-	const VoxelAnimation*		m_currentAnimation	= nullptr;
 
 };

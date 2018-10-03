@@ -13,6 +13,7 @@
 
 class VoxelTexture;
 
+// Enum for controlling the animation playback
 enum ePlayMode
 {
 	PLAYMODE_DEFAULT,
@@ -21,6 +22,7 @@ enum ePlayMode
 	NUM_PLAYMODES
 };
 
+// Struct for a single frame - a sprite and its duration
 struct VoxelAnimFrame
 {
 	VoxelAnimFrame(const VoxelSprite* _sprite, float _duration)
@@ -30,17 +32,18 @@ struct VoxelAnimFrame
 	float				duration = 0.f;
 };
 
+
 class VoxelAnimation
 {
 public:
 	//-----Public Methods-----
 	
 	// Accessors
-	std::string		GetName() const;
+	std::string						GetName() const;
 
 	// Producers
-	const VoxelSprite*	Evaluate(float timeIntoAnimation, ePlayMode modeOverride) const;
-	float				GetTotalDuration() const;
+	const VoxelSprite*				Evaluate(float timeIntoAnimation, ePlayMode modeOverride) const;
+	float							GetTotalDuration() const;
 
 	// Statics
 	static void						LoadVoxelAnimations(const std::string& filename);
@@ -50,6 +53,7 @@ public:
 private:
 	//-----Private Methods-----
 	
+	// Keep constructors private - only construct when loading from file
 	VoxelAnimation(const XMLElement& animElement);
 	VoxelAnimation(const VoxelAnimation& copy) = delete;
 
