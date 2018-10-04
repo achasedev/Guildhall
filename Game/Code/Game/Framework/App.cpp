@@ -63,9 +63,9 @@ App::App()
 App::~App()
 {
 	// Shutdown in reverse order of initialization
+	Game::ShutDown();
 	RemoteCommandService::Shutdown();
 	Net::Shutdown();
-	Game::ShutDown();
 	DebugRenderSystem::Shutdown();
 	Command::Shutdown();
 	DevConsole::Shutdown();
