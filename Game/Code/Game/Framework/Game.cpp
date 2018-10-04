@@ -70,6 +70,7 @@ bool OnPing(NetMessage* msg, const NetSender_t& sender)
 //
 bool OnPong(NetMessage* msg, const NetSender_t& sender)
 {
+	UNUSED(msg);
 	ConsolePrintf("Received pong from %s", sender.address.ToString().c_str());
 
 	return true;
@@ -131,6 +132,8 @@ bool OnAdd(NetMessage* msg, const NetSender_t& sender)
 //
 bool OnAddResponse(NetMessage* msg, const NetSender_t& sender)
 {
+	UNUSED(sender);
+
 	float a;
 	float b;
 	float sum;
@@ -211,7 +214,7 @@ void Command_SendPing(Command& cmd)
 		return;
 	}
 
-	NetConnection* connection = Game::GetNetSession()->GetConnection(connectionIndex);
+	NetConnection* connection = Game::GetNetSession()->GetConnection((uint8_t)connectionIndex);
 
 	if (connection == nullptr)
 	{
@@ -253,7 +256,7 @@ void Command_SendAdd(Command& cmd)
 	cmd.GetParam("a", a, &a);
 	cmd.GetParam("b", b, &b);
 
-	NetConnection* connection = Game::GetNetSession()->GetConnection(connectionIndex);
+	NetConnection* connection = Game::GetNetSession()->GetConnection((uint8_t)connectionIndex);
 
 	if (connection == nullptr)
 	{
@@ -326,6 +329,9 @@ Game::Game()
 //
 Game::~Game()
 {
+	delete m_netSession;
+	m_netSession = nullptr;
+
 	delete m_renderScene;
 	m_renderScene = nullptr;
 }
