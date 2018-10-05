@@ -312,6 +312,65 @@ void Command_SetNetSimLoss(Command& cmd)
 
 
 //-----------------------------------------------------------------------------------------------
+// Command for sending the NetSession tick rate
+//
+void Command_SetSessionNetTick(Command& cmd)
+{
+	float hertz = 0.f;
+	bool provided = cmd.GetParam("h", hertz);
+
+	float timeInterval;
+
+	if (provided && hertz > 0.f)
+	{
+		timeInterval = (1.f / hertz);
+	}
+	else
+	{
+		timeInterval = 0;
+	}
+
+	ConsolePrintf(Rgba::GREEN, "Setting the NetSession tick rate to %f between each send", timeInterval);
+
+	Game::GetNetSession()->SetNetTickRate(hertz);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Command for setting a NetConnection tick rate
+//
+void Command_SetConnectionNetTick(Command& cmd)
+{
+	int index = -1;
+	cmd.GetParam("i", index);
+
+	if (index <= -1)
+	{
+		ConsoleErrorf("No index (-i) specified");
+		return;
+	}
+
+	float hertz = 0.f;
+	bool provided = cmd.GetParam("h", hertz);
+
+	float timeInterval;
+
+	if (provided && hertz > 0.f)
+	{
+		timeInterval = (1.f / hertz);
+	}
+	else
+	{
+		timeInterval = 0.f;
+	}
+
+	ConsolePrintf(Rgba::GREEN, "Setting the NetConnection at index %i tick rate to %f between each send", index, timeInterval);
+
+	Game::GetNetSession()->GetConnection((uint8_t)index)->SetNetTickRate(hertz);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 //--------------------------------- Game Class --------------------------------------------------
 //-----------------------------------------------------------------------------------------------
 
@@ -383,6 +442,9 @@ void Game::Initialize()
 
 	Command::Register("net_sim_lag", "Sets the simulated latency of the game net session", Command_SetNetSimLag);
 	Command::Register("net_sim_loss", "Sets the simulated packet loss of the game net session", Command_SetNetSimLoss);
+
+	Command::Register("net_set_session_send_rate", "Sets the NetSession's network tick rate", Command_SetSessionNetTick);
+	Command::Register("net_set_connection_send_rate", "Sets the connection's tick rate at the specified index", Command_SetConnectionNetTick);
 }
 
 
