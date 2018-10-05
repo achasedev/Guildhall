@@ -283,6 +283,35 @@ void Command_SendAdd(Command& cmd)
 
 
 //-----------------------------------------------------------------------------------------------
+// Command for setting the NetSession simulated latency
+//
+void Command_SetNetSimLag(Command& cmd)
+{
+	float min = 0.1f;
+	cmd.GetParam("min", min, &min);
+
+	float max = min;
+	cmd.GetParam("max", max, &max);
+
+	NetSession* session = Game::GetNetSession();
+	session->SetSimLatency(min, max);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Command for setting the NetSession simulated packet loss
+//
+void Command_SetNetSimLoss(Command& cmd)
+{
+	float loss = 0.f;
+	cmd.GetParam("a", loss, &loss);
+
+	NetSession* session = Game::GetNetSession();
+	session->SetSimLoss(loss);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 //--------------------------------- Game Class --------------------------------------------------
 //-----------------------------------------------------------------------------------------------
 
@@ -351,6 +380,9 @@ void Game::Initialize()
 	Command::Register("add_connection", "Adds a connection to the game session for the given index and address", Command_AddConnection);
 	Command::Register("send_ping", "Sends a ping on the current net session to the given connection index", Command_SendPing);
 	Command::Register("send_add", "Sends an add message the given index", Command_SendAdd);
+
+	Command::Register("net_sim_lag", "Sets the simulated latency of the game net session", Command_SetNetSimLag);
+	Command::Register("net_sim_loss", "Sets the simulated packet loss of the game net session", Command_SetNetSimLoss);
 }
 
 
