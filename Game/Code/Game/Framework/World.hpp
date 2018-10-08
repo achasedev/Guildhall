@@ -14,8 +14,6 @@
 class Player;
 class VoxelGrid;
 class Entity;
-class DynamicEntity;
-class StaticEntity;
 class VoxelTexture;
 class Particle;
 
@@ -32,8 +30,7 @@ public:
 	void Update();
 	void Render();
 
-	void AddDynamicEntity(DynamicEntity* entity);
-	void AddStaticEntity(StaticEntity* entity);
+	void AddEntity(Entity* entity);
 
 	void ParticalizeEntity();
 
@@ -42,8 +39,7 @@ private:
 	//-----Private Methods-----
 
 	// -- Update Loop -- 
-	void UpdateStaticEntities();
-	void UpdateDynamicEntities();
+	void UpdateEntities();
 	void UpdateParticles();
 
 	void ApplyPhysicsStep();
@@ -74,8 +70,7 @@ private:
 	unsigned int m_groundElevation = 0;
 
 	VoxelTexture* m_terrain = nullptr;
-	std::vector<DynamicEntity*> m_dynamicEntities;
-	std::vector<StaticEntity*>	m_staticEntities;
+	std::vector<Entity*> m_entities;
 	std::vector<Particle*> m_particles;
 
 };

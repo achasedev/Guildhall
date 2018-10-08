@@ -9,6 +9,9 @@
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Animation/VoxelAnimator.hpp"
+#include "Game/Entity/PhysicsComponent.hpp"
+
+
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -17,21 +20,20 @@
 
 
 //-----------------------------------------------------------------------------------------------
-// Constructor
-//
-Entity::Entity(ePhysicsType type)
-	: m_entityType(type)
-	, m_dimensions(IntVector3(8, 8, 8))
-{
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Constructor - takes the definition for its constant data characteristics
 //
 Entity::Entity(const EntityDefinition* definition)
 	: m_definition(definition)
 {
+	if (m_definition->m_physicsType == PHYSICS_TYPE_DYNAMIC)
+	{
+		m_physicsComponent = new PhysicsComponent(this);
+	}
+
+	m_animator = new VoxelAnimator(m_definition->m_animationSet, m_definition->m_defaultSprite);
+	m_animator->Play("idle");
+
+	m_position = Vector3(GetRandomFloatInRange(20.f, 100.f), 4.f, GetRandomFloatInRange(20.f, 100.f));
 }
 
 
@@ -48,21 +50,6 @@ Entity::~Entity()
 //
 void Entity::Update()
 {
-// 	DebugRenderOptions options;
-// 	options.m_startColor = Rgba::WHITE;
-// 	options.m_endColor = Rgba::WHITE;
-// 	options.m_lifetime = 0.f;
-// 	options.m_renderMode = DEBUG_RENDER_USE_DEPTH;
-// 	options.m_isWireFrame = true;
-// 
-// 	if (m_collisionDef.m_type == COLLISION_TYPE_DISC)
-// 	{
-// 		DebugRenderSystem::DrawUVSphere(m_position, options, m_collisionDef.m_width);
-// 	}
-// 	else
-// 	{
-// 		DebugRenderSystem::DrawCube(m_position, options, Vector3(m_collisionDef.m_width, m_collisionDef.m_height, m_collisionDef.m_length));
-// 	}
 }
 
 
@@ -177,6 +164,33 @@ const VoxelTexture* Entity::GetTextureForOrientation() const
 CollisionDefinition_t Entity::GetCollisionDefinition() const
 {
 	return m_definition->m_collisionDef;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the physics type of the entity
+//
+ePhysicsType Entity::GetPhysicsType() const
+{
+	return m_definition->m_physicsType;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the definition used to describe this entity's data characteristics
+//
+const EntityDefinition* Entity::GetEntityDefinition() const
+{
+	return m_definition;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the physics component of this entity
+//
+PhysicsComponent* Entity::GetPhysicsComponent() const
+{
+	return m_physicsComponent;
 }
 
 

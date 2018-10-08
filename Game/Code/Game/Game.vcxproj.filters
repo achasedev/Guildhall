@@ -52,19 +52,10 @@
     <ClCompile Include="Entity\Entity.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Entity\DynamicEntity.cpp">
-      <Filter>Architecture</Filter>
-    </ClCompile>
     <ClCompile Include="Entity\Player.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Entity\StaticEntity.cpp">
-      <Filter>Architecture</Filter>
-    </ClCompile>
     <ClCompile Include="Entity\Projectile.cpp">
-      <Filter>Architecture</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity\TestBox.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
     <ClCompile Include="Framework\GameCamera.cpp">
@@ -89,6 +80,9 @@
       <Filter>Architecture</Filter>
     </ClCompile>
     <ClCompile Include="Entity\AIEntity.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\PhysicsComponent.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
   </ItemGroup>
@@ -124,11 +118,8 @@
     <ClInclude Include="Framework\World.hpp" />
     <ClInclude Include="Framework\VoxelGrid.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />
-    <ClInclude Include="Entity\DynamicEntity.hpp" />
     <ClInclude Include="Entity\Player.hpp" />
-    <ClInclude Include="Entity\StaticEntity.hpp" />
     <ClInclude Include="Entity\Projectile.hpp" />
-    <ClInclude Include="Entity\TestBox.hpp" />
     <ClInclude Include="Framework\GameCamera.hpp" />
     <ClInclude Include="Entity\Particle.hpp" />
     <ClInclude Include="Animation\VoxelSprite.hpp" />
@@ -137,5 +128,6 @@
     <ClInclude Include="Animation\VoxelAnimationSet.hpp" />
     <ClInclude Include="Entity\EntityDefinition.hpp" />
     <ClInclude Include="Entity\AIEntity.hpp" />
+    <ClInclude Include="Entity\PhysicsComponent.hpp" />
   </ItemGroup>
 </Project>

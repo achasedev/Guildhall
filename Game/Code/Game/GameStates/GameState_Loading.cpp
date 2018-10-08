@@ -7,6 +7,7 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
+#include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Animation/VoxelAnimation.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
 #include "Game/GameStates/GameState_Loading.hpp"
@@ -82,6 +83,8 @@ void GameState_Loading::Leave()
 void GameState_Loading::LoadResources() const
 {
 	LoadVoxelResources();
+
+	EntityDefinition::LoadDefinitions("Data/EntityDefinitions/Robot.def");
 }
 
 

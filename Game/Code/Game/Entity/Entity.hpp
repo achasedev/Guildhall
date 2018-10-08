@@ -10,6 +10,7 @@
 #include "Engine/Rendering/Resources/VoxelTexture.hpp"
 
 class VoxelAnimator;
+class PhysicsComponent;
 
 // Team the entity is on
 enum eEntityTeam
@@ -43,6 +44,9 @@ public:
 	Vector3					GetEntityPosition() const;
 	const VoxelTexture*		GetTextureForOrientation() const;
 	CollisionDefinition_t	GetCollisionDefinition() const;
+	ePhysicsType			GetPhysicsType() const;
+	const EntityDefinition* GetEntityDefinition() const;
+	PhysicsComponent*		GetPhysicsComponent() const;
 
 	float					GetMass() const;
 	float					GetInverseMass() const;
@@ -78,6 +82,7 @@ protected:
 	int						m_health = 1;
 	eEntityTeam				m_entityTeam = ENTITY_TEAM_UNASSIGNED;
 
+	PhysicsComponent*		m_physicsComponent = nullptr;
 	const EntityDefinition* m_definition = nullptr;
 
 	VoxelAnimator*			m_animator = nullptr;

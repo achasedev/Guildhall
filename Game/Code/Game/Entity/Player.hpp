@@ -5,13 +5,13 @@
 /* Description: Class to represent a player entity
 /************************************************************************/
 #pragma once
-#include "Game/Entity/DynamicEntity.hpp"
+#include "Game/Entity/Entity.hpp"
 
 #define INVALID_PLAYER_ID (4)
 
 class Vector3;
 
-class Player : public DynamicEntity
+class Player : public Entity
 {
 public:
 	//-----Public Methods-----

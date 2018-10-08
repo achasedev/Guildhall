@@ -5,20 +5,17 @@
 /* Description: Class to represent an Entity affected by physics
 /************************************************************************/
 #pragma once
-#include "Engine/Math/Vector3.hpp"
 #include "Game/Entity/Entity.hpp"
+#include "Engine/Math/IntVector3.hpp"
 
-class DynamicEntity : public Entity
+class PhysicsComponent
 {
 public:
 	//-----Public Methods-----
 
 	// Initialization
-	DynamicEntity(const EntityDefinition* definition);
-	~DynamicEntity();
-
-	// Core
-	virtual void	Update() override;
+	PhysicsComponent(Entity* entity);
+	~PhysicsComponent();
 
 	// Physics		
 	void			AddForce(const Vector3& force);
@@ -29,12 +26,6 @@ public:
 	void			SetVelocity(const Vector3& velocity);
 
 	void			ApplyPhysicsStep();
-
-	// Events
-	virtual void	OnCollision(Entity* other) override;
-	virtual void	OnDamageTaken(int damageAmount) override;
-	virtual void	OnDeath() override;
-	virtual void	OnSpawn() override;
 
 	// Accessors	
 	Vector3			GetVelocity() const;
@@ -47,19 +38,20 @@ protected:
 protected:
 	//-----Protected Data-----
 
+	Entity* m_owningEntity = nullptr;
+
 	// State
-	Vector3 m_force										= Vector3::ZERO;
-	Vector3 m_impulse									= Vector3::ZERO;
-	Vector3 m_velocity									= Vector3::ZERO;
+	Vector3 m_force = Vector3::ZERO;
+	Vector3 m_impulse = Vector3::ZERO;
+	Vector3 m_velocity = Vector3::ZERO;
 
 	// Data set members
-	float	m_maxSpeed									= DEFAULT_MAX_SPEED;			// Max speed this entity can move
-	float	m_maxAcceleration							= DEFAULT_MAX_ACCELERATION;		// Max change in velocity per second
-	bool	m_affectedByGravity							= false;
+	float	m_maxSpeed = DEFAULT_MAX_SPEED;			// Max speed this entity can move
+	float	m_maxAcceleration = DEFAULT_MAX_ACCELERATION;		// Max change in velocity per second
+	bool	m_affectedByGravity = false;
 
 	// Defaults
-	static constexpr float DEFAULT_MAX_ACCELERATION		= 1000000.f;
-	static constexpr float DEFAULT_MAX_SPEED			= 1000.f;
-
+	static constexpr float DEFAULT_MAX_ACCELERATION = 1000000.f;
+	static constexpr float DEFAULT_MAX_SPEED = 1000.f;
 
 };

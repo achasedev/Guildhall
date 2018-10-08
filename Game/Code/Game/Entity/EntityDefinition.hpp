@@ -5,14 +5,19 @@
 /* Description: Class to represent the data values behind an entity
 /************************************************************************/
 #pragma once
+#include "Engine/Math/Vector3.hpp"
+#include "Engine/Math/IntVector3.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
+
+#include <map>
+#include <string>
 
 // Convenience type to know what kind of entity we are
 enum ePhysicsType
 {
-	ENTITY_TYPE_STATIC,
-	ENTITY_TYPE_DYNAMIC,
-	ENTITY_TYPE_UNASSIGNED
+	PHYSICS_TYPE_STATIC,
+	PHYSICS_TYPE_DYNAMIC,
+	PHYSICS_TYPE_UNASSIGNED
 };
 
 // Shape of the collision boundary
@@ -39,8 +44,8 @@ struct CollisionDefinition_t
 	CollisionDefinition_t()
 		: m_shape(COLLISION_SHAPE_DISC), m_response(COLLISION_RESPONSE_FULL_CORRECTION), m_xExtent(4.f), m_zExtent(4.f), m_height(8.f) {}
 
-	CollisionDefinition_t(eCollisionShape shape, eCollisionResponse type, float width, float length, float height)
-		: m_shape(shape), m_response(type), m_xExtent(width), m_zExtent(length), m_height(height) {}
+	CollisionDefinition_t(eCollisionShape shape, eCollisionResponse response, float width, float length, float height)
+		: m_shape(shape), m_response(response), m_xExtent(width), m_zExtent(length), m_height(height) {}
 
 	eCollisionShape		m_shape;
 	eCollisionResponse	m_response;
@@ -49,6 +54,8 @@ struct CollisionDefinition_t
 	float				m_height;
 };
 
+class VoxelSprite;
+class VoxelAnimationSet;
 
 class EntityDefinition
 {
@@ -57,8 +64,12 @@ class EntityDefinition
 public:
 	//-----Public Methods-----
 	
+	
+	std::string GetName() const;
+	bool		HasGravity() const;
 
-	static void LoadDefinitions(const std::string& filename);
+	static void						LoadDefinitions(const std::string& filename);
+	static const EntityDefinition*	GetDefinition(const std::string& defName);
 
 
 private:
@@ -70,8 +81,21 @@ private:
 private:
 	//-----Private Data-----
 	
+	std::string					m_name;
+	IntVector3					m_dimensions;
+
+	// Animation
 	const VoxelAnimationSet*	m_animationSet = nullptr;
+	const VoxelSprite*			m_defaultSprite = nullptr;
+
+	// Physics
+	ePhysicsType				m_physicsType		= PHYSICS_TYPE_UNASSIGNED;
+	bool						m_affectedByGravity = false;
 	CollisionDefinition_t		m_collisionDef;
-	ePhysicsType				m_physicsType = ENTITY_TYPE_UNASSIGNED;
+
+	// AI
+
+	// Static registry
+	static std::map<std::string, const EntityDefinition*> s_definitions;
 
 };

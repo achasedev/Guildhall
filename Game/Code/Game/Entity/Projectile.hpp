@@ -5,16 +5,16 @@
 /* Description: Class to represent a flying projectile
 /************************************************************************/
 #pragma once
-#include "Game/Entity/DynamicEntity.hpp"
+#include "Game/Entity/Entity.hpp"
 
 class Stopwatch;
 
-class Projectile : public DynamicEntity
+class Projectile : public Entity
 {
 public:
 	//-----Public Methods-----
 
-	Projectile();
+	Projectile(const EntityDefinition* definition);
 
 	virtual void Update() override;
 

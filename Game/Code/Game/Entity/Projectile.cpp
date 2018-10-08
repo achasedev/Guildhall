@@ -10,12 +10,12 @@
 
 
 //-----------------------------------------------------------------------------------------------
-// Constructor
+// Constructor from a definition
 //
-Projectile::Projectile()
+Projectile::Projectile(const EntityDefinition* definition)
+	: Entity(definition)
 {
 	m_stopwatch = new Stopwatch(Game::GetGameClock());
-	m_collisionDef = CollisionDefinition_t(COLLISION_SHAPE_BOX, COLLISION_RESPONSE_NO_CORRECTION, 1.f, 1.f, 1.f);
 }
 
 
@@ -24,7 +24,7 @@ Projectile::Projectile()
 //
 void Projectile::Update()
 {
-	DynamicEntity::Update();
+	Entity::Update();
 
 	if (!IsMarkedForDelete() && m_stopwatch->HasIntervalElapsed())
 	{
@@ -38,7 +38,7 @@ void Projectile::Update()
 //
 void Projectile::OnCollision(Entity* other)
 {
-	DynamicEntity::OnCollision(other);
+	Entity::OnCollision(other);
 }
 
 
@@ -47,7 +47,7 @@ void Projectile::OnCollision(Entity* other)
 //
 void Projectile::OnDamageTaken(int damageAmount)
 {
-	DynamicEntity::OnDamageTaken(damageAmount);
+	Entity::OnDamageTaken(damageAmount);
 }
 
 
@@ -56,7 +56,7 @@ void Projectile::OnDamageTaken(int damageAmount)
 //
 void Projectile::OnDeath()
 {
-	DynamicEntity::OnDeath();
+	Entity::OnDeath();
 }
 
 
@@ -65,7 +65,7 @@ void Projectile::OnDeath()
 //
 void Projectile::OnSpawn()
 {
-	DynamicEntity::OnSpawn();
+	Entity::OnSpawn();
 
 	m_stopwatch->SetInterval(m_lifetime);
 }

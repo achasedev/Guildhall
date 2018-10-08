@@ -10,6 +10,7 @@
 #include "Game/Entity/Projectile.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Animation/VoxelAnimator.hpp"
+#include "Game/Entity/PhysicsComponent.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
 
 #include "Engine/Core/Window.hpp"
@@ -25,13 +26,10 @@
 // Constructor
 //
 Player::Player(unsigned int playerID)
-	: DynamicEntity()
+	: Entity(EntityDefinition::GetDefinition("Robot"))
 	, m_playerID(playerID)
 {
-	m_collisionDef = CollisionDefinition_t(COLLISION_SHAPE_BOX, COLLISION_RESPONSE_SHARE_CORRECTION, 4.f, 4.f, 8.f);
-	m_affectedByGravity = true;
-
-	m_animator = new VoxelAnimator(VoxelAnimationSet::GetAnimationSet("Robot"), VoxelSprite::GetVoxelSprite("Robot_idle_0"));
+	//m_animator = new VoxelAnimator(VoxelAnimationSet::GetAnimationSet("Robot"), VoxelSprite::GetVoxelSprite("Robot_idle_0"));
 }
 
 
@@ -54,7 +52,7 @@ void Player::ProcessInput()
 	XboxController& controller = InputSystem::GetInstance()->GetController(m_playerID);
 	Vector2 leftStick = controller.GetCorrectedStickPosition(XBOX_STICK_LEFT);
 
-	float currSpeed = m_velocity.GetLength();
+	float currSpeed = m_physicsComponent->GetVelocity().GetLength();
 
 	// If we have input, apply a movement force
 	if (leftStick != Vector2::ZERO)
@@ -76,7 +74,7 @@ void Player::ProcessInput()
 	// Test adding a force
 	if (controller.WasButtonJustPressed(XBOX_BUTTON_X))
 	{
-		AddForce(Vector3(leftStick.x, 0.f, leftStick.y) * -1000.f);
+		m_physicsComponent->AddForce(Vector3(leftStick.x, 0.f, leftStick.y) * -1000.f);
 	}
 
 	// Test shooting
@@ -88,7 +86,7 @@ void Player::ProcessInput()
 	// Test Jumping
 	if (controller.WasButtonJustPressed(XBOX_BUTTON_A))
 	{
-		AddImpulse(Vector3::DIRECTION_UP * m_jumpImpulse);
+		m_physicsComponent->AddImpulse(Vector3::DIRECTION_UP * m_jumpImpulse);
 	}
 }
 
@@ -98,7 +96,7 @@ void Player::ProcessInput()
 //
 void Player::Update()
 {
-	DynamicEntity::Update();
+	Entity::Update();
 }
 
 
@@ -107,7 +105,7 @@ void Player::Update()
 //
 void Player::OnCollision(Entity* other)
 {
-	DynamicEntity::OnCollision(other);
+	Entity::OnCollision(other);
 }
 
 
@@ -116,7 +114,7 @@ void Player::OnCollision(Entity* other)
 //
 void Player::OnDamageTaken(int damageAmount)
 {
-	DynamicEntity::OnDamageTaken(damageAmount);
+	Entity::OnDamageTaken(damageAmount);
 }
 
 
@@ -125,7 +123,7 @@ void Player::OnDamageTaken(int damageAmount)
 //
 void Player::OnDeath()
 {
-	DynamicEntity::OnDeath();
+	Entity::OnDeath();
 }
 
 
@@ -134,7 +132,7 @@ void Player::OnDeath()
 //
 void Player::OnSpawn()
 {
-	DynamicEntity::OnSpawn();
+	Entity::OnSpawn();
 
 	m_animator->Play("idle", PLAYMODE_LOOP);
 }
@@ -145,15 +143,15 @@ void Player::OnSpawn()
 //
 void Player::Shoot()
 {
-	Projectile* proj = new Projectile();
+	Projectile* proj = new Projectile(nullptr);
 	proj->SetPosition(m_position + Vector3(0.f, 4.f, 0.f));
 	proj->SetOrientation(m_orientation);
 
 	Vector2 direction = Vector2::MakeDirectionAtDegrees(m_orientation);	
-	proj->SetVelocity(Vector3(direction.x, 0.f, direction.y) * 100.f);
+	proj->GetPhysicsComponent()->SetVelocity(Vector3(direction.x, 0.f, direction.y) * 100.f);
 	
 	World* world = Game::GetWorld();
-	world->AddDynamicEntity(proj);
+	world->AddEntity(proj);
 }
 
 
@@ -225,20 +223,20 @@ void Player::DebugRenderMovementParams()
 //
 void Player::ApplyInputAcceleration(const Vector2& inputDirection)
 {
-	float currLateralSpeed = m_velocity.xz().GetLength();
+	float currLateralSpeed = m_physicsComponent->GetVelocity().xz().GetLength();
 	float deltaTime = Game::GetDeltaTime();
 
-	Vector2 maxLateralVelocity = (m_velocity.xz() + (m_maxMoveAcceleration * deltaTime) * inputDirection);
+	Vector2 maxLateralVelocity = (m_physicsComponent->GetVelocity().xz() + (m_maxMoveAcceleration * deltaTime) * inputDirection);
 	float maxLateralSpeed = maxLateralVelocity.NormalizeAndGetLength();
 
 	maxLateralSpeed = (currLateralSpeed > m_maxMoveSpeed ? ClampFloat(maxLateralSpeed, 0.f, currLateralSpeed) : ClampFloat(maxLateralSpeed, 0.f, m_maxMoveSpeed));
 	maxLateralVelocity *= maxLateralSpeed;
 
-	Vector3 inputVelocityResult = Vector3(maxLateralVelocity.x, m_velocity.y, maxLateralVelocity.y) - m_velocity;
+	Vector3 inputVelocityResult = Vector3(maxLateralVelocity.x, m_physicsComponent->GetVelocity().y, maxLateralVelocity.y) - m_physicsComponent->GetVelocity();
 	Vector3 acceleration = inputVelocityResult / deltaTime;
 	Vector3 force = acceleration * m_mass;
 
-	AddForce(force);
+	m_physicsComponent->AddForce(force);
 
 	// Reorient the player
 	m_orientation = inputDirection.GetOrientationDegrees();
@@ -251,12 +249,12 @@ void Player::ApplyInputAcceleration(const Vector2& inputDirection)
 void Player::ApplyDeceleration()
 {
 	float deltaTime = Game::GetDeltaTime();
-	float currSpeed = m_velocity.xz().GetLength();
+	float currSpeed = m_physicsComponent->GetVelocity().xz().GetLength();
 	float amountCanBeDecreased = currSpeed;
 
 	if (amountCanBeDecreased > 0.f)
 	{
-		Vector2 direction = -1.0f * m_velocity.xz().GetNormalized();
+		Vector2 direction = -1.0f * m_physicsComponent->GetVelocity().xz().GetNormalized();
 
 		float decelMag = amountCanBeDecreased / deltaTime;
 		decelMag = ClampFloat(decelMag, 0.f, m_maxMoveDeceleration);
@@ -266,6 +264,6 @@ void Player::ApplyDeceleration()
 		direction *= forceMag;
 		Vector3 finalForce = Vector3(direction.x, 0.f, direction.y);
 
-		AddForce(finalForce);
+		m_physicsComponent->AddForce(finalForce);
 	}
 }

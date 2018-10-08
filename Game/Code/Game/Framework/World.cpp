@@ -5,19 +5,18 @@
 /* Description: Implementation of the world class
 /************************************************************************/
 #include "Game/Entity/Player.hpp"
-#include "Game/Entity/TestBox.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Entity/Particle.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
-#include "Game/Entity/StaticEntity.hpp"
 #include "Game/Framework/GameCamera.hpp"
+#include "Game/Entity/PhysicsComponent.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
 
-#define DYNAMIC_COLLISION_MAX_ITERATION_COUNT 5
+#define DYNAMIC_COLLISION_MAX_ITERATION_COUNT 25
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -61,8 +60,7 @@ void World::Update()
 	PROFILE_LOG_SCOPE_FUNCTION();
 
 	// "Thinking" and other general updating (animation)
-	UpdateStaticEntities();
-	UpdateDynamicEntities();
+	UpdateEntities();
 	UpdateParticles();
 
 	// Moving the entities (Forward Euler)
@@ -105,21 +103,11 @@ void World::Render()
 
 
 //-----------------------------------------------------------------------------------------------
-// Adds the given dynamic entity to the world
+// Adds the entity to the world
 //
-void World::AddDynamicEntity(DynamicEntity* entity)
+void World::AddEntity(Entity* entity)
 {
-	m_dynamicEntities.push_back(entity);
-	entity->OnSpawn();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Adds the given static entity to the world
-//
-void World::AddStaticEntity(StaticEntity* entity)
-{
-	m_staticEntities.push_back(entity);
+	m_entities.push_back(entity);
 	entity->OnSpawn();
 }
 
@@ -129,9 +117,9 @@ void World::AddStaticEntity(StaticEntity* entity)
 //
 void World::ParticalizeEntity()
 {
-	DynamicEntity* entity = m_dynamicEntities[1];
+	Entity* entity = m_entities[1];
 
-	m_dynamicEntities.erase(m_dynamicEntities.begin() + 1);
+	m_entities.erase(m_entities.begin() + 1);
 
 	const VoxelTexture* texture = entity->GetTextureForOrientation();
 	Vector3 entityPosition = entity->GetEntityPosition();
@@ -161,38 +149,17 @@ void World::ParticalizeEntity()
 
 
 //-----------------------------------------------------------------------------------------------
-// Updates the static entities in the scene
+// Updates all entities in the game that aren't particles
 //
-void World::UpdateStaticEntities()
+void World::UpdateEntities()
 {
-	int numStatics = (int) m_staticEntities.size();
+	int numEntities = (int)m_entities.size();
 
-	for (int i = 0; i < numStatics; ++i)
+	for (int i = 0; i < numEntities; ++i)
 	{
-		StaticEntity* currStatic = m_staticEntities[i];
-
-		if (!currStatic->IsMarkedForDelete())
+		if (!m_entities[i]->IsMarkedForDelete())
 		{
-			m_staticEntities[i]->Update();
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Updates the dynamic entities in the scene
-//
-void World::UpdateDynamicEntities()
-{
-	int numDynamics = (int) m_dynamicEntities.size();
-
-	for (int i = 0; i < numDynamics; ++i)
-	{
-		DynamicEntity* currDynamic = m_dynamicEntities[i];
-
-		if (!currDynamic->IsMarkedForDelete())
-		{
-			m_dynamicEntities[i]->Update();
+			m_entities[i]->Update();
 		}
 	}
 }
@@ -220,15 +187,15 @@ void World::UpdateParticles()
 //
 void World::ApplyPhysicsStep()
 {
-	int numDynamics = (int) m_dynamicEntities.size();
+	int numDynamics = (int)m_entities.size();
 
 	for (int i = 0; i < numDynamics; ++i)
 	{
-		DynamicEntity* currDynamic = m_dynamicEntities[i];
+		Entity* currDynamic = m_entities[i];
 
-		if (!currDynamic->IsMarkedForDelete())
+		if (currDynamic->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC && !currDynamic->IsMarkedForDelete())
 		{
-			m_dynamicEntities[i]->ApplyPhysicsStep();
+			m_entities[i]->GetPhysicsComponent()->ApplyPhysicsStep();
 		}
 	}
 
@@ -239,7 +206,7 @@ void World::ApplyPhysicsStep()
 	{
 		if (!m_particles[i]->IsMarkedForDelete())
 		{
-			m_particles[i]->ApplyPhysicsStep();
+			m_particles[i]->GetPhysicsComponent()->ApplyPhysicsStep();
 		}
 	}
 }
@@ -250,40 +217,40 @@ void World::ApplyPhysicsStep()
 //
 void World::CheckStaticEntityCollisions()
 {
-	for (int particleIndex = 0; particleIndex < (int)m_dynamicEntities.size(); ++particleIndex)
+	for (int dynamicIndex = 0; dynamicIndex < (int)m_entities.size(); ++dynamicIndex)
 	{
-		DynamicEntity* currDynamic = m_dynamicEntities[particleIndex];
+		Entity* dynamicEntity = m_entities[dynamicIndex];
 		
 		// Don't bother with an entity marked for delete
-		if (currDynamic->IsMarkedForDelete()) { continue; }
+		if (dynamicEntity->GetPhysicsType() != PHYSICS_TYPE_DYNAMIC || dynamicEntity->IsMarkedForDelete()) { continue; }
 
-		for (int staticIndex = 0; staticIndex < (int)m_staticEntities.size(); ++staticIndex)
+		for (int staticIndex = 0; staticIndex < (int)m_entities.size(); ++staticIndex)
 		{
-			StaticEntity* currStatic = m_staticEntities[staticIndex];
+			Entity* staticEntity = m_entities[staticIndex];
 
-			if (currStatic->IsMarkedForDelete()) { continue; }
+			if (staticEntity->GetPhysicsType() != PHYSICS_TYPE_STATIC || staticEntity->IsMarkedForDelete()) { continue; }
 
 			// Do detection and fix here
-			CheckAndCorrectEntityCollision(currDynamic, currStatic);
+			CheckAndCorrectEntityCollision(dynamicEntity, staticEntity);
 		}
 
 		// Also check for clipping into the ground
-		Vector3 position = currDynamic->GetEntityPosition();
+		Vector3 position = dynamicEntity->GetEntityPosition();
 		if (position.y < (float)m_groundElevation)
 		{
 			position.y = (float) m_groundElevation;
-			currDynamic->SetPosition(position);
+			dynamicEntity->SetPosition(position);
 
-			Vector3 velocity = currDynamic->GetVelocity();
+			Vector3 velocity = dynamicEntity->GetPhysicsComponent()->GetVelocity();
 			velocity.y = 0.f;
-			currDynamic->SetVelocity(velocity);
+			dynamicEntity->GetPhysicsComponent()->SetVelocity(velocity);
 		}
 	}
 
 	// Check particles for ground collisions
 	for (int particleIndex = 0; particleIndex < (int)m_particles.size(); ++particleIndex)
 	{
-		DynamicEntity* currParticle = m_particles[particleIndex];
+		Particle* currParticle = m_particles[particleIndex];
 
 		// Don't bother with particles marked for delete
 		if (currParticle->IsMarkedForDelete()) { continue; }
@@ -294,7 +261,7 @@ void World::CheckStaticEntityCollisions()
 		{
 			position.y = (float)m_groundElevation;
 			currParticle->SetPosition(position);
-			currParticle->SetVelocity(Vector3::ZERO);
+			currParticle->GetPhysicsComponent()->SetVelocity(Vector3::ZERO);
 		}
 	}
 }
@@ -311,18 +278,18 @@ void World::CheckDynamicEntityCollisions()
 	{
 		collisionDetected = false;
 
-		for (int firstIndex = 0; firstIndex < (int)m_dynamicEntities.size() - 1; ++firstIndex)
+		for (int firstIndex = 0; firstIndex < (int)m_entities.size() - 1; ++firstIndex)
 		{
-			DynamicEntity* firstEntity = m_dynamicEntities[firstIndex];
+			Entity* firstEntity = m_entities[firstIndex];
 
 			// Don't bother with an entity marked for delete
-			if (firstEntity->IsMarkedForDelete()) { continue; }
+			if (firstEntity->GetPhysicsType() != PHYSICS_TYPE_DYNAMIC || firstEntity->IsMarkedForDelete()) { continue; }
 
-			for (int secondIndex = firstIndex + 1; secondIndex < (int)m_dynamicEntities.size(); ++secondIndex)
+			for (int secondIndex = firstIndex + 1; secondIndex < (int)m_entities.size(); ++secondIndex)
 			{
-				DynamicEntity* secondEntity = m_dynamicEntities[secondIndex];
+				Entity* secondEntity = m_entities[secondIndex];
 
-				if (secondEntity->IsMarkedForDelete()) { continue; }
+				if (secondEntity->GetPhysicsType() != PHYSICS_TYPE_DYNAMIC || secondEntity->IsMarkedForDelete()) { continue; }
 
 				// Do detection and fix here
 				collisionDetected = collisionDetected || CheckAndCorrectEntityCollision(firstEntity, secondEntity);
@@ -340,21 +307,21 @@ void World::CheckDynamicEntityCollisions()
 	{
 		collisionDetected = false;
 
-		for (int firstIndex = 0; firstIndex < (int)m_dynamicEntities.size(); ++firstIndex)
+		for (int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex)
 		{
-			DynamicEntity* firstEntity = m_dynamicEntities[firstIndex];
+			Entity* entity = m_entities[entityIndex];
 
 			// Don't bother with an entity marked for delete
-			if (firstEntity->IsMarkedForDelete()) { continue; }
+			if (entity->GetPhysicsType() != PHYSICS_TYPE_DYNAMIC || entity->IsMarkedForDelete()) { continue; }
 
-			for (int secondIndex = 0; secondIndex < (int)m_particles.size(); ++secondIndex)
+			for (int particleIndex = 0; particleIndex < (int)m_particles.size(); ++particleIndex)
 			{
-				DynamicEntity* secondEntity = m_particles[secondIndex];
+				Particle* particle = m_particles[particleIndex];
 
-				if (secondEntity->IsMarkedForDelete()) { continue; }
+				if (particle->IsMarkedForDelete()) { continue; }
 
 				// Do detection and fix here
-				collisionDetected = collisionDetected || CheckAndCorrectEntityCollision(firstEntity, secondEntity);
+				collisionDetected = collisionDetected || CheckAndCorrectEntityCollision(entity, particle);
 			}
 		}
 
@@ -371,25 +338,6 @@ void World::CheckDynamicEntityCollisions()
 //
 void World::DeleteMarkedEntities()
 {
-	// Static first
-	for (int i = (int)m_staticEntities.size() - 1; i >= 0; --i)
-	{
-		StaticEntity* currStatic = m_staticEntities[i];
-
-		if (currStatic->IsMarkedForDelete())
-		{
-			m_staticEntities[i]->OnDeath();
-			delete m_staticEntities[i];
-
-			if (i < (int)m_staticEntities.size() - 1)
-			{
-				m_staticEntities[i] = m_staticEntities.back();
-			}
-			
-			m_staticEntities.pop_back();
-		}
-	}
-
 	// Check for players before going into the dynamic list
 	// Players will set themselves back to not marked, preventing deletion
 	Player** players = Game::GetPlayers();
@@ -402,22 +350,22 @@ void World::DeleteMarkedEntities()
 		}
 	}
 
-	// Check dynamics
-	for (int i = (int)m_dynamicEntities.size() - 1; i >= 0; --i)
+	// Then check entities
+	for (int i = (int)m_entities.size() - 1; i >= 0; --i)
 	{
-		DynamicEntity* currDynamic = m_dynamicEntities[i];
+		Entity* entity = m_entities[i];
 
-		if (currDynamic->IsMarkedForDelete())
+		if (entity->IsMarkedForDelete())
 		{
-			m_dynamicEntities[i]->OnDeath();
-			delete m_dynamicEntities[i];
+			m_entities[i]->OnDeath();
+			delete m_entities[i];
 
-			if (i < (int)m_dynamicEntities.size() - 1)
+			if (i < (int)m_entities.size() - 1)
 			{
-				m_dynamicEntities[i] = m_dynamicEntities.back();
+				m_entities[i] = m_entities.back();
 			}
 
-			m_dynamicEntities.pop_back();
+			m_entities.pop_back();
 		}
 	}
 
@@ -459,11 +407,14 @@ void World::DrawStaticEntitiesToGrid()
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
-	int numStatics = (int)m_staticEntities.size();
+	int numEntities = (int)m_entities.size();
 
-	for (int staticIndex = 0; staticIndex < numStatics; ++staticIndex)
+	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
 	{
-		m_voxelGrid->DrawEntity(m_staticEntities[staticIndex]);
+		if (m_entities[entityIndex]->GetPhysicsType() == PHYSICS_TYPE_STATIC)
+		{
+			m_voxelGrid->DrawEntity(m_entities[entityIndex]);
+		}
 	}
 }
 
@@ -475,11 +426,14 @@ void World::DrawDynamicEntitiesToGrid()
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
-	int numDynamics = (int) m_dynamicEntities.size();
+	int numEntities = (int)m_entities.size();
 
-	for (int i = 0; i < numDynamics; ++i)
+	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
 	{
-		m_voxelGrid->DrawEntity(m_dynamicEntities[i]);
+		if (m_entities[entityIndex]->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC)
+		{
+			m_voxelGrid->DrawEntity(m_entities[entityIndex]);
+		}
 	}
 }
 

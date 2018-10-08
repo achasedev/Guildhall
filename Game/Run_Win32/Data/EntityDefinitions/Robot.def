@@ -1,0 +1,31 @@
+<EntityDefinitions>
+
+	<EntityDefinition name="Robot" dimensions="8,8,8">
+
+		<!--Visuals-->
+		<Animation set="Robot" defaultSprite="Robot_idle_0"/>
+
+		<!--Physics-->
+		<Physics physicsType="dynamic" hasGravity="true">
+			<CollisionDefinition shape="box" response="share_correction" xExtent="4.0" zExtent="4.0" height="8.0"/>
+		</Physics>
+
+		<!--AI-->
+
+	</EntityDefinition>
+
+		<EntityDefinition name="RobotStatic" dimensions="8,8,8">
+
+		<!--Visuals-->
+		<Animation set="Robot" defaultSprite="Robot_idle_0"/>
+
+		<!--Physics-->
+		<Physics physicsType="static" hasGravity="true">
+			<CollisionDefinition shape="box" response="full_correction" xExtent="4.0" zExtent="4.0" height="8.0"/>
+		</Physics>
+
+		<!--AI-->
+
+	</EntityDefinition>
+
+</EntityDefinitions>

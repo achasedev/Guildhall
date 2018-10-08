@@ -5,12 +5,12 @@
 /* Description: Class to represent a single voxel particle
 /************************************************************************/
 #pragma once
-#include "Game/Entity/DynamicEntity.hpp"
+#include "Game/Entity/Entity.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
 
 class Rgba;
 
-class Particle : public DynamicEntity
+class Particle : public Entity
 {
 public:
 	//-----Public Methods-----

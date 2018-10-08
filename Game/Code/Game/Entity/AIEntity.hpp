@@ -5,9 +5,9 @@
 /* Description: Class to represent an AI controlled entity in the game
 /************************************************************************/
 #pragma once
-#include "Game/Entity/DynamicEntity.hpp"
+#include "Game/Entity/Entity.hpp"
 
-class AIEntity : public DynamicEntity
+class AIEntity : public Entity
 {
 public:
 	//-----Public Methods-----

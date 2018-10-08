@@ -1,0 +1,132 @@
+#include "Game/Animation/VoxelSprite.hpp"
+#include "Game/Entity/EntityDefinition.hpp"
+#include "Game/Animation/VoxelAnimationSet.hpp"
+#include "Engine/Core/Utility/StringUtils.hpp"
+#include "Engine/Core/Utility/ErrorWarningAssert.hpp"
+
+std::map<std::string, const EntityDefinition*> EntityDefinition::s_definitions;
+
+ePhysicsType ConvertPhysicsTypeFromString(const std::string& physicsTypeName)
+{
+	if		(physicsTypeName == "static")	{ return PHYSICS_TYPE_STATIC; }
+	else if (physicsTypeName == "dynamic")	{ return PHYSICS_TYPE_DYNAMIC; }
+	else
+	{
+		return PHYSICS_TYPE_UNASSIGNED;
+	}
+}
+
+eCollisionShape ConvertCollisionShapeFromString(const std::string& shapeName)
+{
+	if		(shapeName == "disc")	{ return COLLISION_SHAPE_DISC; }
+	else if (shapeName == "box")	{ return COLLISION_SHAPE_BOX; }
+	else
+	{
+		return COLLISION_SHAPE_NONE;
+	}
+}
+
+eCollisionResponse ConvertCollisionResponseFromString(const std::string& responseName)
+{
+	if		(responseName == "share_correction")	{ return COLLISION_RESPONSE_SHARE_CORRECTION; }
+	else if (responseName == "no_correction")		{ return COLLISION_RESPONSE_NO_CORRECTION; }
+	else
+	{
+		return COLLISION_RESPONSE_FULL_CORRECTION;
+	}
+}
+
+
+EntityDefinition::EntityDefinition(const XMLElement& entityElement)
+{
+	// Name
+	m_name = ParseXmlAttribute(entityElement, "name");
+	ASSERT_OR_DIE(m_name.size() > 0, "Error: EntityDefinition lacks a name");
+
+	// Dimensions
+	m_dimensions = ParseXmlAttribute(entityElement, "dimensions", IntVector3(8, 8, 8));
+
+	// Animation
+	const XMLElement* animElement = entityElement.FirstChildElement("Animation");
+	if (animElement != nullptr)
+	{
+		std::string animSetName = ParseXmlAttribute(*animElement, "set");
+		m_animationSet = VoxelAnimationSet::GetAnimationSet(animSetName);
+
+		std::string defaultSpriteName = ParseXmlAttribute(*animElement, "defaultSprite", "default");
+		m_defaultSprite = VoxelSprite::GetVoxelSprite(defaultSpriteName);
+	}
+
+	// Physics
+	const XMLElement* physicsElement = entityElement.FirstChildElement("Physics");
+	if (physicsElement != nullptr)
+	{
+		std::string physicsTypeName = ParseXmlAttribute(*physicsElement, "physicsType", "dynamic");
+		m_physicsType = ConvertPhysicsTypeFromString(physicsTypeName);
+
+		m_affectedByGravity = ParseXmlAttribute(*physicsElement, "hasGravity", false);
+
+		// Collision Definition
+		const XMLElement* collisionElement = physicsElement->FirstChildElement("CollisionDefinition");
+
+		if (collisionElement != nullptr)
+		{
+			std::string shapeText = ParseXmlAttribute(*collisionElement, "shape", "disc");
+			eCollisionShape shape = ConvertCollisionShapeFromString(shapeText);
+
+			std::string responseText = ParseXmlAttribute(*collisionElement, "response", "full_correction");
+			eCollisionResponse response = ConvertCollisionResponseFromString(responseText);
+
+			float xExtent = ParseXmlAttribute(*collisionElement, "xExtent", 4.0f);
+			float zExtent = ParseXmlAttribute(*collisionElement, "zExtent", 4.0f);
+			float height = ParseXmlAttribute(*collisionElement, "height", 8.0f);
+
+			m_collisionDef = CollisionDefinition_t(shape, response, xExtent, zExtent, height);
+		}
+	}
+
+	// AI
+}
+
+
+std::string EntityDefinition::GetName() const
+{
+	return m_name;
+}
+
+bool EntityDefinition::HasGravity() const
+{
+	return m_affectedByGravity;
+}
+
+void EntityDefinition::LoadDefinitions(const std::string& filename)
+{
+	XMLDocument document;
+	XMLError error = document.LoadFile(filename.c_str());
+	ASSERT_OR_DIE(error == tinyxml2::XML_SUCCESS, Stringf("Error: EntityDefinition::LoadDefinitions() couldn't open file %s", filename.c_str()).c_str());
+
+	const XMLElement* rootElement = document.RootElement();
+	ASSERT_OR_DIE(rootElement != nullptr, Stringf("Error: EntityDefinition::LoadDefinitions() loaded file with no root element, file: %s", filename.c_str()).c_str());
+
+	const XMLElement* defElement = rootElement->FirstChildElement();
+
+	while (defElement != nullptr)
+	{
+		const EntityDefinition* newDefinition = new EntityDefinition(*defElement);
+		s_definitions[newDefinition->m_name] = newDefinition;
+
+		defElement = defElement->NextSiblingElement();
+	}
+}
+
+const EntityDefinition* EntityDefinition::GetDefinition(const std::string& defName)
+{
+	bool exists = s_definitions.find(defName) != s_definitions.end();
+
+	if (exists)
+	{
+		return s_definitions.at(defName);
+	}
+
+	return nullptr;
+}

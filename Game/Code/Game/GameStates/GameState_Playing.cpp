@@ -7,7 +7,6 @@
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
-#include "Game/Entity/StaticEntity.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
@@ -18,7 +17,7 @@
 #include "Engine/Rendering/Core/ForwardRenderingPath.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
-#include "Game/Entity/TestBox.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // Base constructor
 //
@@ -52,12 +51,12 @@ void GameState_Playing::Enter()
 	players[0] = new Player(0);
 	players[0]->SetPosition(Vector3(60.f, 0.f, 60.f));
 
-	Game::GetWorld()->AddDynamicEntity(players[0]);
+	Game::GetWorld()->AddEntity(players[0]);
 
 	// Spawn some test entities
 	for (int i = 0; i < 10; ++i)
 	{
-		Game::GetWorld()->AddDynamicEntity(new DynamicEntity());
+		Game::GetWorld()->AddEntity(new Entity(EntityDefinition::GetDefinition("RobotStatic")));
 	}
  }
 
