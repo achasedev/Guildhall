@@ -29,7 +29,6 @@ Player::Player(unsigned int playerID)
 	: Entity(EntityDefinition::GetDefinition("Robot"))
 	, m_playerID(playerID)
 {
-	//m_animator = new VoxelAnimator(VoxelAnimationSet::GetAnimationSet("Robot"), VoxelSprite::GetVoxelSprite("Robot_idle_0"));
 }
 
 
@@ -143,7 +142,7 @@ void Player::OnSpawn()
 //
 void Player::Shoot()
 {
-	Projectile* proj = new Projectile(nullptr);
+	Projectile* proj = new Projectile(m_definition);
 	proj->SetPosition(m_position + Vector3(0.f, 4.f, 0.f));
 	proj->SetOrientation(m_orientation);
 

@@ -14,14 +14,12 @@
 
 	</EntityDefinition>
 
-		<EntityDefinition name="RobotStatic" dimensions="8,8,8">
 
-		<!--Visuals-->
-		<Animation set="Robot" defaultSprite="Robot_idle_0"/>
+	<EntityDefinition name="Particle" dimensions="1,1,1">
 
 		<!--Physics-->
-		<Physics physicsType="static" hasGravity="true">
-			<CollisionDefinition shape="box" response="full_correction" xExtent="4.0" zExtent="4.0" height="8.0"/>
+		<Physics physicsType="dynamic" hasGravity="true">
+			<CollisionDefinition shape="box" response="full_correction" xExtent="0.5" zExtent="0.5" height="1.0"/>
 		</Physics>
 
 		<!--AI-->

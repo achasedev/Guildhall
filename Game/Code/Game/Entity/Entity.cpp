@@ -10,8 +10,6 @@
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Animation/VoxelAnimator.hpp"
 #include "Game/Entity/PhysicsComponent.hpp"
-
-
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -33,7 +31,7 @@ Entity::Entity(const EntityDefinition* definition)
 	m_animator = new VoxelAnimator(m_definition->m_animationSet, m_definition->m_defaultSprite);
 	m_animator->Play("idle");
 
-	m_position = Vector3(GetRandomFloatInRange(20.f, 100.f), 4.f, GetRandomFloatInRange(20.f, 100.f));
+	m_position = Vector3(GetRandomFloatInRange(20.f, 250.f), 4.f, GetRandomFloatInRange(20.f, 250.f));
 }
 
 
@@ -42,6 +40,17 @@ Entity::Entity(const EntityDefinition* definition)
 //
 Entity::~Entity()
 {
+	if (m_physicsComponent != nullptr)
+	{
+		delete m_physicsComponent;
+		m_physicsComponent = nullptr;
+	}
+
+	if (m_animator != nullptr)
+	{
+		delete m_animator;
+		m_animator = nullptr;
+	}
 }
 
 
@@ -226,7 +235,7 @@ bool Entity::IsMarkedForDelete() const
 //
 Vector3 Entity::GetPositionForLocalCoords(const IntVector3& localCoords) const
 {
-	IntVector3 halfDimensions = m_dimensions / 2;
+	IntVector3 halfDimensions = m_definition->m_dimensions / 2;
 
 	IntVector3 entityPositionCoords = GetEntityCoordinatePosition();
 
@@ -244,11 +253,13 @@ Vector3 Entity::GetPositionForLocalCoords(const IntVector3& localCoords) const
 //
 Vector3 Entity::GetPositionForLocalIndex(unsigned int index) const
 {
-	int y = index / (m_dimensions.x * m_dimensions.z);
-	int leftOver = index % (m_dimensions.x * m_dimensions.z);
+	IntVector3 dimensions = m_definition->m_dimensions;
 
-	int z = leftOver / (m_dimensions.x);
-	int x = leftOver % (m_dimensions.x);
+	int y = index / (dimensions.x * dimensions.z);
+	int leftOver = index % (dimensions.x * dimensions.z);
+
+	int z = leftOver / (dimensions.x);
+	int x = leftOver % (dimensions.x);
 
 	return GetPositionForLocalCoords(IntVector3(x, y, z));
 }

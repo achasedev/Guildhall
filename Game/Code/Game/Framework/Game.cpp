@@ -18,17 +18,11 @@
 #include "Engine/Core/DeveloperConsole/Command.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 
-// void Command_ReloadPlayerData(Command& cmd)
-// {
-// 	XMLDocument document;
-// 	document.LoadFile("Data/Definitions/Player.xml");
-// 
-// 	const XMLElement* root = document.RootElement();
-// 	
-// 	if (root == nullptr) { return; }
-// 
-// 	const XMLElement* curr = root->FirstChildElement("MaxMoveAcceleration)
-// }
+
+void Command_KillAll(Command& cmd)
+{
+	Game::GetWorld()->ParticalizeAllEntities();
+}
 
 // The singleton instance
 Game* Game::s_instance = nullptr;
@@ -81,6 +75,8 @@ void Game::Initialize()
 
 	// Set the game clock on the Renderer
 	Renderer::GetInstance()->SetRendererGameClock(s_instance->m_gameClock);
+
+	Command::Register("killall", "Kills all entities", Command_KillAll);
 }
 
 

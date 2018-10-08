@@ -54,9 +54,9 @@ void GameState_Playing::Enter()
 	Game::GetWorld()->AddEntity(players[0]);
 
 	// Spawn some test entities
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < 100; ++i)
 	{
-		Game::GetWorld()->AddEntity(new Entity(EntityDefinition::GetDefinition("RobotStatic")));
+		Game::GetWorld()->AddEntity(new Entity(EntityDefinition::GetDefinition("Robot")));
 	}
  }
 
@@ -134,7 +134,7 @@ void GameState_Playing::ProcessInput()
 
 	if (InputSystem::GetInstance()->WasKeyJustPressed('L'))
 	{
-		Game::GetWorld()->ParticalizeEntity();
+		Game::GetWorld()->ParticalizeAllEntities();
 	}
 }
 

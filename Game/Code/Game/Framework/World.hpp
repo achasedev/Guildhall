@@ -32,7 +32,7 @@ public:
 
 	void AddEntity(Entity* entity);
 
-	void ParticalizeEntity();
+	void ParticalizeAllEntities();
 
 
 private:

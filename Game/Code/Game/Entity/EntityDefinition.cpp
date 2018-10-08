@@ -1,11 +1,22 @@
+/************************************************************************/
+/* File: EntityDefinition.cpp
+/* Author: Andrew Chase
+/* Date: October 8th, 2018
+/* Description: Implementation of the EntityDefinition class
+/************************************************************************/
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
+// Global map for all entity definitions
 std::map<std::string, const EntityDefinition*> EntityDefinition::s_definitions;
 
+
+//-----------------------------------------------------------------------------------------------
+// Returns the ePhysicsType corresponding to the text
+//
 ePhysicsType ConvertPhysicsTypeFromString(const std::string& physicsTypeName)
 {
 	if		(physicsTypeName == "static")	{ return PHYSICS_TYPE_STATIC; }
@@ -16,6 +27,10 @@ ePhysicsType ConvertPhysicsTypeFromString(const std::string& physicsTypeName)
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Returns the eCollisionShape corresponding to the text
+//
 eCollisionShape ConvertCollisionShapeFromString(const std::string& shapeName)
 {
 	if		(shapeName == "disc")	{ return COLLISION_SHAPE_DISC; }
@@ -26,6 +41,10 @@ eCollisionShape ConvertCollisionShapeFromString(const std::string& shapeName)
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Returns the eCollisionResponse corresponding to the text
+//
 eCollisionResponse ConvertCollisionResponseFromString(const std::string& responseName)
 {
 	if		(responseName == "share_correction")	{ return COLLISION_RESPONSE_SHARE_CORRECTION; }
@@ -37,6 +56,9 @@ eCollisionResponse ConvertCollisionResponseFromString(const std::string& respons
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Constructor
+//
 EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 {
 	// Name
@@ -50,7 +72,7 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 	const XMLElement* animElement = entityElement.FirstChildElement("Animation");
 	if (animElement != nullptr)
 	{
-		std::string animSetName = ParseXmlAttribute(*animElement, "set");
+		std::string animSetName = ParseXmlAttribute(*animElement, "set", "");
 		m_animationSet = VoxelAnimationSet::GetAnimationSet(animSetName);
 
 		std::string defaultSpriteName = ParseXmlAttribute(*animElement, "defaultSprite", "default");
@@ -89,16 +111,27 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Returns the name of the definition
+//
 std::string EntityDefinition::GetName() const
 {
 	return m_name;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether this entity is affected by gravity (only applies for dynamic entities)
+//
 bool EntityDefinition::HasGravity() const
 {
 	return m_affectedByGravity;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Loads the entity definitions specified in the file filename
+//
 void EntityDefinition::LoadDefinitions(const std::string& filename)
 {
 	XMLDocument document;
@@ -119,6 +152,10 @@ void EntityDefinition::LoadDefinitions(const std::string& filename)
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Returns the definition given by defName if it exists, or nullptr otherwise
+//
 const EntityDefinition* EntityDefinition::GetDefinition(const std::string& defName)
 {
 	bool exists = s_definitions.find(defName) != s_definitions.end();

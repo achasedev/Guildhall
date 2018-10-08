@@ -1,8 +1,8 @@
 /************************************************************************/
-/* File: DynamicEntity.cpp
+/* File: PhysicsComponent.cpp
 /* Author: Andrew Chase
-/* Date: September 22nd, 2017
-/* Description: Implementation of the DynamicEntity class
+/* Date: October 8th, 2018
+/* Description: Implementation of the PhysicsComponent class
 /************************************************************************/
 #include "Game/Entity/PhysicsComponent.hpp"
 #include "Game/Framework/Game.hpp"
@@ -30,32 +30,54 @@ PhysicsComponent::~PhysicsComponent()
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Adds the given force to the component
+//
 void PhysicsComponent::AddForce(const Vector3& force)
 {
 	m_force += force;
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Adds the given impulse to the component
+//
 void PhysicsComponent::AddImpulse(const Vector3& impulse)
 {
 	m_impulse += impulse;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Adds the given velocity to the component
+//
 void PhysicsComponent::AddVelocity(const Vector3& velocity)
 {
 	m_velocity += velocity;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Sets the force of the component to the given force
+//
 void PhysicsComponent::SetForce(const Vector3& force)
 {
 	m_force = force;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Sets the velocity of the component to the given velocity
+//
 void PhysicsComponent::SetVelocity(const Vector3& velocity)
 {
 	m_velocity = velocity;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Applies the forward Euler computation to the velocity and position of the owning entity
+//
 void PhysicsComponent::ApplyPhysicsStep()
 {
 	// Apply impulse, no delta time applied
@@ -87,8 +109,11 @@ void PhysicsComponent::ApplyPhysicsStep()
 	m_impulse = Vector3::ZERO;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Returns the current velocity of the component
+//
 Vector3 PhysicsComponent::GetVelocity() const
 {
 	return m_velocity;
 }
-

@@ -1,8 +1,8 @@
 /************************************************************************/
-/* File: DynamicEntity.hpp
+/* File: PhysicsComponent.hpp
 /* Author: Andrew Chase
-/* Date: September 22nd, 2017
-/* Description: Class to represent an Entity affected by physics
+/* Date: October 8th, 2018
+/* Description: Class to update the entity using a forward Euler physics model
 /************************************************************************/
 #pragma once
 #include "Game/Entity/Entity.hpp"
@@ -31,9 +31,6 @@ public:
 	Vector3			GetVelocity() const;
 
 
-protected:
-	//-----Protected Methods-----
-
 
 protected:
 	//-----Protected Data-----
@@ -46,7 +43,7 @@ protected:
 	Vector3 m_velocity = Vector3::ZERO;
 
 	// Data set members
-	float	m_maxSpeed = DEFAULT_MAX_SPEED;			// Max speed this entity can move
+	float	m_maxSpeed = DEFAULT_MAX_SPEED;						// Max speed this entity can move
 	float	m_maxAcceleration = DEFAULT_MAX_ACCELERATION;		// Max change in velocity per second
 	bool	m_affectedByGravity = false;
 

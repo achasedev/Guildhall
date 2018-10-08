@@ -18,27 +18,21 @@ public:
 	Particle(const Rgba& color, float lifetime, const Vector3& position, const Vector3& initialVelocity);
 	~Particle();
 	
-	virtual void Update() override;
-
-	virtual void OnDeath() override;
-	virtual void OnSpawn() override;
-
-
-public:
-	//-----Public Data-----
-	
-
-private:
-	//-----Private Methods-----
+	virtual void					Update() override;
+	virtual const VoxelTexture*		GetTextureForOrientation() const override;
+	virtual void					OnSpawn() override;
 	
 	
 private:
 	//-----Private Data-----
 	
+	VoxelTexture* m_particleTexture = nullptr;
+
 	Stopwatch m_stopwatch;
 	float m_lifetime = DEFAULT_LIFETIME;
 	float m_initialSpeed = DEFAULT_SPEED;
 
 	static constexpr float DEFAULT_SPEED = 10.f;
 	static constexpr float DEFAULT_LIFETIME = 30.0f;
+
 };

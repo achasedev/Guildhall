@@ -221,8 +221,10 @@ void VoxelGrid::InitializeBuffers()
 	int val = 0;
 	m_countBuffer.CopyToGPU(sizeof(unsigned int), &val); // Initialize it to 0 so compute can start incrementing
 
-	unsigned int vertexCount = voxelCount * VERTICES_PER_VOXEL;
-	unsigned int indexCount = voxelCount * INDICES_PER_VOXEL;
+	// Worst/largest case is we have a checkerboard mesh, in which only half the voxels are meshes
+	// So we cut the amount in half here
+	unsigned int vertexCount = (voxelCount / 4) * VERTICES_PER_VOXEL;
+	unsigned int indexCount = (voxelCount / 4) * INDICES_PER_VOXEL;
 
 	// Setup the mesh so the compute shader can directly write to its buffers
 	m_mesh.InitializeBuffersForCompute<VertexVoxel>((unsigned int)VERTEX_BINDING, vertexCount, (unsigned int)INDEX_BINDING, indexCount);

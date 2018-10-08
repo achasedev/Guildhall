@@ -4,4 +4,3 @@ AIEntity::AIEntity(const EntityDefinition* definition)
 	: Entity(definition)
 {
 }
-

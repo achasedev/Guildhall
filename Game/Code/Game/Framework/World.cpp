@@ -16,7 +16,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
 
-#define DYNAMIC_COLLISION_MAX_ITERATION_COUNT 25
+#define DYNAMIC_COLLISION_MAX_ITERATION_COUNT 50
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -115,36 +115,41 @@ void World::AddEntity(Entity* entity)
 //-----------------------------------------------------------------------------------------------
 // Blows up the given entity
 //
-void World::ParticalizeEntity()
+void World::ParticalizeAllEntities()
 {
-	Entity* entity = m_entities[1];
-
-	m_entities.erase(m_entities.begin() + 1);
-
-	const VoxelTexture* texture = entity->GetTextureForOrientation();
-	Vector3 entityPosition = entity->GetEntityPosition();
-
-	unsigned int voxelCount = texture->GetVoxelCount();
-	for (unsigned int i = 0; i < voxelCount; ++i)
+	for (int entityIndex = (int) m_entities.size() - 1; entityIndex >= 0; --entityIndex)
 	{
-		//Rgba color = texture->GetColorAtIndex(i);
-		Rgba color = Rgba::GetRandomColor();
+		Entity* entity = m_entities[entityIndex];
 
-		if (color.a != 0)
+		if (dynamic_cast<Player*>(entity) == nullptr)
 		{
-			Vector3 voxelPosition = entity->GetPositionForLocalIndex(i);
+			m_entities.erase(m_entities.begin() + entityIndex);
 
-			Vector3 velocity = (voxelPosition - entityPosition).GetNormalized();
-			velocity *= 50.f;
+			const VoxelTexture* texture = entity->GetTextureForOrientation();
+			Vector3 entityPosition = entity->GetEntityPosition();
 
-			Particle* particle = new Particle(color, 300.0f, voxelPosition, velocity);
-			particle->OnSpawn();
+			unsigned int voxelCount = texture->GetVoxelCount();
+			for (unsigned int i = 0; i < voxelCount; ++i)
+			{
+				Rgba color = texture->GetColorAtIndex(i);
 
-			m_particles.push_back(particle);
+				if (color.a != 0)
+				{
+					Vector3 voxelPosition = entity->GetPositionForLocalIndex(i);
+
+					Vector3 velocity = (voxelPosition - entityPosition).GetNormalized();
+					velocity *= 50.f;
+
+					Particle* particle = new Particle(color, 10.0f, voxelPosition, velocity);
+					particle->OnSpawn();
+
+					m_particles.push_back(particle);
+				}
+			}
+
+			delete entity;
 		}
 	}
-
-	delete entity;
 }
 
 
