@@ -6,7 +6,7 @@
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
 #include "Game/Entity/Particle.hpp"
-#include "Game/Entity/PhysicsComponent.hpp"
+#include "Game/Entity/Components/PhysicsComponent.hpp"
 
 
 //-----------------------------------------------------------------------------------------------

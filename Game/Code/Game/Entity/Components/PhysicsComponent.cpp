@@ -4,7 +4,7 @@
 /* Date: October 8th, 2018
 /* Description: Implementation of the PhysicsComponent class
 /************************************************************************/
-#include "Game/Entity/PhysicsComponent.hpp"
+#include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Engine/Math/MathUtils.hpp"
 

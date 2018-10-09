@@ -10,7 +10,7 @@
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/GameCamera.hpp"
-#include "Game/Entity/PhysicsComponent.hpp"
+#include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -40,10 +40,9 @@ World::~World()
 //
 void World::Inititalize(const char* filename)
 {
-	m_terrain = AssetDB::CreateOrGetVoxelTexture(filename);
+	//m_terrain = AssetDB::CreateOrGetVoxelTexture(filename);
 
 	m_dimensions = IntVector3(256, 64, 256);
-	//m_dimensions = m_terrain->GetDimensions();
 
 	m_voxelGrid = new VoxelGrid();
 	m_voxelGrid->Initialize(m_dimensions);
@@ -86,7 +85,7 @@ void World::Render()
 	m_voxelGrid->Clear();
 
 	// Color in the terrain
-	DrawTerrainToGrid();
+	//DrawTerrainToGrid();
 
 	// Color in static geometry
 	DrawStaticEntitiesToGrid();
@@ -150,6 +149,15 @@ void World::ParticalizeAllEntities()
 			delete entity;
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the voxel dimensions of the world
+//
+IntVector3 World::GetDimensions() const
+{
+	return m_dimensions;
 }
 
 

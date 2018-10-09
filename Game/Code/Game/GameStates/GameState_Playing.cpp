@@ -5,6 +5,7 @@
 /* Description: Implementation of the GameState_Playing class
 /************************************************************************/
 #include "Game/Entity/Player.hpp"
+#include "Game/Entity/AIEntity.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/GameCommon.hpp"
@@ -54,9 +55,9 @@ void GameState_Playing::Enter()
 	Game::GetWorld()->AddEntity(players[0]);
 
 	// Spawn some test entities
-	for (int i = 0; i < 100; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
-		Game::GetWorld()->AddEntity(new Entity(EntityDefinition::GetDefinition("Robot")));
+		Game::GetWorld()->AddEntity(new AIEntity(EntityDefinition::GetDefinition("Robot")));
 	}
  }
 

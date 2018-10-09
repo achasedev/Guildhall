@@ -7,6 +7,7 @@
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
+#include "Game/Entity/Components/BehaviorComponent_Wander.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
@@ -68,6 +69,16 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 	// Dimensions
 	m_dimensions = ParseXmlAttribute(entityElement, "dimensions", IntVector3(8, 8, 8));
 
+	// Movement
+	const XMLElement* moveElement = entityElement.FirstChildElement("Movement");
+	if (moveElement != nullptr)
+	{
+		m_maxMoveAcceleration	= ParseXmlAttribute(*moveElement, "maxAcceleration",	m_maxMoveAcceleration);
+		m_maxMoveSpeed			= ParseXmlAttribute(*moveElement, "maxSpeed",			m_maxMoveSpeed);
+		m_maxMoveDeceleration	= ParseXmlAttribute(*moveElement, "maxDeceleration",	m_maxMoveDeceleration);
+		m_jumpImpulse			= ParseXmlAttribute(*moveElement, "jumpImpulse",		m_jumpImpulse);
+	}
+
 	// Animation
 	const XMLElement* animElement = entityElement.FirstChildElement("Animation");
 	if (animElement != nullptr)
@@ -99,15 +110,52 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 			std::string responseText = ParseXmlAttribute(*collisionElement, "response", "full_correction");
 			eCollisionResponse response = ConvertCollisionResponseFromString(responseText);
 
-			float xExtent = ParseXmlAttribute(*collisionElement, "xExtent", 4.0f);
-			float zExtent = ParseXmlAttribute(*collisionElement, "zExtent", 4.0f);
-			float height = ParseXmlAttribute(*collisionElement, "height", 8.0f);
+			float xExtent	= ParseXmlAttribute(*collisionElement, "xExtent",	4.0f);
+			float zExtent	= ParseXmlAttribute(*collisionElement, "zExtent",	4.0f);
+			float height	= ParseXmlAttribute(*collisionElement, "height",	8.0f);
 
 			m_collisionDef = CollisionDefinition_t(shape, response, xExtent, zExtent, height);
 		}
 	}
 
 	// AI
+	const XMLElement* aiElement = entityElement.FirstChildElement("AI");
+	if (aiElement != nullptr)
+	{
+		const XMLElement* behaviorElement = aiElement->FirstChildElement();
+
+		while (behaviorElement != nullptr)
+		{
+			BehaviorComponent* prototype = ConstructBehaviorPrototype(*behaviorElement);
+			m_behaviorPrototypes.push_back(prototype);
+
+			behaviorElement = behaviorElement->NextSiblingElement();
+		}	
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Constructs and returns a behavior component subclass given the element
+// Used for prototype construction on entity construction
+//
+BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement& behaviorElement)
+{
+	BehaviorComponent* toReturn;
+
+	std::string behaviorName = behaviorElement.Name();
+
+	if (behaviorName == "Wander")
+	{
+		float wanderInterval = ParseXmlAttribute(behaviorElement, "interval", 5000.f);
+		toReturn = new BehaviorComponent_Wander(wanderInterval);
+	}
+	else
+	{
+		ERROR_AND_DIE("Unknown Behavior");
+	}
+
+	return toReturn;
 }
 
 
@@ -117,6 +165,15 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 std::string EntityDefinition::GetName() const
 {
 	return m_name;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns a behavior component clone of the prototype at the given index
+//
+BehaviorComponent* EntityDefinition::CloneBehaviorPrototype(unsigned int index) const
+{
+	return m_behaviorPrototypes[index]->Clone();
 }
 
 

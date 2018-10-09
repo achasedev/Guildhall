@@ -11,6 +11,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 // Convenience type to know what kind of entity we are
 enum ePhysicsType
@@ -54,18 +55,30 @@ struct CollisionDefinition_t
 	float				m_height;
 };
 
+struct BehaviorData_t
+{
+	// Wander
+	float m_wanderInterval;
+};
+
+
 class VoxelSprite;
 class VoxelAnimationSet;
+class BehaviorComponent;
 
 class EntityDefinition
 {
 	friend class Entity;
+	friend class MovingEntity;
+	friend class Player;
 
 public:
 	//-----Public Methods-----
 	
 	
-	std::string GetName() const;
+	std::string	GetName() const;
+	BehaviorComponent* CloneBehaviorPrototype(unsigned int index) const;
+
 	bool		HasGravity() const;
 
 	static void						LoadDefinitions(const std::string& filename);
@@ -77,12 +90,20 @@ private:
 	
 	EntityDefinition(const XMLElement& entityElement);
 
+	BehaviorComponent* ConstructBehaviorPrototype(const XMLElement& behaviorElement);
+
 	
 private:
 	//-----Private Data-----
 	
 	std::string					m_name;
 	IntVector3					m_dimensions;
+
+	// Movement
+	float m_maxMoveAcceleration = 300.f;
+	float m_maxMoveSpeed = 40.f;
+	float m_maxMoveDeceleration = 100.f;
+	float m_jumpImpulse = 80.f;
 
 	// Animation
 	const VoxelAnimationSet*	m_animationSet = nullptr;
@@ -94,6 +115,7 @@ private:
 	CollisionDefinition_t		m_collisionDef;
 
 	// AI
+	std::vector<const BehaviorComponent*> m_behaviorPrototypes;
 
 	// Static registry
 	static std::map<std::string, const EntityDefinition*> s_definitions;

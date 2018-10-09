@@ -5,19 +5,24 @@
 /* Description: Class to represent an AI controlled entity in the game
 /************************************************************************/
 #pragma once
-#include "Game/Entity/Entity.hpp"
+#include "Game/Entity/MovingEntity.hpp"
 
-class AIEntity : public Entity
+class BehaviorComponent;
+
+class AIEntity : public MovingEntity
 {
 public:
 	//-----Public Methods-----
 	
 	AIEntity(const EntityDefinition* definition);
 
-	
+	virtual void Update() override;
+
+
 private:
 	//-----Private Data-----
 	
 	// AI controller stuff here
-	
+	BehaviorComponent* m_behaviorComponent = nullptr;
+
 };

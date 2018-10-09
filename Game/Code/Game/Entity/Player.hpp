@@ -5,13 +5,13 @@
 /* Description: Class to represent a player entity
 /************************************************************************/
 #pragma once
-#include "Game/Entity/Entity.hpp"
+#include "Game/Entity/MovingEntity.hpp"
 
 #define INVALID_PLAYER_ID (4)
 
 class Vector3;
 
-class Player : public Entity
+class Player : public MovingEntity
 {
 public:
 	//-----Public Methods-----
@@ -24,7 +24,7 @@ public:
 	void			ProcessInput();
 	virtual void	Update() override;
 
-	// Collision
+	// Events
 	virtual void	OnCollision(Entity* other) override;
 	virtual void	OnDamageTaken(int damageAmount) override;
 	virtual void	OnDeath() override;
@@ -36,12 +36,9 @@ public:
 
 private:
 	//-----Private Methods-----
-
-	void UpdateMovementParamsOnInput();
-	void DebugRenderMovementParams();
 	
-	void ApplyInputAcceleration(const Vector2& inputDirection);
-	void ApplyDeceleration();
+	//void ApplyInputAcceleration(const Vector2& inputDirection);
+	//void ApplyDeceleration();
 
 
 private:
@@ -49,9 +46,9 @@ private:
 
 	int		m_playerID = INVALID_PLAYER_ID;
 
-	float	m_maxMoveAcceleration	= 300.f;
-	float	m_maxMoveSpeed			= 40.f;
-	float	m_maxMoveDeceleration	= 100.f;
-	float	m_jumpImpulse			= 80.f;
+	//float	m_maxMoveAcceleration	= 300.f;
+	//float	m_maxMoveSpeed			= 40.f;
+	//float	m_maxMoveDeceleration	= 100.f;
+	//float	m_jumpImpulse			= 80.f;
 
 };

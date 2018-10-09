@@ -82,7 +82,16 @@
     <ClCompile Include="Entity\AIEntity.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Entity\PhysicsComponent.cpp">
+    <ClCompile Include="Entity\Components\BehaviorComponent.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\Components\PhysicsComponent.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\Components\BehaviorComponent_Wander.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\MovingEntity.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
   </ItemGroup>
@@ -128,6 +137,9 @@
     <ClInclude Include="Animation\VoxelAnimationSet.hpp" />
     <ClInclude Include="Entity\EntityDefinition.hpp" />
     <ClInclude Include="Entity\AIEntity.hpp" />
-    <ClInclude Include="Entity\PhysicsComponent.hpp" />
+    <ClInclude Include="Entity\Components\BehaviorComponent.hpp" />
+    <ClInclude Include="Entity\Components\PhysicsComponent.hpp" />
+    <ClInclude Include="Entity\Components\BehaviorComponent_Wander.hpp" />
+    <ClInclude Include="Entity\MovingEntity.hpp" />
   </ItemGroup>
 </Project>

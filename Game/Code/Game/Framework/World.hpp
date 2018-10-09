@@ -30,9 +30,12 @@ public:
 	void Update();
 	void Render();
 
+	// Mutators
 	void AddEntity(Entity* entity);
-
 	void ParticalizeAllEntities();
+
+	// Accessors
+	IntVector3 GetDimensions() const;
 
 
 private:

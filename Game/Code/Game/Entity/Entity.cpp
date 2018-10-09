@@ -9,7 +9,7 @@
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Animation/VoxelAnimator.hpp"
-#include "Game/Entity/PhysicsComponent.hpp"
+#include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -31,7 +31,7 @@ Entity::Entity(const EntityDefinition* definition)
 	m_animator = new VoxelAnimator(m_definition->m_animationSet, m_definition->m_defaultSprite);
 	m_animator->Play("idle");
 
-	m_position = Vector3(GetRandomFloatInRange(20.f, 250.f), 4.f, GetRandomFloatInRange(20.f, 250.f));
+	m_position = Vector3(GetRandomFloatInRange(10.f, 20.f), 4.f, GetRandomFloatInRange(10.f, 20.f));
 }
 
 

@@ -10,7 +10,7 @@
 #include "Game/Entity/Projectile.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Animation/VoxelAnimator.hpp"
-#include "Game/Entity/PhysicsComponent.hpp"
+#include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
 
 #include "Engine/Core/Window.hpp"
@@ -26,7 +26,7 @@
 // Constructor
 //
 Player::Player(unsigned int playerID)
-	: Entity(EntityDefinition::GetDefinition("Robot"))
+	: MovingEntity(EntityDefinition::GetDefinition("Robot"))
 	, m_playerID(playerID)
 {
 }
@@ -45,8 +45,8 @@ Player::~Player()
 //
 void Player::ProcessInput()
 {
-	UpdateMovementParamsOnInput();
-	DebugRenderMovementParams();
+	//UpdateMovementParamsOnInput();
+	//DebugRenderMovementParams();
 
 	XboxController& controller = InputSystem::GetInstance()->GetController(m_playerID);
 	Vector2 leftStick = controller.GetCorrectedStickPosition(XBOX_STICK_LEFT);
@@ -56,7 +56,8 @@ void Player::ProcessInput()
 	// If we have input, apply a movement force
 	if (leftStick != Vector2::ZERO)
 	{
-		ApplyInputAcceleration(leftStick);
+		//ApplyInputAcceleration(leftStick);
+		Move(leftStick);
 		m_animator->Play("walk");
 	}
 	else
@@ -65,9 +66,10 @@ void Player::ProcessInput()
 	}
 
 	// If we have no input or are moving too fast, decelerate
-	if (leftStick == Vector2::ZERO || (currSpeed > m_maxMoveSpeed))
+	if (leftStick == Vector2::ZERO || (currSpeed > m_definition->m_maxMoveSpeed))
 	{
-		ApplyDeceleration();
+		Decelerate();
+		//ApplyDeceleration();
 	}
 
 	// Test adding a force
@@ -85,7 +87,7 @@ void Player::ProcessInput()
 	// Test Jumping
 	if (controller.WasButtonJustPressed(XBOX_BUTTON_A))
 	{
-		m_physicsComponent->AddImpulse(Vector3::DIRECTION_UP * m_jumpImpulse);
+		Jump();
 	}
 }
 
@@ -154,115 +156,115 @@ void Player::Shoot()
 }
 
 
-//-----------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------
 // Checks for input to update the player's base movement parameters
-//
-void Player::UpdateMovementParamsOnInput()
-{
-	InputSystem* input = InputSystem::GetInstance();
-	float deltaTime = Game::GetDeltaTime();
-
-	float maxAccelChange = 0.f;
-	if (input->IsKeyPressed('T'))
-	{
-		maxAccelChange -= 20.f * deltaTime;
-	}
-
-	if (input->IsKeyPressed('Y'))
-	{
-		maxAccelChange += 20.f * deltaTime;
-	}
-
-	m_maxMoveAcceleration += maxAccelChange;
-
-	float maxDecelChange = 0.f;
-	if (input->IsKeyPressed('O'))
-	{
-		maxDecelChange -= 20.f * deltaTime;
-	}
-
-	if (input->IsKeyPressed('P'))
-	{
-		maxDecelChange += 20.f * deltaTime;
-	}
-
-	m_maxMoveDeceleration += maxDecelChange;
-
-	float maxSpeedChange = 0.f;
-	if (input->IsKeyPressed('U'))
-	{
-		maxSpeedChange -= 20.f * deltaTime;
-	}
-
-	if (input->IsKeyPressed('I'))
-	{
-		maxSpeedChange += 20.f * deltaTime;
-	}
-
-	m_maxMoveSpeed += maxSpeedChange;
-}
-
-
-//-----------------------------------------------------------------------------------------------
+// 
+// void Player::UpdateMovementParamsOnInput()
+// {
+// 	InputSystem* input = InputSystem::GetInstance();
+// 	float deltaTime = Game::GetDeltaTime();
+// 
+// 	float maxAccelChange = 0.f;
+// 	if (input->IsKeyPressed('T'))
+// 	{
+// 		maxAccelChange -= 20.f * deltaTime;
+// 	}
+// 
+// 	if (input->IsKeyPressed('Y'))
+// 	{
+// 		maxAccelChange += 20.f * deltaTime;
+// 	}
+// 
+// 	m_maxMoveAcceleration += maxAccelChange;
+// 
+// 	float maxDecelChange = 0.f;
+// 	if (input->IsKeyPressed('O'))
+// 	{
+// 		maxDecelChange -= 20.f * deltaTime;
+// 	}
+// 
+// 	if (input->IsKeyPressed('P'))
+// 	{
+// 		maxDecelChange += 20.f * deltaTime;
+// 	}
+// 
+// 	m_maxMoveDeceleration += maxDecelChange;
+// 
+// 	float maxSpeedChange = 0.f;
+// 	if (input->IsKeyPressed('U'))
+// 	{
+// 		maxSpeedChange -= 20.f * deltaTime;
+// 	}
+// 
+// 	if (input->IsKeyPressed('I'))
+// 	{
+// 		maxSpeedChange += 20.f * deltaTime;
+// 	}
+// 
+// 	m_maxMoveSpeed += maxSpeedChange;
+// }
+// 
+// 
+// -----------------------------------------------------------------------------------------------
 // Renders the player's current movement params and hotkeys for changing
-//
-void Player::DebugRenderMovementParams()
-{
-	AABB2 bounds = Window::GetInstance()->GetWindowBounds();
-	std::string toPrint = Stringf("(T,Y) Max Acceleration: %.2f", m_maxMoveAcceleration);
-	toPrint += Stringf("\n(U,I) Max Deceleration: %.2f", m_maxMoveDeceleration);
-	toPrint += Stringf("\n(O,P) Max Speed: %.2f", m_maxMoveSpeed);
-
-	DebugRenderSystem::Draw2DText(toPrint, bounds, 0.f, Rgba::WHITE, 30.f);
-}
-
-
-//-----------------------------------------------------------------------------------------------
+// 
+// void Player::DebugRenderMovementParams()
+// {
+// 	AABB2 bounds = Window::GetInstance()->GetWindowBounds();
+// 	std::string toPrint = Stringf("(T,Y) Max Acceleration: %.2f", m_maxMoveAcceleration);
+// 	toPrint += Stringf("\n(U,I) Max Deceleration: %.2f", m_maxMoveDeceleration);
+// 	toPrint += Stringf("\n(O,P) Max Speed: %.2f", m_maxMoveSpeed);
+// 
+// 	DebugRenderSystem::Draw2DText(toPrint, bounds, 0.f, Rgba::WHITE, 30.f);
+// }
+// 
+// 
+// -----------------------------------------------------------------------------------------------
 // Applies the acceleration from the player's input to move them
-//
-void Player::ApplyInputAcceleration(const Vector2& inputDirection)
-{
-	float currLateralSpeed = m_physicsComponent->GetVelocity().xz().GetLength();
-	float deltaTime = Game::GetDeltaTime();
-
-	Vector2 maxLateralVelocity = (m_physicsComponent->GetVelocity().xz() + (m_maxMoveAcceleration * deltaTime) * inputDirection);
-	float maxLateralSpeed = maxLateralVelocity.NormalizeAndGetLength();
-
-	maxLateralSpeed = (currLateralSpeed > m_maxMoveSpeed ? ClampFloat(maxLateralSpeed, 0.f, currLateralSpeed) : ClampFloat(maxLateralSpeed, 0.f, m_maxMoveSpeed));
-	maxLateralVelocity *= maxLateralSpeed;
-
-	Vector3 inputVelocityResult = Vector3(maxLateralVelocity.x, m_physicsComponent->GetVelocity().y, maxLateralVelocity.y) - m_physicsComponent->GetVelocity();
-	Vector3 acceleration = inputVelocityResult / deltaTime;
-	Vector3 force = acceleration * m_mass;
-
-	m_physicsComponent->AddForce(force);
-
-	// Reorient the player
-	m_orientation = inputDirection.GetOrientationDegrees();
-}
-
-
-//-----------------------------------------------------------------------------------------------
+// 
+// void Player::ApplyInputAcceleration(const Vector2& inputDirection)
+// {
+// 	float currLateralSpeed = m_physicsComponent->GetVelocity().xz().GetLength();
+// 	float deltaTime = Game::GetDeltaTime();
+// 
+// 	Vector2 maxLateralVelocity = (m_physicsComponent->GetVelocity().xz() + (m_maxMoveAcceleration * deltaTime) * inputDirection);
+// 	float maxLateralSpeed = maxLateralVelocity.NormalizeAndGetLength();
+// 
+// 	maxLateralSpeed = (currLateralSpeed > m_maxMoveSpeed ? ClampFloat(maxLateralSpeed, 0.f, currLateralSpeed) : ClampFloat(maxLateralSpeed, 0.f, m_maxMoveSpeed));
+// 	maxLateralVelocity *= maxLateralSpeed;
+// 
+// 	Vector3 inputVelocityResult = Vector3(maxLateralVelocity.x, m_physicsComponent->GetVelocity().y, maxLateralVelocity.y) - m_physicsComponent->GetVelocity();
+// 	Vector3 acceleration = inputVelocityResult / deltaTime;
+// 	Vector3 force = acceleration * m_mass;
+// 
+// 	m_physicsComponent->AddForce(force);
+// 
+// 	// Reorient the player
+// 	m_orientation = inputDirection.GetOrientationDegrees();
+// }
+// 
+// 
+// -----------------------------------------------------------------------------------------------
 // Applies a deceleration to the player so they slow down
-//
-void Player::ApplyDeceleration()
-{
-	float deltaTime = Game::GetDeltaTime();
-	float currSpeed = m_physicsComponent->GetVelocity().xz().GetLength();
-	float amountCanBeDecreased = currSpeed;
-
-	if (amountCanBeDecreased > 0.f)
-	{
-		Vector2 direction = -1.0f * m_physicsComponent->GetVelocity().xz().GetNormalized();
-
-		float decelMag = amountCanBeDecreased / deltaTime;
-		decelMag = ClampFloat(decelMag, 0.f, m_maxMoveDeceleration);
-
-		float forceMag = decelMag * m_mass;
-
-		direction *= forceMag;
-		Vector3 finalForce = Vector3(direction.x, 0.f, direction.y);
-
-		m_physicsComponent->AddForce(finalForce);
-	}
-}
+// 
+// void Player::ApplyDeceleration()
+// {
+// 	float deltaTime = Game::GetDeltaTime();
+// 	float currSpeed = m_physicsComponent->GetVelocity().xz().GetLength();
+// 	float amountCanBeDecreased = currSpeed;
+// 
+// 	if (amountCanBeDecreased > 0.f)
+// 	{
+// 		Vector2 direction = -1.0f * m_physicsComponent->GetVelocity().xz().GetNormalized();
+// 
+// 		float decelMag = amountCanBeDecreased / deltaTime;
+// 		decelMag = ClampFloat(decelMag, 0.f, m_maxMoveDeceleration);
+// 
+// 		float forceMag = decelMag * m_mass;
+// 
+// 		direction *= forceMag;
+// 		Vector3 finalForce = Vector3(direction.x, 0.f, direction.y);
+// 
+// 		m_physicsComponent->AddForce(finalForce);
+// 	}
+// }

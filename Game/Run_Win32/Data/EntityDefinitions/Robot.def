@@ -1,6 +1,6 @@
 <EntityDefinitions>
 
-	<EntityDefinition name="Robot" dimensions="8,8,8">
+	<EntityDefinition name="Player" dimensions="8,8,8">
 
 		<!--Visuals-->
 		<Animation set="Robot" defaultSprite="Robot_idle_0"/>
@@ -11,6 +11,26 @@
 		</Physics>
 
 		<!--AI-->
+
+	</EntityDefinition>
+
+	<EntityDefinition name="Robot" dimensions="8,8,8">
+
+		<!--Movement Parameters-->
+		<Movement maxAcceleration="3000.0" maxSpeed="40.0" maxDeceleration="100.0" jumpImpulse="80.0"/>
+
+		<!--Visuals-->
+		<Animation set="Robot" defaultSprite="Robot_idle_0"/>
+
+		<!--Physics-->
+		<Physics physicsType="dynamic" hasGravity="true">
+			<CollisionDefinition shape="box" response="share_correction" xExtent="4.0" zExtent="4.0" height="8.0"/>
+		</Physics>
+
+		<!--AI-->
+		<AI>
+			<Wander interval="5.f"/>
+		</AI>
 
 	</EntityDefinition>
 
