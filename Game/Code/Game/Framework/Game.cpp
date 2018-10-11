@@ -316,8 +316,8 @@ void Command_SetNetSimLoss(Command& cmd)
 //
 void Command_SetSessionNetTick(Command& cmd)
 {
-	float hertz = 0.f;
-	bool provided = cmd.GetParam("h", hertz);
+	float hertz = 60.f;
+	bool provided = cmd.GetParam("f", hertz, &hertz);
 
 	float timeInterval;
 
@@ -330,7 +330,7 @@ void Command_SetSessionNetTick(Command& cmd)
 		timeInterval = 0;
 	}
 
-	ConsolePrintf(Rgba::GREEN, "Setting the NetSession tick rate to %f between each send", timeInterval);
+	ConsolePrintf(Rgba::GREEN, "Setting the NetSession tick rate to %f hertz", timeInterval);
 
 	Game::GetNetSession()->SetNetTickRate(hertz);
 }
@@ -367,6 +367,20 @@ void Command_SetConnectionNetTick(Command& cmd)
 	ConsolePrintf(Rgba::GREEN, "Setting the NetConnection at index %i tick rate to %f between each send", index, timeInterval);
 
 	Game::GetNetSession()->GetConnection((uint8_t)index)->SetNetTickRate(hertz);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Command for setting the heartbeat interval
+//
+void Command_SetHeartbeat(Command& cmd)
+{
+	float hertz = 2.f;
+	cmd.GetParam("a", hertz);
+
+	Game::GetNetSession()->SetConnectionHeartbeatInterval(hertz);
+
+	ConsolePrintf(Rgba::GREEN, "Set the NetSession's heartbeat to %f hz", hertz);
 }
 
 
@@ -445,6 +459,8 @@ void Game::Initialize()
 
 	Command::Register("net_set_session_send_rate", "Sets the NetSession's network tick rate", Command_SetSessionNetTick);
 	Command::Register("net_set_connection_send_rate", "Sets the connection's tick rate at the specified index", Command_SetConnectionNetTick);
+
+	Command::Register("net_set_heartbeat", "Sets the NetSession's heartbeat", Command_SetHeartbeat);
 }
 
 
@@ -492,6 +508,7 @@ void Game::Update()
 void Game::Render() const
 {
 	m_currentState->Render();
+	m_netSession->RenderDebugInfo();
 }
 
 
