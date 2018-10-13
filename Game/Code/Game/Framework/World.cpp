@@ -14,9 +14,10 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/Utility/HeatMap.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
 
-#define DYNAMIC_COLLISION_MAX_ITERATION_COUNT 50
+#define DYNAMIC_COLLISION_MAX_ITERATION_COUNT 500
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -31,7 +32,11 @@ World::World()
 //
 World::~World()
 {
-
+	if (m_navigationMap != nullptr)
+	{
+		delete m_navigationMap;
+		m_navigationMap = nullptr;
+	}
 }
 
 
@@ -40,7 +45,7 @@ World::~World()
 //
 void World::Inititalize(const char* filename)
 {
-	//m_terrain = AssetDB::CreateOrGetVoxelTexture(filename);
+	m_terrain = AssetDB::CreateOrGetVoxelTexture(filename);
 
 	m_dimensions = IntVector3(256, 64, 256);
 
@@ -48,6 +53,15 @@ void World::Inititalize(const char* filename)
 	m_voxelGrid->Initialize(m_dimensions);
 
 	m_groundElevation = 4;
+
+	m_navigationMap = new HeatMap(m_dimensions.xz(), -1.f);
+
+	m_navigationMap->Clear(999.f);
+
+	IntVector2 targetCoords = IntVector2(240, 240);
+
+	m_navigationMap->SetHeat(targetCoords, 0.f);
+	m_navigationMap->SolveMapUpToDistance(999.f); // Will need to provide a cost map here from world
 }
 
 
@@ -85,7 +99,7 @@ void World::Render()
 	m_voxelGrid->Clear();
 
 	// Color in the terrain
-	//DrawTerrainToGrid();
+	DrawTerrainToGrid();
 
 	// Color in static geometry
 	DrawStaticEntitiesToGrid();
@@ -158,6 +172,28 @@ void World::ParticalizeAllEntities()
 IntVector3 World::GetDimensions() const
 {
 	return m_dimensions;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the navigation map of the world
+//
+HeatMap* World::GetNavMap() const
+{
+	return m_navigationMap;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the next position along the path
+//
+Vector3 World::GetNextPosition(const Vector3& currPosition) const
+{
+	IntVector2 currCoords = IntVector2(currPosition.x, currPosition.z);
+
+	IntVector2 neighborCoords = m_navigationMap->GetMinNeighborCoords(currCoords);
+
+	return Vector3(neighborCoords.x + 0.5f, m_groundElevation, neighborCoords.y + 0.5f);
 }
 
 

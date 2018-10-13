@@ -25,8 +25,6 @@ public:
 private:
 	//-----Private Data-----
 	
-	Vector3 m_nextPosition;
-	Vector3 m_finalPosition;
 	Stopwatch m_timer;
 
 	float m_wanderInterval = 5000.f;

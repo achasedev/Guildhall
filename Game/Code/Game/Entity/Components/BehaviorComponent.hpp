@@ -25,7 +25,6 @@ public:
 protected:
 	//-----Protected Data-----
 	
-	HeatMap*		m_navigationMap = nullptr;
 	MovingEntity*	m_owningEntity = nullptr;
 
 };

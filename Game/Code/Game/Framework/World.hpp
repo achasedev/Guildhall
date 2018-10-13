@@ -16,6 +16,7 @@ class VoxelGrid;
 class Entity;
 class VoxelTexture;
 class Particle;
+class HeatMap;
 
 class World
 {
@@ -35,7 +36,11 @@ public:
 	void ParticalizeAllEntities();
 
 	// Accessors
-	IntVector3 GetDimensions() const;
+	IntVector3	GetDimensions() const;
+	HeatMap*	GetNavMap() const;
+
+	// Producers
+	Vector3 GetNextPosition(const Vector3& currPosition) const;
 
 
 private:
@@ -75,5 +80,7 @@ private:
 	VoxelTexture* m_terrain = nullptr;
 	std::vector<Entity*> m_entities;
 	std::vector<Particle*> m_particles;
+
+	HeatMap*		m_navigationMap = nullptr;
 
 };

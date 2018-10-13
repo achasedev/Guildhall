@@ -55,7 +55,7 @@ void GameState_Playing::Enter()
 	Game::GetWorld()->AddEntity(players[0]);
 
 	// Spawn some test entities
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < 20; ++i)
 	{
 		Game::GetWorld()->AddEntity(new AIEntity(EntityDefinition::GetDefinition("Robot")));
 	}
