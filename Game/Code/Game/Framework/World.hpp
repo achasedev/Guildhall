@@ -10,6 +10,8 @@
 #include "Engine/Math/IntVector3.hpp"
 
 #define MAX_PLAYERS (4)
+#define NAV_DIMENSION_FACTOR (4)
+
 
 class Player;
 class VoxelGrid;
@@ -55,6 +57,8 @@ private:
 	void CheckStaticEntityCollisions();
 	void CheckDynamicEntityCollisions();
 
+	void UpdateCostMap();
+
 	void DeleteMarkedEntities();
 
 	// Render
@@ -62,6 +66,10 @@ private:
 	void DrawStaticEntitiesToGrid();
 	void DrawDynamicEntitiesToGrid();
 	void DrawParticlesToGrid();
+
+	// Navigation
+	void UpdateNavigationMap();
+
 
 	// Collision
 	bool CheckAndCorrectEntityCollision(Entity* first, Entity* second);
@@ -82,5 +90,6 @@ private:
 	std::vector<Particle*> m_particles;
 
 	HeatMap*		m_navigationMap = nullptr;
+	HeatMap*		m_costsMap = nullptr;
 
 };

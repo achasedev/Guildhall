@@ -17,7 +17,7 @@
 #include "Engine/Core/Utility/HeatMap.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
 
-#define DYNAMIC_COLLISION_MAX_ITERATION_COUNT 500
+#define DYNAMIC_COLLISION_MAX_ITERATION_COUNT 100
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -54,14 +54,22 @@ void World::Inititalize(const char* filename)
 
 	m_groundElevation = 4;
 
-	m_navigationMap = new HeatMap(m_dimensions.xz(), -1.f);
+	IntVector2 mapDimensions = m_dimensions.xz();
+	mapDimensions.x /= NAV_DIMENSION_FACTOR;
+	mapDimensions.y /= NAV_DIMENSION_FACTOR;
 
-	m_navigationMap->Clear(999.f);
+	m_navigationMap = new HeatMap(mapDimensions, 999.f);
+	m_costsMap = new HeatMap(mapDimensions, 1.0f);
 
 	IntVector2 targetCoords = IntVector2(240, 240);
+	targetCoords.x /= NAV_DIMENSION_FACTOR;
+	targetCoords.y /= NAV_DIMENSION_FACTOR;
+
+	UpdateCostMap();
 
 	m_navigationMap->SetHeat(targetCoords, 0.f);
-	m_navigationMap->SolveMapUpToDistance(999.f); // Will need to provide a cost map here from world
+
+	m_navigationMap->SolveMapUpToDistance(9999.f, m_costsMap); // Will need to provide a cost map here from world
 }
 
 
@@ -85,6 +93,10 @@ void World::Update()
 
 	// Clean Up
 	DeleteMarkedEntities();
+
+	// Navigation
+	UpdateCostMap();
+	UpdateNavigationMap();
 }
 
 
@@ -134,7 +146,7 @@ void World::ParticalizeAllEntities()
 	{
 		Entity* entity = m_entities[entityIndex];
 
-		if (dynamic_cast<Player*>(entity) == nullptr)
+		if (dynamic_cast<Player*>(entity) == nullptr && entity->GetPhysicsType() == PHYSICS_TYPE_STATIC)
 		{
 			m_entities.erase(m_entities.begin() + entityIndex);
 
@@ -153,7 +165,7 @@ void World::ParticalizeAllEntities()
 					Vector3 velocity = (voxelPosition - entityPosition).GetNormalized();
 					velocity *= 50.f;
 
-					Particle* particle = new Particle(color, 10.0f, voxelPosition, velocity);
+					Particle* particle = new Particle(color, 1.0f, voxelPosition, velocity);
 					particle->OnSpawn();
 
 					m_particles.push_back(particle);
@@ -191,9 +203,15 @@ Vector3 World::GetNextPosition(const Vector3& currPosition) const
 {
 	IntVector2 currCoords = IntVector2(currPosition.x, currPosition.z);
 
+	currCoords.x /= NAV_DIMENSION_FACTOR;
+	currCoords.y /= NAV_DIMENSION_FACTOR;
+
 	IntVector2 neighborCoords = m_navigationMap->GetMinNeighborCoords(currCoords);
 
-	return Vector3(neighborCoords.x + 0.5f, m_groundElevation, neighborCoords.y + 0.5f);
+	neighborCoords.x *= NAV_DIMENSION_FACTOR;
+	neighborCoords.y *= NAV_DIMENSION_FACTOR;
+
+	return Vector3(neighborCoords.x + NAV_DIMENSION_FACTOR * .5f, m_groundElevation, neighborCoords.y + NAV_DIMENSION_FACTOR * .5f);
 }
 
 
@@ -202,6 +220,8 @@ Vector3 World::GetNextPosition(const Vector3& currPosition) const
 //
 void World::UpdateEntities()
 {
+	PROFILE_LOG_SCOPE_FUNCTION();
+
 	int numEntities = (int)m_entities.size();
 
 	for (int i = 0; i < numEntities; ++i)
@@ -219,6 +239,8 @@ void World::UpdateEntities()
 //
 void World::UpdateParticles()
 {
+	PROFILE_LOG_SCOPE_FUNCTION();
+
 	int numParticles = (int)m_particles.size();
 
 	for (int i = 0; i < numParticles; ++i)
@@ -383,6 +405,52 @@ void World::CheckDynamicEntityCollisions()
 
 
 //-----------------------------------------------------------------------------------------------
+// Updates the navigation cost map by flagging spaces occupied by static entities as non-traversable
+//
+void World::UpdateCostMap()
+{
+	m_costsMap->Clear(1.f);
+
+	int numEntities = (int) m_entities.size();
+
+	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
+	{
+		Entity* currEntity = m_entities[entityIndex];
+
+		if (!currEntity->IsMarkedForDelete() && currEntity->GetPhysicsType() == PHYSICS_TYPE_STATIC)
+		{
+			Vector3 position = currEntity->GetEntityPosition();
+			IntVector3 dimensions = currEntity->GetTextureForOrientation()->GetDimensions();
+			IntVector3 halfDimensions = dimensions / 2;
+
+			// Coordinate the object occupies (object bottom center)
+			IntVector3 coordinatePosition = IntVector3(position.x, position.y, position.z);
+
+			IntVector3 bottomLeft = coordinatePosition;
+			bottomLeft.x -= halfDimensions.x;
+			bottomLeft.z -= halfDimensions.z;
+
+			for (int xOffset = 0; xOffset < dimensions.x; ++xOffset)
+			{
+				for (int zOffset = 0; zOffset < dimensions.z; ++zOffset)
+				{
+					IntVector2 coord = bottomLeft.xz() + IntVector2(xOffset, zOffset);
+
+					coord.x /= NAV_DIMENSION_FACTOR;
+					coord.y /= NAV_DIMENSION_FACTOR;
+
+					if (m_costsMap->AreCoordsValid(coord))
+					{
+						m_costsMap->SetHeat(coord, 999.f);
+					}
+				}
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Deletes all entities marked for delete this frame, except for the players
 //
 void World::DeleteMarkedEntities()
@@ -501,6 +569,23 @@ void World::DrawParticlesToGrid()
 			m_voxelGrid->DrawEntity(m_particles[i]);
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Resolves the navigation map
+//
+void World::UpdateNavigationMap()
+{
+	m_navigationMap->Clear(999.f);
+	IntVector2 targetCoords = IntVector2(240, 240);
+
+	targetCoords.x /= NAV_DIMENSION_FACTOR;
+	targetCoords.y /= NAV_DIMENSION_FACTOR;
+
+	m_navigationMap->SetHeat(targetCoords, 0.f);
+
+	m_navigationMap->SolveMapUpToDistance(9999.f, m_costsMap);
 }
 
 

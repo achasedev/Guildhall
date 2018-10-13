@@ -1,8 +1,0 @@
-<VoxelSprites>
-
-	<VoxelSprite name="Robot_Idle_0" file="Data/VoxelSprites/Robot_Idle_0.qef"/>
-	<VoxelSprite name="Robot_Idle_1" file="Data/VoxelSprites/Robot_Idle_1.qef"/>
-	<VoxelSprite name="Robot_Walk_0" file="Data/VoxelSprites/Robot_Walk_0.qef"/>
-	<VoxelSprite name="Robot_Walk_1" file="Data/VoxelSprites/Robot_Walk_1.qef"/>
-
-</VoxelSprites>

@@ -2,6 +2,7 @@
 
 	<VoxelSprites>
 		<VoxelSprite file="Data/VoxelSprites/Robot.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Wall.sprite"/>
 	</VoxelSprites>
 
 

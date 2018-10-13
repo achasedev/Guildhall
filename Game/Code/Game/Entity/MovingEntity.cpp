@@ -56,7 +56,7 @@ void MovingEntity::Move(const Vector2& direction)
 	m_physicsComponent->AddForce(force);
 
 	// Reorient the entity
-	m_orientation = direction.GetOrientationDegrees();
+	//m_orientation = direction.GetOrientationDegrees();
 }
 
 void MovingEntity::Jump()

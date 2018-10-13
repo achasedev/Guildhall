@@ -31,7 +31,7 @@ Entity::Entity(const EntityDefinition* definition)
 	m_animator = new VoxelAnimator(m_definition->m_animationSet, m_definition->m_defaultSprite);
 	m_animator->Play("idle");
 
-	m_position = Vector3(GetRandomFloatInRange(10.f, 10.f), 4.f, GetRandomFloatInRange(10.f, 10.f));
+	m_position = Vector3(GetRandomFloatInRange(10.f, 50.f), 4.f, GetRandomFloatInRange(10.f, 200.f));
 }
 
 

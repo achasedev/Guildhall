@@ -52,12 +52,21 @@ void GameState_Playing::Enter()
 	players[0] = new Player(0);
 	players[0]->SetPosition(Vector3(60.f, 0.f, 60.f));
 
+	Game::GetWorld()->Inititalize("Data/VoxelModels/Ground.qef");
+
 	Game::GetWorld()->AddEntity(players[0]);
 
 	// Spawn some test entities
-	for (int i = 0; i < 20; ++i)
+	for (int i = 0; i < 50; ++i)
 	{
 		Game::GetWorld()->AddEntity(new AIEntity(EntityDefinition::GetDefinition("Robot")));
+	}
+
+	for (int i = 0; i < 200; ++i)
+	{
+		Entity* newEntity = new Entity(EntityDefinition::GetDefinition("Wall"));
+		newEntity->SetPosition(Vector3(GetRandomFloatInRange(0.f, 254.f), 4.f, GetRandomFloatInRange(0.f, 254.f)));
+		Game::GetWorld()->AddEntity(newEntity);
 	}
  }
 
