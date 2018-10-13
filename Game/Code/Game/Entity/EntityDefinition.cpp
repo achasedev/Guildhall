@@ -7,7 +7,7 @@
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
-#include "Game/Entity/Components/BehaviorComponent_Wander.hpp"
+#include "Game/Entity/Components/BehaviorComponent_PursuePath.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
@@ -145,10 +145,9 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 
 	std::string behaviorName = behaviorElement.Name();
 
-	if (behaviorName == "Wander")
+	if (behaviorName == "PursuePath")
 	{
-		float wanderInterval = ParseXmlAttribute(behaviorElement, "interval", 5000.f);
-		toReturn = new BehaviorComponent_Wander(wanderInterval);
+		toReturn = new BehaviorComponent_PursuePath();
 	}
 	else
 	{

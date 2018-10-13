@@ -9,24 +9,16 @@
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
 
-class BehaviorComponent_Wander : public BehaviorComponent
+class BehaviorComponent_PursuePath : public BehaviorComponent
 {
 public:
 	//-----Public Methods-----
 	
-	BehaviorComponent_Wander(float wanderInterval);
-	~BehaviorComponent_Wander();
+	BehaviorComponent_PursuePath();
+	~BehaviorComponent_PursuePath();
 	
 
 	virtual void Update() override;
 	virtual BehaviorComponent* Clone() const override;
-
-	
-private:
-	//-----Private Data-----
-	
-	Stopwatch m_timer;
-
-	float m_wanderInterval = 5000.f;
 
 };

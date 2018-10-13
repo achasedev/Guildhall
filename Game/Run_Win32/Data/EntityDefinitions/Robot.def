@@ -29,7 +29,7 @@
 
 		<!--AI-->
 		<AI>
-			<Wander interval="5.f"/>
+			<PursuePath/>
 		</AI>
 
 	</EntityDefinition>

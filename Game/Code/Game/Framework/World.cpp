@@ -32,10 +32,10 @@ World::World()
 //
 World::~World()
 {
-	if (m_navigationMap != nullptr)
+	if (m_playerHeatmap != nullptr)
 	{
-		delete m_navigationMap;
-		m_navigationMap = nullptr;
+		delete m_playerHeatmap;
+		m_playerHeatmap = nullptr;
 	}
 }
 
@@ -58,7 +58,7 @@ void World::Inititalize(const char* filename)
 	mapDimensions.x /= NAV_DIMENSION_FACTOR;
 	mapDimensions.y /= NAV_DIMENSION_FACTOR;
 
-	m_navigationMap = new HeatMap(mapDimensions, 999.f);
+	m_playerHeatmap = new HeatMap(mapDimensions, NAV_STATIC_COST);
 	m_costsMap = new HeatMap(mapDimensions, 1.0f);
 
 	IntVector2 targetCoords = IntVector2(240, 240);
@@ -66,10 +66,10 @@ void World::Inititalize(const char* filename)
 	targetCoords.y /= NAV_DIMENSION_FACTOR;
 
 	UpdateCostMap();
+	
+	m_playerHeatmap->SetHeat(targetCoords, 0.f);
 
-	m_navigationMap->SetHeat(targetCoords, 0.f);
-
-	m_navigationMap->SolveMapUpToDistance(9999.f, m_costsMap); // Will need to provide a cost map here from world
+	m_playerHeatmap->SolveMapUpToDistance(NAV_STATIC_COST + 1.f, m_costsMap); // Will need to provide a cost map here from world
 }
 
 
@@ -96,7 +96,7 @@ void World::Update()
 
 	// Navigation
 	UpdateCostMap();
-	UpdateNavigationMap();
+	UpdatePlayerHeatmap();
 }
 
 
@@ -192,26 +192,26 @@ IntVector3 World::GetDimensions() const
 //
 HeatMap* World::GetNavMap() const
 {
-	return m_navigationMap;
+	return m_playerHeatmap;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Returns the next position along the path
 //
-Vector3 World::GetNextPosition(const Vector3& currPosition) const
+Vector3 World::GetNextPositionTowardsPlayer(const Vector3& currPosition) const
 {
 	IntVector2 currCoords = IntVector2(currPosition.x, currPosition.z);
 
 	currCoords.x /= NAV_DIMENSION_FACTOR;
 	currCoords.y /= NAV_DIMENSION_FACTOR;
 
-	IntVector2 neighborCoords = m_navigationMap->GetMinNeighborCoords(currCoords);
+	IntVector2 neighborCoords = m_playerHeatmap->GetMinNeighborCoords(currCoords);
 
 	neighborCoords.x *= NAV_DIMENSION_FACTOR;
 	neighborCoords.y *= NAV_DIMENSION_FACTOR;
 
-	return Vector3(neighborCoords.x + NAV_DIMENSION_FACTOR * .5f, m_groundElevation, neighborCoords.y + NAV_DIMENSION_FACTOR * .5f);
+	return Vector3(neighborCoords.x + (NAV_DIMENSION_FACTOR * .5f), m_groundElevation, neighborCoords.y + (NAV_DIMENSION_FACTOR * .5f));
 }
 
 
@@ -434,16 +434,45 @@ void World::UpdateCostMap()
 			{
 				for (int zOffset = 0; zOffset < dimensions.z; ++zOffset)
 				{
-					IntVector2 coord = bottomLeft.xz() + IntVector2(xOffset, zOffset);
-
-					coord.x /= NAV_DIMENSION_FACTOR;
-					coord.y /= NAV_DIMENSION_FACTOR;
+					IntVector2 coord = (bottomLeft.xz() + IntVector2(xOffset, zOffset)) / NAV_DIMENSION_FACTOR;
 
 					if (m_costsMap->AreCoordsValid(coord))
 					{
-						m_costsMap->SetHeat(coord, 999.f);
+						m_costsMap->SetHeat(coord, NAV_STATIC_COST);
 					}
 				}
+			}
+		}
+	}
+
+	// Cellular automata pass
+	int neighborhoodSize = 1;
+	bool currCoordsDone = false;
+	for (unsigned int index = 0; index < m_costsMap->GetCellCount(); ++index)
+	{
+		// No need to update cells that are occupied by static entities
+		if (m_costsMap->GetHeat(index) >= NAV_STATIC_COST) { continue; }
+
+		currCoordsDone = false;
+		IntVector2 currCoords = m_costsMap->GetCoordsForIndex(index);
+
+		for (int y = -neighborhoodSize; y <= neighborhoodSize; ++y)
+		{
+			for (int x = -neighborhoodSize; x <= neighborhoodSize; ++x)
+			{
+				IntVector2 neighborCoords = currCoords + IntVector2(x, y);
+
+				if (m_costsMap->AreCoordsValid(neighborCoords) && m_costsMap->GetHeat(neighborCoords) >= NAV_STATIC_COST)
+				{
+					m_costsMap->AddHeat(currCoords, 5.f);
+					currCoordsDone = true;
+					break;
+				}
+			}
+
+			if (currCoordsDone)
+			{
+				break;
 			}
 		}
 	}
@@ -575,17 +604,23 @@ void World::DrawParticlesToGrid()
 //-----------------------------------------------------------------------------------------------
 // Resolves the navigation map
 //
-void World::UpdateNavigationMap()
+void World::UpdatePlayerHeatmap()
 {
-	m_navigationMap->Clear(999.f);
-	IntVector2 targetCoords = IntVector2(240, 240);
+	m_playerHeatmap->Clear(NAV_STATIC_COST);
 
-	targetCoords.x /= NAV_DIMENSION_FACTOR;
-	targetCoords.y /= NAV_DIMENSION_FACTOR;
+	Player** players = Game::GetPlayers();
 
-	m_navigationMap->SetHeat(targetCoords, 0.f);
+	// Seed in the player positions
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		if (players[i] != nullptr)
+		{
+			IntVector3 position = players[i]->GetEntityCoordinatePosition();
+			m_playerHeatmap->Seed(0.f, (position.xz() / NAV_DIMENSION_FACTOR));
+		}
+	}
 
-	m_navigationMap->SolveMapUpToDistance(9999.f, m_costsMap);
+	m_playerHeatmap->SolveMapUpToDistance(NAV_STATIC_COST + 1.f, m_costsMap);
 }
 
 

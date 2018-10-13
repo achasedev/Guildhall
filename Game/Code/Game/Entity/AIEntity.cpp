@@ -1,5 +1,5 @@
 #include "Game/Entity/AIEntity.hpp"
-#include "Game/Entity/Components/BehaviorComponent_Wander.hpp"
+#include "Game/Entity/Components/BehaviorComponent_PursuePath.hpp"
 
 AIEntity::AIEntity(const EntityDefinition* definition)
 	: MovingEntity(definition)

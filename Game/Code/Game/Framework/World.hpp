@@ -11,7 +11,7 @@
 
 #define MAX_PLAYERS (4)
 #define NAV_DIMENSION_FACTOR (4)
-
+#define NAV_STATIC_COST (9999.f)
 
 class Player;
 class VoxelGrid;
@@ -42,13 +42,16 @@ public:
 	HeatMap*	GetNavMap() const;
 
 	// Producers
-	Vector3 GetNextPosition(const Vector3& currPosition) const;
+	Vector3		GetNextPositionTowardsPlayer(const Vector3& currPosition) const;
 
 
 private:
 	//-----Private Methods-----
 
 	// -- Update Loop -- 
+	void UpdateCostMap();
+	void UpdatePlayerHeatmap();
+
 	void UpdateEntities();
 	void UpdateParticles();
 
@@ -57,8 +60,6 @@ private:
 	void CheckStaticEntityCollisions();
 	void CheckDynamicEntityCollisions();
 
-	void UpdateCostMap();
-
 	void DeleteMarkedEntities();
 
 	// Render
@@ -66,10 +67,6 @@ private:
 	void DrawStaticEntitiesToGrid();
 	void DrawDynamicEntitiesToGrid();
 	void DrawParticlesToGrid();
-
-	// Navigation
-	void UpdateNavigationMap();
-
 
 	// Collision
 	bool CheckAndCorrectEntityCollision(Entity* first, Entity* second);
@@ -89,7 +86,7 @@ private:
 	std::vector<Entity*> m_entities;
 	std::vector<Particle*> m_particles;
 
-	HeatMap*		m_navigationMap = nullptr;
+	HeatMap*		m_playerHeatmap = nullptr;
 	HeatMap*		m_costsMap = nullptr;
 
 };

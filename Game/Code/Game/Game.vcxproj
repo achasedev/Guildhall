@@ -292,7 +292,7 @@
     <ClCompile Include="Animation\VoxelAnimator.cpp" />
     <ClCompile Include="Entity\AIEntity.cpp" />
     <ClCompile Include="Entity\Components\BehaviorComponent.cpp" />
-    <ClCompile Include="Entity\Components\BehaviorComponent_Wander.cpp" />
+    <ClCompile Include="Entity\Components\BehaviorComponent_PursuePath.cpp" />
     <ClCompile Include="Entity\Entity.cpp" />
     <ClCompile Include="Entity\EntityDefinition.cpp" />
     <ClCompile Include="Entity\MovingEntity.cpp" />
@@ -321,7 +321,7 @@
     <ClInclude Include="Animation\VoxelAnimator.hpp" />
     <ClInclude Include="Entity\AIEntity.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent.hpp" />
-    <ClInclude Include="Entity\Components\BehaviorComponent_Wander.hpp" />
+    <ClInclude Include="Entity\Components\BehaviorComponent_PursuePath.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\EntityDefinition.hpp" />
     <ClInclude Include="Entity\MovingEntity.hpp" />

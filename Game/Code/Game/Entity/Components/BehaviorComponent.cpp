@@ -18,8 +18,5 @@ void BehaviorComponent::Initialize(MovingEntity* owningEntity)
 
 void BehaviorComponent::Update()
 {
-// 	// Update our distance map
-// 	World* world = Game::GetWorld();
-// 	m_navigationMap->SolveMapUpToDistance((float)world->GetDimensions().x); // Will need to provide a cost map here from world
 }
 
