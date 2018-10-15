@@ -21,6 +21,8 @@
 
 void Command_KillAll(Command& cmd)
 {
+	UNUSED(cmd);
+
 	Game::GetWorld()->ParticalizeAllEntities();
 }
 

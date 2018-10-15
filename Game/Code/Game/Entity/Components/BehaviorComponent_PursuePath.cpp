@@ -32,9 +32,7 @@ void BehaviorComponent_PursuePath::Update()
 	Vector3 nextPosition = Game::GetWorld()->GetNextPositionTowardsPlayer(m_owningEntity->GetEntityPosition());
 	Vector2 toNext = (nextPosition - m_owningEntity->GetEntityPosition()).xz();
 	
-	m_owningEntity->SetOrientation(0.f);
 	m_owningEntity->Move(toNext);
-
 }
 
 BehaviorComponent* BehaviorComponent_PursuePath::Clone() const

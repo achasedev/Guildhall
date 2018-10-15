@@ -26,7 +26,7 @@
 // Constructor
 //
 Player::Player(unsigned int playerID)
-	: MovingEntity(EntityDefinition::GetDefinition("Robot"))
+	: MovingEntity(EntityDefinition::GetDefinition("Player"))
 	, m_playerID(playerID)
 {
 }

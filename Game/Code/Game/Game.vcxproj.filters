@@ -94,6 +94,9 @@
     <ClCompile Include="Entity\Components\BehaviorComponent_PursuePath.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\Components\BehaviorComponent_PursueDirect.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -141,5 +144,6 @@
     <ClInclude Include="Entity\Components\PhysicsComponent.hpp" />
     <ClInclude Include="Entity\MovingEntity.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_PursuePath.hpp" />
+    <ClInclude Include="Entity\Components\BehaviorComponent_PursueDirect.hpp" />
   </ItemGroup>
 </Project>

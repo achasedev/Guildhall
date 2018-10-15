@@ -8,6 +8,7 @@
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursuePath.hpp"
+#include "Game/Entity/Components/BehaviorComponent_PursueDirect.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
@@ -148,6 +149,10 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 	if (behaviorName == "PursuePath")
 	{
 		toReturn = new BehaviorComponent_PursuePath();
+	}
+	else if (behaviorName == "PursueDirect")
+	{
+		toReturn = new BehaviorComponent_PursueDirect();
 	}
 	else
 	{

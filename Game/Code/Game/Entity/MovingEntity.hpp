@@ -35,14 +35,5 @@ public:
 protected:
 	//-----Protected Data-----
 	
-// 	float	m_maxMoveAcceleration = 300.f;
-// 	float	m_maxMoveSpeed = 40.f;
-// 	float	m_maxMoveDeceleration = 100.f;
-// 	float	m_jumpImpulse = 80.f;
-
-// 	float	m_maxMoveAcceleration = 3000.f;
-// 	float	m_maxMoveSpeed = 40.f;
-// 	float	m_maxMoveDeceleration = 100.f;
-// 	float	m_jumpImpulse = 80.f;
 
 };

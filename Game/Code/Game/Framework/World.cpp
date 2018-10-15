@@ -45,7 +45,7 @@ World::~World()
 //
 void World::Inititalize(const char* filename)
 {
-	m_terrain = AssetDB::CreateOrGetVoxelTexture(filename);
+	//m_terrain = AssetDB::CreateOrGetVoxelTexture(filename);
 
 	m_dimensions = IntVector3(256, 64, 256);
 
@@ -111,7 +111,7 @@ void World::Render()
 	m_voxelGrid->Clear();
 
 	// Color in the terrain
-	DrawTerrainToGrid();
+	//DrawTerrainToGrid();
 
 	// Color in static geometry
 	DrawStaticEntitiesToGrid();
@@ -211,7 +211,7 @@ Vector3 World::GetNextPositionTowardsPlayer(const Vector3& currPosition) const
 	neighborCoords.x *= NAV_DIMENSION_FACTOR;
 	neighborCoords.y *= NAV_DIMENSION_FACTOR;
 
-	return Vector3(neighborCoords.x + (NAV_DIMENSION_FACTOR * .5f), m_groundElevation, neighborCoords.y + (NAV_DIMENSION_FACTOR * .5f));
+	return Vector3((float) neighborCoords.x + (NAV_DIMENSION_FACTOR * .5f), (float) m_groundElevation, (float) neighborCoords.y + (NAV_DIMENSION_FACTOR * .5f));
 }
 
 
