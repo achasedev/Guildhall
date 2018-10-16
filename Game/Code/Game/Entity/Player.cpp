@@ -147,6 +147,7 @@ void Player::Shoot()
 	Projectile* proj = new Projectile(EntityDefinition::GetDefinition("Bullet"));
 	proj->SetPosition(m_position + Vector3(0.f, 4.f, 0.f));
 	proj->SetOrientation(m_orientation);
+	proj->SetTeam(m_entityTeam);
 
 	Vector2 direction = Vector2::MakeDirectionAtDegrees(m_orientation);	
 	proj->GetPhysicsComponent()->SetVelocity(Vector3(direction.x, 0.f, direction.y) * 100.f);

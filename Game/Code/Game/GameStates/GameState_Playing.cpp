@@ -49,20 +49,28 @@ void GameState_Playing::Enter()
 
 	Player** players = Game::GetPlayers();
 
-	players[0] = new Player(0);
-	players[0]->SetPosition(Vector3(60.f, 0.f, 60.f));
+	for (int i = 0; i < 1; ++i)
+	{
+		players[i] = new Player(i);
+		players[i]->SetPosition(Vector3(50.f * (float) i + 30.f, 0.f, 60.f));
+		players[i]->SetTeam(ENTITY_TEAM_PLAYER);
+
+		Game::GetWorld()->AddEntity(players[i]);
+	}
 
 	Game::GetWorld()->Inititalize("Data/VoxelModels/Ground.qef");
 
-	Game::GetWorld()->AddEntity(players[0]);
 
 	// Spawn some test entities
-	for (int i = 0; i < 0; ++i)
+	for (int i = 0; i < 2; ++i)
 	{
-		Game::GetWorld()->AddEntity(new AIEntity(EntityDefinition::GetDefinition("Robot")));
+		AIEntity* entity = new AIEntity(EntityDefinition::GetDefinition("Robot"));
+		entity->SetTeam(ENTITY_TEAM_ENEMY);
+
+		Game::GetWorld()->AddEntity(entity);
 	}
 
-	for (int i = 0; i < 0; ++i)
+	for (int i = 0; i < 20; ++i)
 	{
 		Entity* newEntity = new Entity(EntityDefinition::GetDefinition("Wall"));
 		newEntity->SetPosition(Vector3(GetRandomFloatInRange(0.f, 254.f), 4.f, GetRandomFloatInRange(0.f, 254.f)));

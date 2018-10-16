@@ -37,6 +37,7 @@ public:
 	void							AddPositionOffset(const Vector3& offset);
 	void							SetPosition(const Vector3& newPosition);
 	void							SetOrientation(float orientation);
+	void							SetTeam(eEntityTeam team);
 
 	void							TakeDamage(int damageAmount);
 

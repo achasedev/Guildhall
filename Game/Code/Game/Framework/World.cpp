@@ -17,7 +17,7 @@
 #include "Engine/Core/Utility/HeatMap.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
 
-#define DYNAMIC_COLLISION_MAX_ITERATION_COUNT 100
+#define DYNAMIC_COLLISION_MAX_ITERATION_COUNT 5
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -231,6 +231,28 @@ bool World::IsPositionInStatic(const Vector3& position) const
 {
 	IntVector2 coords = IntVector2(position.xz()) / NAV_DIMENSION_FACTOR;
 	return (m_playerHeatmap->GetHeat(coords) >= NAV_STATIC_COST);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether an entity at start position could see something at the end position
+//
+bool World::HasLineOfSight(const Vector3& startPosition, const Vector3& endPosition) const
+{
+	Vector3 direction = (endPosition - startPosition);
+	int stepCount = Ceiling(direction.NormalizeAndGetLength());
+
+	for (int stepNumber = 1; stepNumber <= stepCount; ++stepNumber)
+	{
+		Vector3 currPosition = startPosition + direction * (float) stepNumber;
+		
+		if (IsPositionInStatic(currPosition))
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 
@@ -999,12 +1021,12 @@ bool World::CheckAndCorrect_BoxDisc(Entity* first, Entity* second)
 			direction *= totalCorrection;
 
 			// Correct, since we definitely have collision
-			float firstScalar, secondScalar;
-			GetMassScalars(first, second, firstScalar, secondScalar);
+			float discScalar, boxScalar;
+			GetMassScalars(discEntity, boxEntity, discScalar, boxScalar);
 
 			Vector3 finalCorrection = Vector3(direction.x, 0.f, direction.y);
-			first->AddCollisionCorrection(firstScalar * finalCorrection);
-			second->AddCollisionCorrection(-secondScalar * finalCorrection);
+			boxEntity->AddCollisionCorrection(boxScalar * finalCorrection);
+			discEntity->AddCollisionCorrection(-discScalar * finalCorrection);
 			return true;
 		}
 	}
@@ -1017,12 +1039,12 @@ bool World::CheckAndCorrect_BoxDisc(Entity* first, Entity* second)
 	{
 		// Collision Occurred, correct
 		float overlap = discRadius - (discPosition.xz() - edgePoint).GetLength();
-		float firstScalar, secondScalar;
-		GetMassScalars(first, second, firstScalar, secondScalar);
+		float discScalar, boxScalar;
+		GetMassScalars(first, second, discScalar, boxScalar);
 
 		Vector3 totalCorrection = overlap * (discPosition - boxPosition).GetNormalized();
-		first->AddCollisionCorrection(firstScalar * totalCorrection);
-		second->AddCollisionCorrection(-secondScalar * totalCorrection);
+		discEntity->AddCollisionCorrection(discScalar * totalCorrection);
+		boxEntity->AddCollisionCorrection(-boxScalar * totalCorrection);
 		return true;
 	}
 

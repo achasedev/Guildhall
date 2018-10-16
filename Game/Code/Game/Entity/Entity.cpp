@@ -99,6 +99,15 @@ void Entity::SetOrientation(float orientation)
 
 
 //-----------------------------------------------------------------------------------------------
+// Sets the team of the entity to the one specified
+//
+void Entity::SetTeam(eEntityTeam team)
+{
+	m_entityTeam = team;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Subtracts the amount to the entity's health
 //
 void Entity::TakeDamage(int damageAmount)

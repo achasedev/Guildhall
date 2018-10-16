@@ -45,6 +45,7 @@ public:
 	// Producers
 	Vector3		GetNextPositionTowardsPlayer(const Vector3& currPosition) const;
 	bool		IsPositionInStatic(const Vector3& position) const;
+	bool		HasLineOfSight(const Vector3& startPosition, const Vector3& endPosition) const;
 
 
 private:

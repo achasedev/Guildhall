@@ -7,9 +7,10 @@
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
+#include "Game/Entity/Components/BehaviorComponent_Shoot.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursuePath.hpp"
-#include "Game/Entity/Components/BehaviorComponent_PursueDirect.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursueJump.hpp"
+#include "Game/Entity/Components/BehaviorComponent_PursueDirect.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
@@ -178,6 +179,16 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 	else if (behaviorName == "PursueJump")
 	{
 		toReturn = new BehaviorComponent_PursueJump();
+	}
+	else if (behaviorName == "Shoot")
+	{
+		std::string projectileDefName = ParseXmlAttribute(behaviorElement, "projectile", "Bullet");
+		const EntityDefinition* projDef = EntityDefinition::GetDefinition(projectileDefName);
+		ASSERT_OR_DIE(projDef != nullptr, Stringf("Error: Bad projectile name in behavior element, \"%s\"", projectileDefName.c_str()));
+		
+		float fireRate = ParseXmlAttribute(behaviorElement, "fireRate", 1.0f);
+
+		toReturn = new BehaviorComponent_Shoot(projDef, fireRate);
 	}
 	else
 	{
