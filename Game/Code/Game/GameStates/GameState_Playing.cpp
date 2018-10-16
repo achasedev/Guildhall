@@ -57,12 +57,12 @@ void GameState_Playing::Enter()
 	Game::GetWorld()->AddEntity(players[0]);
 
 	// Spawn some test entities
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < 0; ++i)
 	{
 		Game::GetWorld()->AddEntity(new AIEntity(EntityDefinition::GetDefinition("Robot")));
 	}
 
-	for (int i = 0; i < 100; ++i)
+	for (int i = 0; i < 0; ++i)
 	{
 		Entity* newEntity = new Entity(EntityDefinition::GetDefinition("Wall"));
 		newEntity->SetPosition(Vector3(GetRandomFloatInRange(0.f, 254.f), 4.f, GetRandomFloatInRange(0.f, 254.f)));

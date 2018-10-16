@@ -20,7 +20,7 @@
 	<EntityDefinition name="Robot" dimensions="8,8,8">
 
 		<!--Movement Parameters-->
-		<Movement maxAcceleration="3000.0" maxSpeed="20.0" maxDeceleration="100.0" jumpImpulse="120.0"/>
+		<Movement maxAcceleration="3000.0" maxSpeed="30.0" maxDeceleration="100.0" jumpImpulse="120.0"/>
 
 		<!--Visuals-->
 		<Animation set="Robot" defaultSprite="Robot_idle_0"/>
@@ -32,8 +32,20 @@
 
 		<!--AI-->
 		<AI>
-			<PursueJump/>
+			<PursueDirect/>
 		</AI>
+
+	</EntityDefinition>
+
+		<EntityDefinition name="Bullet" dimensions="1,1,1">
+
+		<!--Visuals-->
+		<Animation defaultSprite="Bullet"/>
+
+		<!--Physics-->
+		<Physics physicsType="dynamic" hasGravity="false">
+			<CollisionDefinition shape="box" response="ignore_correction" teamException="same" xExtent="0.5" zExtent="0.5" height="1.0"/>
+		</Physics>
 
 	</EntityDefinition>
 

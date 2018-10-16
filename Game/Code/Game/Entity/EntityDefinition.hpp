@@ -33,34 +33,36 @@ enum eCollisionShape
 // How the entity should react to collision corrections
 enum eCollisionResponse
 {
+	COLLISION_RESPONSE_IGNORE_CORRECTION,
 	COLLISION_RESPONSE_NO_CORRECTION,
 	COLLISION_RESPONSE_SHARE_CORRECTION,
 	COLLISION_RESPONSE_FULL_CORRECTION,
 	NUM_COLLISION_RESPONSES
 };
 
+enum eCollisionTeamException
+{
+	COLLISION_TEAM_EXCEPTION_NONE,
+	COLLISION_TEAM_EXCEPTION_SAME,
+	COLLISION_TEAM_EXCEPTION_DIFFERENT,
+};
+
 // Collision state for a single entity
 struct CollisionDefinition_t
 {
 	CollisionDefinition_t()
-		: m_shape(COLLISION_SHAPE_DISC), m_response(COLLISION_RESPONSE_FULL_CORRECTION), m_xExtent(4.f), m_zExtent(4.f), m_height(8.f) {}
+		: m_shape(COLLISION_SHAPE_DISC), m_response(COLLISION_RESPONSE_SHARE_CORRECTION), m_teamException(COLLISION_TEAM_EXCEPTION_NONE), m_xExtent(4.f), m_zExtent(4.f), m_height(8.f) {}
 
-	CollisionDefinition_t(eCollisionShape shape, eCollisionResponse response, float width, float length, float height)
-		: m_shape(shape), m_response(response), m_xExtent(width), m_zExtent(length), m_height(height) {}
+	CollisionDefinition_t(eCollisionShape shape, eCollisionResponse response, eCollisionTeamException teamBehavior, float width, float length, float height)
+		: m_shape(shape), m_response(response), m_teamException(teamBehavior), m_xExtent(width), m_zExtent(length), m_height(height) {}
 
-	eCollisionShape		m_shape;
-	eCollisionResponse	m_response;
-	float				m_xExtent;
-	float				m_zExtent;
-	float				m_height;
+	eCollisionShape				m_shape;
+	eCollisionResponse			m_response;
+	eCollisionTeamException		m_teamException;
+	float						m_xExtent;
+	float						m_zExtent;
+	float						m_height;
 };
-
-struct BehaviorData_t
-{
-	// Wander
-	float m_wanderInterval;
-};
-
 
 class VoxelSprite;
 class VoxelAnimationSet;

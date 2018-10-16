@@ -52,9 +52,26 @@ eCollisionResponse ConvertCollisionResponseFromString(const std::string& respons
 {
 	if		(responseName == "share_correction")	{ return COLLISION_RESPONSE_SHARE_CORRECTION; }
 	else if (responseName == "no_correction")		{ return COLLISION_RESPONSE_NO_CORRECTION; }
+	else if (responseName == "ignore_correction")	{ return COLLISION_RESPONSE_IGNORE_CORRECTION; }
+	else if (responseName == "full_correction")		{ return COLLISION_RESPONSE_FULL_CORRECTION; }
 	else
 	{
-		return COLLISION_RESPONSE_FULL_CORRECTION;
+		ERROR_AND_DIE(Stringf("Invalid collision response: %s", responseName.c_str()));
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the eCollisionTeamException corresponding to the text
+//
+eCollisionTeamException ConvertCollisionTeamExceptionFromString(const std::string& exceptionName)
+{
+	if (exceptionName == "none") { return COLLISION_TEAM_EXCEPTION_NONE; }
+	else if (exceptionName == "same") { return COLLISION_TEAM_EXCEPTION_SAME; }
+	else if (exceptionName == "different") { return COLLISION_TEAM_EXCEPTION_DIFFERENT; }
+	else
+	{
+		ERROR_AND_DIE(Stringf("Invalid collision team exception: %s", exceptionName.c_str()));
 	}
 }
 
@@ -112,11 +129,14 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 			std::string responseText = ParseXmlAttribute(*collisionElement, "response", "full_correction");
 			eCollisionResponse response = ConvertCollisionResponseFromString(responseText);
 
+			std::string teamExceptionText = ParseXmlAttribute(*collisionElement, "teamException", "none");
+			eCollisionTeamException teamException = ConvertCollisionTeamExceptionFromString(teamExceptionText);
+
 			float xExtent	= ParseXmlAttribute(*collisionElement, "xExtent",	4.0f);
 			float zExtent	= ParseXmlAttribute(*collisionElement, "zExtent",	4.0f);
 			float height	= ParseXmlAttribute(*collisionElement, "height",	8.0f);
 
-			m_collisionDef = CollisionDefinition_t(shape, response, xExtent, zExtent, height);
+			m_collisionDef = CollisionDefinition_t(shape, response, teamException, xExtent, zExtent, height);
 		}
 	}
 

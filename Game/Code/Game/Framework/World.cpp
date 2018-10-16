@@ -95,9 +95,9 @@ void World::Update()
 	DeleteMarkedEntities();
 
 	// Navigation
-	UpdateCostMap();
-	UpdatePlayerHeatmap();
-}
+	//UpdateCostMap();
+	//UpdatePlayerHeatmap();
+}	
 
 
 //-----------------------------------------------------------------------------------------------
@@ -644,10 +644,42 @@ void World::UpdatePlayerHeatmap()
 
 
 //-----------------------------------------------------------------------------------------------
+// Checks if the two entities pass the team exception check, and should continue checking for
+// collisions. Returns true if there should be collision checks, false otherwise
+//
+bool IsThereTeamException(Entity* first, Entity* second)
+{
+	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
+	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
+	eEntityTeam firstTeam = first->GetTeam();
+	eEntityTeam secondTeam = second->GetTeam();
+
+	bool teamsMatch = (firstTeam == secondTeam);
+
+	// Same checks
+	if (firstDef.m_teamException == COLLISION_TEAM_EXCEPTION_SAME && teamsMatch) { return false; }
+	if (secondDef.m_teamException == COLLISION_TEAM_EXCEPTION_SAME && teamsMatch) { return false; }
+
+	// Different checks
+	if (firstDef.m_teamException == COLLISION_TEAM_EXCEPTION_DIFFERENT && !teamsMatch) { return false; }
+	if (secondDef.m_teamException == COLLISION_TEAM_EXCEPTION_DIFFERENT && !teamsMatch) { return false; }
+
+	// Either both are always, or we don't meet the exception criteria
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Checks if the two given entities are colliding, and pushes them out if so
 //
 bool World::CheckAndCorrectEntityCollision(Entity* first, Entity* second)
 {
+	// First check for team exceptions
+	if (!IsThereTeamException(first, second))
+	{
+		return false;
+	}
+
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
 
@@ -690,6 +722,14 @@ void GetMassScalars(Entity* first, Entity* second, float& out_firstScalar, float
 {
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
+
+	// If either one is flagged as ignoring the correction then do nothing at all
+	if (firstDef.m_response == COLLISION_RESPONSE_IGNORE_CORRECTION || secondDef.m_response == COLLISION_RESPONSE_IGNORE_CORRECTION)
+	{
+		out_firstScalar = 0.f;
+		out_secondScalar = 0.f;
+		return;
+	}
 
 	float firstMass = first->GetMass();
 	float secondMass = second->GetMass();

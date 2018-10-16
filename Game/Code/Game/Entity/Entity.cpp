@@ -167,6 +167,15 @@ float Entity::GetOrientation() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the team index of the entity
+//
+eEntityTeam Entity::GetTeam() const
+{
+	return m_entityTeam;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the 3D texture to used for rendering, based on the current 2D orientation of the entity
 //
 const VoxelTexture* Entity::GetTextureForOrientation() const
