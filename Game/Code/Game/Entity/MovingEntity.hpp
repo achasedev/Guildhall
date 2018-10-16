@@ -31,9 +31,4 @@ public:
 	void Jump();
 	void Decelerate();
 
-	
-protected:
-	//-----Protected Data-----
-	
-
 };

@@ -38,11 +38,13 @@ public:
 	void ParticalizeAllEntities();
 
 	// Accessors
-	IntVector3	GetDimensions() const;
-	HeatMap*	GetNavMap() const;
+	IntVector3		GetDimensions() const;
+	HeatMap*		GetNavMap() const;
+	unsigned int	GetGroundElevation() const;
 
 	// Producers
 	Vector3		GetNextPositionTowardsPlayer(const Vector3& currPosition) const;
+	bool		IsPositionInStatic(const Vector3& position) const;
 
 
 private:

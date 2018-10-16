@@ -158,6 +158,15 @@ Vector3 Entity::GetEntityPosition() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the orientation of the entity
+//
+float Entity::GetOrientation() const
+{
+	return m_orientation;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the 3D texture to used for rendering, based on the current 2D orientation of the entity
 //
 const VoxelTexture* Entity::GetTextureForOrientation() const

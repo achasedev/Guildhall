@@ -15,20 +15,7 @@ public:
 	BehaviorComponent_PursueDirect() {}
 	~BehaviorComponent_PursueDirect() {}
 
-	virtual void Update() override;
-	virtual BehaviorComponent* Clone() const override;
-
-
-public:
-	//-----Public Data-----
-	
-
-private:
-	//-----Private Methods-----
-	
-	
-private:
-	//-----Private Data-----
-	
+	virtual void				Update() override;
+	virtual BehaviorComponent*	Clone() const override;
 	
 };

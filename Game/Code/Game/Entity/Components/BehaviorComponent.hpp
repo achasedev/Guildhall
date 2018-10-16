@@ -7,7 +7,6 @@
 #pragma once
 
 class MovingEntity;
-class HeatMap;
 
 class BehaviorComponent
 {
@@ -17,9 +16,9 @@ public:
 	BehaviorComponent();
 	virtual ~BehaviorComponent();
 
-	virtual void Initialize(MovingEntity* owningEntity);
-	virtual void Update();
-	virtual BehaviorComponent* Clone() const = 0;
+	virtual void				Initialize(MovingEntity* owningEntity);
+	virtual void				Update();
+	virtual BehaviorComponent*	Clone() const = 0;
 
 	
 protected:

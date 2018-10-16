@@ -197,6 +197,15 @@ HeatMap* World::GetNavMap() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the ground elevation of the world
+//
+unsigned int World::GetGroundElevation() const
+{
+	return m_groundElevation;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the next position along the path
 //
 Vector3 World::GetNextPositionTowardsPlayer(const Vector3& currPosition) const
@@ -212,6 +221,16 @@ Vector3 World::GetNextPositionTowardsPlayer(const Vector3& currPosition) const
 	neighborCoords.y *= NAV_DIMENSION_FACTOR;
 
 	return Vector3((float) neighborCoords.x + (NAV_DIMENSION_FACTOR * .5f), (float) m_groundElevation, (float) neighborCoords.y + (NAV_DIMENSION_FACTOR * .5f));
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if the position passed is within a static entity (on the 2D plane), false otherwise
+//
+bool World::IsPositionInStatic(const Vector3& position) const
+{
+	IntVector2 coords = IntVector2(position.xz()) / NAV_DIMENSION_FACTOR;
+	return (m_playerHeatmap->GetHeat(coords) >= NAV_STATIC_COST);
 }
 
 

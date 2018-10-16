@@ -1,26 +1,49 @@
 /************************************************************************/
-/* File: BehaviorComponent_PursueDirect.cpp
+/* File: BehaviorComponent_PursueJump.cpp
 /* Author: Andrew Chase
 /* Date: October 15th 2018
-/* Description: Implementation of the PursueDirect behavior
+/* Description: Implementation of the PursueJump behavior
 /************************************************************************/
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
-#include "Game/Entity/Components/BehaviorComponent_PursueDirect.hpp"
+#include "Game/Framework/World.hpp"
+#include "Game/Entity/Components/BehaviorComponent_PursueJump.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
+
+
+//-----------------------------------------------------------------------------------------------
+// Constructor
+//
+BehaviorComponent_PursueJump::BehaviorComponent_PursueJump()
+{
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Initializes the component by placing the jump sensor just outside the entity's collision boundary
+//
+void BehaviorComponent_PursueJump::Initialize(MovingEntity* owningEntity)
+{
+	BehaviorComponent::Initialize(owningEntity);
+	m_jumpSensorDistance = m_owningEntity->GetCollisionDefinition().m_xExtent + SENSOR_OFFSET_DISTANCE;
+}
 
 
 //-----------------------------------------------------------------------------------------------
 // Update
 //
-void BehaviorComponent_PursueDirect::Update()
+void BehaviorComponent_PursueJump::Update()
 {
+	Vector2 jumpSensorOffset = Vector2::MakeDirectionAtDegrees(m_owningEntity->GetOrientation()) * m_jumpSensorDistance;
+	Vector3 jumpSensorPosition = m_owningEntity->GetEntityPosition() + Vector3(jumpSensorOffset.x, 0.f, jumpSensorOffset.y);
+
+	// Move the entity
 	BehaviorComponent::Update();
 
 	Player** players = Game::GetPlayers();
 
 	Vector3 closestPlayerPosition;
-	float minDistance;
+	float minDistance = 9999.f;
 	bool playerFound = false;
 
 	Vector3 currentPosition = m_owningEntity->GetEntityPosition();
@@ -40,7 +63,7 @@ void BehaviorComponent_PursueDirect::Update()
 			}
 		}
 	}
-	
+
 	// Shouldn't happen, but to avoid unidentifiable behavior
 	if (!playerFound)
 	{
@@ -49,14 +72,22 @@ void BehaviorComponent_PursueDirect::Update()
 
 	Vector3 directionToMove = (closestPlayerPosition - currentPosition).GetNormalized();
 	m_owningEntity->Move(directionToMove.xz());
+
+	// Check for jumping
+	bool shouldJump = (Game::GetWorld()->IsPositionInStatic(jumpSensorPosition));
+
+	if (shouldJump)
+	{
+		m_owningEntity->Jump();
+	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// Makes a copy of this behavior and returns it
+// Clones this behavior and returns it
 //
-BehaviorComponent* BehaviorComponent_PursueDirect::Clone() const
+BehaviorComponent* BehaviorComponent_PursueJump::Clone() const
 {
 	ASSERT_OR_DIE(m_owningEntity == nullptr, "Error: Behavior clone had non-null base members on prototype");
-	return new BehaviorComponent_PursueDirect();
+	return new BehaviorComponent_PursueJump();
 }

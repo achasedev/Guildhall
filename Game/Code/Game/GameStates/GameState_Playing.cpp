@@ -56,15 +56,10 @@ void GameState_Playing::Enter()
 
 	Game::GetWorld()->AddEntity(players[0]);
 
-	const EntityDefinition* direct = EntityDefinition::GetDefinition("Robot_Direct");
-	const EntityDefinition* path = EntityDefinition::GetDefinition("Robot_Path");
-
 	// Spawn some test entities
 	for (int i = 0; i < 10; ++i)
 	{
-		const EntityDefinition* toUse = (CheckRandomChance(0.5f) ? direct : path);
-
-		Game::GetWorld()->AddEntity(new AIEntity(toUse));
+		Game::GetWorld()->AddEntity(new AIEntity(EntityDefinition::GetDefinition("Robot")));
 	}
 
 	for (int i = 0; i < 100; ++i)

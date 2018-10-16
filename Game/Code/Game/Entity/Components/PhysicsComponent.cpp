@@ -9,7 +9,7 @@
 #include "Engine/Math/MathUtils.hpp"
 
 // Default acceleration due to gravity
-#define GRAVITY_MAGNITUDE (100.f);
+#define GRAVITY_MAGNITUDE (200.f);
 
 
 //-----------------------------------------------------------------------------------------------

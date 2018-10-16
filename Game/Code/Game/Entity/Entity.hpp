@@ -42,6 +42,7 @@ public:
 
 	// Accessors
 	Vector3							GetEntityPosition() const;
+	float							GetOrientation() const;
 	virtual const VoxelTexture*		GetTextureForOrientation() const;
 	CollisionDefinition_t			GetCollisionDefinition() const;
 	ePhysicsType					GetPhysicsType() const;
