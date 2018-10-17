@@ -18,6 +18,8 @@ class Entity;
 
 class VoxelGrid
 {
+	friend class World;
+
 public:
 	//-----Public Methods-----
 

@@ -137,7 +137,9 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 			float zExtent	= ParseXmlAttribute(*collisionElement, "zExtent",	4.0f);
 			float height	= ParseXmlAttribute(*collisionElement, "height",	8.0f);
 
-			m_collisionDef = CollisionDefinition_t(shape, response, teamException, xExtent, zExtent, height);
+			int layer = ParseXmlAttribute(*collisionElement, "layer", 0);
+
+			m_collisionDef = CollisionDefinition_t(shape, response, teamException, xExtent, zExtent, height, (unsigned int) layer);
 		}
 	}
 

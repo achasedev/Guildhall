@@ -137,6 +137,7 @@ void Entity::OnDamageTaken(int damageAmount)
 //
 void Entity::OnDeath()
 {
+	m_isMarkedForDelete = true;
 }
 
 

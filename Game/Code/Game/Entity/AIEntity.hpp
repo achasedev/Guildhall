@@ -18,6 +18,8 @@ public:
 
 	virtual void Update() override;
 
+	virtual void OnDeath() override;
+
 
 private:
 	//-----Private Data-----

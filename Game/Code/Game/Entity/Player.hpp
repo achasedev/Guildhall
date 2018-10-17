@@ -36,19 +36,11 @@ public:
 
 private:
 	//-----Private Methods-----
-	
-	//void ApplyInputAcceleration(const Vector2& inputDirection);
-	//void ApplyDeceleration();
 
 
 private:
 	//-----Private Data-----
 
 	int		m_playerID = INVALID_PLAYER_ID;
-
-	//float	m_maxMoveAcceleration	= 300.f;
-	//float	m_maxMoveSpeed			= 40.f;
-	//float	m_maxMoveDeceleration	= 100.f;
-	//float	m_jumpImpulse			= 80.f;
 
 };

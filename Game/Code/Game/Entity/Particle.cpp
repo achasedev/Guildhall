@@ -52,6 +52,24 @@ void Particle::Update()
 
 
 //-----------------------------------------------------------------------------------------------
+// Sets the flag used to check whether the particle should continue simulating physics
+//
+void Particle::SetApplyPhysics(bool newState)
+{
+	m_applyPhysics = newState;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether this particle should have physics applied to it
+//
+bool Particle::ShouldApplyPhysics() const
+{
+	return m_applyPhysics;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Override for drawing - particles don't use an animator
 //
 const VoxelTexture* Particle::GetTextureForOrientation() const

@@ -19,6 +19,10 @@ public:
 	~Particle();
 	
 	virtual void					Update() override;
+
+	void SetApplyPhysics(bool newState);
+	bool ShouldApplyPhysics() const;
+
 	virtual const VoxelTexture*		GetTextureForOrientation() const override;
 	virtual void					OnSpawn() override;
 	
@@ -27,6 +31,8 @@ private:
 	//-----Private Data-----
 	
 	VoxelTexture* m_particleTexture = nullptr;
+
+	bool m_applyPhysics = true;
 
 	Stopwatch m_stopwatch;
 	float m_lifetime = DEFAULT_LIFETIME;

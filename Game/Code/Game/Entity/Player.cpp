@@ -45,9 +45,6 @@ Player::~Player()
 //
 void Player::ProcessInput()
 {
-	//UpdateMovementParamsOnInput();
-	//DebugRenderMovementParams();
-
 	XboxController& controller = InputSystem::GetInstance()->GetController(m_playerID);
 	Vector2 leftStick = controller.GetCorrectedStickPosition(XBOX_STICK_LEFT);
 
@@ -65,11 +62,18 @@ void Player::ProcessInput()
 		m_animator->Play("idle");
 	}
 
+	// Orientation
+	Vector2 rightStick = controller.GetCorrectedStickPosition(XBOX_STICK_RIGHT);
+
+	if (rightStick != Vector2::ZERO)
+	{
+		m_orientation = rightStick.GetOrientationDegrees();
+	}
+
 	// If we have no input or are moving too fast, decelerate
 	if (leftStick == Vector2::ZERO || (currSpeed > m_definition->m_maxMoveSpeed))
 	{
 		Decelerate();
-		//ApplyDeceleration();
 	}
 
 	// Test adding a force
@@ -79,7 +83,7 @@ void Player::ProcessInput()
 	}
 
 	// Test shooting
-	if (controller.IsButtonPressed(XBOX_BUTTON_B))
+	if (controller.GetTriggerValue(XBOX_TRIGGER_RIGHT) > 0.5f)
 	{
 		Shoot();
 	}

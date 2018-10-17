@@ -10,7 +10,7 @@
 
 		<!--Physics-->
 		<Physics physicsType="dynamic" hasGravity="true">
-			<CollisionDefinition shape="box" response="share_correction" xExtent="4.0" zExtent="4.0" height="8.0"/>
+			<CollisionDefinition shape="disc" response="share_correction" xExtent="4.0" zExtent="4.0" height="8.0"/>
 		</Physics>
 
 		<!--AI-->
@@ -24,7 +24,7 @@
 
 		<!--Physics-->
 		<Physics physicsType="dynamic" hasGravity="false">
-			<CollisionDefinition shape="box" response="ignore_correction" teamException="same" xExtent="0.5" zExtent="0.5" height="1.0"/>
+			<CollisionDefinition shape="box" response="ignore_correction" teamException="same" xExtent="0.5" zExtent="0.5" height="1.0" layer="1"/>
 		</Physics>
 
 	</EntityDefinition>
@@ -44,7 +44,8 @@
 
 		<!--AI-->
 		<AI>
-			<Shoot projectile="Bullet" fireRate="1.0"/>
+			<!--<Shoot projectile="Bullet" fireRate="1.0"/>-->
+			<PursueDirect/>
 		</AI>
 
 	</EntityDefinition>

@@ -70,7 +70,7 @@ void GameState_Playing::Enter()
 		Game::GetWorld()->AddEntity(entity);
 	}
 
-	for (int i = 0; i < 20; ++i)
+	for (int i = 0; i < 0; ++i)
 	{
 		Entity* newEntity = new Entity(EntityDefinition::GetDefinition("Wall"));
 		newEntity->SetPosition(Vector3(GetRandomFloatInRange(0.f, 254.f), 4.f, GetRandomFloatInRange(0.f, 254.f)));

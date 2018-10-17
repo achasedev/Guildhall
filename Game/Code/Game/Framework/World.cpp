@@ -17,7 +17,8 @@
 #include "Engine/Core/Utility/HeatMap.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
 
-#define DYNAMIC_COLLISION_MAX_ITERATION_COUNT 5
+#define DYNAMIC_COLLISION_MAX_ITERATION_COUNT (5)
+#define MAX_COLLISION_LAYERS (3)
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -45,7 +46,7 @@ World::~World()
 //
 void World::Inititalize(const char* filename)
 {
-	//m_terrain = AssetDB::CreateOrGetVoxelTexture(filename);
+	m_terrain = AssetDB::CreateOrGetVoxelTexture("Data/VoxelModels/Ground.qef");
 
 	m_dimensions = IntVector3(256, 64, 256);
 
@@ -95,8 +96,8 @@ void World::Update()
 	DeleteMarkedEntities();
 
 	// Navigation
-	//UpdateCostMap();
-	//UpdatePlayerHeatmap();
+	UpdateCostMap();
+	UpdatePlayerHeatmap();
 }	
 
 
@@ -111,7 +112,7 @@ void World::Render()
 	m_voxelGrid->Clear();
 
 	// Color in the terrain
-	//DrawTerrainToGrid();
+	DrawTerrainToGrid();
 
 	// Color in static geometry
 	DrawStaticEntitiesToGrid();
@@ -146,33 +147,11 @@ void World::ParticalizeAllEntities()
 	{
 		Entity* entity = m_entities[entityIndex];
 
-		if (dynamic_cast<Player*>(entity) == nullptr && entity->GetPhysicsType() == PHYSICS_TYPE_STATIC)
+		if (dynamic_cast<Player*>(entity) == nullptr)
 		{
-			m_entities.erase(m_entities.begin() + entityIndex);
-
-			const VoxelTexture* texture = entity->GetTextureForOrientation();
-			Vector3 entityPosition = entity->GetEntityPosition();
-
-			unsigned int voxelCount = texture->GetVoxelCount();
-			for (unsigned int i = 0; i < voxelCount; ++i)
-			{
-				Rgba color = texture->GetColorAtIndex(i);
-
-				if (color.a != 0)
-				{
-					Vector3 voxelPosition = entity->GetPositionForLocalIndex(i);
-
-					Vector3 velocity = (voxelPosition - entityPosition).GetNormalized();
-					velocity *= 50.f;
-
-					Particle* particle = new Particle(color, 1.0f, voxelPosition, velocity);
-					particle->OnSpawn();
-
-					m_particles.push_back(particle);
-				}
-			}
-
+			ParticalizeEntity(entity);
 			delete entity;
+			m_entities.erase(m_entities.begin() + entityIndex);
 		}
 	}
 }
@@ -257,6 +236,15 @@ bool World::HasLineOfSight(const Vector3& startPosition, const Vector3& endPosit
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns true if the entity is standing on (or in) the ground
+//
+bool World::IsEntityOnGround(const Entity* entity) const
+{
+	return (entity->GetEntityPosition().y <= (float)m_groundElevation);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Updates all entities in the game that aren't particles
 //
 void World::UpdateEntities()
@@ -316,9 +304,15 @@ void World::ApplyPhysicsStep()
 
 	for (int i = 0; i < numParticles; ++i)
 	{
-		if (!m_particles[i]->IsMarkedForDelete())
+		if (!m_particles[i]->IsMarkedForDelete() && m_particles[i]->ShouldApplyPhysics())
 		{
 			m_particles[i]->GetPhysicsComponent()->ApplyPhysicsStep();
+
+			// Optimization - set the particle to not keep simulating if it already hit the ground
+			if (IsEntityOnGround(m_particles[i]))
+			{
+				m_particles[i]->SetApplyPhysics(false);
+			}
 		}
 	}
 }
@@ -377,44 +371,50 @@ void World::CheckStaticEntityCollisions()
 		}
 	}
 }
-
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Checks for all dynamic vs. dynamic collisions in the scene, and corrects them
 //
 void World::CheckDynamicEntityCollisions()
 {
-	bool collisionDetected;
-
-	for (int iteration = 0; iteration < (int) DYNAMIC_COLLISION_MAX_ITERATION_COUNT; ++iteration)
+	for (unsigned int layer = 0; layer < MAX_COLLISION_LAYERS; ++layer)
 	{
-		collisionDetected = false;
-
-		for (int firstIndex = 0; firstIndex < (int)m_entities.size() - 1; ++firstIndex)
+		bool collisionDetected = true;
+		for (int iteration = 0; iteration < (int)DYNAMIC_COLLISION_MAX_ITERATION_COUNT; ++iteration)
 		{
-			Entity* firstEntity = m_entities[firstIndex];
+			collisionDetected = false;
 
-			// Don't bother with an entity marked for delete
-			if (firstEntity->GetPhysicsType() != PHYSICS_TYPE_DYNAMIC || firstEntity->IsMarkedForDelete()) { continue; }
-
-			for (int secondIndex = firstIndex + 1; secondIndex < (int)m_entities.size(); ++secondIndex)
+			for (int firstIndex = 0; firstIndex < (int)m_entities.size(); ++firstIndex)
 			{
-				Entity* secondEntity = m_entities[secondIndex];
+				Entity* firstEntity = m_entities[firstIndex];
 
-				if (secondEntity->GetPhysicsType() != PHYSICS_TYPE_DYNAMIC || secondEntity->IsMarkedForDelete()) { continue; }
+				// Don't bother with an entity not on this layer, or marked for delete
+				if (firstEntity->GetPhysicsType() != PHYSICS_TYPE_DYNAMIC || firstEntity->GetCollisionDefinition().m_collisionLayer != layer || firstEntity->IsMarkedForDelete()) { continue; }
 
-				// Do detection and fix here
-				collisionDetected = collisionDetected || CheckAndCorrectEntityCollision(firstEntity, secondEntity);
+				for (int secondIndex = 0; secondIndex < (int)m_entities.size(); ++secondIndex)
+				{
+					if (firstIndex == secondIndex) { continue; }
+
+					Entity* secondEntity = m_entities[secondIndex];
+
+					if (secondEntity->GetPhysicsType() != PHYSICS_TYPE_DYNAMIC || secondEntity->GetCollisionDefinition().m_collisionLayer > layer || secondEntity->IsMarkedForDelete()) { continue; }
+
+					// Do detection and fix here
+					collisionDetected = collisionDetected || CheckAndCorrectEntityCollision(firstEntity, secondEntity);
+				}
 			}
-		}
 
-		if (!collisionDetected)
-		{
-			break;
+			if (!collisionDetected)
+			{
+				break;
+			}
 		}
 	}
 
 	// Check against particles
+	bool collisionDetected = false;
+
 	for (int iteration = 0; iteration < (int)DYNAMIC_COLLISION_MAX_ITERATION_COUNT; ++iteration)
 	{
 		collisionDetected = false;
@@ -544,8 +544,8 @@ void World::DeleteMarkedEntities()
 
 		if (entity->IsMarkedForDelete())
 		{
-			m_entities[i]->OnDeath();
-			delete m_entities[i];
+			// OnDeath should have been called, and once finished should mark for delete
+			delete entity;
 
 			if (i < (int)m_entities.size() - 1)
 			{
@@ -705,17 +705,18 @@ bool World::CheckAndCorrectEntityCollision(Entity* first, Entity* second)
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
 
+	bool wasCollision = false;
 	if (firstDef.m_shape == COLLISION_SHAPE_DISC)
 	{
 		if (secondDef.m_shape == COLLISION_SHAPE_DISC)
 		{
 			// Disc vs. Disc
-			return CheckAndCorrect_DiscDisc(first, second);
+			wasCollision = CheckAndCorrect_DiscDisc(first, second);
 		}
 		else if (secondDef.m_shape == COLLISION_SHAPE_BOX)
 		{
 			// Disc vs. Box
-			return CheckAndCorrect_BoxDisc(first, second);
+			wasCollision = CheckAndCorrect_BoxDisc(first, second);
 		}
 	}
 	else if (firstDef.m_shape == COLLISION_SHAPE_BOX)
@@ -723,17 +724,23 @@ bool World::CheckAndCorrectEntityCollision(Entity* first, Entity* second)
 		if (secondDef.m_shape == COLLISION_SHAPE_DISC)
 		{
 			// Box vs. Disc
-			return CheckAndCorrect_BoxDisc(first, second);
+			wasCollision = CheckAndCorrect_BoxDisc(first, second);
 		}
 		else if (secondDef.m_shape == COLLISION_SHAPE_BOX)
 		{
 			// Box vs. Box
-			return CheckAndCorrect_BoxBox(first, second);
+			wasCollision = CheckAndCorrect_BoxBox(first, second);
 		}
 	}
 
-	// Else we don't check collision, so just return false
-	return false;
+	// Call collision callbacks
+	if (wasCollision)
+	{
+		first->OnCollision(second);
+		second->OnCollision(first);
+	}
+
+	return wasCollision;
 }
 
 
@@ -1043,6 +1050,7 @@ bool World::CheckAndCorrect_BoxDisc(Entity* first, Entity* second)
 		GetMassScalars(first, second, discScalar, boxScalar);
 
 		Vector3 totalCorrection = overlap * (discPosition - boxPosition).GetNormalized();
+
 		discEntity->AddCollisionCorrection(discScalar * totalCorrection);
 		boxEntity->AddCollisionCorrection(-boxScalar * totalCorrection);
 		return true;
@@ -1110,4 +1118,33 @@ bool World::CheckAndCorrect_BoxBox(Entity* first, Entity* second)
 	}
 
 	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Creates a bunch of particles to represent the exploded entity
+//
+void World::ParticalizeEntity(Entity* entity)
+{
+	const VoxelTexture* texture = entity->GetTextureForOrientation();
+	Vector3 entityPosition = entity->GetEntityPosition();
+
+	unsigned int voxelCount = texture->GetVoxelCount();
+	for (unsigned int i = 0; i < voxelCount; ++i)
+	{
+		Rgba color = texture->GetColorAtIndex(i);
+
+		if (color.a != 0)
+		{
+			Vector3 voxelPosition = entity->GetPositionForLocalIndex(i);
+
+			Vector3 velocity = (voxelPosition - entityPosition).GetNormalized();
+			velocity *= 50.f;
+
+			Particle* particle = new Particle(color, 2.0f, voxelPosition, velocity);
+			particle->OnSpawn();
+
+			m_particles.push_back(particle);
+		}
+	}
 }

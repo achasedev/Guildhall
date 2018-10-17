@@ -35,7 +35,7 @@ public:
 
 	// Mutators
 	void AddEntity(Entity* entity);
-	void ParticalizeAllEntities();
+
 
 	// Accessors
 	IntVector3		GetDimensions() const;
@@ -46,6 +46,11 @@ public:
 	Vector3		GetNextPositionTowardsPlayer(const Vector3& currPosition) const;
 	bool		IsPositionInStatic(const Vector3& position) const;
 	bool		HasLineOfSight(const Vector3& startPosition, const Vector3& endPosition) const;
+	bool		IsEntityOnGround(const Entity* entity) const;
+
+	// Utility
+	void ParticalizeEntity(Entity* entity);
+	void ParticalizeAllEntities();
 
 
 private:
@@ -76,6 +81,7 @@ private:
 	bool CheckAndCorrect_DiscDisc(Entity* first, Entity* second);
 	bool CheckAndCorrect_BoxDisc(Entity* first, Entity* second);
 	bool CheckAndCorrect_BoxBox(Entity* first, Entity* second);
+
 
 
 private:
