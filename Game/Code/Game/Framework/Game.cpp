@@ -90,22 +90,16 @@ void Command_AddConnection(Command& cmd)
 //
 void Command_SendPing(Command& cmd)
 {
+	std::string address;
+	bool addressSpecified = cmd.GetParam("a", address);
+
 	int connectionIndex = -1;
-	if (!cmd.GetParam("i", connectionIndex))
+	if (!addressSpecified && !cmd.GetParam("i", connectionIndex))
 	{
-		ConsoleErrorf("No connection index specified");
+		ConsoleErrorf("No connection index or address specified specified");
 		return;
 	}
 
-	NetConnection* connection = Game::GetNetSession()->GetConnection((uint8_t)connectionIndex);
-
-	if (connection == nullptr)
-	{
-		ConsoleErrorf("Could not find connection at index %i", connectionIndex);
-		return;
-	}
-
-	uint8_t definitionIndex;
 	const NetMessageDefinition_t* definition = Game::GetNetSession()->GetMessageDefinition("ping");
 
 	if (definition == nullptr)
@@ -117,7 +111,27 @@ void Command_SendPing(Command& cmd)
 	NetMessage* msg = new NetMessage(definition);
 	msg->WriteString("Hello, World!");
 
-	connection->Send(msg);
+	if (addressSpecified)
+	{
+		NetSender_t sender;
+		sender.netSession = Game::GetNetSession();
+		sender.address = NetAddress_t(address.c_str(), false);
+
+		Game::GetNetSession()->SendMessageDirect(msg, sender);
+		ConsolePrintf(Rgba::GREEN, "Sent a ping to address %s", address.c_str());
+	}
+	else
+	{
+		NetConnection* connection = Game::GetNetSession()->GetConnection((uint8_t)connectionIndex);
+
+		if (connection == nullptr)
+		{
+			ConsoleErrorf("Could not find connection at index %i", connectionIndex);
+			return;
+		}
+		connection->Send(msg);
+		ConsolePrintf("Sent ping to connection %i", connectionIndex);
+	}
 }
 
 
@@ -222,6 +236,83 @@ void Command_SetHeartbeat(Command& cmd)
 	ConsolePrintf(Rgba::GREEN, "Set the NetSession's heartbeat to %f hz", hertz);
 }
 
+#include "Engine/Core/Threading/Threading.hpp"
+#include "Engine/Core/Time/Stopwatch.hpp"
+
+struct ThreadWork_Data
+{
+	unsigned int connectionIndex;
+	unsigned int messageCount;
+	NetAddress_t address;
+	bool useAddress;
+};
+
+void ThreadWork_UnreliableTest(void* args)
+{
+	Stopwatch timer;
+
+	ThreadWork_Data* data = (ThreadWork_Data*)args;
+
+	unsigned int sent = 0;
+	timer.SetInterval(0.03f);
+
+	NetConnection* connection = Game::GetNetSession()->GetConnection((uint8_t)data->connectionIndex);
+	while (sent < data->messageCount)
+	{
+		if (timer.HasIntervalElapsed())
+		{
+			NetMessage* message = new NetMessage(Game::GetNetSession()->GetMessageDefinition("unreliable_test"));
+
+			message->Write(sent);
+			message->Write(data->messageCount);
+
+			sent++;
+			timer.SetInterval(0.03f);
+
+			if (data->useAddress)
+			{
+				NetSender_t sender;
+				sender.address = data->address;
+				sender.netSession = Game::GetNetSession();
+
+				Game::GetNetSession()->SendMessageDirect(message, sender);
+			}
+			else
+			{
+				connection->Send(message);
+			}
+		}
+	}
+
+	free(args);
+}
+
+void Command_UnreliableTest(Command& cmd)
+{
+	unsigned int connectionIndex = INVALID_CONNECTION_INDEX;
+	unsigned int messageCount = 10;
+
+	std::string address;
+	bool addressSpecifed = cmd.GetParam("a", address);
+	bool connectionSpecified = cmd.GetParam("i", connectionIndex);
+
+	if (!connectionSpecified && !addressSpecifed)
+	{
+		ConsoleErrorf("No connection index or address specified");
+		return;
+	}
+
+	cmd.GetParam("c", messageCount, &messageCount);
+
+
+	ThreadWork_Data* data = (ThreadWork_Data*)malloc(sizeof(ThreadWork_Data));
+	data->messageCount = messageCount;
+	data->connectionIndex = connectionIndex;
+	data->address = NetAddress_t(address.c_str(), false);
+	data->useAddress = addressSpecifed;
+
+	Thread::CreateAndDetach(ThreadWork_UnreliableTest, data);
+}
 
 //-----------------------------------------------------------------------------------------------
 //--------------------------------- Game Class --------------------------------------------------
@@ -293,6 +384,8 @@ void Game::Initialize()
 	Command::Register("net_set_connection_send_rate", "Sets the connection's tick rate at the specified index", Command_SetConnectionNetTick);
 
 	Command::Register("net_set_heartbeat", "Sets the NetSession's heartbeat", Command_SetHeartbeat);
+
+	Command::Register("unreliable_test", "Sends messages on a fixed interval for testing", Command_UnreliableTest);
 }
 
 
@@ -453,6 +546,13 @@ bool UnreliableTest(NetMessage* msg, const NetSender_t& sender)
 {
 	UNUSED(msg);
 	UNUSED(sender);
+
+	uint32_t messageNumber, messageCount;
+
+	msg->Read(messageNumber);
+	msg->Read(messageCount);
+
+	ConsolePrintf("UnreliableTest message received: (%i, %i)", messageNumber, messageCount);
 
 	return true;
 }
