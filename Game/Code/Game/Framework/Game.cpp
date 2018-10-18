@@ -22,135 +22,18 @@
 // Port the net session will run on
 #define GAME_PORT 10084
 
-// Message callbacks for NetSession Testing
-
-//-----------------------------------------------------------------------------------------------
-// Called when a ping is received, responds with a pong
-//
-bool OnPing(NetMessage* msg, const NetSender_t& sender)
+// Message IDs for game messages
+enum eNetGameMessage : uint8_t
 {
-	std::string str;
-	msg->ReadString(str);
+	NET_MSG_GAME_TEST = NET_MSG_CORE_COUNT,
 
-	ConsolePrintf("Received ping from %s: %s", sender.address.ToString().c_str(), str.c_str());
+	// Other messages
 
-	// Respond with a pong
-	uint8_t definitionIndex;
-	if (!Game::GetNetSession()->GetMessageDefinitionIndex("pong", definitionIndex))
-	{
-		ConsoleErrorf("OnPing couldn't find definition for message named \"pong\"");
-		return false;
-	}
+	NET_MSG_UNRELIABLE_TEST = 128
+};
 
-	NetMessage message(definitionIndex);
-	NetConnection* connection = Game::GetNetSession()->GetConnection(sender.connectionIndex);
-
-
-	if (connection != nullptr)
-	{
-		connection->Send(&message);
-		ConsolePrintf(Rgba::GREEN, "Sent a message to connection %i", sender.connectionIndex);
-	}
-	else
-	{
-		Game::GetNetSession()->SendMessageDirect(&message, sender);
-		ConsolePrintf(Rgba::GREEN, "Sent an indirect message to address %s", sender.address.ToString().c_str());
-	}
-
-	// all messages serve double duty
-	// do some work, and also validate
-	// if a message ends up being malformed, we return false
-	// to notify the session we may want to kick this connection; 
-	return true;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Called when a pong message is received, after a ping is sent
-//
-bool OnPong(NetMessage* msg, const NetSender_t& sender)
-{
-	UNUSED(msg);
-	ConsolePrintf("Received pong from %s", sender.address.ToString().c_str());
-
-	return true;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Called when an add message is received, responds with an add message response
-//
-bool OnAdd(NetMessage* msg, const NetSender_t& sender)
-{
-	float a;
-	float b;
-
-	// Adding requires two values, ensure we can read them
-	if (msg->Read(a) <= 0 || msg->Read(b) <= 0)
-	{
-		return false;
-	}
-
-	float sum = a + b;
-
-	std::string result = Stringf("Received add request for \"%f + %f = %f\"", a, b, sum);
-	ConsolePrintf(result.c_str());
-	ConsolePrintf("Sending result back to sender...");
-
-	// Respond with a pong
-	uint8_t definitionIndex;
-	if (!Game::GetNetSession()->GetMessageDefinitionIndex("add_response", definitionIndex))
-	{
-		ConsoleErrorf("OnPing couldn't find definition for message named \"add_response\"");
-		return false;
-	}
-
-	NetMessage* response = new NetMessage(definitionIndex);
-	response->Write(a);
-	response->Write(b);
-	response->Write(sum);
-
-	NetConnection* connection = Game::GetNetSession()->GetConnection(sender.connectionIndex);
-
-	if (connection != nullptr)
-	{
-		connection->Send(response);
-		ConsolePrintf(Rgba::GREEN, "Sent a message to connection %i", sender.connectionIndex);
-	}
-	else
-	{
-		Game::GetNetSession()->SendMessageDirect(response, sender);
-		ConsolePrintf(Rgba::GREEN, "Sent an indirect message to address %s", sender.address.ToString().c_str());
-	}
-
-	return true;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Called when an add response is called, prints the result to console
-//
-bool OnAddResponse(NetMessage* msg, const NetSender_t& sender)
-{
-	UNUSED(sender);
-
-	float a;
-	float b;
-	float sum;
-
-	// Adding requires two values, ensure we can read them
-	if (msg->Read(a) <= 0 || msg->Read(b) <= 0 || msg->Read(sum) <= 0)
-	{
-		ConsoleErrorf("Received bad add response message");
-		return false;
-	}
-
-
-	std::string result = Stringf("Received add response: \"%f + %f = %f\"", a, b, sum);
-	ConsolePrintf(result.c_str());
-
-	return true;
-}
+// Message callbacks
+bool UnreliableTest(NetMessage* msg, const NetSender_t& sender);
 
 
 // Commands for testing the NetSession
@@ -223,60 +106,16 @@ void Command_SendPing(Command& cmd)
 	}
 
 	uint8_t definitionIndex;
-	bool definitionExists = Game::GetNetSession()->GetMessageDefinitionIndex("ping", definitionIndex);
+	const NetMessageDefinition_t* definition = Game::GetNetSession()->GetMessageDefinition("ping");
 
-	if (!definitionExists)
+	if (definition == nullptr)
 	{
 		ConsoleErrorf("Definition does not exist on NetSession for message \"ping\"");
 		return;
 	}
 
-	NetMessage* msg = new NetMessage(definitionIndex);
+	NetMessage* msg = new NetMessage(definition);
 	msg->WriteString("Hello, World!");
-
-	connection->Send(msg);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Sends an add message to the given connection index
-//
-void Command_SendAdd(Command& cmd)
-{
-	int connectionIndex = -1;
-	if (!cmd.GetParam("i", connectionIndex))
-	{
-		ConsoleErrorf("No connection index specified");
-		return;
-	}
-
-	float a = 1.0f;
-	float b = 1.0f;
-
-	cmd.GetParam("a", a, &a);
-	cmd.GetParam("b", b, &b);
-
-	NetConnection* connection = Game::GetNetSession()->GetConnection((uint8_t)connectionIndex);
-
-	if (connection == nullptr)
-	{
-		ConsoleErrorf("Could not find connection at index %i", connectionIndex);
-		return;
-	}
-
-	uint8_t definitionIndex;
-	bool definitionExists = Game::GetNetSession()->GetMessageDefinitionIndex("add", definitionIndex);
-
-	if (!definitionExists)
-	{
-		ConsoleErrorf("Definition does not exist on NetSession for message \"ping\"");
-		return;
-	}
-
-	NetMessage* msg = new NetMessage(definitionIndex);
-
-	msg->Write(a);
-	msg->Write(b);
 
 	connection->Send(msg);
 }
@@ -415,13 +254,7 @@ Game::Game()
 
 	// Net Session
 	m_netSession = new NetSession();
-
-	// Link messages to callbacks
-	m_netSession->RegisterMessageDefinition("ping", OnPing);
-	m_netSession->RegisterMessageDefinition("pong", OnPong);
-	m_netSession->RegisterMessageDefinition("add", OnAdd);
-	m_netSession->RegisterMessageDefinition("add_response", OnAddResponse);
-
+	RegisterGameMessages();
 	m_netSession->Bind(GAME_PORT, 10);
 }
 
@@ -452,7 +285,6 @@ void Game::Initialize()
 
 	Command::Register("add_connection", "Adds a connection to the game session for the given index and address", Command_AddConnection);
 	Command::Register("send_ping", "Sends a ping on the current net session to the given connection index", Command_SendPing);
-	Command::Register("send_add", "Sends an add message the given index", Command_SendAdd);
 
 	Command::Register("net_sim_lag", "Sets the simulated latency of the game net session", Command_SetNetSimLag);
 	Command::Register("net_sim_loss", "Sets the simulated packet loss of the game net session", Command_SetNetSimLoss);
@@ -482,7 +314,6 @@ void Game::ProcessInput()
 	m_currentState->ProcessInput();
 }
 
-#include "Engine/Networking/Socket.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Update the movement variables of every entity in the world, as well as update the game state
@@ -598,4 +429,30 @@ void Game::CheckToUpdateGameState()
 		// Enter the new state
 		m_currentState->Enter();
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Registers all game net messages to the game NetSession
+//
+void Game::RegisterGameMessages()
+{
+	m_netSession->RegisterMessageDefinition(NET_MSG_UNRELIABLE_TEST, "unreliable_test", UnreliableTest);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Message callbacks
+//-----------------------------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------------------------
+// For testing unreliable messages that require a connection
+//
+bool UnreliableTest(NetMessage* msg, const NetSender_t& sender)
+{
+	UNUSED(msg);
+	UNUSED(sender);
+
+	return true;
 }

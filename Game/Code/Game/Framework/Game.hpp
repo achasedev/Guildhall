@@ -50,6 +50,8 @@ private:
 
 	void		CheckToUpdateGameState();
 
+	void		RegisterGameMessages();
+
 
 private:
 	//-----Private Data-----
