@@ -29,11 +29,13 @@ enum eNetGameMessage : uint8_t
 
 	// Other messages
 
-	NET_MSG_UNRELIABLE_TEST = 128
+	NET_MSG_UNRELIABLE_TEST = 128,
+	NET_MSG_RELIABLE_TEST = 129
 };
 
 // Message callbacks
-bool UnreliableTest(NetMessage* msg, const NetSender_t& sender);
+bool OnUnreliableTest(NetMessage* msg, const NetSender_t& sender);
+bool OnReliableTest(NetMessage* msg, const NetSender_t& sender);
 
 
 // Commands for testing the NetSession
@@ -256,7 +258,6 @@ void ThreadWork_UnreliableTest(void* args)
 	unsigned int sent = 0;
 	timer.SetInterval(0.03f);
 
-	NetConnection* connection = Game::GetNetSession()->GetConnection((uint8_t)data->connectionIndex);
 	while (sent < data->messageCount)
 	{
 		if (timer.HasIntervalElapsed())
@@ -279,7 +280,62 @@ void ThreadWork_UnreliableTest(void* args)
 			}
 			else
 			{
-				connection->Send(message);
+				NetConnection* connection = Game::GetNetSession()->GetConnection((uint8_t)data->connectionIndex);
+				if (connection == nullptr)
+				{
+					ConsoleErrorf("No connection at %i", data->connectionIndex);
+				}
+				else
+				{
+					connection->Send(message);
+				}
+			}
+		}
+	}
+
+	free(args);
+}
+
+void ThreadWork_ReliableTest(void* args)
+{
+	Stopwatch timer;
+
+	ThreadWork_Data* data = (ThreadWork_Data*)args;
+
+	unsigned int sent = 0;
+	timer.SetInterval(0.03f);
+
+	while (sent < data->messageCount)
+	{
+		if (timer.HasIntervalElapsed())
+		{
+			NetMessage* message = new NetMessage(Game::GetNetSession()->GetMessageDefinition("reliable_test"));
+
+			message->Write(sent);
+			message->Write(data->messageCount);
+
+			sent++;
+			timer.SetInterval(0.03f);
+
+			if (data->useAddress)
+			{
+				NetSender_t sender;
+				sender.address = data->address;
+				sender.netSession = Game::GetNetSession();
+
+				Game::GetNetSession()->SendMessageDirect(message, sender);
+			}
+			else
+			{
+				NetConnection* connection = Game::GetNetSession()->GetConnection((uint8_t)data->connectionIndex);
+				if (connection == nullptr)
+				{
+					ConsoleErrorf("No connection at %i", data->connectionIndex);
+				}
+				else
+				{
+					connection->Send(message);
+				}
 			}
 		}
 	}
@@ -312,6 +368,34 @@ void Command_UnreliableTest(Command& cmd)
 	data->useAddress = addressSpecifed;
 
 	Thread::CreateAndDetach(ThreadWork_UnreliableTest, data);
+}
+
+
+void Command_ReliableTest(Command& cmd)
+{
+	unsigned int connectionIndex = INVALID_CONNECTION_INDEX;
+	unsigned int messageCount = 10;
+
+	std::string address;
+	bool addressSpecifed = cmd.GetParam("a", address);
+	bool connectionSpecified = cmd.GetParam("i", connectionIndex);
+
+	if (!connectionSpecified && !addressSpecifed)
+	{
+		ConsoleErrorf("No connection index or address specified");
+		return;
+	}
+
+	cmd.GetParam("c", messageCount, &messageCount);
+
+
+	ThreadWork_Data* data = (ThreadWork_Data*)malloc(sizeof(ThreadWork_Data));
+	data->messageCount = messageCount;
+	data->connectionIndex = connectionIndex;
+	data->address = NetAddress_t(address.c_str(), false);
+	data->useAddress = addressSpecifed;
+
+	Thread::CreateAndDetach(ThreadWork_ReliableTest, data);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -385,7 +469,8 @@ void Game::Initialize()
 
 	Command::Register("net_set_heartbeat", "Sets the NetSession's heartbeat", Command_SetHeartbeat);
 
-	Command::Register("unreliable_test", "Sends messages on a fixed interval for testing", Command_UnreliableTest);
+	Command::Register("unreliable_test", "Sends unreliable messages on a fixed interval for testing", Command_UnreliableTest);
+	Command::Register("reliable_test", "Sends reliable messages on a fixed interval for testing", Command_ReliableTest);
 }
 
 
@@ -530,7 +615,8 @@ void Game::CheckToUpdateGameState()
 //
 void Game::RegisterGameMessages()
 {
-	m_netSession->RegisterMessageDefinition(NET_MSG_UNRELIABLE_TEST, "unreliable_test", UnreliableTest);
+	m_netSession->RegisterMessageDefinition(NET_MSG_UNRELIABLE_TEST, "unreliable_test", OnUnreliableTest);
+	m_netSession->RegisterMessageDefinition(NET_MSG_RELIABLE_TEST, "reliable_test", OnReliableTest);
 }
 
 
@@ -542,7 +628,7 @@ void Game::RegisterGameMessages()
 //-----------------------------------------------------------------------------------------------
 // For testing unreliable messages that require a connection
 //
-bool UnreliableTest(NetMessage* msg, const NetSender_t& sender)
+bool OnUnreliableTest(NetMessage* msg, const NetSender_t& sender)
 {
 	UNUSED(msg);
 	UNUSED(sender);
@@ -556,3 +642,18 @@ bool UnreliableTest(NetMessage* msg, const NetSender_t& sender)
 
 	return true;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+// For testing reliable traffic
+//
+bool OnReliableTest(NetMessage* msg, const NetSender_t& sender)
+{
+	UNUSED(msg);
+	UNUSED(sender);
+
+	ConsolePrintf("ReliableTest message received");
+
+	return true;
+}
+
