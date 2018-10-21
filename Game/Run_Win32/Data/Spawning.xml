@@ -1,0 +1,25 @@
+<Spawning>
+
+	<Core max_spawned_entities="55555"/>
+
+	<SpawnPoints>
+
+		<SpawnPoint position="128, 5, 128" radius="50.0"/>
+		<SpawnPoint position="10, 5, 10" radius="50.0"/>
+		<SpawnPoint position="10, 5, 240" radius="50.0"/>
+		<SpawnPoint position="240, 5, 10" radius="50.0"/>
+		<SpawnPoint position="240, 5, 240" radius="50.0"/>
+
+	</SpawnPoints>
+
+	<Waves>
+
+		<Wave>
+
+			<Spawn entity="Robot" min_spawned="50" max_spawned="100" total_to_spawn="1000"/>
+
+		</Wave> 
+
+	</Waves>
+
+</Spawning>

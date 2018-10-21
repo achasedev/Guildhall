@@ -128,6 +128,26 @@ void VoxelGrid::DrawEntity(const Entity* entity)
 
 
 //-----------------------------------------------------------------------------------------------
+// Draws the ground to the grid, up to the given elevation
+//
+void VoxelGrid::DrawGround(unsigned int groundElevation)
+{
+	for (int y = 0; y < groundElevation; ++y)
+	{
+		for (int z = 0; z < m_dimensions.z; ++z)
+		{
+			for (int x = 0; x < m_dimensions.x; ++x)
+			{
+				int index = GetIndexForCoords(IntVector3(x, y, z));
+
+				m_gridColors[index] = Rgba::DARK_GREEN;
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Draws the 3D texture to the grid
 //
 void VoxelGrid::Draw3DTexture(const VoxelTexture* texture, const IntVector3& bottomLeft)

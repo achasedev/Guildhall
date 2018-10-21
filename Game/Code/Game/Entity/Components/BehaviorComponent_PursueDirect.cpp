@@ -20,7 +20,7 @@ void BehaviorComponent_PursueDirect::Update()
 	Player** players = Game::GetPlayers();
 
 	Vector3 closestPlayerPosition;
-	float minDistance;
+	float minDistance = 10000.f;
 	bool playerFound = false;
 
 	Vector3 currentPosition = m_owningEntity->GetEntityPosition();

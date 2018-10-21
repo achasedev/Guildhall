@@ -50,7 +50,6 @@ Game::Game()
 
 	// Game world
 	m_world = new World();
-	//m_world->Inititalize("Data/VoxelModels/Ground.qef");
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{

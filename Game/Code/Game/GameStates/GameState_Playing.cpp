@@ -10,6 +10,7 @@
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Framework/GameCamera.hpp"
+#include "Game/Framework/SpawnManager.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
@@ -58,24 +59,8 @@ void GameState_Playing::Enter()
 		Game::GetWorld()->AddEntity(players[i]);
 	}
 
-	Game::GetWorld()->Inititalize("Data/VoxelModels/Ground.qef");
-
-
-	// Spawn some test entities
-	for (int i = 0; i < 2; ++i)
-	{
-		AIEntity* entity = new AIEntity(EntityDefinition::GetDefinition("Robot"));
-		entity->SetTeam(ENTITY_TEAM_ENEMY);
-
-		Game::GetWorld()->AddEntity(entity);
-	}
-
-	for (int i = 0; i < 0; ++i)
-	{
-		Entity* newEntity = new Entity(EntityDefinition::GetDefinition("Wall"));
-		newEntity->SetPosition(Vector3(GetRandomFloatInRange(0.f, 254.f), 4.f, GetRandomFloatInRange(0.f, 254.f)));
-		Game::GetWorld()->AddEntity(newEntity);
-	}
+	Game::GetWorld()->Inititalize();
+	m_spawnManager = new SpawnManager("Data/Spawning.xml");
  }
 
 
@@ -162,6 +147,8 @@ void GameState_Playing::ProcessInput()
 //
 void GameState_Playing::Update()
 {
+	m_spawnManager->Update();
+
 	Game::GetWorld()->Update();
 
 	// Camera

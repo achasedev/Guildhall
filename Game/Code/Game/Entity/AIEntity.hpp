@@ -7,6 +7,7 @@
 #pragma once
 #include "Game/Entity/MovingEntity.hpp"
 
+class SpawnPoint;
 class BehaviorComponent;
 
 class AIEntity : public MovingEntity
@@ -17,14 +18,15 @@ public:
 	AIEntity(const EntityDefinition* definition);
 
 	virtual void Update() override;
-
 	virtual void OnDeath() override;
+
+	void SetSpawnPoint(SpawnPoint* spawnPoint);
 
 
 private:
 	//-----Private Data-----
 	
-	// AI controller stuff here
-	BehaviorComponent* m_behaviorComponent = nullptr;
+	SpawnPoint*			m_spawnPoint = nullptr;
+	BehaviorComponent*	m_behaviorComponent = nullptr;
 
 };

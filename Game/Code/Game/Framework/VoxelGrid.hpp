@@ -30,6 +30,7 @@ public:
 	// Mutators
 	void				Clear();
 	void				DrawEntity(const Entity* entity);
+	void				DrawGround(unsigned int groundElevation);
 	void				Draw3DTexture(const VoxelTexture* texture, const IntVector3& position);
 
 	// Accessors

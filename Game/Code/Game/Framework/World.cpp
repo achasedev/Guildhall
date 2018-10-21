@@ -44,16 +44,14 @@ World::~World()
 //-----------------------------------------------------------------------------------------------
 // Initializes the grid and any other setup
 //
-void World::Inititalize(const char* filename)
+void World::Inititalize()
 {
-	m_terrain = AssetDB::CreateOrGetVoxelTexture("Data/VoxelModels/Ground.qef");
-
 	m_dimensions = IntVector3(256, 64, 256);
 
 	m_voxelGrid = new VoxelGrid();
 	m_voxelGrid->Initialize(m_dimensions);
 
-	m_groundElevation = 4;
+	m_groundElevation = 5;
 
 	IntVector2 mapDimensions = m_dimensions.xz();
 	mapDimensions.x /= NAV_DIMENSION_FACTOR;
@@ -69,8 +67,7 @@ void World::Inititalize(const char* filename)
 	UpdateCostMap();
 	
 	m_playerHeatmap->SetHeat(targetCoords, 0.f);
-
-	m_playerHeatmap->SolveMapUpToDistance(NAV_STATIC_COST + 1.f, m_costsMap); // Will need to provide a cost map here from world
+	m_playerHeatmap->SolveMapUpToDistance(NAV_STATIC_COST + 1.f, m_costsMap);
 }
 
 
@@ -96,8 +93,8 @@ void World::Update()
 	DeleteMarkedEntities();
 
 	// Navigation
-	UpdateCostMap();
-	UpdatePlayerHeatmap();
+	//UpdateCostMap();
+	//UpdatePlayerHeatmap();
 }	
 
 
@@ -111,8 +108,8 @@ void World::Render()
 	// Clear grid
 	m_voxelGrid->Clear();
 
-	// Color in the terrain
-	DrawTerrainToGrid();
+	// Color in the ground
+	m_voxelGrid->DrawGround(m_groundElevation);
 
 	// Color in static geometry
 	DrawStaticEntitiesToGrid();
@@ -574,16 +571,6 @@ void World::DeleteMarkedEntities()
 			m_particles.pop_back();
 		}
 	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Draws the terrain to the grid
-//
-void World::DrawTerrainToGrid()
-{
-	PROFILE_LOG_SCOPE_FUNCTION();
-	m_voxelGrid->Draw3DTexture(m_terrain, IntVector3(0, 0, 0));
 }
 
 
@@ -1134,14 +1121,14 @@ void World::ParticalizeEntity(Entity* entity)
 	{
 		Rgba color = texture->GetColorAtIndex(i);
 
-		if (color.a != 0)
+		if (color.a != 0 && CheckRandomChance(0.25f))
 		{
 			Vector3 voxelPosition = entity->GetPositionForLocalIndex(i);
 
 			Vector3 velocity = (voxelPosition - entityPosition).GetNormalized();
 			velocity *= 50.f;
 
-			Particle* particle = new Particle(color, 2.0f, voxelPosition, velocity);
+			Particle* particle = new Particle(color, 1.0f, voxelPosition, velocity);
 			particle->OnSpawn();
 
 			m_particles.push_back(particle);

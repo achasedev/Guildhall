@@ -28,7 +28,7 @@ public:
 	World();
 	~World();
 
-	void Inititalize(const char* filename);
+	void Inititalize();
 
 	void Update();
 	void Render();
@@ -71,7 +71,6 @@ private:
 	void DeleteMarkedEntities();
 
 	// Render
-	void DrawTerrainToGrid();
 	void DrawStaticEntitiesToGrid();
 	void DrawDynamicEntitiesToGrid();
 	void DrawParticlesToGrid();
@@ -91,11 +90,9 @@ private:
 	VoxelGrid*	m_voxelGrid;		
 	unsigned int m_groundElevation = 0;
 
-	VoxelTexture* m_terrain = nullptr;
 	std::vector<Entity*> m_entities;
 	std::vector<Particle*> m_particles;
 
 	HeatMap*		m_playerHeatmap = nullptr;
 	HeatMap*		m_costsMap = nullptr;
-
 };

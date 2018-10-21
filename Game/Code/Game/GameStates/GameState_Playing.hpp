@@ -11,6 +11,7 @@
 #include <vector>
 
 class World;
+class SpawnManager;
 
 class GameState_Playing : public GameState
 {
@@ -38,6 +39,8 @@ private:
 	//-----Private Data-----
 
 	bool m_cameraEjected = false;
+
+	SpawnManager*	m_spawnManager = nullptr;
 
 	static constexpr float CAMERA_ROTATION_SPEED = 45.f;
 	static constexpr float CAMERA_TRANSLATION_SPEED = 10.f;
