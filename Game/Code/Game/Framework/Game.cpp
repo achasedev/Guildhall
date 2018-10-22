@@ -616,7 +616,7 @@ void Game::CheckToUpdateGameState()
 void Game::RegisterGameMessages()
 {
 	m_netSession->RegisterMessageDefinition(NET_MSG_UNRELIABLE_TEST, "unreliable_test", OnUnreliableTest);
-	m_netSession->RegisterMessageDefinition(NET_MSG_RELIABLE_TEST, "reliable_test", OnReliableTest);
+	m_netSession->RegisterMessageDefinition(NET_MSG_RELIABLE_TEST, "reliable_test", OnReliableTest, NET_MSG_OPTION_RELIABLE);
 }
 
 
@@ -643,7 +643,7 @@ bool OnUnreliableTest(NetMessage* msg, const NetSender_t& sender)
 	return true;
 }
 
-
+#include "Engine/Core/LogSystem.hpp"
 //-----------------------------------------------------------------------------------------------
 // For testing reliable traffic
 //
@@ -652,7 +652,8 @@ bool OnReliableTest(NetMessage* msg, const NetSender_t& sender)
 	UNUSED(msg);
 	UNUSED(sender);
 
-	ConsolePrintf("ReliableTest message received");
+	ConsolePrintf("ReliableTest message received, ID: %i", msg->GetReliableID());
+	LogTaggedPrintf("NET", "ReliableTest message received, ID: %i", msg->GetReliableID());
 
 	return true;
 }
