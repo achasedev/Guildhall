@@ -307,7 +307,9 @@
     <ClCompile Include="Framework\GameCamera.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
     <ClCompile Include="Framework\PlayStates\PlayState.cpp" />
+    <ClCompile Include="Framework\PlayStates\PlayState_Defeat.cpp" />
     <ClCompile Include="Framework\PlayStates\PlayState_Rest.cpp" />
+    <ClCompile Include="Framework\PlayStates\PlayState_Victory.cpp" />
     <ClCompile Include="Framework\PlayStates\PlayState_Wave.cpp" />
     <ClCompile Include="Framework\WaveManager.cpp" />
     <ClCompile Include="Framework\SpawnPoint.cpp" />
@@ -347,7 +349,9 @@
     <ClInclude Include="Framework\GameCamera.hpp" />
     <ClInclude Include="Framework\GameCommon.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState.hpp" />
+    <ClInclude Include="Framework\PlayStates\PlayState_Defeat.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Rest.hpp" />
+    <ClInclude Include="Framework\PlayStates\PlayState_Victory.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Wave.hpp" />
     <ClInclude Include="Framework\WaveManager.hpp" />
     <ClInclude Include="Framework\SpawnPoint.hpp" />

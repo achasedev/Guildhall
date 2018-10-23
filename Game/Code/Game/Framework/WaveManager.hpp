@@ -22,11 +22,13 @@ public:
 	~WaveManager();
 
 	void Initialize(const char* filename);
+	void CleanUp();
 
 	void Update();
 
 	void StartNextWave();
 	bool IsCurrentWaveFinished() const;
+	bool IsCurrentWaveFinal() const;
 
 	int GetCurrentWaveNumber() const;
 

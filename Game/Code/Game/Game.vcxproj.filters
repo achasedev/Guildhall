@@ -121,6 +121,12 @@
     <ClCompile Include="Framework\PlayStates\PlayState_Rest.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\PlayStates\PlayState_Victory.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\PlayStates\PlayState_Defeat.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -177,5 +183,7 @@
     <ClInclude Include="Framework\PlayStates\PlayState_Wave.hpp" />
     <ClInclude Include="Framework\WaveManager.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Rest.hpp" />
+    <ClInclude Include="Framework\PlayStates\PlayState_Victory.hpp" />
+    <ClInclude Include="Framework\PlayStates\PlayState_Defeat.hpp" />
   </ItemGroup>
 </Project>

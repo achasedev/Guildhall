@@ -5,6 +5,7 @@
 #include "Game/Framework/PlayStates/PlayState_Wave.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 #include "Game/Framework/PlayStates/PlayState_Rest.hpp"
+#include "Game/Framework/PlayStates/PlayState_Victory.hpp"
 #include "Game/Entity/Player.hpp"
 
 #include "Engine/Core/Window.hpp"
@@ -18,7 +19,6 @@ PlayState_Wave::PlayState_Wave()
 
 PlayState_Wave::~PlayState_Wave()
 {
-
 }
 
 void PlayState_Wave::ProcessInput()
@@ -37,15 +37,24 @@ void PlayState_Wave::ProcessInput()
 
 void PlayState_Wave::Update()
 {
+	WaveManager* waveMan = Game::GetWaveManager();
+
 	// Update the wave logic first
-	Game::GetWaveManager()->Update();
+	waveMan->Update();
 
 	UpdateWorldAndCamera();
 
 	// Check for end of wave
-	if (Game::GetWaveManager()->IsCurrentWaveFinished())
+	if (waveMan->IsCurrentWaveFinished())
 	{
-		m_gameState->TransitionToPlayState(new PlayState_Rest());
+		if (waveMan->IsCurrentWaveFinal())
+		{
+			m_gameState->TransitionToPlayState(new PlayState_Victory());
+		}
+		else
+		{
+			m_gameState->TransitionToPlayState(new PlayState_Rest());
+		}
 	}
 }
 

@@ -73,6 +73,19 @@ void GameState_Playing::Enter()
 //
 void GameState_Playing::Leave()
 {
+	Game::GetWaveManager()->CleanUp();
+	Game::GetWorld()->CleanUp();
+
+	// Delete the players
+	Player** players = Game::GetPlayers();
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		if (players[i] != nullptr)
+		{
+			delete players[i];
+			players[i] = nullptr;
+		}
+	}
 }
 
 

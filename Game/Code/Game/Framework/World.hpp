@@ -29,6 +29,7 @@ public:
 	~World();
 
 	void Inititalize();
+	void CleanUp();
 
 	void Update();
 	void Render();
@@ -51,7 +52,7 @@ public:
 	// Utility
 	void ParticalizeEntity(Entity* entity);
 	void ParticalizeAllEntities();
-
+	
 
 private:
 	//-----Private Methods-----

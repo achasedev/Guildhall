@@ -72,6 +72,42 @@ void World::Inititalize()
 
 
 //-----------------------------------------------------------------------------------------------
+// Cleans up the world's entities and state to be used again in another world
+//
+void World::CleanUp()
+{
+	m_dimensions = IntVector3(-1, -1, -1);
+	m_groundElevation = 0;
+	
+	delete m_voxelGrid;
+	m_voxelGrid = nullptr;
+
+	delete m_playerHeatmap;
+	m_playerHeatmap = nullptr;
+
+	delete m_costsMap;
+	m_costsMap = nullptr;
+
+	for (int i = 0; i < (int)m_entities.size(); ++i)
+	{
+		if (dynamic_cast<Player*>(m_entities[i]) == nullptr)
+		{
+			delete m_entities[i];
+		}
+	}
+
+	m_entities.clear();
+
+	for (int i = 0; i < (int)m_particles.size(); ++i)
+	{
+		delete m_particles[i];
+	}
+
+	m_particles.clear();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Update
 //
 void World::Update()

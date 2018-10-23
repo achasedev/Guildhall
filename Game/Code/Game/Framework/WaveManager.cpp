@@ -28,19 +28,7 @@ WaveManager::WaveManager()
 //
 WaveManager::~WaveManager()
 {
-	for (int i = 0; i < (int)m_waves.size(); ++i)
-	{
-		delete m_waves[i];
-	}
-
-	m_waves.clear();
-
-	for (int i = 0; i < (int)m_spawnPoints.size(); ++i)
-	{
-		delete m_spawnPoints[i];
-	}
-
-	m_spawnPoints.clear();
+	CleanUp();
 }
 
 
@@ -73,6 +61,36 @@ void WaveManager::Initialize(const char* filename)
 	m_currWaveFinished = false;
 	m_currWaveIndex = -1;
 	m_totalSpawnedThisWave = 0;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Resets the manager to be used again in another game
+//
+void WaveManager::CleanUp()
+{
+	// Basic state
+	m_spawnTick.Reset();
+	m_currWaveFinished = false;
+	m_currWaveIndex = -1;
+	m_maxSpawnedEntities = 100000;
+	m_totalSpawnedThisWave = 0;
+
+	// Clean up waves
+	for (int i = 0; i < (int)m_waves.size(); ++i)
+	{
+		delete m_waves[i];
+	}
+
+	m_waves.clear();
+
+	// Clean up spawn points
+	for (int i = 0; i < (int)m_spawnPoints.size(); ++i)
+	{
+		delete m_spawnPoints[i];
+	}
+
+	m_spawnPoints.clear();
 }
 
 
@@ -179,6 +197,15 @@ void WaveManager::StartNextWave()
 bool WaveManager::IsCurrentWaveFinished() const
 {
 	return m_currWaveFinished;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether the current wave is the last wave, for testing victory
+//
+bool WaveManager::IsCurrentWaveFinal() const
+{
+	return (m_currWaveIndex == (int)m_waves.size() - 1);
 }
 
 
