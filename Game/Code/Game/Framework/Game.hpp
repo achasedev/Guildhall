@@ -13,11 +13,10 @@
 
 class Clock;
 class World;
+class WaveManager;
 class GameCamera;
 class Player;
 class GameState;
-class GameObject;
-class RenderScene;
 
 class Game
 {
@@ -34,6 +33,8 @@ public:
 	void Update();						// Updates all game object states, called each frame
 	void Render() const;				// Renders all game objects to screen, called each frame
 
+	GameState* GetGameState() const;
+
 	static Game*	GetInstance();
 	static void		TransitionToGameState(GameState* newState);
 
@@ -42,6 +43,7 @@ public:
 	static float				GetDeltaTime();
 	static World*				GetWorld();
 	static Player**				GetPlayers();
+	static WaveManager*			GetWaveManager();
 
 
 private:
@@ -52,18 +54,22 @@ private:
 	Game(const Game& copy) = delete;
 
 	void		CheckToUpdateGameState();
+	void		UpdateCameraOnInput();
 
 
 private:
 	//-----Private Data-----
 
-	GameCamera*					m_gameCamera = nullptr;
 	GameState*					m_currentState = nullptr;
 	GameState*					m_pendingState = nullptr;
 	Clock*						m_gameClock = nullptr;
 	World*						m_world = nullptr;
+	WaveManager*				m_waveManager = nullptr;
 
 	Player*						m_players[MAX_PLAYERS];
+
+	// Camera
+	GameCamera*					m_gameCamera = nullptr;
 
 	static Game* s_instance;			// The singleton Game instance
 

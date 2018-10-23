@@ -1,13 +1,13 @@
 /************************************************************************/
-/* File: SpawnManager.cpp
+/* File: WaveManager.cpp
 /* Author: Andrew Chase
 /* Date: October 20th 2018
-/* Description: Implementation of the SpawnManager class
+/* Description: Implementation of the WaveManager class
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/Wave.hpp"
 #include "Game/Framework/SpawnPoint.hpp"
-#include "Game/Framework/SpawnManager.hpp"
+#include "Game/Framework/WaveManager.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
@@ -17,8 +17,37 @@
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
-SpawnManager::SpawnManager(const char* filename)
+WaveManager::WaveManager()
 	: m_spawnTick(Stopwatch(Game::GetGameClock()))
+{
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Destructor
+//
+WaveManager::~WaveManager()
+{
+	for (int i = 0; i < (int)m_waves.size(); ++i)
+	{
+		delete m_waves[i];
+	}
+
+	m_waves.clear();
+
+	for (int i = 0; i < (int)m_spawnPoints.size(); ++i)
+	{
+		delete m_spawnPoints[i];
+	}
+
+	m_spawnPoints.clear();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the manager's wave data to the data given by the xml filename
+//
+void WaveManager::Initialize(const char* filename)
 {
 	// Load the file
 	XMLDocument document;
@@ -39,34 +68,18 @@ SpawnManager::SpawnManager(const char* filename)
 	InitializeWaves(*rootElement);
 
 	m_spawnTick.SetInterval(1.0f);
-}
 
-
-//-----------------------------------------------------------------------------------------------
-// Destructor
-//
-SpawnManager::~SpawnManager()
-{
-	for (int i = 0; i < (int)m_waves.size(); ++i)
-	{
-		delete m_waves[i];
-	}
-
-	m_waves.clear();
-
-	for (int i = 0; i < (int)m_spawnPoints.size(); ++i)
-	{
-		delete m_spawnPoints[i];
-	}
-
-	m_spawnPoints.clear();
+	// Reset the state
+	m_currWaveFinished = false;
+	m_currWaveIndex = -1;
+	m_totalSpawnedThisWave = 0;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Update
 //
-void SpawnManager::Update()
+void WaveManager::Update()
 {
 	// Check for end of wave
 	PerformWaveEndCheck();
@@ -106,7 +119,7 @@ void SpawnManager::Update()
 
 
 		// If this event should still be delayed, continue
-		if (m_numberOfEntitiesSpawned < event.spawnDelay)
+		if (m_totalSpawnedThisWave < event.spawnDelay)
 		{
 			continue;
 		}
@@ -143,7 +156,7 @@ void SpawnManager::Update()
 		for (int i = 0; i < amountToSpawn; ++i)
 		{
 			point->SpawnEntity(event.definition);
-			m_numberOfEntitiesSpawned++;
+			m_totalSpawnedThisWave++;
 		}
 	}
 }
@@ -152,17 +165,18 @@ void SpawnManager::Update()
 //-----------------------------------------------------------------------------------------------
 // Sets up the manager to begin the next wave
 //
-void SpawnManager::StartNextWave()
+void WaveManager::StartNextWave()
 {
 	m_currWaveIndex++;
 	m_currWaveFinished = false;
+	m_totalSpawnedThisWave = 0;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Returns whether the current wave has finished playing
 //
-bool SpawnManager::IsCurrentWaveFinished() const
+bool WaveManager::IsCurrentWaveFinished() const
 {
 	return m_currWaveFinished;
 }
@@ -171,7 +185,7 @@ bool SpawnManager::IsCurrentWaveFinished() const
 //-----------------------------------------------------------------------------------------------
 // Parses for any core information for the spawn manager
 //
-void SpawnManager::InitializeCoreInfo(const XMLElement& rootElement)
+void WaveManager::InitializeCoreInfo(const XMLElement& rootElement)
 {
 	const XMLElement* coreElement = rootElement.FirstChildElement("Core");
 
@@ -185,7 +199,7 @@ void SpawnManager::InitializeCoreInfo(const XMLElement& rootElement)
 //-----------------------------------------------------------------------------------------------
 // Parses for the spawn point information
 //
-void SpawnManager::InitializeSpawnPoints(const XMLElement& rootElement)
+void WaveManager::InitializeSpawnPoints(const XMLElement& rootElement)
 {
 	const XMLElement* pointsElement = rootElement.FirstChildElement("SpawnPoints");
 
@@ -208,7 +222,7 @@ void SpawnManager::InitializeSpawnPoints(const XMLElement& rootElement)
 //-----------------------------------------------------------------------------------------------
 // Parses for the waves descriptions
 //
-void SpawnManager::InitializeWaves(const XMLElement& rootElement)
+void WaveManager::InitializeWaves(const XMLElement& rootElement)
 {
 	const XMLElement* wavesElement = rootElement.FirstChildElement("Waves");
 
@@ -231,7 +245,7 @@ void SpawnManager::InitializeWaves(const XMLElement& rootElement)
 //-----------------------------------------------------------------------------------------------
 // Checks if all entities for this wave have spawned and are dead, signalling this wave is finished
 //
-bool SpawnManager::PerformWaveEndCheck()
+bool WaveManager::PerformWaveEndCheck()
 {
 	if (m_currWaveFinished)
 	{
@@ -259,7 +273,7 @@ bool SpawnManager::PerformWaveEndCheck()
 //-----------------------------------------------------------------------------------------------
 // Returns the total number of entities spawned by this manager
 //
-int SpawnManager::GetTotalSpawnCount() const
+int WaveManager::GetTotalSpawnCount() const
 {
 	int numSpawners = (int) m_spawnPoints.size();
 
@@ -276,7 +290,7 @@ int SpawnManager::GetTotalSpawnCount() const
 //-----------------------------------------------------------------------------------------------
 // Returns the number of entities of the given definition are spawned currently
 //
-int SpawnManager::GetSpawnCountForType(const EntityDefinition* definition) const
+int WaveManager::GetSpawnCountForType(const EntityDefinition* definition) const
 {
 	int numSpawners = (int)m_spawnPoints.size();
 
@@ -287,4 +301,13 @@ int SpawnManager::GetSpawnCountForType(const EntityDefinition* definition) const
 	}
 
 	return total;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the current wave index
+//
+int WaveManager::GetCurrentWaveNumber() const
+{
+	return m_currWaveIndex;
 }

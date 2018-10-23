@@ -103,13 +103,22 @@
     <ClCompile Include="Entity\Components\BehaviorComponent_Shoot.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Framework\SpawnManager.cpp">
-      <Filter>Architecture</Filter>
-    </ClCompile>
     <ClCompile Include="Framework\SpawnPoint.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
     <ClCompile Include="Framework\Wave.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\PlayStates\PlayState.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\PlayStates\PlayState_Wave.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\WaveManager.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\PlayStates\PlayState_Rest.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
   </ItemGroup>
@@ -162,8 +171,11 @@
     <ClInclude Include="Entity\Components\BehaviorComponent_PursueDirect.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_PursueJump.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_Shoot.hpp" />
-    <ClInclude Include="Framework\SpawnManager.hpp" />
     <ClInclude Include="Framework\SpawnPoint.hpp" />
     <ClInclude Include="Framework\Wave.hpp" />
+    <ClInclude Include="Framework\PlayStates\PlayState.hpp" />
+    <ClInclude Include="Framework\PlayStates\PlayState_Wave.hpp" />
+    <ClInclude Include="Framework\WaveManager.hpp" />
+    <ClInclude Include="Framework\PlayStates\PlayState_Rest.hpp" />
   </ItemGroup>
 </Project>

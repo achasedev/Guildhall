@@ -10,8 +10,10 @@
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Framework/GameCamera.hpp"
-#include "Game/Framework/SpawnManager.hpp"
+#include "Game/Framework/WaveManager.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
+#include "Game/Framework/PlayStates/PlayState.hpp"
+#include "Game/Framework/PlayStates/PlayState_Wave.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
@@ -60,10 +62,10 @@ void GameState_Playing::Enter()
 	}
 
 	Game::GetWorld()->Inititalize();
-	m_spawnManager = new SpawnManager("Data/Spawning.xml");
+	Game::GetWaveManager()->Initialize("Data/Spawning.xml");
 
-	m_state = PLAY_STATE_WAVE;
- }
+	TransitionToPlayState(new PlayState_Wave());
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -75,153 +77,16 @@ void GameState_Playing::Leave()
 
 
 //-----------------------------------------------------------------------------------------------
-// Updates the camera transform based on keyboard and mouse input
+// Begins a transition to the given state from the current state
 //
-void GameState_Playing::UpdateCameraOnInput()
+void GameState_Playing::TransitionToPlayState(PlayState* state)
 {
-	float deltaTime = Game::GetDeltaTime();
-	InputSystem* input = InputSystem::GetInstance();
+	m_transitionState = state;
+	m_isTransitioning = true;
 
-	// Translating the camera
-	Vector3 translationOffset = Vector3::ZERO;
-	if (input->IsKeyPressed('W'))								{ translationOffset.z += 1.f; }		// Forward
-	if (input->IsKeyPressed('S'))								{ translationOffset.z -= 1.f; }		// Left
-	if (input->IsKeyPressed('A'))								{ translationOffset.x -= 1.f; }		// Back
-	if (input->IsKeyPressed('D'))								{ translationOffset.x += 1.f; }		// Right
-	if (input->IsKeyPressed(InputSystem::KEYBOARD_SPACEBAR))	{ translationOffset.y += 1.f; }		// Up
-	if (input->IsKeyPressed('X'))								{ translationOffset.y -= 1.f; }		// Down
-
-	if (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT))
+	if (m_currentState != nullptr)
 	{
-		translationOffset *= 50.f;
-	}
-
-	translationOffset *= CAMERA_TRANSLATION_SPEED * deltaTime;
-
-	GameCamera* gameCamera = Game::GetGameCamera();
-	gameCamera->TranslateLocal(translationOffset);
-
-	// Rotating the camera
-	Mouse& mouse = InputSystem::GetMouse();
-	IntVector2 mouseDelta = mouse.GetMouseDelta();
-
-	Vector2 rotationOffset = Vector2((float) mouseDelta.y, (float) mouseDelta.x) * 0.12f;
-	Vector3 rotation = Vector3(rotationOffset.x * CAMERA_ROTATION_SPEED * deltaTime, rotationOffset.y * CAMERA_ROTATION_SPEED * deltaTime, 0.f);
-
-	gameCamera->Rotate(rotation);	
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Update for when the game is at idle
-//
-void GameState_Playing::Update_Idle()
-{
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Update for when a wave is currently being played
-//
-void GameState_Playing::Update_Wave()
-{
-	m_spawnManager->Update();
-	Game::GetWorld()->Update();
-
-	// Camera
-	if (!m_cameraEjected)
-	{
-		Game::GetGameCamera()->UpdatePositionBasedOnPlayers();
-	}
-
-	if (m_spawnManager->IsCurrentWaveFinished())
-	{
-		TransitionToState(PLAY_STATE_REST);
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Update for the period between waves
-//
-void GameState_Playing::Update_Rest()
-{
-	if (m_restTimer.HasIntervalElapsed())
-	{
-		TransitionToState(PLAY_STATE_WAVE);
-	}
-	else
-	{
-		Game::GetWorld()->Update();
-
-		// Camera
-		if (!m_cameraEjected)
-		{
-			Game::GetGameCamera()->UpdatePositionBasedOnPlayers();
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Renders the idle state
-//
-void GameState_Playing::Render_Idle()
-{
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Renders the wave state (gameplay during a wave)
-//
-void GameState_Playing::Render_Wave()
-{
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Renders the rest state (period between waves)
-//
-void GameState_Playing::Render_Rest()
-{
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Performs the necessary clean up and intialization for moving into a different state
-//
-void GameState_Playing::TransitionToState(ePlayState state)
-{
-	// Exit
-	switch (m_state)
-	{
-	case PLAY_STATE_IDLE:
-		break;
-	case PLAY_STATE_WAVE:
-		break;
-	case PLAY_STATE_REST:
-		break;
-	default:
-		break;
-	}
-
-	// Enter
-	m_state = state;
-	switch (m_state)
-	{
-	case PLAY_STATE_IDLE:
-		break;
-	case PLAY_STATE_WAVE:
-		m_spawnManager->StartNextWave();
-		break;
-	case PLAY_STATE_REST:
-		m_restTimer.SetInterval(REST_INTERVAL);
-		break;
-	default:
-		break;
+		m_currentState->StartLeaveTimer();
 	}
 }
 
@@ -231,29 +96,30 @@ void GameState_Playing::TransitionToState(ePlayState state)
 //
 void GameState_Playing::ProcessInput()
 {
-	if (InputSystem::GetInstance()->WasKeyJustPressed('B'))
+	if (m_currentState != nullptr)
 	{
-		m_cameraEjected = !m_cameraEjected;
+		m_currentState->ProcessInput();
 	}
-
-	Player** players = Game::GetPlayers();
-
-	for (int i = 0; i < MAX_PLAYERS; ++i)
+	else
 	{
-		if (players[i] != nullptr)
-		{
-			players[i]->ProcessInput();
-		}
-	}
-
-	if (m_cameraEjected)
-	{
-		UpdateCameraOnInput();
+		m_transitionState->ProcessInput();
 	}
 
 	if (InputSystem::GetInstance()->WasKeyJustPressed('L'))
 	{
 		Game::GetWorld()->ParticalizeAllEntities();
+	}
+
+	// Camera
+	GameCamera* camera = Game::GetGameCamera();
+	if (InputSystem::GetInstance()->WasKeyJustPressed('B'))
+	{
+		camera->ToggleEjected();
+	}
+
+	if (camera->IsEjected())
+	{
+		camera->UpdatePositionOnInput();
 	}
 }
 
@@ -263,81 +129,58 @@ void GameState_Playing::ProcessInput()
 //
 void GameState_Playing::Update()
 {
-	switch (m_state)
+	if (m_isTransitioning)
 	{
-	case PLAY_STATE_IDLE:
-		Update_Idle();
-		break;
-	case PLAY_STATE_WAVE:
-		Update_Wave();
-		break;
-	case PLAY_STATE_REST:
-		Update_Rest();
-		break;
-	default:
-		break;
+		// Update on leave of the current state
+		if (m_currentState != nullptr)
+		{
+			bool leaveFinished = m_currentState->Leave();
+
+			if (leaveFinished)
+			{
+				delete m_currentState;
+				m_currentState = nullptr;
+
+				m_transitionState->StartEnterTimer();
+			}
+		}
+		else // Update on enter of the transition state
+		{
+			bool enterFinished = m_transitionState->Enter();
+
+			if (enterFinished)
+			{
+				m_currentState = m_transitionState;
+				m_transitionState = nullptr;
+				m_isTransitioning = false;
+			}
+		}
+	}
+	else
+	{
+		m_currentState->Update();
 	}
 }
 
 
-//- C FUNCTION ----------------------------------------------------------------------------------------------
-// Returns the string representative of the given enum
-//
-std::string GetStringForPlayState(ePlayState state)
-{
-	switch (state)
-	{
-	case PLAY_STATE_IDLE:
-		return "IDLE";
-		break;
-	case PLAY_STATE_WAVE:
-		return "WAVE";
-		break;
-	case PLAY_STATE_REST:
-		return "REST";
-		break;
-	default:
-		return "";
-		break;
-	}
-}
-
-#include "Engine/Core/Window.hpp"
-#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 //-----------------------------------------------------------------------------------------------
 // Renders the gameplay state to screen
 //
 void GameState_Playing::Render() const
 {
-	std::string stateText = GetStringForPlayState(m_state);
-
-	DebugRenderSystem::Draw2DText(stateText, Window::GetInstance()->GetWindowBounds(), 0.f);
-
-	// 3D
-	switch (m_state)
+	if (m_isTransitioning)
 	{
-	case PLAY_STATE_IDLE:
-		break;
-	case PLAY_STATE_WAVE:
-		Game::GetWorld()->Render();
-		break;
-	case PLAY_STATE_REST:
-		Game::GetWorld()->Render();
-		break;
-	default:
-		break;
+		if (m_currentState != nullptr)
+		{
+			m_currentState->Render_Leave();
+		}
+		else
+		{
+			m_transitionState->Render_Enter();
+		}
 	}
-
-	// 2D
-	switch (m_state)
+	else
 	{
-	case PLAY_STATE_IDLE:
-		break;
-	case PLAY_STATE_WAVE:
-		break;
-	case PLAY_STATE_REST:
-		break;
-	default:
-		break;
+		m_currentState->Render();
 	}
 }

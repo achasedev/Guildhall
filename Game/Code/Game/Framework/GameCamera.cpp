@@ -8,6 +8,7 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Input/InputSystem.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -52,4 +53,69 @@ void GameCamera::UpdatePositionBasedOnPlayers()
 
 	Vector3 newPos = targetPos + m_offsetDirection * m_offsetDistance;
 	LookAt(newPos, targetPos);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Updates the camera by checking for input
+//
+void GameCamera::UpdatePositionOnInput()
+{
+	float deltaTime = Game::GetDeltaTime();
+	InputSystem* input = InputSystem::GetInstance();
+
+	// Translating the camera
+	Vector3 translationOffset = Vector3::ZERO;
+	if (input->IsKeyPressed('W')) { translationOffset.z += 1.f; }		// Forward
+	if (input->IsKeyPressed('S')) { translationOffset.z -= 1.f; }		// Left
+	if (input->IsKeyPressed('A')) { translationOffset.x -= 1.f; }		// Back
+	if (input->IsKeyPressed('D')) { translationOffset.x += 1.f; }		// Right
+	if (input->IsKeyPressed(InputSystem::KEYBOARD_SPACEBAR)) { translationOffset.y += 1.f; }		// Up
+	if (input->IsKeyPressed('X')) { translationOffset.y -= 1.f; }		// Down
+
+	if (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT))
+	{
+		translationOffset *= 50.f;
+	}
+
+	translationOffset *= CAMERA_TRANSLATION_SPEED * deltaTime;
+
+	GameCamera* gameCamera = Game::GetGameCamera();
+	gameCamera->TranslateLocal(translationOffset);
+
+	// Rotating the camera
+	Mouse& mouse = InputSystem::GetMouse();
+	IntVector2 mouseDelta = mouse.GetMouseDelta();
+
+	Vector2 rotationOffset = Vector2((float)mouseDelta.y, (float)mouseDelta.x) * 0.12f;
+	Vector3 rotation = Vector3(rotationOffset.x * CAMERA_ROTATION_SPEED * deltaTime, rotationOffset.y * CAMERA_ROTATION_SPEED * deltaTime, 0.f);
+
+	gameCamera->Rotate(rotation);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Toggles the ejected state of the camera
+//
+void GameCamera::ToggleEjected()
+{
+	m_cameraEjected = !m_cameraEjected;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the ejected state of the camera to the state provided
+//
+void GameCamera::SetEjected(bool newState)
+{
+	m_cameraEjected = newState;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the ejected state of the camera
+//
+bool GameCamera::IsEjected() const
+{
+	return m_cameraEjected;
 }

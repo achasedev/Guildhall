@@ -93,8 +93,8 @@ void World::Update()
 	DeleteMarkedEntities();
 
 	// Navigation
-	//UpdateCostMap();
-	//UpdatePlayerHeatmap();
+	UpdateCostMap();
+	UpdatePlayerHeatmap();
 }	
 
 

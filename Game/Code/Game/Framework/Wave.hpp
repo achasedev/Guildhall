@@ -24,7 +24,7 @@ struct EntitySpawnEvent_t
 class Wave
 {
 public:
-	friend class SpawnManager;
+	friend class WaveManager;
 
 	//-----Public Methods-----
 	

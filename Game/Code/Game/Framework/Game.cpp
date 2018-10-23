@@ -8,6 +8,7 @@
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Framework/GameCamera.hpp"
+#include "Game/Framework/WaveManager.hpp"
 #include "Game/GameStates/GameState_Loading.hpp"
 
 #include "Engine/Core/Time/Clock.hpp"
@@ -74,6 +75,9 @@ void Game::Initialize()
 	GUARANTEE_OR_DIE(s_instance == nullptr, "Error: Game::Initialize called when a Game instance already exists.");
 	s_instance = new Game();
 
+	// Wave manager initialize here, since it refers to the instance above
+	s_instance->m_waveManager = new WaveManager();
+
 	// Set the game clock on the Renderer
 	Renderer::GetInstance()->SetRendererGameClock(s_instance->m_gameClock);
 
@@ -121,6 +125,15 @@ void Game::Render() const
 {
 	//PROFILE_LOG_SCOPE_FUNCTION();
 	m_currentState->Render();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the game state of the Game instance
+//
+GameState* Game::GetGameState() const
+{
+	return m_currentState;
 }
 
 
@@ -176,6 +189,15 @@ World* Game::GetWorld()
 Player** Game::GetPlayers()
 {
 	return &s_instance->m_players[0];
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the Wave Manager for the game
+//
+WaveManager* Game::GetWaveManager()
+{
+	return s_instance->m_waveManager;
 }
 
 

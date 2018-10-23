@@ -43,7 +43,7 @@ Player::~Player()
 //-----------------------------------------------------------------------------------------------
 // Checks for player related input on the respective controller
 //
-void Player::ProcessInput()
+void Player::ProcessGameplayInput()
 {
 	XboxController& controller = InputSystem::GetInstance()->GetController(m_playerID);
 	Vector2 leftStick = controller.GetCorrectedStickPosition(XBOX_STICK_LEFT);

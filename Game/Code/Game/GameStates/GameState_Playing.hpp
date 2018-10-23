@@ -22,7 +22,8 @@ enum ePlayState
 
 
 class World;
-class SpawnManager;
+class WaveManager;
+class PlayState;
 
 class GameState_Playing : public GameState
 {
@@ -39,44 +40,15 @@ public:
 	virtual void Enter() override;
 	virtual void Leave() override;
 
-
-private:
-	//-----Private Methods-----
-
-	void UpdateCameraOnInput();
-
-	
-	void Update_Idle();
-	void Update_Wave();
-	void Update_Rest();
-	void Update_Pause();
-	void Update_Victory();
-	void Update_Death();
-
-	void Render_Idle();
-	void Render_Wave();
-	void Render_Rest();
-	void Render_Pause();
-	void Render_Victory();
-	void Render_Death();
-
-	void TransitionToState(ePlayState state);
+	void TransitionToPlayState(PlayState* state);
 
 
 private:
 	//-----Private Data-----
 
-	ePlayState m_state = PLAY_STATE_IDLE;
-	ePlayState m_transition = PLAY_STATE_IDLE;
+	PlayState* m_currentState = nullptr;
+	PlayState* m_transitionState = nullptr;
 
-	Stopwatch m_restTimer;
-
-	bool m_cameraEjected = false;
-
-	SpawnManager*	m_spawnManager = nullptr;
-
-	static constexpr float CAMERA_ROTATION_SPEED = 45.f;
-	static constexpr float CAMERA_TRANSLATION_SPEED = 10.f;
-	static constexpr float REST_INTERVAL = 5.f;
+	bool m_isTransitioning = false;
 
 };

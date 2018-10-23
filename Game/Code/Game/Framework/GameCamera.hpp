@@ -16,6 +16,11 @@ public:
 	~GameCamera();
 
 	void UpdatePositionBasedOnPlayers();
+	void UpdatePositionOnInput();
+
+	void ToggleEjected();
+	void SetEjected(bool newState);
+	bool IsEjected() const;
 
 
 private:
@@ -23,5 +28,10 @@ private:
 	
 	float	m_offsetDistance;
 	Vector3 m_offsetDirection;
+
+	bool						m_cameraEjected = false;
+
+	static constexpr float		CAMERA_ROTATION_SPEED = 45.f;
+	static constexpr float		CAMERA_TRANSLATION_SPEED = 10.f;
 
 };

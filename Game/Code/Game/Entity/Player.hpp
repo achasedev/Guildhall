@@ -9,8 +9,6 @@
 
 #define INVALID_PLAYER_ID (4)
 
-class Vector3;
-
 class Player : public MovingEntity
 {
 public:
@@ -21,7 +19,7 @@ public:
 	~Player();
 
 	// Core Loop
-	void			ProcessInput();
+	void			ProcessGameplayInput();
 	virtual void	Update() override;
 
 	// Events

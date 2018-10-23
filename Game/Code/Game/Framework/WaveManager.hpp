@@ -1,5 +1,5 @@
 /************************************************************************/
-/* File: SpawnManager.hpp
+/* File: WaveManager.hpp
 /* Author: Andrew Chase
 /* Date: October 20th 2018
 /* Description: Class to control per-wave entity spawning
@@ -11,19 +11,24 @@
 
 class Wave;
 class SpawnPoint;
+class EntityDefinition;
 
-class SpawnManager
+class WaveManager
 {
 public:
 	//-----Public Methods-----
 	
-	SpawnManager(const char* filename);
-	~SpawnManager();
+	WaveManager();
+	~WaveManager();
+
+	void Initialize(const char* filename);
 
 	void Update();
 
 	void StartNextWave();
 	bool IsCurrentWaveFinished() const;
+
+	int GetCurrentWaveNumber() const;
 
 
 public:
@@ -50,10 +55,10 @@ private:
 
 	bool m_currWaveFinished = false;
 
-	unsigned int m_currWaveIndex = 0;
+	int m_currWaveIndex = -1;
 	std::vector<Wave*> m_waves;
 	std::vector<SpawnPoint*> m_spawnPoints;
 
 	int m_maxSpawnedEntities = 100000;
-	int m_numberOfEntitiesSpawned = 0;
+	int m_totalSpawnedThisWave = 0;
 };
