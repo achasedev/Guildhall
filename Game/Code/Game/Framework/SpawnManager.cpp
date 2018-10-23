@@ -69,7 +69,7 @@ SpawnManager::~SpawnManager()
 void SpawnManager::Update()
 {
 	// Check for end of wave
-	CheckForCurrWaveFinished();
+	PerformWaveEndCheck();
 
 	if (m_currWaveFinished)
 	{
@@ -150,6 +150,25 @@ void SpawnManager::Update()
 
 
 //-----------------------------------------------------------------------------------------------
+// Sets up the manager to begin the next wave
+//
+void SpawnManager::StartNextWave()
+{
+	m_currWaveIndex++;
+	m_currWaveFinished = false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether the current wave has finished playing
+//
+bool SpawnManager::IsCurrentWaveFinished() const
+{
+	return m_currWaveFinished;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Parses for any core information for the spawn manager
 //
 void SpawnManager::InitializeCoreInfo(const XMLElement& rootElement)
@@ -212,7 +231,7 @@ void SpawnManager::InitializeWaves(const XMLElement& rootElement)
 //-----------------------------------------------------------------------------------------------
 // Checks if all entities for this wave have spawned and are dead, signalling this wave is finished
 //
-bool SpawnManager::CheckForCurrWaveFinished()
+bool SpawnManager::PerformWaveEndCheck()
 {
 	if (m_currWaveFinished)
 	{

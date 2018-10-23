@@ -22,6 +22,9 @@ public:
 
 	void Update();
 
+	void StartNextWave();
+	bool IsCurrentWaveFinished() const;
+
 
 public:
 	//-----Public Data-----
@@ -34,7 +37,7 @@ private:
 	void InitializeSpawnPoints(const XMLElement& rootElement);
 	void InitializeWaves(const XMLElement& rootElement);
 
-	bool CheckForCurrWaveFinished();
+	bool PerformWaveEndCheck();
 
 	int GetTotalSpawnCount() const;
 	int GetSpawnCountForType(const EntityDefinition* definition) const;

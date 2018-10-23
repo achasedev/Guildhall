@@ -61,6 +61,8 @@ void GameState_Playing::Enter()
 
 	Game::GetWorld()->Inititalize();
 	m_spawnManager = new SpawnManager("Data/Spawning.xml");
+
+	m_state = PLAY_STATE_WAVE;
  }
 
 
@@ -111,6 +113,120 @@ void GameState_Playing::UpdateCameraOnInput()
 
 
 //-----------------------------------------------------------------------------------------------
+// Update for when the game is at idle
+//
+void GameState_Playing::Update_Idle()
+{
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Update for when a wave is currently being played
+//
+void GameState_Playing::Update_Wave()
+{
+	m_spawnManager->Update();
+	Game::GetWorld()->Update();
+
+	// Camera
+	if (!m_cameraEjected)
+	{
+		Game::GetGameCamera()->UpdatePositionBasedOnPlayers();
+	}
+
+	if (m_spawnManager->IsCurrentWaveFinished())
+	{
+		TransitionToState(PLAY_STATE_REST);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Update for the period between waves
+//
+void GameState_Playing::Update_Rest()
+{
+	if (m_restTimer.HasIntervalElapsed())
+	{
+		TransitionToState(PLAY_STATE_WAVE);
+	}
+	else
+	{
+		Game::GetWorld()->Update();
+
+		// Camera
+		if (!m_cameraEjected)
+		{
+			Game::GetGameCamera()->UpdatePositionBasedOnPlayers();
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Renders the idle state
+//
+void GameState_Playing::Render_Idle()
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Renders the wave state (gameplay during a wave)
+//
+void GameState_Playing::Render_Wave()
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Renders the rest state (period between waves)
+//
+void GameState_Playing::Render_Rest()
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Performs the necessary clean up and intialization for moving into a different state
+//
+void GameState_Playing::TransitionToState(ePlayState state)
+{
+	// Exit
+	switch (m_state)
+	{
+	case PLAY_STATE_IDLE:
+		break;
+	case PLAY_STATE_WAVE:
+		break;
+	case PLAY_STATE_REST:
+		break;
+	default:
+		break;
+	}
+
+	// Enter
+	m_state = state;
+	switch (m_state)
+	{
+	case PLAY_STATE_IDLE:
+		break;
+	case PLAY_STATE_WAVE:
+		m_spawnManager->StartNextWave();
+		break;
+	case PLAY_STATE_REST:
+		m_restTimer.SetInterval(REST_INTERVAL);
+		break;
+	default:
+		break;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Checks for input
 //
 void GameState_Playing::ProcessInput()
@@ -147,22 +263,81 @@ void GameState_Playing::ProcessInput()
 //
 void GameState_Playing::Update()
 {
-	m_spawnManager->Update();
-
-	Game::GetWorld()->Update();
-
-	// Camera
-	if (!m_cameraEjected)
+	switch (m_state)
 	{
-		Game::GetGameCamera()->UpdatePositionBasedOnPlayers();
+	case PLAY_STATE_IDLE:
+		Update_Idle();
+		break;
+	case PLAY_STATE_WAVE:
+		Update_Wave();
+		break;
+	case PLAY_STATE_REST:
+		Update_Rest();
+		break;
+	default:
+		break;
 	}
 }
 
 
+//- C FUNCTION ----------------------------------------------------------------------------------------------
+// Returns the string representative of the given enum
+//
+std::string GetStringForPlayState(ePlayState state)
+{
+	switch (state)
+	{
+	case PLAY_STATE_IDLE:
+		return "IDLE";
+		break;
+	case PLAY_STATE_WAVE:
+		return "WAVE";
+		break;
+	case PLAY_STATE_REST:
+		return "REST";
+		break;
+	default:
+		return "";
+		break;
+	}
+}
+
+#include "Engine/Core/Window.hpp"
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 //-----------------------------------------------------------------------------------------------
 // Renders the gameplay state to screen
 //
 void GameState_Playing::Render() const
 {
-	Game::GetWorld()->Render();
+	std::string stateText = GetStringForPlayState(m_state);
+
+	DebugRenderSystem::Draw2DText(stateText, Window::GetInstance()->GetWindowBounds(), 0.f);
+
+	// 3D
+	switch (m_state)
+	{
+	case PLAY_STATE_IDLE:
+		break;
+	case PLAY_STATE_WAVE:
+		Game::GetWorld()->Render();
+		break;
+	case PLAY_STATE_REST:
+		Game::GetWorld()->Render();
+		break;
+	default:
+		break;
+	}
+
+	// 2D
+	switch (m_state)
+	{
+	case PLAY_STATE_IDLE:
+		break;
+	case PLAY_STATE_WAVE:
+		break;
+	case PLAY_STATE_REST:
+		break;
+	default:
+		break;
+	}
 }

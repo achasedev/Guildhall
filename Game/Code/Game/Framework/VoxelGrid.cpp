@@ -132,7 +132,7 @@ void VoxelGrid::DrawEntity(const Entity* entity)
 //
 void VoxelGrid::DrawGround(unsigned int groundElevation)
 {
-	for (int y = 0; y < groundElevation; ++y)
+	for (int y = 0; y < (int) groundElevation; ++y)
 	{
 		for (int z = 0; z < m_dimensions.z; ++z)
 		{
