@@ -21,7 +21,7 @@ void PlayState_Rest::ProcessInput()
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
-		if (players[i] != nullptr)
+		if (Game::IsPlayerAlive(i))
 		{
 			players[i]->ProcessGameplayInput();
 		}
@@ -30,6 +30,17 @@ void PlayState_Rest::ProcessInput()
 
 bool PlayState_Rest::Enter()
 {
+	// Respawn the dead players
+	Player** players = Game::GetPlayers();
+
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		if (players[i] != nullptr && players[i]->IsMarkedForDelete())
+		{
+			players[i]->Respawn();
+		}
+	}
+
 	UpdateWorldAndCamera();
 
 	if (m_transitionTimer.HasIntervalElapsed())

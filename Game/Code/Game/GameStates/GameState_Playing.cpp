@@ -35,6 +35,17 @@ GameState_Playing::GameState_Playing()
 //
 GameState_Playing::~GameState_Playing()
 {
+	if (m_currentState != nullptr)
+	{
+		delete m_currentState;
+		m_currentState = nullptr;
+	}
+
+	if (m_transitionState != nullptr)
+	{
+		delete m_transitionState;
+		m_transitionState = nullptr;
+	}
 }
 
 
@@ -52,13 +63,15 @@ void GameState_Playing::Enter()
 
 	Player** players = Game::GetPlayers();
 
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
-		players[i] = new Player(i);
-		players[i]->SetPosition(Vector3(50.f * (float) i + 30.f, 0.f, 60.f));
-		players[i]->SetTeam(ENTITY_TEAM_PLAYER);
+		if (InputSystem::GetInstance()->GetController(i).IsConnected())
+		{
+			players[i] = new Player(i);
+			players[i]->SetPosition(Vector3(50.f * (float)i + 30.f, 0.f, 60.f));
 
-		Game::GetWorld()->AddEntity(players[i]);
+			Game::GetWorld()->AddEntity(players[i]);
+		}
 	}
 
 	Game::GetWorld()->Inititalize();
@@ -101,6 +114,26 @@ void GameState_Playing::TransitionToPlayState(PlayState* state)
 	{
 		m_currentState->StartLeaveTimer();
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if all current players are dead
+//
+bool GameState_Playing::AreAllPlayersDead() const
+{
+	bool allDead = true;
+
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		if (Game::IsPlayerAlive(i))
+		{
+			allDead = false;
+			break;
+		}
+	}
+
+	return allDead;
 }
 
 

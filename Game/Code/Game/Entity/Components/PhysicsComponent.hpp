@@ -25,6 +25,8 @@ public:
 	void			SetForce(const Vector3& force);
 	void			SetVelocity(const Vector3& velocity);
 
+	void			StopAllMovement();
+
 	void			ApplyPhysicsStep();
 
 	// Accessors	

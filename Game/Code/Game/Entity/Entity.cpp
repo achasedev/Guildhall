@@ -115,11 +115,6 @@ void Entity::TakeDamage(int damageAmount)
 	m_health -= damageAmount;
 
 	OnDamageTaken(damageAmount);
-
-	if (m_health <= 0)
-	{
-		OnDeath();
-	}
 }
 
 
@@ -129,6 +124,11 @@ void Entity::TakeDamage(int damageAmount)
 void Entity::OnDamageTaken(int damageAmount)
 {
 	UNUSED(damageAmount);
+
+	if (m_health <= 0)
+	{
+		OnDeath();
+	}
 }
 
 
@@ -246,6 +246,15 @@ float Entity::GetMass() const
 float Entity::GetInverseMass() const
 {
 	return m_inverseMass;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether this entity is a player entitys
+//
+bool Entity::IsPlayer() const
+{
+	return m_isPlayer;
 }
 
 

@@ -31,6 +31,9 @@ public:
 	// Behavior
 	void Shoot();
 
+	// Mutators
+	void Respawn();
+
 
 private:
 	//-----Private Methods-----

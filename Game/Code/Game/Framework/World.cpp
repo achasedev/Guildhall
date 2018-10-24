@@ -560,22 +560,22 @@ void World::DeleteMarkedEntities()
 {
 	// Check for players before going into the dynamic list
 	// Players will set themselves back to not marked, preventing deletion
-	Player** players = Game::GetPlayers();
-
-	for (int i = 0; i < MAX_PLAYERS; ++i)
-	{
-		if (players[i] != nullptr && players[i]->IsMarkedForDelete())
-		{
-			players[i]->OnDeath();
-		}
-	}
+// 	Player** players = Game::GetPlayers();
+// 
+// 	for (int i = 0; i < MAX_PLAYERS; ++i)
+// 	{
+// 		if (players[i] != nullptr && players[i]->IsMarkedForDelete())
+// 		{
+// 			players[i]->OnDeath();
+// 		}
+// 	}
 
 	// Then check entities
 	for (int i = (int)m_entities.size() - 1; i >= 0; --i)
 	{
 		Entity* entity = m_entities[i];
 
-		if (entity->IsMarkedForDelete())
+		if (entity->IsMarkedForDelete() && !entity->IsPlayer())
 		{
 			// OnDeath should have been called, and once finished should mark for delete
 			delete entity;
@@ -621,7 +621,7 @@ void World::DrawStaticEntitiesToGrid()
 
 	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
 	{
-		if (m_entities[entityIndex]->GetPhysicsType() == PHYSICS_TYPE_STATIC)
+		if (m_entities[entityIndex]->GetPhysicsType() == PHYSICS_TYPE_STATIC && !m_entities[entityIndex]->IsMarkedForDelete())
 		{
 			m_voxelGrid->DrawEntity(m_entities[entityIndex]);
 		}
@@ -640,7 +640,7 @@ void World::DrawDynamicEntitiesToGrid()
 
 	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
 	{
-		if (m_entities[entityIndex]->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC)
+		if (m_entities[entityIndex]->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC && !m_entities[entityIndex]->IsMarkedForDelete())
 		{
 			m_voxelGrid->DrawEntity(m_entities[entityIndex]);
 		}
@@ -677,7 +677,7 @@ void World::UpdatePlayerHeatmap()
 	// Seed in the player positions
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
-		if (players[i] != nullptr)
+		if (Game::IsPlayerAlive(i))
 		{
 			IntVector3 position = players[i]->GetEntityCoordinatePosition();
 			m_playerHeatmap->Seed(0.f, (position.xz() / NAV_DIMENSION_FACTOR));

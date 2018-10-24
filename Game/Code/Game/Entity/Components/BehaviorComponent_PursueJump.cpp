@@ -50,7 +50,7 @@ void BehaviorComponent_PursueJump::Update()
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
-		if (players[i] != nullptr)
+		if (Game::IsPlayerAlive(i))
 		{
 			Vector3 playerPosition = players[i]->GetEntityPosition();
 			float currDistance = (playerPosition - currentPosition).GetLengthSquared();

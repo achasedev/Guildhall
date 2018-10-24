@@ -76,6 +76,17 @@ void PhysicsComponent::SetVelocity(const Vector3& velocity)
 
 
 //-----------------------------------------------------------------------------------------------
+// Immediately stops all movement on the component
+//
+void PhysicsComponent::StopAllMovement()
+{
+	m_velocity = Vector3::ZERO;
+	m_force = Vector3::ZERO;
+	m_impulse = Vector3::ZERO;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Applies the forward Euler computation to the velocity and position of the owning entity
 //
 void PhysicsComponent::ApplyPhysicsStep()

@@ -338,3 +338,12 @@ int WaveManager::GetCurrentWaveNumber() const
 {
 	return m_currWaveIndex;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the number of waves currently in the wave manager
+//
+int WaveManager::GetWaveCount() const
+{
+	return (int)m_waves.size();
+}

@@ -6,6 +6,7 @@
 #include "Game/GameStates/GameState_Playing.hpp"
 #include "Game/Framework/PlayStates/PlayState_Rest.hpp"
 #include "Game/Framework/PlayStates/PlayState_Victory.hpp"
+#include "Game/Framework/PlayStates/PlayState_Defeat.hpp"
 #include "Game/Entity/Player.hpp"
 
 #include "Engine/Core/Window.hpp"
@@ -28,7 +29,7 @@ void PlayState_Wave::ProcessInput()
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
-		if (players[i] != nullptr)
+		if (Game::IsPlayerAlive(i))
 		{
 			players[i]->ProcessGameplayInput();
 		}
@@ -44,7 +45,7 @@ void PlayState_Wave::Update()
 
 	UpdateWorldAndCamera();
 
-	// Check for end of wave
+	// Check for end of wave and victory
 	if (waveMan->IsCurrentWaveFinished())
 	{
 		if (waveMan->IsCurrentWaveFinal())
@@ -55,6 +56,12 @@ void PlayState_Wave::Update()
 		{
 			m_gameState->TransitionToPlayState(new PlayState_Rest());
 		}
+	}
+
+	// Check for defeat
+	if (m_gameState->AreAllPlayersDead())
+	{
+		m_gameState->TransitionToPlayState(new PlayState_Defeat());
 	}
 }
 
@@ -98,7 +105,7 @@ void PlayState_Wave::Render() const
 {
 	Game::GetWorld()->Render();
 
-	DebugRenderSystem::Draw2DText(Stringf("Wave %i", Game::GetWaveManager()->GetCurrentWaveNumber()), Window::GetInstance()->GetWindowBounds(), 0.f);
+	DebugRenderSystem::Draw2DText(Stringf("Wave %i of %i", Game::GetWaveManager()->GetCurrentWaveNumber() + 1, Game::GetWaveManager()->GetWaveCount()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
 void PlayState_Wave::Render_Leave() const

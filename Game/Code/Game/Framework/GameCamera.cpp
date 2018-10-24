@@ -25,7 +25,6 @@ GameCamera::GameCamera()
 //
 GameCamera::~GameCamera()
 {
-
 }
 
 
@@ -38,18 +37,24 @@ void GameCamera::UpdatePositionBasedOnPlayers()
 
 	// Average the player's locations
 	Vector3 targetPos = Vector3::ZERO;
-	float playerCount = 0.f;
+	int playerCount = 0;
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
-		if (players[i] != nullptr)
+		if (Game::IsPlayerAlive(i))
 		{
 			targetPos += players[i]->GetEntityPosition();
-			playerCount += 1.0f;
+			playerCount++;
 		}
 	}
 
-	targetPos /= playerCount;
+	// No players == don't move
+	if (playerCount == 0)
+	{
+		return;
+	}
+
+	targetPos /= (float) playerCount;
 
 	Vector3 newPos = targetPos + m_offsetDirection * m_offsetDistance;
 	LookAt(newPos, targetPos);

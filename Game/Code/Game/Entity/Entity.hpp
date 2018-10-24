@@ -54,6 +54,8 @@ public:
 	float							GetMass() const;
 	float							GetInverseMass() const;
 
+	bool							IsPlayer() const;
+
 	// Producers
 	bool							IsMarkedForDelete() const;
 	Vector3							GetPositionForLocalCoords(const IntVector3& localCoords) const;
@@ -89,6 +91,8 @@ protected:
 
 	// Animation
 	VoxelAnimator*			m_animator = nullptr;
+
+	bool					m_isPlayer = false;
 
 	// Statics
 	static constexpr float	DEFAULT_MASS = 1.0f;

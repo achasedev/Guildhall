@@ -4,6 +4,7 @@
 /* Date: March 24th, 2018
 /* Description: Game class for general gameplay management
 /************************************************************************/
+#include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/GameCommon.hpp"
@@ -198,6 +199,21 @@ Player** Game::GetPlayers()
 WaveManager* Game::GetWaveManager()
 {
 	return s_instance->m_waveManager;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether the player at the given index exists and is not marked for delete (dead)
+//
+bool Game::IsPlayerAlive(unsigned int index)
+{
+	if (index >= MAX_PLAYERS)
+	{
+		return false;
+	}
+
+	Player* player = s_instance->m_players[index];
+	return (player != nullptr && !player->IsMarkedForDelete());
 }
 
 

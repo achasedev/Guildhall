@@ -45,6 +45,8 @@ public:
 	static Player**				GetPlayers();
 	static WaveManager*			GetWaveManager();
 
+	static bool					IsPlayerAlive(unsigned int index);
+
 
 private:
 	//-----Private Methods-----
@@ -54,7 +56,6 @@ private:
 	Game(const Game& copy) = delete;
 
 	void		CheckToUpdateGameState();
-	void		UpdateCameraOnInput();
 
 
 private:

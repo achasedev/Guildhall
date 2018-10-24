@@ -31,6 +31,7 @@ public:
 	bool IsCurrentWaveFinal() const;
 
 	int GetCurrentWaveNumber() const;
+	int GetWaveCount() const;
 
 
 public:

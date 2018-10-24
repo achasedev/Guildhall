@@ -42,6 +42,8 @@ public:
 
 	void TransitionToPlayState(PlayState* state);
 
+	bool AreAllPlayersDead() const;
+
 
 private:
 	//-----Private Data-----

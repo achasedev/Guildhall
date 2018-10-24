@@ -5,6 +5,7 @@
 /* Description: Implementation of the player class
 /************************************************************************/
 #include "Game/Entity/Player.hpp"
+#include "Game/Entity/AIEntity.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Entity/Projectile.hpp"
@@ -29,6 +30,9 @@ Player::Player(unsigned int playerID)
 	: MovingEntity(EntityDefinition::GetDefinition("Player"))
 	, m_playerID(playerID)
 {
+	m_isPlayer = true;
+	m_health = 10;
+	m_entityTeam = ENTITY_TEAM_PLAYER;
 }
 
 
@@ -111,6 +115,14 @@ void Player::Update()
 void Player::OnCollision(Entity* other)
 {
 	Entity::OnCollision(other);
+
+	// The player takes damage if the other is an enemy AI
+	if (other->GetTeam() != ENTITY_TEAM_PLAYER && dynamic_cast<AIEntity*>(other) != nullptr)
+	{
+		TakeDamage(1);
+		Vector3 direction = (m_position - other->GetEntityPosition()).GetNormalized();
+		m_physicsComponent->AddImpulse(direction * 50.f);
+	}
 }
 
 
@@ -129,6 +141,8 @@ void Player::OnDamageTaken(int damageAmount)
 void Player::OnDeath()
 {
 	Entity::OnDeath();
+
+	Game::GetWorld()->ParticalizeEntity(this);
 }
 
 
@@ -158,4 +172,16 @@ void Player::Shoot()
 	
 	World* world = Game::GetWorld();
 	world->AddEntity(proj);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Resets the player to be alive again after dying
+//
+void Player::Respawn()
+{
+	m_isMarkedForDelete = false;
+	m_health = 10;
+	
+	m_physicsComponent->StopAllMovement();
 }

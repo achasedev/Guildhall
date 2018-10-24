@@ -50,8 +50,8 @@ public:
 	bool		IsEntityOnGround(const Entity* entity) const;
 
 	// Utility
-	void ParticalizeEntity(Entity* entity);
-	void ParticalizeAllEntities();
+	void		ParticalizeEntity(Entity* entity);
+	void		ParticalizeAllEntities();
 	
 
 private:
