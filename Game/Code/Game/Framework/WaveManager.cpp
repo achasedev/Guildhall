@@ -154,7 +154,7 @@ void WaveManager::Update()
 
 		// Add a random amount on top of that for variance
 		int range = (int)(event.maxLiveSpawned - lowerBound);
-
+		
 		int addition = GetRandomIntInRange(0, range);
 		amountToSpawn += addition;
 

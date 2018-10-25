@@ -24,22 +24,16 @@ public:
 	virtual void Render_Enter() const override;
 	virtual void Render() const override;
 	virtual void Render_Leave() const override;
-
-
-public:
-	//-----Public Data-----
-	
-
-private:
-	//-----Private Methods-----
 	
 	
 private:
 	//-----Private Data-----
 	
-	Stopwatch m_restTimer;
+	// Timer for controlling when to move to the next wave state
+	Stopwatch				m_restTimer;
+		
 	static constexpr float REST_INTERVAL = 5.f;
-
 	static constexpr float REST_TRANSITION_IN_TIME = 1.0f;
 	static constexpr float REST_TRANSITION_OUT_TIME = 1.0f;
+
 };

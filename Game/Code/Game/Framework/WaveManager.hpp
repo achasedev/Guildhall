@@ -21,17 +21,19 @@ public:
 	WaveManager();
 	~WaveManager();
 
-	void Initialize(const char* filename);
-	void CleanUp();
+	void	Initialize(const char* filename);
+	void	CleanUp();
 
-	void Update();
+	void	Update();
 
-	void StartNextWave();
-	bool IsCurrentWaveFinished() const;
-	bool IsCurrentWaveFinal() const;
+	// Accessors
+	int		GetWaveCount() const;
+	bool	IsCurrentWaveFinal() const;
+	int		GetCurrentWaveNumber() const;
+	bool	IsCurrentWaveFinished() const;
 
-	int GetCurrentWaveNumber() const;
-	int GetWaveCount() const;
+	// Mutators
+	void	StartNextWave();
 
 
 public:
@@ -41,27 +43,29 @@ public:
 private:
 	//-----Private Methods-----
 	
-	void InitializeCoreInfo(const XMLElement& rootElement);
-	void InitializeSpawnPoints(const XMLElement& rootElement);
-	void InitializeWaves(const XMLElement& rootElement);
+	void	InitializeCoreInfo(const XMLElement& rootElement);
+	void	InitializeSpawnPoints(const XMLElement& rootElement);
+	void	InitializeWaves(const XMLElement& rootElement);
 
-	bool PerformWaveEndCheck();
+	bool	PerformWaveEndCheck();
 
-	int GetTotalSpawnCount() const;
-	int GetSpawnCountForType(const EntityDefinition* definition) const;
+	int		GetTotalSpawnCount() const;
+	int		GetSpawnCountForType(const EntityDefinition* definition) const;
 
 
 private:
 	//-----Private Data-----
-	
-	Stopwatch m_spawnTick;
 
-	bool m_currWaveFinished = false;
+	// State
+	Stopwatch					m_spawnTick;
 
-	int m_currWaveIndex = -1;
-	std::vector<Wave*> m_waves;
-	std::vector<SpawnPoint*> m_spawnPoints;
+	bool						m_currWaveFinished = false;
+	int							m_currWaveIndex = -1;
+	int							m_totalSpawnedThisWave = 0;
 
-	int m_maxSpawnedEntities = 100000;
-	int m_totalSpawnedThisWave = 0;
+	// Data
+	std::vector<Wave*>			m_waves;
+	std::vector<SpawnPoint*>	m_spawnPoints;
+	int							m_maxSpawnedEntities = 100000;
+
 };

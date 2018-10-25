@@ -1,3 +1,9 @@
+/************************************************************************/
+/* File: PlayState_Wave.cpp
+/* Author: Andrew Chase
+/* Date: October 25th 2018
+/* Description: Implementation of the Wave PlayState
+/************************************************************************/
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/GameCamera.hpp"
@@ -9,19 +15,32 @@
 #include "Game/Framework/PlayStates/PlayState_Defeat.hpp"
 #include "Game/Entity/Player.hpp"
 
+// For debug rendering the state
 #include "Engine/Core/Window.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
+
+//-----------------------------------------------------------------------------------------------
+// Constructor
+//
 PlayState_Wave::PlayState_Wave()
 	: PlayState(WAVE_TRANSITION_IN_TIME, WAVE_TRANSITION_OUT_TIME)
 {
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Destructor
+//
 PlayState_Wave::~PlayState_Wave()
 {
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Checks for player gameplay input and applies it
+//
 void PlayState_Wave::ProcessInput()
 {
 	// Check player input
@@ -36,6 +55,10 @@ void PlayState_Wave::ProcessInput()
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Updates the wave manager and then world
+//
 void PlayState_Wave::Update()
 {
 	WaveManager* waveMan = Game::GetWaveManager();
@@ -66,6 +89,9 @@ void PlayState_Wave::Update()
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Update the enter transition
+//
 bool PlayState_Wave::Enter()
 {
 	UpdateWorldAndCamera();
@@ -80,6 +106,10 @@ bool PlayState_Wave::Enter()
 	return false;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Updates the leave transition
+//
 bool PlayState_Wave::Leave()
 {
 	UpdateWorldAndCamera();
@@ -94,23 +124,31 @@ bool PlayState_Wave::Leave()
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Renders the enter transition
+//
 void PlayState_Wave::Render_Enter() const
 {
 	Game::GetWorld()->Render();
-
 	DebugRenderSystem::Draw2DText(Stringf("Wave Enter: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Renders the normal state of the game
+//
 void PlayState_Wave::Render() const
 {
 	Game::GetWorld()->Render();
-
 	DebugRenderSystem::Draw2DText(Stringf("Wave %i of %i", Game::GetWaveManager()->GetCurrentWaveNumber() + 1, Game::GetWaveManager()->GetWaveCount()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Renders the leave transition of the game
+//
 void PlayState_Wave::Render_Leave() const
 {
 	Game::GetWorld()->Render();
-
 	DebugRenderSystem::Draw2DText(Stringf("Wave Leave: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }

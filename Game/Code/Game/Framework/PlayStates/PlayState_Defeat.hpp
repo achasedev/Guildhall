@@ -26,14 +26,6 @@ public:
 	virtual void Render_Leave() const override;
 
 
-public:
-	//-----Public Data-----
-
-
-private:
-	//-----Private Methods-----
-
-
 private:
 	//-----Private Data-----
 

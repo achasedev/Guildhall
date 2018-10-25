@@ -10,15 +10,15 @@
 
 class EntityDefinition;
 
-// Single description for a spawn
+// Single description for a spawn event
 struct EntitySpawnEvent_t
 {
-	const EntityDefinition* definition = nullptr;
-	int countToSpawn = 0;
-	int minLiveSpawned = 0;
-	int maxLiveSpawned = 0;
-	int spawnDelay = 0;
-	int maxLiveThreshold = 0;
+	const EntityDefinition* definition = nullptr; // What to spawn
+	int countToSpawn = 0;		// Total amount to spawn in this event
+	int minLiveSpawned = 0;		// Ensure this many are on screen at all points in time
+	int maxLiveSpawned = 0;		// Ensure we never have more than this many spawned at once
+	int spawnDelay = 0;			// How many entities should spawn in the wave before this event should start
+	int maxLiveThreshold = 0;	// If the live number falls below this value, attempt to spawn more
 };
 
 class Wave

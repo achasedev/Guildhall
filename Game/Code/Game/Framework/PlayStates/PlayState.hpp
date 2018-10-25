@@ -27,6 +27,7 @@ public:
 	virtual void Render() const = 0;
 	virtual void Render_Leave() const = 0;
 
+	// Called before the state first enters/leaves
 	void StartEnterTimer();
 	void StartLeaveTimer();
 
@@ -40,8 +41,8 @@ protected:
 protected:
 	//-----Protected Data-----
 	
-	GameState_Playing* m_gameState = nullptr;
-	Stopwatch m_transitionTimer;
+	GameState_Playing*	m_gameState = nullptr;
+	Stopwatch			m_transitionTimer;
 
 	float m_transitionInTime = 0.f;
 	float m_transitionOutTime = 0.f;
