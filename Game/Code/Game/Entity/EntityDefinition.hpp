@@ -51,18 +51,14 @@ enum eCollisionTeamException
 struct CollisionDefinition_t
 {
 	CollisionDefinition_t()
-		: m_shape(COLLISION_SHAPE_DISC), m_response(COLLISION_RESPONSE_SHARE_CORRECTION), m_teamException(COLLISION_TEAM_EXCEPTION_NONE)
-		, m_xExtent(4.f), m_zExtent(4.f), m_height(8.f), m_collisionLayer(0) {}
+		: m_shape(COLLISION_SHAPE_DISC), m_response(COLLISION_RESPONSE_SHARE_CORRECTION), m_teamException(COLLISION_TEAM_EXCEPTION_NONE) {}
 
-	CollisionDefinition_t(eCollisionShape shape, eCollisionResponse response, eCollisionTeamException teamBehavior, float width, float length, float height, unsigned int collisionLayer)
-		: m_shape(shape), m_response(response), m_teamException(teamBehavior), m_xExtent(width), m_zExtent(length), m_height(height), m_collisionLayer(collisionLayer) {}
+	CollisionDefinition_t(eCollisionShape shape, eCollisionResponse response, eCollisionTeamException teamBehavior, unsigned int collisionLayer)
+		: m_shape(shape), m_response(response), m_teamException(teamBehavior), m_collisionLayer(collisionLayer) {}
 
 	eCollisionShape				m_shape;
 	eCollisionResponse			m_response;
 	eCollisionTeamException		m_teamException;
-	float						m_xExtent;
-	float						m_zExtent;
-	float						m_height;
 	unsigned int				m_collisionLayer;
 };
 
@@ -102,7 +98,6 @@ private:
 	//-----Private Data-----
 	
 	std::string					m_name;
-	IntVector3					m_dimensions;
 
 	// Movement
 	float m_maxMoveAcceleration = 300.f;

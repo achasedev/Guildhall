@@ -28,6 +28,9 @@ VoxelSprite::VoxelSprite(const std::string& name, const std::string& filename)
 	IntVector3 dimensions = northTexture->GetDimensions();
 	ASSERT_OR_DIE(dimensions.x == dimensions.z, Stringf("Error: VoxelSprite::VoxelSprite() had a texture with unequal xz dimensions, file was %s", filename.c_str()));
 
+	m_dimensions = northTexture->GetDimensions();
+	ASSERT_OR_DIE(m_dimensions.x == m_dimensions.z, "Error: VoxelSprite::VoxelSprite() has unequeal xz dimensions");
+
 	// Rotate to get the other 3 directions
 
 	// South
@@ -98,6 +101,15 @@ const VoxelTexture* VoxelSprite::GetTextureForOrientation(float angle) const
 	else if (cardinalAngle == 90.f)		{ return m_textures[DIRECTION_NORTH]; }
 	else if (cardinalAngle == 180.f)	{ return m_textures[DIRECTION_WEST]; }
 	else								{ return m_textures[DIRECTION_SOUTH]; }
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the dimensions of the voxel sprite
+//
+IntVector3 VoxelSprite::GetDimensions() const
+{
+	return m_dimensions;
 }
 
 

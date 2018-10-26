@@ -1,0 +1,5 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Window" file="Data/VoxelModels/Statics/Window.qef"/>
+
+</VoxelSprites>

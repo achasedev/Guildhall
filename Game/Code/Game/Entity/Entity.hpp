@@ -50,6 +50,7 @@ public:
 	ePhysicsType					GetPhysicsType() const;
 	const EntityDefinition*			GetEntityDefinition() const;
 	PhysicsComponent*				GetPhysicsComponent() const;
+	virtual IntVector3						GetDimensions() const;
 
 	float							GetMass() const;
 	float							GetInverseMass() const;

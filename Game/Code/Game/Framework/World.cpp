@@ -16,6 +16,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/HeatMap.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
+#include "Engine/Math/AABB3.hpp"
 
 #define DYNAMIC_COLLISION_MAX_ITERATION_COUNT (5)
 #define MAX_COLLISION_LAYERS (3)
@@ -68,6 +69,13 @@ void World::Inititalize()
 	
 	m_playerHeatmap->SetHeat(targetCoords, 0.f);
 	m_playerHeatmap->SolveMapUpToDistance(NAV_STATIC_COST + 1.f, m_costsMap);
+
+	for (int i = 0; i < 20; ++i)
+	{
+		Entity* entity = new Entity(EntityDefinition::GetDefinition("Window"));
+		entity->SetPosition(Vector3(GetRandomFloatInRange(20.f, 200.f), (float) m_groundElevation, GetRandomFloatInRange(20.f, 200.f)));
+		m_entities.push_back(entity);
+	}
 }
 
 
@@ -740,33 +748,33 @@ bool World::CheckAndCorrectEntityCollision(Entity* first, Entity* second)
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
 
-	bool wasCollision = false;
-	if (firstDef.m_shape == COLLISION_SHAPE_DISC)
-	{
-		if (secondDef.m_shape == COLLISION_SHAPE_DISC)
-		{
-			// Disc vs. Disc
-			wasCollision = CheckAndCorrect_DiscDisc(first, second);
-		}
-		else if (secondDef.m_shape == COLLISION_SHAPE_BOX)
-		{
-			// Disc vs. Box
-			wasCollision = CheckAndCorrect_BoxDisc(first, second);
-		}
-	}
-	else if (firstDef.m_shape == COLLISION_SHAPE_BOX)
-	{
-		if (secondDef.m_shape == COLLISION_SHAPE_DISC)
-		{
-			// Box vs. Disc
-			wasCollision = CheckAndCorrect_BoxDisc(first, second);
-		}
-		else if (secondDef.m_shape == COLLISION_SHAPE_BOX)
-		{
-			// Box vs. Box
-			wasCollision = CheckAndCorrect_BoxBox(first, second);
-		}
-	}
+	bool wasCollision = CheckAndCorrect_Voxel(first, second);
+// 	if (firstDef.m_shape == COLLISION_SHAPE_DISC)
+// 	{
+// 		if (secondDef.m_shape == COLLISION_SHAPE_DISC)
+// 		{
+// 			// Disc vs. Disc
+// 			wasCollision = CheckAndCorrect_DiscDisc(first, second);
+// 		}
+// 		else if (secondDef.m_shape == COLLISION_SHAPE_BOX)
+// 		{
+// 			// Disc vs. Box
+// 			wasCollision = CheckAndCorrect_BoxDisc(first, second);
+// 		}
+// 	}
+// 	else if (firstDef.m_shape == COLLISION_SHAPE_BOX)
+// 	{
+// 		if (secondDef.m_shape == COLLISION_SHAPE_DISC)
+// 		{
+// 			// Box vs. Disc
+// 			wasCollision = CheckAndCorrect_BoxDisc(first, second);
+// 		}
+// 		else if (secondDef.m_shape == COLLISION_SHAPE_BOX)
+// 		{
+// 			// Box vs. Box
+// 			wasCollision = CheckAndCorrect_BoxBox(first, second);
+// 		}
+// 	}
 
 	// Call collision callbacks
 	if (wasCollision)
@@ -855,305 +863,522 @@ void GetMassScalars(Entity* first, Entity* second, float& out_firstScalar, float
 	}
 }
 
+// 
+// //-----------------------------------------------------------------------------------------------
+// // Checks if two disc-collision entities overlap, and corrects them if so
+// //
+// bool World::CheckAndCorrect_DiscDisc(Entity* first, Entity* second)
+// {
+// 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
+// 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
+// 
+// 	float firstRadius = firstDef.m_xExtent;
+// 	float secondRadius = secondDef.m_xExtent;
+// 
+// 	Vector3 firstPosition = first->GetEntityPosition();
+// 	Vector3 secondPosition = second->GetEntityPosition();
+// 
+// 	// Height check
+// 	bool firstAboveSecond = (secondPosition.y + secondDef.m_height) < (firstPosition.y);
+// 	bool secondAboveFirst = (firstPosition.y + firstDef.m_height) < (secondPosition.y);
+// 
+// 	if (firstAboveSecond || secondAboveFirst)
+// 	{
+// 		return false;
+// 	}
+// 
+// 	float radiiSquared = (firstRadius + secondRadius) * (firstRadius + secondRadius);
+// 	float distanceSquared = (firstPosition - secondPosition).GetLengthSquared();
+// 
+// 	if (radiiSquared > distanceSquared)
+// 	{
+// 		// Split the difference in the overlap, based on mass
+// 		float overlap = (firstRadius + secondRadius) - (firstPosition - secondPosition).GetLength();
+// 		float firstScalar, secondScalar;
+// 		GetMassScalars(first, second, firstScalar, secondScalar);
+// 
+// 		Vector3 totalCorrection = overlap * (firstPosition - secondPosition).GetNormalized();
+// 		first->AddCollisionCorrection(firstScalar * totalCorrection);
+// 		second->AddCollisionCorrection(-secondScalar * totalCorrection);
+// 
+// 		return true;
+// 	}
+// 
+// 	return false;
+// }
+// 
+// 
+// //-----------------------------------------------------------------------------------------------
+// // Checks if a disc and a box entity are overlapping, and corrects them if so
+// //
+// bool World::CheckAndCorrect_BoxDisc(Entity* first, Entity* second)
+// {
+// 	bool isFirstBox = first->GetCollisionDefinition().m_shape == COLLISION_SHAPE_BOX;
+// 	Entity* boxEntity;
+// 	Entity* discEntity;
+// 
+// 	if (isFirstBox)
+// 	{
+// 		boxEntity = first;
+// 		discEntity = second;
+// 	}
+// 	else
+// 	{
+// 		boxEntity = second;
+// 		discEntity = first;
+// 	}
+// 
+// 	CollisionDefinition_t boxDef = boxEntity->GetCollisionDefinition();
+// 	CollisionDefinition_t discDef = discEntity->GetCollisionDefinition();
+// 
+// 	Vector3 discPosition = discEntity->GetEntityPosition();
+// 	Vector3 boxPosition = boxEntity->GetEntityPosition();
+// 
+// 	float discRadius	= discDef.m_xExtent;
+// 	Vector2 boxExtents	= Vector2(boxDef.m_xExtent, boxDef.m_zExtent);
+// 	AABB2 boxBounds		= AABB2(boxPosition.xz() - boxExtents, boxPosition.xz() + boxExtents);
+// 
+// 	// Height check
+// 	bool discAboveBox = ((boxPosition.y + boxDef.m_height) < (discPosition.y - discDef.m_height));
+// 	bool boxAboveDisc = (boxPosition.y > (discPosition.y + discDef.m_height));
+// 
+// 	if (discAboveBox || boxAboveDisc)
+// 	{
+// 		return false;
+// 	}
+// 
+// 	// Figure out which region the disc is in
+// 	Vector2 edgePoint;
+// 	if (discPosition.x < boxBounds.mins.x)	// Disc "to the left" of box
+// 	{
+// 		if (discPosition.z < boxBounds.mins.y) // Disc below the box
+// 		{
+// 			edgePoint = boxBounds.mins;
+// 		}
+// 		else if (discPosition.z > boxBounds.maxs.y) // Disc above the box
+// 		{
+// 			edgePoint = Vector2(boxBounds.mins.x, boxBounds.maxs.y);
+// 		}
+// 		else // Disc directly to the left
+// 		{
+// 			edgePoint = Vector2(boxBounds.mins.x, discPosition.z);
+// 		}
+// 	}
+// 	else if (discPosition.x > boxBounds.maxs.x) // Disc "to the right" of box
+// 	{
+// 		if (discPosition.z < boxBounds.mins.y) // Disc below the box
+// 		{
+// 			edgePoint = Vector2(boxBounds.maxs.x, boxBounds.mins.y);
+// 		}
+// 		else if (discPosition.z > boxBounds.maxs.y) // Disc above the box
+// 		{
+// 			edgePoint = boxBounds.maxs;
+// 		}
+// 		else // Disc directly to the right
+// 		{
+// 			edgePoint = Vector2(boxBounds.maxs.x, discPosition.z);
+// 		}
+// 	}
+// 	else // Disc within the box's x span
+// 	{
+// 		if (discPosition.z < boxBounds.mins.y) // Disc below the box
+// 		{
+// 			edgePoint = Vector2(discPosition.x, boxBounds.mins.y);
+// 		}
+// 		else if (discPosition.z > boxBounds.maxs.y) // Disc above the box
+// 		{
+// 			edgePoint = Vector2(discPosition.x, boxBounds.maxs.y);
+// 		}
+// 		else // Disc inside the box, special case requires additional logic
+// 		{
+// 			// Get closest from left right
+// 			// Get closest from top bottom
+// 			// Take the overall closest, and push that direction
+// 
+// 			float topDist = boxBounds.maxs.y - discPosition.z;
+// 			float bottomDist = discPosition.z - boxBounds.mins.y;
+// 			float leftDist = discPosition.x - boxBounds.mins.x;
+// 			float rightDist = boxBounds.maxs.x - discPosition.x;
+// 
+// 			if (leftDist < rightDist)
+// 			{
+// 				// left is min
+// 				if (topDist < bottomDist)
+// 				{
+// 					// left and top
+// 					if (leftDist < topDist)
+// 					{
+// 						// left
+// 						edgePoint = Vector2(boxBounds.mins.x, discPosition.z);
+// 					}
+// 					else
+// 					{
+// 						// top
+// 						edgePoint = Vector2(discPosition.x, boxBounds.maxs.y);
+// 					}
+// 				}
+// 				else
+// 				{
+// 					// left and bottom
+// 					if (leftDist < bottomDist)
+// 					{
+// 						// left
+// 						edgePoint = Vector2(boxBounds.mins.x, discPosition.z);
+// 					}
+// 					else
+// 					{
+// 						// bottom
+// 						edgePoint = Vector2(discPosition.x, boxBounds.mins.y);
+// 					}
+// 				}
+// 			}
+// 			else
+// 			{
+// 				// right is min
+// 				if (topDist < bottomDist)
+// 				{
+// 					// right and top
+// 					if (rightDist < topDist)
+// 					{
+// 						// right
+// 						edgePoint = Vector2(boxBounds.maxs.x, discPosition.z);
+// 					}
+// 					else
+// 					{
+// 						// top
+// 						edgePoint = Vector2(discPosition.x, boxBounds.maxs.y);
+// 					}
+// 				}
+// 				else
+// 				{
+// 					// right and bottom
+// 					if (rightDist < bottomDist)
+// 					{
+// 						// right
+// 						edgePoint = Vector2(boxBounds.maxs.x, discPosition.z);
+// 					}
+// 					else
+// 					{
+// 						// bottom
+// 						edgePoint = Vector2(discPosition.x, boxBounds.mins.y);
+// 					}
+// 				}
+// 			}
+// 
+// 			// Move to the edge point, then out
+// 			Vector2 direction = (discPosition.xz() - edgePoint);
+// 			float totalCorrection = direction.NormalizeAndGetLength() + discRadius;
+// 			direction *= totalCorrection;
+// 
+// 			// Correct, since we definitely have collision
+// 			float discScalar, boxScalar;
+// 			GetMassScalars(discEntity, boxEntity, discScalar, boxScalar);
+// 
+// 			Vector3 finalCorrection = Vector3(direction.x, 0.f, direction.y);
+// 			boxEntity->AddCollisionCorrection(boxScalar * finalCorrection);
+// 			discEntity->AddCollisionCorrection(-discScalar * finalCorrection);
+// 			return true;
+// 		}
+// 	}
+// 
+// 	// Got the edge point, now check for collision and correct
+// 	float distSquared = (discPosition.xz() - edgePoint).GetLengthSquared();
+// 	float radiusSquared = discRadius * discRadius;
+// 
+// 	if (distSquared < radiusSquared)
+// 	{
+// 		// Collision Occurred, correct
+// 		float overlap = discRadius - (discPosition.xz() - edgePoint).GetLength();
+// 		float discScalar, boxScalar;
+// 		GetMassScalars(first, second, discScalar, boxScalar);
+// 
+// 		Vector3 totalCorrection = overlap * (discPosition - boxPosition).GetNormalized();
+// 
+// 		discEntity->AddCollisionCorrection(discScalar * totalCorrection);
+// 		boxEntity->AddCollisionCorrection(-boxScalar * totalCorrection);
+// 		return true;
+// 	}
+// 
+// 	return false;
+// }
+// 
+// 
+// //-----------------------------------------------------------------------------------------------
+// // Checks if 2 box-collision entities are overlapping, and corrects them if so
+// //
+// bool World::CheckAndCorrect_BoxBox(Entity* first, Entity* second)
+// {
+// 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
+// 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
+// 
+// 	Vector3 firstPosition	= first->GetEntityPosition();
+// 	Vector3 secondPosition	= second->GetEntityPosition();
+// 
+// 	Vector2 firstExtents	= Vector2(firstDef.m_xExtent, firstDef.m_zExtent);
+// 	Vector2 secondExtents	= Vector2(secondDef.m_xExtent, secondDef.m_zExtent);
+// 
+// 	AABB2 firstBounds	= AABB2(firstPosition.xz() - firstExtents, firstPosition.xz() + firstExtents);
+// 	AABB2 secondBounds	= AABB2(secondPosition.xz() - secondExtents, secondPosition.xz() + secondExtents);
+// 
+// 	// Height check
+// 	bool firstAboveSecond = (secondPosition.y + secondDef.m_height) < (firstPosition.y);
+// 	bool secondAboveFirst = (firstPosition.y + firstDef.m_height) < (secondPosition.y);
+// 
+// 	if (firstAboveSecond || secondAboveFirst)
+// 	{
+// 		return false;
+// 	}
+// 
+// 	if (DoAABB2sOverlap(firstBounds, secondBounds))
+// 	{
+// 		Vector2 diff = (firstPosition.xz() - secondPosition.xz());
+// 		Vector2 absDiff = Vector2(AbsoluteValue(diff.x), AbsoluteValue(diff.y));
+// 		
+// 		float sumOfX = (firstExtents.x + secondExtents.x);
+// 		float sumOfY = (firstExtents.y + secondExtents.y);
+// 
+// 		float xOverlap = (sumOfX - absDiff.x);
+// 		float yOverlap = (sumOfY - absDiff.y);
+// 
+// 		Vector3 finalCorrection;
+// 		if (xOverlap < yOverlap)
+// 		{
+// 			float sign = (diff.x < 0.f ? -1.f : 1.f);
+// 			finalCorrection = Vector3(sign * xOverlap, 0.f, 0.f);
+// 		}
+// 		else
+// 		{
+// 			float sign = (diff.y < 0.f ? -1.f : 1.f);
+// 			finalCorrection = Vector3(0.f, 0.f, sign * yOverlap);
+// 		}
+// 
+// 		float firstScalar, secondScalar;
+// 		GetMassScalars(first, second, firstScalar, secondScalar);
+// 
+// 		first->AddCollisionCorrection(firstScalar * finalCorrection);
+// 		second->AddCollisionCorrection(-secondScalar * finalCorrection);
+// 		return true;
+// 	}
+// 
+// 	return false;
+// }
 
-//-----------------------------------------------------------------------------------------------
-// Checks if two disc-collision entities overlap, and corrects them if so
-//
-bool World::CheckAndCorrect_DiscDisc(Entity* first, Entity* second)
+struct BoundOverlapResult_t
 {
-	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
-	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
+	int xOverlap;
+	int yOverlap;
+	int zOverlap;
 
-	float firstRadius = firstDef.m_xExtent;
-	float secondRadius = secondDef.m_xExtent;
+	bool firstOnLeft;
+	bool firstInFront;
+	bool firstBelow;
+};
 
-	Vector3 firstPosition = first->GetEntityPosition();
-	Vector3 secondPosition = second->GetEntityPosition();
-
-	// Height check
-	bool firstAboveSecond = (secondPosition.y + secondDef.m_height) < (firstPosition.y);
-	bool secondAboveFirst = (firstPosition.y + firstDef.m_height) < (secondPosition.y);
-
-	if (firstAboveSecond || secondAboveFirst)
+bool DoBoundsOverlap(const AABB3& a, const AABB3& b, BoundOverlapResult_t& r)
+{
+	// Check if a is completely to the left of b
+	if (a.maxs.x <= b.mins.x)
+	{
+		return false;
+		// Check if a is completely to the right of b
+	}
+	else if (a.mins.x >= b.maxs.x)
+	{
+		return false;
+		// Check if a is completely above b
+	}
+	else if (a.mins.y >= b.maxs.y)
+	{
+		return false;
+		// Check if a is completely below b
+	}
+	else if (a.maxs.y <= b.mins.y)
+	{
+		return false;
+	}
+	else if (a.maxs.z <= b.mins.z)
+	{
+		return false;
+	}
+	else if (a.mins.z >= b.maxs.z)
 	{
 		return false;
 	}
 
-	float radiiSquared = (firstRadius + secondRadius) * (firstRadius + secondRadius);
-	float distanceSquared = (firstPosition - secondPosition).GetLengthSquared();
-
-	if (radiiSquared > distanceSquared)
+	// X Overlap
+	if (a.maxs.x - b.mins.x < b.maxs.x - a.mins.x)
 	{
-		// Split the difference in the overlap, based on mass
-		float overlap = (firstRadius + secondRadius) - (firstPosition - secondPosition).GetLength();
-		float firstScalar, secondScalar;
-		GetMassScalars(first, second, firstScalar, secondScalar);
-
-		Vector3 totalCorrection = overlap * (firstPosition - secondPosition).GetNormalized();
-		first->AddCollisionCorrection(firstScalar * totalCorrection);
-		second->AddCollisionCorrection(-secondScalar * totalCorrection);
-
-		return true;
-	}
-
-	return false;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Checks if a disc and a box entity are overlapping, and corrects them if so
-//
-bool World::CheckAndCorrect_BoxDisc(Entity* first, Entity* second)
-{
-	bool isFirstBox = first->GetCollisionDefinition().m_shape == COLLISION_SHAPE_BOX;
-	Entity* boxEntity;
-	Entity* discEntity;
-
-	if (isFirstBox)
-	{
-		boxEntity = first;
-		discEntity = second;
+		r.firstOnLeft = true;
+		r.xOverlap = Ceiling(a.maxs.x - b.mins.x);
 	}
 	else
 	{
-		boxEntity = second;
-		discEntity = first;
+		r.firstOnLeft = false;
+		r.xOverlap = Ceiling(b.maxs.x - a.mins.x);
 	}
 
-	CollisionDefinition_t boxDef = boxEntity->GetCollisionDefinition();
-	CollisionDefinition_t discDef = discEntity->GetCollisionDefinition();
-
-	Vector3 discPosition = discEntity->GetEntityPosition();
-	Vector3 boxPosition = boxEntity->GetEntityPosition();
-
-	float discRadius	= discDef.m_xExtent;
-	Vector2 boxExtents	= Vector2(boxDef.m_xExtent, boxDef.m_zExtent);
-	AABB2 boxBounds		= AABB2(boxPosition.xz() - boxExtents, boxPosition.xz() + boxExtents);
-
-	// Height check
-	bool discAboveBox = ((boxPosition.y + boxDef.m_height) < (discPosition.y - discDef.m_height));
-	bool boxAboveDisc = (boxPosition.y > (discPosition.y + discDef.m_height));
-
-	if (discAboveBox || boxAboveDisc)
+	// Y Overlap
+	if (a.maxs.y - b.mins.y < b.maxs.y - a.mins.y)
 	{
-		return false;
+		r.firstBelow = true;
+		r.yOverlap = Ceiling(a.maxs.y - b.mins.y);
 	}
-
-	// Figure out which region the disc is in
-	Vector2 edgePoint;
-	if (discPosition.x < boxBounds.mins.x)	// Disc "to the left" of box
+	else
 	{
-		if (discPosition.z < boxBounds.mins.y) // Disc below the box
-		{
-			edgePoint = boxBounds.mins;
-		}
-		else if (discPosition.z > boxBounds.maxs.y) // Disc above the box
-		{
-			edgePoint = Vector2(boxBounds.mins.x, boxBounds.maxs.y);
-		}
-		else // Disc directly to the left
-		{
-			edgePoint = Vector2(boxBounds.mins.x, discPosition.z);
-		}
+		r.firstBelow = false;
+		r.yOverlap = Ceiling(b.maxs.y - a.mins.y);
 	}
-	else if (discPosition.x > boxBounds.maxs.x) // Disc "to the right" of box
+
+	// z Overlap
+	if (a.maxs.z - b.mins.z < b.maxs.z - a.mins.z)
 	{
-		if (discPosition.z < boxBounds.mins.y) // Disc below the box
-		{
-			edgePoint = Vector2(boxBounds.maxs.x, boxBounds.mins.y);
-		}
-		else if (discPosition.z > boxBounds.maxs.y) // Disc above the box
-		{
-			edgePoint = boxBounds.maxs;
-		}
-		else // Disc directly to the right
-		{
-			edgePoint = Vector2(boxBounds.maxs.x, discPosition.z);
-		}
+		r.firstInFront = true;
+		r.zOverlap = Ceiling(a.maxs.z - b.mins.z);
 	}
-	else // Disc within the box's x span
+	else
 	{
-		if (discPosition.z < boxBounds.mins.y) // Disc below the box
-		{
-			edgePoint = Vector2(discPosition.x, boxBounds.mins.y);
-		}
-		else if (discPosition.z > boxBounds.maxs.y) // Disc above the box
-		{
-			edgePoint = Vector2(discPosition.x, boxBounds.maxs.y);
-		}
-		else // Disc inside the box, special case requires additional logic
-		{
-			// Get closest from left right
-			// Get closest from top bottom
-			// Take the overall closest, and push that direction
-
-			float topDist = boxBounds.maxs.y - discPosition.z;
-			float bottomDist = discPosition.z - boxBounds.mins.y;
-			float leftDist = discPosition.x - boxBounds.mins.x;
-			float rightDist = boxBounds.maxs.x - discPosition.x;
-
-			if (leftDist < rightDist)
-			{
-				// left is min
-				if (topDist < bottomDist)
-				{
-					// left and top
-					if (leftDist < topDist)
-					{
-						// left
-						edgePoint = Vector2(boxBounds.mins.x, discPosition.z);
-					}
-					else
-					{
-						// top
-						edgePoint = Vector2(discPosition.x, boxBounds.maxs.y);
-					}
-				}
-				else
-				{
-					// left and bottom
-					if (leftDist < bottomDist)
-					{
-						// left
-						edgePoint = Vector2(boxBounds.mins.x, discPosition.z);
-					}
-					else
-					{
-						// bottom
-						edgePoint = Vector2(discPosition.x, boxBounds.mins.y);
-					}
-				}
-			}
-			else
-			{
-				// right is min
-				if (topDist < bottomDist)
-				{
-					// right and top
-					if (rightDist < topDist)
-					{
-						// right
-						edgePoint = Vector2(boxBounds.maxs.x, discPosition.z);
-					}
-					else
-					{
-						// top
-						edgePoint = Vector2(discPosition.x, boxBounds.maxs.y);
-					}
-				}
-				else
-				{
-					// right and bottom
-					if (rightDist < bottomDist)
-					{
-						// right
-						edgePoint = Vector2(boxBounds.maxs.x, discPosition.z);
-					}
-					else
-					{
-						// bottom
-						edgePoint = Vector2(discPosition.x, boxBounds.mins.y);
-					}
-				}
-			}
-
-			// Move to the edge point, then out
-			Vector2 direction = (discPosition.xz() - edgePoint);
-			float totalCorrection = direction.NormalizeAndGetLength() + discRadius;
-			direction *= totalCorrection;
-
-			// Correct, since we definitely have collision
-			float discScalar, boxScalar;
-			GetMassScalars(discEntity, boxEntity, discScalar, boxScalar);
-
-			Vector3 finalCorrection = Vector3(direction.x, 0.f, direction.y);
-			boxEntity->AddCollisionCorrection(boxScalar * finalCorrection);
-			discEntity->AddCollisionCorrection(-discScalar * finalCorrection);
-			return true;
-		}
+		r.firstInFront = false;
+		r.zOverlap = Ceiling(b.maxs.z - a.mins.z);
 	}
 
-	// Got the edge point, now check for collision and correct
-	float distSquared = (discPosition.xz() - edgePoint).GetLengthSquared();
-	float radiusSquared = discRadius * discRadius;
-
-	if (distSquared < radiusSquared)
-	{
-		// Collision Occurred, correct
-		float overlap = discRadius - (discPosition.xz() - edgePoint).GetLength();
-		float discScalar, boxScalar;
-		GetMassScalars(first, second, discScalar, boxScalar);
-
-		Vector3 totalCorrection = overlap * (discPosition - boxPosition).GetNormalized();
-
-		discEntity->AddCollisionCorrection(discScalar * totalCorrection);
-		boxEntity->AddCollisionCorrection(-boxScalar * totalCorrection);
-		return true;
-	}
-
-	return false;
+	return true;
 }
 
-
+#include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 //-----------------------------------------------------------------------------------------------
-// Checks if 2 box-collision entities are overlapping, and corrects them if so
+// Checks for collision between the two entities on a per-voxel basis, and corrects them if there
+// was collision
 //
-bool World::CheckAndCorrect_BoxBox(Entity* first, Entity* second)
+bool World::CheckAndCorrect_Voxel(Entity* first, Entity* second)
 {
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
 
-	Vector3 firstPosition	= first->GetEntityPosition();
-	Vector3 secondPosition	= second->GetEntityPosition();
+	Vector3 firstPosition = first->GetEntityPosition();
+	Vector3 secondPosition = second->GetEntityPosition();
+ 
+	IntVector3 firstDimensions = first->GetDimensions();
+	IntVector3 secondDimensions = second->GetDimensions();
 
-	Vector2 firstExtents	= Vector2(firstDef.m_xExtent, firstDef.m_zExtent);
-	Vector2 secondExtents	= Vector2(secondDef.m_xExtent, secondDef.m_zExtent);
+	Vector3 firstTopRight = firstPosition + Vector3(firstDimensions);
+	Vector3 secondTopRight = secondPosition + Vector3(secondDimensions);
 
-	AABB2 firstBounds	= AABB2(firstPosition.xz() - firstExtents, firstPosition.xz() + firstExtents);
-	AABB2 secondBounds	= AABB2(secondPosition.xz() - secondExtents, secondPosition.xz() + secondExtents);
+	AABB3 firstBounds = AABB3(firstPosition, firstTopRight);
+	AABB3 secondBounds = AABB3(secondPosition, secondTopRight);
 
-	// Height check
-	bool firstAboveSecond = (secondPosition.y + secondDef.m_height) < (firstPosition.y);
-	bool secondAboveFirst = (firstPosition.y + firstDef.m_height) < (secondPosition.y);
 
-	if (firstAboveSecond || secondAboveFirst)
+	// They intersect, so check the voxels of the intersection
+	BoundOverlapResult_t r;
+	bool boundsOverlap = DoBoundsOverlap(firstBounds, secondBounds, r);
+
+	if (!boundsOverlap)
 	{
 		return false;
 	}
 
-	if (DoAABBsOverlap(firstBounds, secondBounds))
+	GUARANTEE_OR_DIE(r.xOverlap != 0 && r.yOverlap != 0 && r.zOverlap != 0, "Overlaps had 0 component values");
+
+	int firstXOffset = 0;
+	int firstYOffset = 0;
+	int firstZOffset = 0;
+	int secondXOffset = 0;
+	int secondYOffset = 0;
+	int secondZOffset = 0;
+
+	if (r.firstOnLeft)
 	{
-		Vector2 diff = (firstPosition.xz() - secondPosition.xz());
-		Vector2 absDiff = Vector2(AbsoluteValue(diff.x), AbsoluteValue(diff.y));
-		
-		float sumOfX = (firstExtents.x + secondExtents.x);
-		float sumOfY = (firstExtents.y + secondExtents.y);
-
-		float xOverlap = (sumOfX - absDiff.x);
-		float yOverlap = (sumOfY - absDiff.y);
-
-		Vector3 finalCorrection;
-		if (xOverlap < yOverlap)
-		{
-			float sign = (diff.x < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(sign * xOverlap, 0.f, 0.f);
-		}
-		else
-		{
-			float sign = (diff.y < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(0.f, 0.f, sign * yOverlap);
-		}
-
-		float firstScalar, secondScalar;
-		GetMassScalars(first, second, firstScalar, secondScalar);
-
-		first->AddCollisionCorrection(firstScalar * finalCorrection);
-		second->AddCollisionCorrection(-secondScalar * finalCorrection);
-		return true;
+		firstXOffset = (int) firstDimensions.x - r.xOverlap;
+	}
+	else
+	{
+		secondXOffset = (int) secondDimensions.x - r.xOverlap;
 	}
 
-	return false;
+	if (r.firstBelow)
+	{
+		firstYOffset = (int) firstDimensions.y - r.yOverlap;
+	}
+	else
+	{
+		secondYOffset = (int) secondDimensions.y - r.yOverlap;
+	}
+
+	if (r.firstInFront)
+	{
+		firstZOffset = (int) firstDimensions.z - r.zOverlap;
+	}
+	else
+	{
+		secondZOffset = (int) secondDimensions.z - r.zOverlap;
+	}
+
+	const VoxelTexture* firstTexture = first->GetTextureForOrientation();
+	const VoxelTexture* secondTexture = second->GetTextureForOrientation();
+
+	boundsOverlap = false;
+	for (int yIndex = 0; yIndex < r.yOverlap; ++yIndex)
+	{
+		for (int zIndex = 0; zIndex < r.zOverlap; ++zIndex)
+		{
+			uint32_t firstFlags = firstTexture->GetCollisionByteForRow(yIndex + firstYOffset, zIndex + firstZOffset);
+			uint32_t secondFlags = secondTexture->GetCollisionByteForRow(yIndex + secondYOffset, zIndex + secondZOffset);
+
+			if (r.firstOnLeft)
+			{
+				firstFlags = firstFlags << (firstDimensions.x - r.xOverlap);
+			}
+			else
+			{
+				secondFlags = secondFlags << (secondDimensions.x - r.xOverlap);
+			}
+
+			if ((firstFlags & secondFlags) != 0)
+			{
+				boundsOverlap = true;
+				break;
+			}
+		}
+
+		if (boundsOverlap)
+		{
+			break;
+		}
+	}
+
+	if (!boundsOverlap)
+	{
+		return false;
+	}
+
+	Vector2 diff = (firstPosition.xz() - secondPosition.xz());
+	Vector2 absDiff = Vector2(AbsoluteValue(diff.x), AbsoluteValue(diff.y));
+
+	float sumOfX = (firstDimensions.x + secondDimensions.x) * 0.5f;
+	float sumOfZ = (firstDimensions.z + secondDimensions.z) * 0.5f;
+
+	float xActualOverlap = (sumOfX - absDiff.x);
+	float zActualOverlap = (sumOfZ - absDiff.y);
+
+	Vector3 finalCorrection;
+	if (xActualOverlap < zActualOverlap)
+	{
+		float sign = (diff.x < 0.f ? -1.f : 1.f);
+		finalCorrection = Vector3(sign * xActualOverlap, 0.f, 0.f);
+	}
+	else
+	{
+		float sign = (diff.y < 0.f ? -1.f : 1.f);
+		finalCorrection = Vector3(0.f, 0.f, sign * zActualOverlap);
+	}
+
+	float firstScalar, secondScalar;
+	GetMassScalars(first, second, firstScalar, secondScalar);
+
+	first->AddCollisionCorrection(firstScalar * finalCorrection);
+	second->AddCollisionCorrection(-secondScalar * finalCorrection);
+	return true;
 }
+
 
 
 //-----------------------------------------------------------------------------------------------

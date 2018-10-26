@@ -7,6 +7,7 @@
 #pragma once
 #include <map>
 #include <string>
+#include "Engine/Math/IntVector3.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 
 // For directionality
@@ -31,6 +32,9 @@ public:
 	// Accessors
 	const VoxelTexture*			GetTextureForOrientation(float angle) const;
 
+	// Producers
+	IntVector3					GetDimensions() const;
+
 	// Statics
 	static void					LoadVoxelSprites(const std::string& filename);
 	static const VoxelSprite*	GetVoxelSprite(const std::string& name);
@@ -47,6 +51,7 @@ private:
 	//-----Private Data-----
 	
 	std::string		m_name;
+	IntVector3		m_dimensions;
 	VoxelTexture*	m_textures[NUM_DIRECTIONS];
 
 	// All sprites in the game are stored here

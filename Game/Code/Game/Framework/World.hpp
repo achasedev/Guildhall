@@ -78,10 +78,11 @@ private:
 
 	// Collision
 	bool CheckAndCorrectEntityCollision(Entity* first, Entity* second);
-	bool CheckAndCorrect_DiscDisc(Entity* first, Entity* second);
-	bool CheckAndCorrect_BoxDisc(Entity* first, Entity* second);
-	bool CheckAndCorrect_BoxBox(Entity* first, Entity* second);
+	//bool CheckAndCorrect_DiscDisc(Entity* first, Entity* second);
+	//bool CheckAndCorrect_BoxDisc(Entity* first, Entity* second);
+	//bool CheckAndCorrect_BoxBox(Entity* first, Entity* second);
 
+	bool CheckAndCorrect_Voxel(Entity* first, Entity* second);
 
 
 private:

@@ -1,0 +1,5 @@
+<VoxelSprites>
+
+	<VoxelSprite name="TestCube" file="Data/VoxelModels/TestCube.qef"/>
+
+</VoxelSprites>

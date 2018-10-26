@@ -40,6 +40,20 @@ bool AreCoordsOnEdge(const IntVector3& coords, const IntVector3& dimensions)
 	return false;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Destructor
+//
+VoxelGrid::~VoxelGrid()
+{
+	if (m_gridColors != nullptr)
+	{
+		free(m_gridColors);
+		m_gridColors = nullptr;
+	}
+}
+
+
 //-----------------------------------------------------------------------------------------------
 // Initializes the grid buffers and dimensions
 //
@@ -113,17 +127,11 @@ void VoxelGrid::DrawEntity(const Entity* entity)
 
 	const VoxelTexture* texture = entity->GetTextureForOrientation();
 	Vector3 position = entity->GetEntityPosition();
-	IntVector3 dimensions = texture->GetDimensions();
-	IntVector3 halfDimensions = dimensions / 2;
 
 	// Coordinate the object occupies (object bottom center)
 	IntVector3 coordinatePosition = IntVector3(position.x, position.y, position.z);
 
-	IntVector3 bottomLeft = coordinatePosition;
-	bottomLeft.x -= halfDimensions.x;
-	bottomLeft.z -= halfDimensions.z;
-
-	Draw3DTexture(texture, bottomLeft);
+	Draw3DTexture(texture, coordinatePosition);
 }
 
 
@@ -188,16 +196,12 @@ void VoxelGrid::DebugDrawEntityCollision(const Entity* entity)
 
 	const VoxelTexture* texture = entity->GetTextureForOrientation();
 	Vector3 position = entity->GetEntityPosition();
-	IntVector3 dimensions = entity->GetEntityDefinition()->GetDimensions();
-
-	IntVector3 halfDimensions = dimensions / 2;
+	IntVector3 dimensions = entity->GetDimensions();
 
 	// Coordinate the object occupies (object bottom center)
 	IntVector3 coordinatePosition = IntVector3(position.x, position.y, position.z);
 
 	IntVector3 bottomLeft = coordinatePosition;
-	bottomLeft.x -= halfDimensions.x;
-	bottomLeft.z -= halfDimensions.z;
 
 	for (int xOff = 0; xOff < dimensions.x; ++xOff)
 	{

@@ -25,7 +25,7 @@ BehaviorComponent_PursueJump::BehaviorComponent_PursueJump()
 void BehaviorComponent_PursueJump::Initialize(MovingEntity* owningEntity)
 {
 	BehaviorComponent::Initialize(owningEntity);
-	m_jumpSensorDistance = m_owningEntity->GetCollisionDefinition().m_xExtent + SENSOR_OFFSET_DISTANCE;
+	m_jumpSensorDistance = m_owningEntity->GetDimensions().z * 0.5f + SENSOR_OFFSET_DISTANCE;
 }
 
 

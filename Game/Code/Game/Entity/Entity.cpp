@@ -53,12 +53,17 @@ Entity::~Entity()
 	}
 }
 
-
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 //-----------------------------------------------------------------------------------------------
 // Update
 //
 void Entity::Update()
 {
+	DebugRenderOptions options;
+	options.m_isWireFrame = true;
+	options.m_lifetime = 0.f;
+
+	//DebugRenderSystem::DrawCube(m_position + Vector3(GetDimensions()) / 2.f, options, Vector3(GetDimensions()));
 }
 
 
@@ -232,6 +237,15 @@ PhysicsComponent* Entity::GetPhysicsComponent() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the dimensions of the entity
+//
+IntVector3 Entity::GetDimensions() const
+{
+	return m_definition->GetDimensions();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the mass of the entity
 //
 float Entity::GetMass() const
@@ -272,11 +286,7 @@ bool Entity::IsMarkedForDelete() const
 //
 Vector3 Entity::GetPositionForLocalCoords(const IntVector3& localCoords) const
 {
-	IntVector3 halfDimensions = m_definition->m_dimensions / 2;
-
-	IntVector3 entityPositionCoords = GetEntityCoordinatePosition();
-
-	IntVector3 bottomLeft = entityPositionCoords - IntVector3(halfDimensions.x, 0, halfDimensions.z);
+	IntVector3 bottomLeft = GetEntityCoordinatePosition();
 
 	Vector3 position = Vector3(bottomLeft + localCoords);
 	position += Vector3(0.5f, 0.f, 0.5f);
@@ -290,7 +300,7 @@ Vector3 Entity::GetPositionForLocalCoords(const IntVector3& localCoords) const
 //
 Vector3 Entity::GetPositionForLocalIndex(unsigned int index) const
 {
-	IntVector3 dimensions = m_definition->m_dimensions;
+	IntVector3 dimensions = GetDimensions();
 
 	int y = index / (dimensions.x * dimensions.z);
 	int leftOver = index % (dimensions.x * dimensions.z);

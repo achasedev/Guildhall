@@ -117,12 +117,12 @@ void Player::OnCollision(Entity* other)
 	Entity::OnCollision(other);
 
 	// The player takes damage if the other is an enemy AI
-	if (other->GetTeam() != ENTITY_TEAM_PLAYER && dynamic_cast<AIEntity*>(other) != nullptr)
-	{
-		TakeDamage(1);
-		Vector3 direction = (m_position - other->GetEntityPosition()).GetNormalized();
-		m_physicsComponent->AddImpulse(direction * 50.f);
-	}
+// 	if (other->GetTeam() != ENTITY_TEAM_PLAYER && dynamic_cast<AIEntity*>(other) != nullptr)
+// 	{
+// 		TakeDamage(1);
+// 		Vector3 direction = (m_position - other->GetEntityPosition()).GetNormalized();
+// 		m_physicsComponent->AddImpulse(direction * 50.f);
+// 	}
 }
 
 

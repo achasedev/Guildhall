@@ -1,6 +1,6 @@
 <EntityDefinitions>
 
-	<EntityDefinition name="Player" dimensions="8,8,8">
+	<EntityDefinition name="Player">
 
 		<!--Movement Parameters-->
 		<Movement maxAcceleration="300.0" maxSpeed="40.0" maxDeceleration="100.0" jumpImpulse="80.0"/>
@@ -10,26 +10,43 @@
 
 		<!--Physics-->
 		<Physics physicsType="dynamic" hasGravity="true">
-			<CollisionDefinition shape="disc" response="share_correction" xExtent="4.0" zExtent="4.0" height="8.0"/>
+			<CollisionDefinition shape="disc" response="share_correction"/>
 		</Physics>
 
 		<!--AI-->
 
 	</EntityDefinition>
 
-		<EntityDefinition name="Bullet" dimensions="1,1,1">
+  <EntityDefinition name="Player_test">
+
+    <!--Movement Parameters-->
+    <Movement maxAcceleration="300.0" maxSpeed="40.0" maxDeceleration="100.0" jumpImpulse="80.0"/>
+
+    <!--Visuals-->
+    <Animation defaultSprite="TestCube"/>
+
+    <!--Physics-->
+    <Physics physicsType="dynamic" hasGravity="true">
+      <CollisionDefinition shape="disc" response="share_correction"/>
+    </Physics>
+
+    <!--AI-->
+
+  </EntityDefinition>
+
+		<EntityDefinition name="Bullet">
 
 		<!--Visuals-->
 		<Animation defaultSprite="Bullet"/>
 
 		<!--Physics-->
 		<Physics physicsType="dynamic" hasGravity="false">
-			<CollisionDefinition shape="box" response="ignore_correction" teamException="same" xExtent="0.5" zExtent="0.5" height="1.0" layer="1"/>
+			<CollisionDefinition shape="box" response="ignore_correction" teamException="same" layer="1"/>
 		</Physics>
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Robot" dimensions="8,8,8">
+	<EntityDefinition name="Robot">
 
 		<!--Movement Parameters-->
 		<Movement maxAcceleration="3000.0" maxSpeed="20.0" maxDeceleration="100.0" jumpImpulse="120.0"/>
@@ -39,7 +56,7 @@
 
 		<!--Physics-->
 		<Physics physicsType="dynamic" hasGravity="true">
-			<CollisionDefinition shape="disc" response="share_correction" xExtent="4.0" zExtent="4.0" height="8.0"/>
+			<CollisionDefinition shape="disc" response="share_correction" />
 		</Physics>
 
 		<!--AI-->
@@ -50,24 +67,57 @@
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Wall" dimensions="8,8,8">
+  <EntityDefinition name="Robot_test">
+
+    <!--Movement Parameters-->
+    <Movement maxAcceleration="3000.0" maxSpeed="2.0" maxDeceleration="100.0" jumpImpulse="120.0"/>
+
+    <!--Visuals-->
+    <Animation defaultSprite="TestCube"/>
+
+    <!--Physics-->
+    <Physics physicsType="dynamic" hasGravity="true">
+      <CollisionDefinition shape="disc" response="share_correction" />
+    </Physics>
+
+    <!--AI-->
+    <AI>
+      <!--<Shoot projectile="Bullet" fireRate="1.0"/>-->
+      <PursueDirect/>
+    </AI>
+
+  </EntityDefinition>
+
+	<EntityDefinition name="Wall">
 
 		<!--Visuals-->
 		<Animation defaultSprite="Wall"/>
 
 		<!--Physics-->
 		<Physics physicsType="static">
-			<CollisionDefinition shape="box" response="no_correction" xExtent="4.0" zExtent="4.0" height="8.0"/>
+			<CollisionDefinition shape="box" response="no_correction"/>
+		</Physics>
+
+	</EntityDefinition>
+
+	<EntityDefinition name="Window">
+
+		<!--Visuals-->
+		<Animation defaultSprite="Window"/>
+
+		<!--Physics-->
+		<Physics physicsType="static">
+			<CollisionDefinition shape="box" response="no_correction"/>
 		</Physics>
 
 	</EntityDefinition>
 
 
-	<EntityDefinition name="Particle" dimensions="1,1,1">
+	<EntityDefinition name="Particle">
 
 		<!--Physics-->
 		<Physics physicsType="dynamic" hasGravity="true">
-			<CollisionDefinition shape="box" response="full_correction" xExtent="0.5" zExtent="0.5" height="1.0"/>
+			<CollisionDefinition shape="box" response="full_correction"/>
 		</Physics>
 
 		<!--AI-->

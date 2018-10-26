@@ -23,6 +23,8 @@ class VoxelGrid
 public:
 	//-----Public Methods-----
 
+	~VoxelGrid();
+
 	// Initializers
 	void				Initialize(const IntVector3& voxelDimensions);
 	void				BuildMeshAndDraw();

@@ -13,6 +13,7 @@
 #include "Game/Entity/Components/BehaviorComponent_PursueDirect.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
+#include "Engine/Rendering/Resources/VoxelTexture.hpp"
 
 // Global map for all entity definitions
 std::map<std::string, const EntityDefinition*> EntityDefinition::s_definitions;
@@ -86,9 +87,6 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 	m_name = ParseXmlAttribute(entityElement, "name");
 	ASSERT_OR_DIE(m_name.size() > 0, "Error: EntityDefinition lacks a name");
 
-	// Dimensions
-	m_dimensions = ParseXmlAttribute(entityElement, "dimensions", IntVector3(8, 8, 8));
-
 	// Movement
 	const XMLElement* moveElement = entityElement.FirstChildElement("Movement");
 	if (moveElement != nullptr)
@@ -108,6 +106,8 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 
 		std::string defaultSpriteName = ParseXmlAttribute(*animElement, "defaultSprite", "default");
 		m_defaultSprite = VoxelSprite::GetVoxelSprite(defaultSpriteName);
+
+		ASSERT_OR_DIE(m_defaultSprite != nullptr, "Error: Default sprite not found");
 	}
 
 	// Physics
@@ -133,13 +133,9 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 			std::string teamExceptionText = ParseXmlAttribute(*collisionElement, "teamException", "none");
 			eCollisionTeamException teamException = ConvertCollisionTeamExceptionFromString(teamExceptionText);
 
-			float xExtent	= ParseXmlAttribute(*collisionElement, "xExtent",	4.0f);
-			float zExtent	= ParseXmlAttribute(*collisionElement, "zExtent",	4.0f);
-			float height	= ParseXmlAttribute(*collisionElement, "height",	8.0f);
-
 			int layer = ParseXmlAttribute(*collisionElement, "layer", 0);
 
-			m_collisionDef = CollisionDefinition_t(shape, response, teamException, xExtent, zExtent, height, (unsigned int) layer);
+			m_collisionDef = CollisionDefinition_t(shape, response, teamException, (unsigned int) layer);
 		}
 	}
 
@@ -215,7 +211,7 @@ std::string EntityDefinition::GetName() const
 //
 IntVector3 EntityDefinition::GetDimensions() const
 {
-	return m_dimensions;
+	return m_defaultSprite->GetDimensions();
 }
 
 
