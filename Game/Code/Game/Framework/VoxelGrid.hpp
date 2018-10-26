@@ -33,6 +33,9 @@ public:
 	void				DrawGround(unsigned int groundElevation);
 	void				Draw3DTexture(const VoxelTexture* texture, const IntVector3& position);
 
+	void				DebugDrawEntityCollision(const Entity* entity);
+
+
 	// Accessors
 	int					GetVoxelCount() const;
 	int					GetIndexForCoords(const IntVector3& coords) const;

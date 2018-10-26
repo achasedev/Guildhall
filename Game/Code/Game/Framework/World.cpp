@@ -106,12 +106,17 @@ void World::CleanUp()
 	m_particles.clear();
 }
 
-
+#include "Engine/Input/InputSystem.hpp"
 //-----------------------------------------------------------------------------------------------
 // Update
 //
 void World::Update()
 {
+	if (InputSystem::GetInstance()->WasKeyJustPressed('F'))
+	{
+		m_drawCollision = !m_drawCollision;
+	}
+
 	PROFILE_LOG_SCOPE_FUNCTION();
 
 	// "Thinking" and other general updating (animation)
@@ -129,8 +134,8 @@ void World::Update()
 	DeleteMarkedEntities();
 
 	// Navigation
-	UpdateCostMap();
-	UpdatePlayerHeatmap();
+	//UpdateCostMap();
+	//UpdatePlayerHeatmap();
 }	
 
 
@@ -404,7 +409,7 @@ void World::CheckStaticEntityCollisions()
 		}
 	}
 }
-#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Checks for all dynamic vs. dynamic collisions in the scene, and corrects them
@@ -642,7 +647,14 @@ void World::DrawDynamicEntitiesToGrid()
 	{
 		if (m_entities[entityIndex]->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC && !m_entities[entityIndex]->IsMarkedForDelete())
 		{
-			m_voxelGrid->DrawEntity(m_entities[entityIndex]);
+			if (m_drawCollision)
+			{
+				m_voxelGrid->DebugDrawEntityCollision(m_entities[entityIndex]);
+			}
+			else
+			{
+				m_voxelGrid->DrawEntity(m_entities[entityIndex]);
+			}
 		}
 	}
 }

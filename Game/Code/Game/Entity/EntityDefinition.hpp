@@ -81,6 +81,7 @@ public:
 	
 	
 	std::string	GetName() const;
+	IntVector3 GetDimensions() const;
 	BehaviorComponent* CloneBehaviorPrototype(unsigned int index) const;
 
 	bool		HasGravity() const;

@@ -74,7 +74,6 @@ VoxelSprite::VoxelSprite(const std::string& name, const std::string& filename)
 			{
 				int sourceIndex = y * (dimensions.x * dimensions.z) + z * dimensions.x + x;
 				westTexture->SetColorAtIndex(destIndex, northTexture->GetColorAtIndex(sourceIndex));
-
 				destIndex++;
 			}
 		}

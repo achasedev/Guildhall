@@ -180,6 +180,49 @@ void VoxelGrid::Draw3DTexture(const VoxelTexture* texture, const IntVector3& bot
 
 
 //-----------------------------------------------------------------------------------------------
+// Draws the collision representation of the entity to the grid
+//
+void VoxelGrid::DebugDrawEntityCollision(const Entity* entity)
+{
+	PROFILE_LOG_SCOPE_FUNCTION();
+
+	const VoxelTexture* texture = entity->GetTextureForOrientation();
+	Vector3 position = entity->GetEntityPosition();
+	IntVector3 dimensions = entity->GetEntityDefinition()->GetDimensions();
+
+	IntVector3 halfDimensions = dimensions / 2;
+
+	// Coordinate the object occupies (object bottom center)
+	IntVector3 coordinatePosition = IntVector3(position.x, position.y, position.z);
+
+	IntVector3 bottomLeft = coordinatePosition;
+	bottomLeft.x -= halfDimensions.x;
+	bottomLeft.z -= halfDimensions.z;
+
+	for (int xOff = 0; xOff < dimensions.x; ++xOff)
+	{
+		for (int yOff = 0; yOff < dimensions.y; ++yOff)
+		{
+			for (int zOff = 0; zOff < dimensions.z; ++zOff)
+			{
+				IntVector3 localCoords = IntVector3(xOff, yOff, zOff);
+				IntVector3 globalCoords = bottomLeft + localCoords;
+
+				int globalIndex = GetIndexForCoords(globalCoords);
+				if (globalIndex != -1)
+				{
+					if (texture->DoLocalCoordsHaveCollision(localCoords))
+					{
+						m_gridColors[globalIndex] = Rgba::RED;
+					}
+				}
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the number of voxels in this grid (solid and non-solid)
 //
 int VoxelGrid::GetVoxelCount() const

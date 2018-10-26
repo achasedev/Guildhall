@@ -211,6 +211,15 @@ std::string EntityDefinition::GetName() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the (x,y,z) dimensions of the entity
+//
+IntVector3 EntityDefinition::GetDimensions() const
+{
+	return m_dimensions;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns a behavior component clone of the prototype at the given index
 //
 BehaviorComponent* EntityDefinition::CloneBehaviorPrototype(unsigned int index) const

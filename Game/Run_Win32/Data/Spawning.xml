@@ -15,23 +15,7 @@
 	<Waves>
 
 		<Wave>
-			<Spawn entity="Robot" min_spawned="10" max_spawned="100" total_to_spawn="50"/>
-		</Wave> 
-
-		<Wave>
-			<Spawn entity="Robot" min_spawned="15" max_spawned="100" total_to_spawn="70"/>
-		</Wave> 
-
-		<Wave>
-			<Spawn entity="Robot" min_spawned="20" max_spawned="100" total_to_spawn="100"/>
-		</Wave> 
-
-		<Wave>
-			<Spawn entity="Robot" min_spawned="25" max_spawned="100" total_to_spawn="200"/>
-		</Wave> 
-
-		<Wave>
-			<Spawn entity="Robot" min_spawned="30" max_spawned="100" total_to_spawn="300"/>
+			<Spawn entity="Robot" min_spawned="1" max_spawned="1" total_to_spawn="1"/>
 		</Wave> 
 
 	</Waves>

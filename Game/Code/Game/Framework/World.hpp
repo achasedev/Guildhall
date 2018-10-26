@@ -96,4 +96,7 @@ private:
 
 	HeatMap*		m_playerHeatmap = nullptr;
 	HeatMap*		m_costsMap = nullptr;
+
+	bool			m_drawCollision = false;
+
 };
