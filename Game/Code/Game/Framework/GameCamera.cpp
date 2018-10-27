@@ -43,7 +43,7 @@ void GameCamera::UpdatePositionBasedOnPlayers()
 	{
 		if (Game::IsPlayerAlive(i))
 		{
-			targetPos += players[i]->GetEntityPosition();
+			targetPos += players[i]->GetPosition();
 			playerCount++;
 		}
 	}

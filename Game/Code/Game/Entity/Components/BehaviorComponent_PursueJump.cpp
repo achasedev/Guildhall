@@ -35,7 +35,7 @@ void BehaviorComponent_PursueJump::Initialize(AnimatedEntity* owningEntity)
 void BehaviorComponent_PursueJump::Update()
 {
 	Vector2 jumpSensorOffset = Vector2::MakeDirectionAtDegrees(m_owningEntity->GetOrientation()) * m_jumpSensorDistance;
-	Vector3 jumpSensorPosition = m_owningEntity->GetEntityPosition() + Vector3(jumpSensorOffset.x, 0.f, jumpSensorOffset.y);
+	Vector3 jumpSensorPosition = m_owningEntity->GetPosition() + Vector3(jumpSensorOffset.x, 0.f, jumpSensorOffset.y);
 
 	// Move the entity
 	BehaviorComponent::Update();
@@ -46,13 +46,13 @@ void BehaviorComponent_PursueJump::Update()
 	float minDistance = 9999.f;
 	bool playerFound = false;
 
-	Vector3 currentPosition = m_owningEntity->GetEntityPosition();
+	Vector3 currentPosition = m_owningEntity->GetPosition();
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
 		if (Game::IsPlayerAlive(i))
 		{
-			Vector3 playerPosition = players[i]->GetEntityPosition();
+			Vector3 playerPosition = players[i]->GetPosition();
 			float currDistance = (playerPosition - currentPosition).GetLengthSquared();
 
 			if (!playerFound || currDistance < minDistance)

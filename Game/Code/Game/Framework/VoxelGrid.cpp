@@ -206,7 +206,7 @@ void VoxelGrid::DebugDrawEntityCollision(const Entity* entity)
 	PROFILE_LOG_SCOPE_FUNCTION();
 
 	const VoxelTexture* texture = entity->GetTextureForRender();
-	Vector3 position = entity->GetEntityPosition();
+	Vector3 position = entity->GetPosition();
 	IntVector3 dimensions = entity->GetDimensions();
 
 	// Coordinate the object occupies (object bottom center)

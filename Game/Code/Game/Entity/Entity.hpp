@@ -42,7 +42,7 @@ public:
 	void							TakeDamage(int damageAmount);
 
 	// Accessors
-	Vector3							GetEntityPosition() const;
+	Vector3							GetPosition() const;
 	float							GetOrientation() const;
 	eEntityTeam						GetTeam() const;
 	virtual const VoxelTexture*		GetTextureForRender() const;

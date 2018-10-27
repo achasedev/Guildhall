@@ -77,11 +77,6 @@ private:
 	void DrawDynamicEntitiesToGrid();
 	void DrawParticlesToGrid();
 
-	// Collision
-	bool CheckAndCorrectEntityCollision(Entity* first, Entity* second);
-	bool PerformBroadphaseCheck(Entity* first, Entity* second);
-	bool PerformNarrowphaseCheck();
-
 
 private:
 	//-----Private Data-----

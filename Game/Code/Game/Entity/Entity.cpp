@@ -163,7 +163,7 @@ void Entity::AddCollisionCorrection(const Vector3& correction)
 //-----------------------------------------------------------------------------------------------
 // Returns the world position of the entity
 //
-Vector3 Entity::GetEntityPosition() const
+Vector3 Entity::GetPosition() const
 {
 	return m_position;
 }

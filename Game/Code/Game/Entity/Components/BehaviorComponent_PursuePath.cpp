@@ -37,8 +37,8 @@ void BehaviorComponent_PursuePath::Update()
 	BehaviorComponent::Update();
 
 	// Move towards next position
-	Vector3 nextPosition = Game::GetWorld()->GetNextPositionTowardsPlayer(m_owningEntity->GetEntityPosition());
-	Vector2 toNext = (nextPosition - m_owningEntity->GetEntityPosition()).GetNormalized().xz();
+	Vector3 nextPosition = Game::GetWorld()->GetNextPositionTowardsPlayer(m_owningEntity->GetPosition());
+	Vector2 toNext = (nextPosition - m_owningEntity->GetPosition()).GetNormalized().xz();
 	
 	m_owningEntity->Move(toNext);
 }

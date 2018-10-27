@@ -23,13 +23,13 @@ void BehaviorComponent_PursueDirect::Update()
 	float minDistance = 10000.f;
 	bool playerFound = false;
 
-	Vector3 currentPosition = m_owningEntity->GetEntityPosition();
+	Vector3 currentPosition = m_owningEntity->GetPosition();
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
 		if (Game::IsPlayerAlive(i))
 		{
-			Vector3 playerPosition = players[i]->GetEntityPosition();
+			Vector3 playerPosition = players[i]->GetPosition();
 			float currDistance = (playerPosition - currentPosition).GetLengthSquared();
 
 			if (!playerFound || currDistance < minDistance)

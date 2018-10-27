@@ -25,13 +25,13 @@ void BehaviorComponent_Shoot::Update()
 	float minDistance = 9999.f;
 	bool playerFound = false;
 	bool haveFoundPlayerInLineOfSight = false;
-	Vector3 currentPosition = m_owningEntity->GetEntityPosition();
+	Vector3 currentPosition = m_owningEntity->GetPosition();
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
 		if (Game::IsPlayerAlive(i))
 		{
-			Vector3 playerPosition = players[i]->GetEntityPosition();
+			Vector3 playerPosition = players[i]->GetPosition();
 			float currDistance = (playerPosition - currentPosition).GetLengthSquared();
 
 			// Update our target if...
@@ -62,8 +62,8 @@ void BehaviorComponent_Shoot::Update()
 	// If we can't see a player, then path find to get to the closest one
 	if (!haveFoundPlayerInLineOfSight)
 	{
-		Vector3 nextPosition = world->GetNextPositionTowardsPlayer(m_owningEntity->GetEntityPosition());
-		Vector2 toNext = (nextPosition - m_owningEntity->GetEntityPosition()).GetNormalized().xz();
+		Vector3 nextPosition = world->GetNextPositionTowardsPlayer(m_owningEntity->GetPosition());
+		Vector2 toNext = (nextPosition - m_owningEntity->GetPosition()).GetNormalized().xz();
 
 		m_owningEntity->Move(toNext);
 	}
@@ -88,7 +88,7 @@ BehaviorComponent* BehaviorComponent_Shoot::Clone() const
 
 void BehaviorComponent_Shoot::Shoot()
 {
-	Vector3 entityPosition = m_owningEntity->GetEntityPosition();
+	Vector3 entityPosition = m_owningEntity->GetPosition();
 	float entityOrientation = m_owningEntity->GetOrientation();
 
 	Projectile* proj = new Projectile(EntityDefinition::GetDefinition("Bullet"));
