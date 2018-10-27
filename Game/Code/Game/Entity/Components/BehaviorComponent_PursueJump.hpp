@@ -14,7 +14,7 @@ public:
 	
 	BehaviorComponent_PursueJump();
 
-	virtual void				Initialize(MovingEntity* owningEntity) override;
+	virtual void				Initialize(AnimatedEntity* owningEntity) override;
 	virtual void				Update() override;
 	virtual BehaviorComponent*	Clone() const override;
 

@@ -26,25 +26,28 @@ class VoxelSprite
 {
 public:
 	//-----Public Methods-----
-	
+
 	VoxelSprite(const std::string& name, const std::string& filename);
+	~VoxelSprite();
 
 	// Accessors
 	const VoxelTexture*			GetTextureForOrientation(float angle) const;
 
 	// Producers
 	IntVector3					GetDimensions() const;
+	VoxelSprite*				Clone() const;
 
 	// Statics
 	static void					LoadVoxelSprites(const std::string& filename);
+	static VoxelSprite*			CreateVoxelSpriteClone(const std::string& name);
 	static const VoxelSprite*	GetVoxelSprite(const std::string& name);
-	
+
 
 private:
 	//-----Private Methods-----
-	
+
 	// No copying for now
-	VoxelSprite(const VoxelSprite& copy) = delete;
+	VoxelSprite(const VoxelSprite& copy);
 
 	
 private:

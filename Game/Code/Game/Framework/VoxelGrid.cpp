@@ -125,8 +125,8 @@ void VoxelGrid::DrawEntity(const Entity* entity)
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
-	const VoxelTexture* texture = entity->GetTextureForOrientation();
-	IntVector3 position = entity->GetEntityCoordinatePosition();
+	const VoxelTexture* texture = entity->GetTextureForRender();
+	IntVector3 position = entity->GetCoordinatePosition();
 
 	DebugRenderOptions options;
 	options.m_isWireFrame = true;
@@ -205,7 +205,7 @@ void VoxelGrid::DebugDrawEntityCollision(const Entity* entity)
 
 	PROFILE_LOG_SCOPE_FUNCTION();
 
-	const VoxelTexture* texture = entity->GetTextureForOrientation();
+	const VoxelTexture* texture = entity->GetTextureForRender();
 	Vector3 position = entity->GetEntityPosition();
 	IntVector3 dimensions = entity->GetDimensions();
 

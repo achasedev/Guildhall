@@ -15,7 +15,7 @@
 // Constructor
 //
 AIEntity::AIEntity(const EntityDefinition* definition)
-	: MovingEntity(definition)
+	: AnimatedEntity(definition)
 {
 	// Initialize the Behavior Component
 	m_behaviorComponent = definition->CloneBehaviorPrototype(0);
@@ -28,7 +28,7 @@ AIEntity::AIEntity(const EntityDefinition* definition)
 //
 void AIEntity::Update()
 {
-	MovingEntity::Update();
+	AnimatedEntity::Update();
 	m_behaviorComponent->Update();
 }
 
@@ -38,10 +38,10 @@ void AIEntity::Update()
 //
 void AIEntity::OnDeath()
 {
-	MovingEntity::OnDeath();
+	AnimatedEntity::OnDeath();
 
 	m_spawnPoint->StopTrackingEntity(this);
-	//Game::GetWorld()->ParticalizeEntity(this);
+	Game::GetWorld()->ParticalizeEntity(this);
 }
 
 //-----------------------------------------------------------------------------------------------

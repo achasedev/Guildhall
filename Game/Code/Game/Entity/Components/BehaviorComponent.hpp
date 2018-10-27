@@ -6,7 +6,7 @@
 /************************************************************************/
 #pragma once
 
-class MovingEntity;
+class AnimatedEntity;
 
 class BehaviorComponent
 {
@@ -16,7 +16,7 @@ public:
 	BehaviorComponent();
 	virtual ~BehaviorComponent();
 
-	virtual void				Initialize(MovingEntity* owningEntity);
+	virtual void				Initialize(AnimatedEntity* owningEntity);
 	virtual void				Update();
 	virtual BehaviorComponent*	Clone() const = 0;
 
@@ -24,6 +24,6 @@ public:
 protected:
 	//-----Protected Data-----
 	
-	MovingEntity*	m_owningEntity = nullptr;
+	AnimatedEntity*	m_owningEntity = nullptr;
 
 };

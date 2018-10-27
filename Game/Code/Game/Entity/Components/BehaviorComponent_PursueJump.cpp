@@ -22,7 +22,7 @@ BehaviorComponent_PursueJump::BehaviorComponent_PursueJump()
 //-----------------------------------------------------------------------------------------------
 // Initializes the component by placing the jump sensor just outside the entity's collision boundary
 //
-void BehaviorComponent_PursueJump::Initialize(MovingEntity* owningEntity)
+void BehaviorComponent_PursueJump::Initialize(AnimatedEntity* owningEntity)
 {
 	BehaviorComponent::Initialize(owningEntity);
 	m_jumpSensorDistance = m_owningEntity->GetDimensions().z * 0.5f + SENSOR_OFFSET_DISTANCE;

@@ -45,12 +45,12 @@ public:
 	Vector3							GetEntityPosition() const;
 	float							GetOrientation() const;
 	eEntityTeam						GetTeam() const;
-	virtual const VoxelTexture*		GetTextureForOrientation() const;
+	virtual const VoxelTexture*		GetTextureForRender() const;
 	CollisionDefinition_t			GetCollisionDefinition() const;
 	ePhysicsType					GetPhysicsType() const;
 	const EntityDefinition*			GetEntityDefinition() const;
 	PhysicsComponent*				GetPhysicsComponent() const;
-	virtual IntVector3						GetDimensions() const;
+	virtual IntVector3				GetDimensions() const;
 
 	float							GetMass() const;
 	float							GetInverseMass() const;
@@ -62,7 +62,7 @@ public:
 	Vector3							GetPositionForLocalCoords(const IntVector3& localCoords) const;
 	Vector3							GetPositionForLocalIndex(unsigned int index) const;
 
-	IntVector3						GetEntityCoordinatePosition() const;
+	IntVector3						GetCoordinatePosition() const;
 
 	// Events
 	virtual void					OnCollision(Entity* other);
@@ -90,10 +90,9 @@ protected:
 	PhysicsComponent*		m_physicsComponent = nullptr;
 	const EntityDefinition* m_definition = nullptr;
 
-	// Animation
-	VoxelAnimator*			m_animator = nullptr;
-
 	bool					m_isPlayer = false;
+
+	VoxelTexture*			m_defaultTexture = nullptr;
 
 	// Statics
 	static constexpr float	DEFAULT_MASS = 1.0f;

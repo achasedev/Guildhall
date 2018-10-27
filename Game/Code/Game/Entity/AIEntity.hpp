@@ -5,12 +5,12 @@
 /* Description: Class to represent an AI controlled entity in the game
 /************************************************************************/
 #pragma once
-#include "Game/Entity/MovingEntity.hpp"
+#include "Game/Entity/AnimatedEntity.hpp"
 
 class SpawnPoint;
 class BehaviorComponent;
 
-class AIEntity : public MovingEntity
+class AIEntity : public AnimatedEntity
 {
 public:
 	//-----Public Methods-----

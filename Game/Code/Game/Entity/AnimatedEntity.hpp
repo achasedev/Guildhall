@@ -7,15 +7,16 @@
 #pragma once
 #include "Game/Entity/Entity.hpp"
 
-class MovingEntity : public Entity
+class AnimatedEntity : public Entity
 {
 public:
 	//-----Public Methods-----
 	
-	MovingEntity(const EntityDefinition* definition);
-	virtual ~MovingEntity();
+	AnimatedEntity(const EntityDefinition* definition);
+	virtual ~AnimatedEntity();
 
 	virtual void Update() override;
+	virtual const VoxelTexture* GetTextureForRender() const override;
 
 	// Events
 	virtual void	OnCollision(Entity* other) override;
@@ -30,5 +31,12 @@ public:
 	void Move(const Vector2& direction);
 	void Jump();
 	void Decelerate();
+
+
+protected:
+	//-----Protected Data-----
+
+	// Animation
+	VoxelAnimator*			m_animator = nullptr;
 
 };

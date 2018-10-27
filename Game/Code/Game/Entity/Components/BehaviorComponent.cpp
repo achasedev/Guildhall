@@ -29,7 +29,7 @@ BehaviorComponent::~BehaviorComponent()
 //-----------------------------------------------------------------------------------------------
 // Initialize
 //
-void BehaviorComponent::Initialize(MovingEntity* owningEntity)
+void BehaviorComponent::Initialize(AnimatedEntity* owningEntity)
 {
 	m_owningEntity = owningEntity;
 }

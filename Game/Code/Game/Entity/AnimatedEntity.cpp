@@ -6,42 +6,64 @@
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
-#include "Game/Entity/MovingEntity.hpp"
+#include "Game/Entity/AnimatedEntity.hpp"
+#include "Game/Animation/VoxelAnimator.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Engine/Math/MathUtils.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
-MovingEntity::MovingEntity(const EntityDefinition* definition)
+AnimatedEntity::AnimatedEntity(const EntityDefinition* definition)
 	: Entity(definition)
 {
+	m_animator = new VoxelAnimator(m_definition->m_animationSet, m_definition->m_defaultSprite);
+	m_animator->Play("idle");
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Destructor
 //
-MovingEntity::~MovingEntity()
+AnimatedEntity::~AnimatedEntity()
 {
-
+	if (m_animator != nullptr)
+	{
+		delete m_animator;
+		m_animator = nullptr;
+	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Update
 //
-void MovingEntity::Update()
+void AnimatedEntity::Update()
 {
 	Entity::Update();
 }
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the texture associated with the entity's current orientation and animation
+//
+const VoxelTexture* AnimatedEntity::GetTextureForRender() const
+{
+	const VoxelSprite* sprite = m_animator->GetCurrentSprite();
+
+	if (sprite != nullptr)
+	{
+		return sprite->GetTextureForOrientation(m_orientation);
+	}
+
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Collision event
 //
-void MovingEntity::OnCollision(Entity* other)
+void AnimatedEntity::OnCollision(Entity* other)
 {
 	Entity::OnCollision(other);
 }
@@ -50,7 +72,7 @@ void MovingEntity::OnCollision(Entity* other)
 //-----------------------------------------------------------------------------------------------
 // Damage event
 //
-void MovingEntity::OnDamageTaken(int damageAmount)
+void AnimatedEntity::OnDamageTaken(int damageAmount)
 {
 	Entity::OnDamageTaken(damageAmount);
 }
@@ -59,7 +81,7 @@ void MovingEntity::OnDamageTaken(int damageAmount)
 //-----------------------------------------------------------------------------------------------
 // Death event
 //
-void MovingEntity::OnDeath()
+void AnimatedEntity::OnDeath()
 {
 	Entity::OnDeath();
 }
@@ -68,7 +90,7 @@ void MovingEntity::OnDeath()
 //-----------------------------------------------------------------------------------------------
 // Spawn Event
 //
-void MovingEntity::OnSpawn()
+void AnimatedEntity::OnSpawn()
 {
 	Entity::OnSpawn();
 }
@@ -77,7 +99,7 @@ void MovingEntity::OnSpawn()
 //-----------------------------------------------------------------------------------------------
 // Moves the entity in the given direction, clamping to the entity's max move speed
 //
-void MovingEntity::Move(const Vector2& direction)
+void AnimatedEntity::Move(const Vector2& direction)
 {
 	float currLateralSpeed = m_physicsComponent->GetVelocity().xz().GetLength();
 	float deltaTime = Game::GetDeltaTime();
@@ -102,7 +124,7 @@ void MovingEntity::Move(const Vector2& direction)
 //-----------------------------------------------------------------------------------------------
 // Adds an impulse to the entity so it jumps upwards, but only if it's on the ground
 //
-void MovingEntity::Jump()
+void AnimatedEntity::Jump()
 {
 	unsigned int groundElevation = Game::GetWorld()->GetGroundElevation();
 
@@ -116,7 +138,7 @@ void MovingEntity::Jump()
 //-----------------------------------------------------------------------------------------------
 // Slows the entity down by applying a force against its current velocity
 //
-void MovingEntity::Decelerate()
+void AnimatedEntity::Decelerate()
 {
 	float deltaTime = Game::GetDeltaTime();
 	float currSpeed = m_physicsComponent->GetVelocity().xz().GetLength();

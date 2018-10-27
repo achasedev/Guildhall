@@ -6,7 +6,7 @@
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
-#include "Game/Entity/MovingEntity.hpp"
+#include "Game/Entity/AnimatedEntity.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursuePath.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/HeatMap.hpp"

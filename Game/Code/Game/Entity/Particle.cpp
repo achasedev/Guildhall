@@ -6,8 +6,9 @@
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
 #include "Game/Entity/Particle.hpp"
+#include "Game/Animation/VoxelAnimator.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
-
+#include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Constructor - assembles the texture 
@@ -15,8 +16,10 @@
 Particle::Particle(const Rgba& color, float lifetime, const Vector3& position, const Vector3& initialVelocity)
 	: Entity(EntityDefinition::GetDefinition("Particle"))
 {
-	m_particleTexture = new VoxelTexture();
-	m_particleTexture->CreateFromColorStream(&color, IntVector3(1, 1, 1));
+	ASSERT_OR_DIE(m_defaultTexture == nullptr, "Error: Particle definition has a default texture!");
+
+	m_defaultTexture = new VoxelTexture();
+	m_defaultTexture->CreateFromColorStream(&color, IntVector3(1, 1, 1));
 
 	m_position = position;
 	m_lifetime = lifetime;
@@ -31,11 +34,6 @@ Particle::Particle(const Rgba& color, float lifetime, const Vector3& position, c
 //
 Particle::~Particle()
 {
-	if (m_particleTexture != nullptr)
-	{
-		delete m_particleTexture;
-		m_particleTexture = nullptr;
-	}
 }
 
 
@@ -66,15 +64,6 @@ void Particle::SetApplyPhysics(bool newState)
 bool Particle::ShouldApplyPhysics() const
 {
 	return m_applyPhysics;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Override for drawing - particles don't use an animator
-//
-const VoxelTexture* Particle::GetTextureForOrientation() const
-{
-	return m_particleTexture;
 }
 
 

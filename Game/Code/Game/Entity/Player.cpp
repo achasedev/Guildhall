@@ -27,7 +27,7 @@
 // Constructor
 //
 Player::Player(unsigned int playerID)
-	: MovingEntity(EntityDefinition::GetDefinition("Player"))
+	: AnimatedEntity(EntityDefinition::GetDefinition("Player"))
 	, m_playerID(playerID)
 {
 	m_isPlayer = true;

@@ -298,7 +298,7 @@
     <ClCompile Include="Entity\Components\BehaviorComponent_Shoot.cpp" />
     <ClCompile Include="Entity\Entity.cpp" />
     <ClCompile Include="Entity\EntityDefinition.cpp" />
-    <ClCompile Include="Entity\MovingEntity.cpp" />
+    <ClCompile Include="Entity\AnimatedEntity.cpp" />
     <ClCompile Include="Entity\Particle.cpp" />
     <ClCompile Include="Entity\Components\PhysicsComponent.cpp" />
     <ClCompile Include="Entity\Player.cpp" />
@@ -338,7 +338,7 @@
     <ClInclude Include="Entity\Components\BehaviorComponent_Shoot.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\EntityDefinition.hpp" />
-    <ClInclude Include="Entity\MovingEntity.hpp" />
+    <ClInclude Include="Entity\AnimatedEntity.hpp" />
     <ClInclude Include="Entity\Particle.hpp" />
     <ClInclude Include="Entity\Components\PhysicsComponent.hpp" />
     <ClInclude Include="Entity\Player.hpp" />

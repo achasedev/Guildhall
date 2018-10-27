@@ -524,7 +524,7 @@ void World::UpdateCostMap()
 		if (!currEntity->IsMarkedForDelete() && currEntity->GetPhysicsType() == PHYSICS_TYPE_STATIC)
 		{
 			Vector3 position = currEntity->GetEntityPosition();
-			IntVector3 dimensions = currEntity->GetTextureForOrientation()->GetDimensions();
+			IntVector3 dimensions = currEntity->GetTextureForRender()->GetDimensions();
 			IntVector3 halfDimensions = dimensions / 2;
 
 			// Coordinate the object occupies (object bottom center)
@@ -723,7 +723,7 @@ void World::UpdatePlayerHeatmap()
 	{
 		if (Game::IsPlayerAlive(i))
 		{
-			IntVector3 position = players[i]->GetEntityCoordinatePosition();
+			IntVector3 position = players[i]->GetCoordinatePosition();
 			m_playerHeatmap->Seed(0.f, (position.xz() / NAV_DIMENSION_FACTOR));
 		}
 	}
@@ -772,7 +772,7 @@ bool World::CheckAndCorrectEntityCollision(Entity* first, Entity* second)
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
 
-	bool wasCollision = CheckAndCorrect_Voxel(first, second);
+	bool wasCollision = PerformBroadphaseCheck(first, second);
 // 	if (firstDef.m_shape == COLLISION_SHAPE_DISC)
 // 	{
 // 		if (secondDef.m_shape == COLLISION_SHAPE_DISC)
@@ -1414,8 +1414,8 @@ bool IsThereVoxelOverlap(Entity* first, Entity* second, const BoundOverlapResult
 	}
 
 
-	const VoxelTexture* firstTexture = first->GetTextureForOrientation();
-	const VoxelTexture* secondTexture = second->GetTextureForOrientation();
+	const VoxelTexture* firstTexture = first->GetTextureForRender();
+	const VoxelTexture* secondTexture = second->GetTextureForRender();
 
 	for (int yIndex = 0; yIndex < r.yOverlap; ++yIndex)
 	{
@@ -1484,15 +1484,14 @@ bool IsThereVoxelOverlap(Entity* first, Entity* second, const BoundOverlapResult
 }
 
 
-#include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 //-----------------------------------------------------------------------------------------------
 // Checks for collision between the two entities on a per-voxel basis, and corrects them if there
 // was collision
 //
-bool World::CheckAndCorrect_Voxel(Entity* first, Entity* second)
+bool World::PerformBroadphaseCheck(Entity* first, Entity* second)
 {
-	Vector3 firstPosition = Vector3(first->GetEntityCoordinatePosition());
-	Vector3 secondPosition = Vector3(second->GetEntityCoordinatePosition());
+	Vector3 firstPosition = Vector3(first->GetCoordinatePosition());
+	Vector3 secondPosition = Vector3(second->GetCoordinatePosition());
  
 	IntVector3 firstDimensions = first->GetDimensions();
 	IntVector3 secondDimensions = second->GetDimensions();
@@ -1568,7 +1567,7 @@ bool World::CheckAndCorrect_Voxel(Entity* first, Entity* second)
 //
 void World::ParticalizeEntity(Entity* entity)
 {
-	const VoxelTexture* texture = entity->GetTextureForOrientation();
+	const VoxelTexture* texture = entity->GetTextureForRender();
 	Vector3 entityPosition = entity->GetEntityPosition();
 
 	unsigned int voxelCount = texture->GetVoxelCount();

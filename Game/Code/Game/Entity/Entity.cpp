@@ -8,7 +8,6 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
-#include "Game/Animation/VoxelAnimator.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Assets/AssetDB.hpp"
@@ -28,10 +27,13 @@ Entity::Entity(const EntityDefinition* definition)
 		m_physicsComponent = new PhysicsComponent(this);
 	}
 
-	m_animator = new VoxelAnimator(m_definition->m_animationSet, m_definition->m_defaultSprite);
-	m_animator->Play("idle");
-
 	m_position = Vector3(GetRandomFloatInRange(10.f, 50.f), 4.f, GetRandomFloatInRange(10.f, 200.f));
+
+	// Only create a default texture if the definition has one specified
+	if (definition->m_defaultSprite != nullptr)
+	{
+		m_defaultTexture = definition->m_defaultSprite->GetTextureForOrientation(90.f)->Clone();
+	}
 }
 
 
@@ -45,15 +47,15 @@ Entity::~Entity()
 		delete m_physicsComponent;
 		m_physicsComponent = nullptr;
 	}
-
-	if (m_animator != nullptr)
+	
+	if (m_defaultTexture != nullptr)
 	{
-		delete m_animator;
-		m_animator = nullptr;
+		delete m_defaultTexture;
+		m_defaultTexture = nullptr;
 	}
 }
 
-#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // Update
 //
@@ -188,10 +190,9 @@ eEntityTeam Entity::GetTeam() const
 //-----------------------------------------------------------------------------------------------
 // Returns the 3D texture to used for rendering, based on the current 2D orientation of the entity
 //
-const VoxelTexture* Entity::GetTextureForOrientation() const
+const VoxelTexture* Entity::GetTextureForRender() const
 {
-	const VoxelSprite* sprite = m_animator->GetCurrentSprite();
-	return sprite->GetTextureForOrientation(m_orientation);
+	return m_defaultTexture;
 }
 
 
@@ -236,7 +237,8 @@ PhysicsComponent* Entity::GetPhysicsComponent() const
 //
 IntVector3 Entity::GetDimensions() const
 {
-	return m_definition->GetDimensions();
+	const VoxelTexture* texture = GetTextureForRender();
+	return texture->GetDimensions();
 }
 
 
@@ -281,7 +283,7 @@ bool Entity::IsMarkedForDelete() const
 //
 Vector3 Entity::GetPositionForLocalCoords(const IntVector3& localCoords) const
 {
-	IntVector3 bottomLeft = GetEntityCoordinatePosition();
+	IntVector3 bottomLeft = GetCoordinatePosition();
 
 	Vector3 position = Vector3(bottomLeft + localCoords);
 	position += Vector3(0.5f, 0.f, 0.5f);
@@ -310,7 +312,7 @@ Vector3 Entity::GetPositionForLocalIndex(unsigned int index) const
 //-----------------------------------------------------------------------------------------------
 // Returns the coordinate position that this entity occupies
 //
-IntVector3 Entity::GetEntityCoordinatePosition() const
+IntVector3 Entity::GetCoordinatePosition() const
 {
 	return IntVector3(m_position);
 }

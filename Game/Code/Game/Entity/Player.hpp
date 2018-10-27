@@ -5,11 +5,11 @@
 /* Description: Class to represent a player entity
 /************************************************************************/
 #pragma once
-#include "Game/Entity/MovingEntity.hpp"
+#include "Game/Entity/AnimatedEntity.hpp"
 
 #define INVALID_PLAYER_ID (4)
 
-class Player : public MovingEntity
+class Player : public AnimatedEntity
 {
 public:
 	//-----Public Methods-----

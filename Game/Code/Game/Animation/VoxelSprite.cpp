@@ -21,15 +21,14 @@ std::map<std::string, const VoxelSprite*> VoxelSprite::s_sprites;
 VoxelSprite::VoxelSprite(const std::string& name, const std::string& filename)
 	: m_name(name)
 {
-	VoxelTexture* northTexture = AssetDB::CreateOrGetVoxelTexture(filename);
-	//ASSERT_OR_DIE(northTexture != nullptr, Stringf("Error: VoxelSprite::VoxelSprite() couldn't open file %s", filename.c_str()));
+	VoxelTexture* northTexture = new VoxelTexture();
+	bool success = northTexture->CreateFromFile(filename.c_str());
+
+	ASSERT_OR_DIE(success, Stringf("Error: VoxelSprite::VoxelSprite() couldn't open file %s", filename.c_str()));
 
 	// Dimensions check, so we can rotate and have it work
-	IntVector3 dimensions = northTexture->GetDimensions();
-	//ASSERT_OR_DIE(dimensions.x == dimensions.z, Stringf("Error: VoxelSprite::VoxelSprite() had a texture with unequal xz dimensions, file was %s", filename.c_str()));
-
 	m_dimensions = northTexture->GetDimensions();
-	//ASSERT_OR_DIE(m_dimensions.x == m_dimensions.z, "Error: VoxelSprite::VoxelSprite() has unequeal xz dimensions");
+
 
 	// Rotate to get the other 3 directions if we can
 	if (m_dimensions.x == m_dimensions.z)
@@ -37,13 +36,13 @@ VoxelSprite::VoxelSprite(const std::string& name, const std::string& filename)
 		// South
 		int destIndex = 0;
 		VoxelTexture* southTexture = northTexture->Clone();
-		for (int y = 0; y < dimensions.y; ++y)
+		for (int y = 0; y < m_dimensions.y; ++y)
 		{
-			for (int z = dimensions.z - 1; z >= 0; --z)
+			for (int z = m_dimensions.z - 1; z >= 0; --z)
 			{
-				for (int x = dimensions.x - 1; x >= 0; --x)
+				for (int x = m_dimensions.x - 1; x >= 0; --x)
 				{
-					int sourceIndex = y * (dimensions.x * dimensions.z) + z * dimensions.x + x;
+					int sourceIndex = y * (m_dimensions.x * m_dimensions.z) + z * m_dimensions.x + x;
 					southTexture->SetColorAtIndex(destIndex, northTexture->GetColorAtIndex(sourceIndex));
 					destIndex++;
 				}
@@ -53,13 +52,13 @@ VoxelSprite::VoxelSprite(const std::string& name, const std::string& filename)
 		// East
 		VoxelTexture* eastTexture = northTexture->Clone();
 		destIndex = 0;
-		for (int y = 0; y < dimensions.y; ++y)
+		for (int y = 0; y < m_dimensions.y; ++y)
 		{
-			for (int x = dimensions.x - 1; x >= 0; --x)
+			for (int x = m_dimensions.x - 1; x >= 0; --x)
 			{
-				for (int z = 0; z < dimensions.z; ++z)
+				for (int z = 0; z < m_dimensions.z; ++z)
 				{
-					int sourceIndex = y * (dimensions.x * dimensions.z) + z * dimensions.x + x;
+					int sourceIndex = y * (m_dimensions.x * m_dimensions.z) + z * m_dimensions.x + x;
 					eastTexture->SetColorAtIndex(destIndex, northTexture->GetColorAtIndex(sourceIndex));
 					destIndex++;
 				}
@@ -69,13 +68,13 @@ VoxelSprite::VoxelSprite(const std::string& name, const std::string& filename)
 		// West
 		VoxelTexture* westTexture = northTexture->Clone();
 		destIndex = 0;
-		for (int y = 0; y < dimensions.y; ++y)
+		for (int y = 0; y < m_dimensions.y; ++y)
 		{
-			for (int x = 0; x < dimensions.x; ++x)
+			for (int x = 0; x < m_dimensions.x; ++x)
 			{
-				for (int z = dimensions.z - 1; z >= 0; --z)
+				for (int z = m_dimensions.z - 1; z >= 0; --z)
 				{
-					int sourceIndex = y * (dimensions.x * dimensions.z) + z * dimensions.x + x;
+					int sourceIndex = y * (m_dimensions.x * m_dimensions.z) + z * m_dimensions.x + x;
 					westTexture->SetColorAtIndex(destIndex, northTexture->GetColorAtIndex(sourceIndex));
 					destIndex++;
 				}
@@ -91,9 +90,43 @@ VoxelSprite::VoxelSprite(const std::string& name, const std::string& filename)
 	else
 	{
 		m_textures[DIRECTION_NORTH] = northTexture;
-		m_textures[DIRECTION_EAST] = northTexture->Clone();
-		m_textures[DIRECTION_SOUTH] = northTexture->Clone();
-		m_textures[DIRECTION_WEST] = northTexture->Clone();
+		m_textures[DIRECTION_EAST] = nullptr;
+		m_textures[DIRECTION_SOUTH] = nullptr;
+		m_textures[DIRECTION_WEST] = nullptr;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Private copy constructor
+//
+VoxelSprite::VoxelSprite(const VoxelSprite& copy)
+{
+	m_name = copy.m_name;
+	m_dimensions = copy.m_dimensions;
+
+	for (int i = 0; i < NUM_DIRECTIONS; ++i)
+	{
+		if (copy.m_textures[i] != nullptr)
+		{
+			m_textures[i] = copy.m_textures[i]->Clone();
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Destructor
+//
+VoxelSprite::~VoxelSprite()
+{
+	for (int i = 0; i < NUM_DIRECTIONS; ++i)
+	{
+		if (m_textures[i] != nullptr)
+		{
+			delete m_textures[i];
+			m_textures[i] = nullptr;
+		}
 	}
 }
 
@@ -105,10 +138,19 @@ const VoxelTexture* VoxelSprite::GetTextureForOrientation(float angle) const
 {
 	float cardinalAngle = GetNearestCardinalAngle(angle);
 
-	if		(cardinalAngle == 0.f)		{ return m_textures[DIRECTION_EAST]; }
-	else if (cardinalAngle == 90.f)		{ return m_textures[DIRECTION_NORTH]; }
-	else if (cardinalAngle == 180.f)	{ return m_textures[DIRECTION_WEST]; }
-	else								{ return m_textures[DIRECTION_SOUTH]; }
+	const VoxelTexture* toReturn = nullptr;
+
+	if (cardinalAngle == 0.f)			{ toReturn = m_textures[DIRECTION_EAST]; }
+	else if (cardinalAngle == 90.f)		{ toReturn = m_textures[DIRECTION_NORTH]; }
+	else if (cardinalAngle == 180.f)	{ toReturn = m_textures[DIRECTION_WEST]; }
+	else								{ toReturn = m_textures[DIRECTION_SOUTH]; }
+
+	if (toReturn == nullptr)
+	{
+		return m_textures[DIRECTION_NORTH];
+	}
+
+	return toReturn;
 }
 
 
@@ -118,6 +160,15 @@ const VoxelTexture* VoxelSprite::GetTextureForOrientation(float angle) const
 IntVector3 VoxelSprite::GetDimensions() const
 {
 	return m_dimensions;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Clones the VoxelSprite (deep copy)
+//
+VoxelSprite* VoxelSprite::Clone() const
+{
+	return new VoxelSprite(*this);
 }
 
 
@@ -157,6 +208,22 @@ void VoxelSprite::LoadVoxelSprites(const std::string& filename)
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns a clone of the VoxelSprite given by name if it exists, nullptr otherwise
+//
+VoxelSprite* VoxelSprite::CreateVoxelSpriteClone(const std::string& name)
+{
+	const VoxelSprite* baseSprite = GetVoxelSprite(name);
+
+	if (baseSprite != nullptr)
+	{
+		return baseSprite->Clone();
+	}
+
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the VoxelSprite given by name if it exists, nullptr otherwise
 //
 const VoxelSprite* VoxelSprite::GetVoxelSprite(const std::string& name)
@@ -167,6 +234,6 @@ const VoxelSprite* VoxelSprite::GetVoxelSprite(const std::string& name)
 	{
 		return s_sprites.at(name);
 	}
-	
+
 	return nullptr;
 }

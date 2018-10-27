@@ -58,7 +58,7 @@ class BehaviorComponent;
 class EntityDefinition
 {
 	friend class Entity;
-	friend class MovingEntity;
+	friend class AnimatedEntity;
 	friend class Player;
 
 public:
@@ -69,7 +69,7 @@ public:
 	IntVector3 GetDimensions() const;
 	BehaviorComponent* CloneBehaviorPrototype(unsigned int index) const;
 
-	bool		HasGravity() const;
+	bool HasGravity() const;
 
 	static void						LoadDefinitions(const std::string& filename);
 	static const EntityDefinition*	GetDefinition(const std::string& defName);
@@ -89,10 +89,10 @@ private:
 	std::string					m_name;
 
 	// Movement
-	float m_maxMoveAcceleration = 300.f;
-	float m_maxMoveSpeed = 40.f;
-	float m_maxMoveDeceleration = 100.f;
-	float m_jumpImpulse = 80.f;
+	float						m_maxMoveAcceleration = 300.f;
+	float						m_maxMoveSpeed = 40.f;
+	float						m_maxMoveDeceleration = 100.f;
+	float						m_jumpImpulse = 80.f;
 
 	// Animation
 	const VoxelAnimationSet*	m_animationSet = nullptr;
