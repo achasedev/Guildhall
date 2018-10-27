@@ -22,71 +22,79 @@ VoxelSprite::VoxelSprite(const std::string& name, const std::string& filename)
 	: m_name(name)
 {
 	VoxelTexture* northTexture = AssetDB::CreateOrGetVoxelTexture(filename);
-	ASSERT_OR_DIE(northTexture != nullptr, Stringf("Error: VoxelSprite::VoxelSprite() couldn't open file %s", filename.c_str()));
+	//ASSERT_OR_DIE(northTexture != nullptr, Stringf("Error: VoxelSprite::VoxelSprite() couldn't open file %s", filename.c_str()));
 
 	// Dimensions check, so we can rotate and have it work
 	IntVector3 dimensions = northTexture->GetDimensions();
-	ASSERT_OR_DIE(dimensions.x == dimensions.z, Stringf("Error: VoxelSprite::VoxelSprite() had a texture with unequal xz dimensions, file was %s", filename.c_str()));
+	//ASSERT_OR_DIE(dimensions.x == dimensions.z, Stringf("Error: VoxelSprite::VoxelSprite() had a texture with unequal xz dimensions, file was %s", filename.c_str()));
 
 	m_dimensions = northTexture->GetDimensions();
-	ASSERT_OR_DIE(m_dimensions.x == m_dimensions.z, "Error: VoxelSprite::VoxelSprite() has unequeal xz dimensions");
+	//ASSERT_OR_DIE(m_dimensions.x == m_dimensions.z, "Error: VoxelSprite::VoxelSprite() has unequeal xz dimensions");
 
-	// Rotate to get the other 3 directions
-
-	// South
-	int destIndex = 0;
-	VoxelTexture* southTexture = northTexture->Clone();
-	for (int y = 0; y < dimensions.y; ++y)
+	// Rotate to get the other 3 directions if we can
+	if (m_dimensions.x == m_dimensions.z)
 	{
-		for (int z = dimensions.z - 1; z >= 0; --z)
-		{
-			for (int x = dimensions.x - 1; x >= 0; --x)
-			{
-				int sourceIndex = y * (dimensions.x * dimensions.z) + z * dimensions.x + x;
-				southTexture->SetColorAtIndex(destIndex, northTexture->GetColorAtIndex(sourceIndex));
-				destIndex++;
-			}
-		}
-	}
-
-	// East
-	VoxelTexture* eastTexture = northTexture->Clone();
-	destIndex = 0;
-	for (int y = 0; y < dimensions.y; ++y)
-	{
-		for (int x = dimensions.x - 1; x >= 0; --x)
-		{
-			for (int z = 0; z < dimensions.z; ++z)
-			{
-				int sourceIndex = y * (dimensions.x * dimensions.z) + z * dimensions.x + x;
-				eastTexture->SetColorAtIndex(destIndex, northTexture->GetColorAtIndex(sourceIndex));
-
-				destIndex++;
-			}
-		}
-	}
-
-	// West
-	VoxelTexture* westTexture = northTexture->Clone();
-	destIndex = 0;
-	for (int y = 0; y < dimensions.y; ++y)
-	{
-		for (int x = 0; x < dimensions.x; ++x)
+		// South
+		int destIndex = 0;
+		VoxelTexture* southTexture = northTexture->Clone();
+		for (int y = 0; y < dimensions.y; ++y)
 		{
 			for (int z = dimensions.z - 1; z >= 0; --z)
 			{
-				int sourceIndex = y * (dimensions.x * dimensions.z) + z * dimensions.x + x;
-				westTexture->SetColorAtIndex(destIndex, northTexture->GetColorAtIndex(sourceIndex));
-				destIndex++;
+				for (int x = dimensions.x - 1; x >= 0; --x)
+				{
+					int sourceIndex = y * (dimensions.x * dimensions.z) + z * dimensions.x + x;
+					southTexture->SetColorAtIndex(destIndex, northTexture->GetColorAtIndex(sourceIndex));
+					destIndex++;
+				}
 			}
 		}
-	}
 
-	// Set the textures
-	m_textures[DIRECTION_EAST] = eastTexture;
-	m_textures[DIRECTION_NORTH] = northTexture;
-	m_textures[DIRECTION_WEST] = westTexture;
-	m_textures[DIRECTION_SOUTH] = southTexture;
+		// East
+		VoxelTexture* eastTexture = northTexture->Clone();
+		destIndex = 0;
+		for (int y = 0; y < dimensions.y; ++y)
+		{
+			for (int x = dimensions.x - 1; x >= 0; --x)
+			{
+				for (int z = 0; z < dimensions.z; ++z)
+				{
+					int sourceIndex = y * (dimensions.x * dimensions.z) + z * dimensions.x + x;
+					eastTexture->SetColorAtIndex(destIndex, northTexture->GetColorAtIndex(sourceIndex));
+					destIndex++;
+				}
+			}
+		}
+
+		// West
+		VoxelTexture* westTexture = northTexture->Clone();
+		destIndex = 0;
+		for (int y = 0; y < dimensions.y; ++y)
+		{
+			for (int x = 0; x < dimensions.x; ++x)
+			{
+				for (int z = dimensions.z - 1; z >= 0; --z)
+				{
+					int sourceIndex = y * (dimensions.x * dimensions.z) + z * dimensions.x + x;
+					westTexture->SetColorAtIndex(destIndex, northTexture->GetColorAtIndex(sourceIndex));
+					destIndex++;
+				}
+			}
+		}
+
+		// Set the textures
+		m_textures[DIRECTION_EAST] = eastTexture;
+		m_textures[DIRECTION_NORTH] = northTexture;
+		m_textures[DIRECTION_WEST] = westTexture;
+		m_textures[DIRECTION_SOUTH] = southTexture;
+	}
+	else
+	{
+		m_textures[DIRECTION_NORTH] = northTexture;
+		m_textures[DIRECTION_EAST] = northTexture->Clone();
+		m_textures[DIRECTION_SOUTH] = northTexture->Clone();
+		m_textures[DIRECTION_WEST] = northTexture->Clone();
+	}
 }
 
 

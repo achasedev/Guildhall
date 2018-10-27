@@ -59,11 +59,6 @@ Entity::~Entity()
 //
 void Entity::Update()
 {
-	DebugRenderOptions options;
-	options.m_isWireFrame = true;
-	options.m_lifetime = 0.f;
-
-	//DebugRenderSystem::DrawCube(m_position + Vector3(GetDimensions()) / 2.f, options, Vector3(GetDimensions()));
 }
 
 

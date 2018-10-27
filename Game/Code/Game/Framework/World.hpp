@@ -66,6 +66,7 @@ private:
 
 	void ApplyPhysicsStep();
 
+	void CheckForGroundCollisions();
 	void CheckStaticEntityCollisions();
 	void CheckDynamicEntityCollisions();
 

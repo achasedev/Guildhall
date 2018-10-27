@@ -70,10 +70,11 @@ void World::Inititalize()
 	m_playerHeatmap->SetHeat(targetCoords, 0.f);
 	m_playerHeatmap->SolveMapUpToDistance(NAV_STATIC_COST + 1.f, m_costsMap);
 
-	for (int i = 0; i < 20; ++i)
+	for (int i = 0; i < 0; ++i)
 	{
 		Entity* entity = new Entity(EntityDefinition::GetDefinition("Window"));
 		entity->SetPosition(Vector3(GetRandomFloatInRange(20.f, 200.f), (float) m_groundElevation, GetRandomFloatInRange(20.f, 200.f)));
+		entity->SetOrientation(90.f);
 		m_entities.push_back(entity);
 	}
 }
@@ -365,6 +366,30 @@ void World::ApplyPhysicsStep()
 
 
 //-----------------------------------------------------------------------------------------------
+// Checks for entities clipping into the ground, and if so fixes them
+//
+void World::CheckForGroundCollisions()
+{
+	for (int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex)
+	{
+		Entity* entity = m_entities[entityIndex];
+
+		// Also check for clipping into the ground
+		Vector3 position = entity->GetEntityPosition();
+		if (position.y < (float)m_groundElevation)
+		{
+			position.y = (float)m_groundElevation;
+			entity->SetPosition(position);
+
+			Vector3 velocity = entity->GetPhysicsComponent()->GetVelocity();
+			velocity.y = 0.f;
+			entity->GetPhysicsComponent()->SetVelocity(velocity);
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Checks for all dynamic vs. static collisions in the scene, and corrects them
 //
 void World::CheckStaticEntityCollisions()
@@ -385,19 +410,9 @@ void World::CheckStaticEntityCollisions()
 			// Do detection and fix here
 			CheckAndCorrectEntityCollision(dynamicEntity, staticEntity);
 		}
-
-		// Also check for clipping into the ground
-		Vector3 position = dynamicEntity->GetEntityPosition();
-		if (position.y < (float)m_groundElevation)
-		{
-			position.y = (float) m_groundElevation;
-			dynamicEntity->SetPosition(position);
-
-			Vector3 velocity = dynamicEntity->GetPhysicsComponent()->GetVelocity();
-			velocity.y = 0.f;
-			dynamicEntity->GetPhysicsComponent()->SetVelocity(velocity);
-		}
 	}
+
+	CheckForGroundCollisions();
 
 	// Check particles for ground collisions
 	for (int particleIndex = 0; particleIndex < (int)m_particles.size(); ++particleIndex)
@@ -424,6 +439,8 @@ void World::CheckStaticEntityCollisions()
 //
 void World::CheckDynamicEntityCollisions()
 {
+	CheckForGroundCollisions();
+
 	for (unsigned int layer = 0; layer < MAX_COLLISION_LAYERS; ++layer)
 	{
 		bool collisionDetected = true;
@@ -636,7 +653,14 @@ void World::DrawStaticEntitiesToGrid()
 	{
 		if (m_entities[entityIndex]->GetPhysicsType() == PHYSICS_TYPE_STATIC && !m_entities[entityIndex]->IsMarkedForDelete())
 		{
-			m_voxelGrid->DrawEntity(m_entities[entityIndex]);
+			if (m_drawCollision)
+			{
+				m_voxelGrid->DebugDrawEntityCollision(m_entities[entityIndex]);
+			}
+			else
+			{
+				m_voxelGrid->DrawEntity(m_entities[entityIndex]);
+			}
 		}
 	}
 }
@@ -1163,19 +1187,48 @@ void GetMassScalars(Entity* first, Entity* second, float& out_firstScalar, float
 // 	return false;
 // }
 
+enum eOverlapCase
+{
+	FIRST_ON_MIN,
+	FIRST_ON_MAX,
+	FIRST_INSIDE,
+	FIRST_ENCAPSULATE
+};
+
 struct BoundOverlapResult_t
 {
 	int xOverlap;
 	int yOverlap;
 	int zOverlap;
 
-	bool firstOnLeft;
-	bool firstInFront;
-	bool firstBelow;
+	float xOverlapf;
+	float yOverlapf;
+	float zOverlapf;
+
+	eOverlapCase xCase;
+	eOverlapCase yCase;
+	eOverlapCase zCase;
+
+	AABB3 firstBounds;
+	AABB3 secondBounds;
 };
+
+#include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
 bool DoBoundsOverlap(const AABB3& a, const AABB3& b, BoundOverlapResult_t& r)
 {
+	r.firstBounds = a;
+	r.secondBounds = b;
+
+	IntVector3 firstDimensions = IntVector3(a.GetDimensions());
+	IntVector3 secondDimensions = IntVector3(b.GetDimensions());
+
+	IntVector3 firstPosition = IntVector3(a.GetCenter());
+	firstPosition.y -= (firstDimensions.y / 2);
+
+	IntVector3 secondPosition = IntVector3(b.GetCenter());
+	secondPosition.y -= (secondDimensions.y / 2);
+
 	// Check if a is completely to the left of b
 	if (a.maxs.x <= b.mins.x)
 	{
@@ -1205,43 +1258,229 @@ bool DoBoundsOverlap(const AABB3& a, const AABB3& b, BoundOverlapResult_t& r)
 		return false;
 	}
 
-	// X Overlap
-	if (a.maxs.x - b.mins.x < b.maxs.x - a.mins.x)
+	if (a.maxs.x < b.maxs.x)
 	{
-		r.firstOnLeft = true;
-		r.xOverlap = Ceiling(a.maxs.x - b.mins.x);
+		if (a.mins.x > b.mins.x)
+		{
+			r.xCase = FIRST_INSIDE;
+		}
+		else
+		{
+			r.xCase = FIRST_ON_MIN;
+		}
 	}
 	else
 	{
-		r.firstOnLeft = false;
-		r.xOverlap = Ceiling(b.maxs.x - a.mins.x);
+		if (a.mins.x > b.mins.x)
+		{
+			r.xCase = FIRST_ON_MAX;
+		}
+		else
+		{
+			r.xCase = FIRST_ENCAPSULATE;
+		}
 	}
+
+	if (a.maxs.y < b.maxs.y)
+	{
+		if (a.mins.y > b.mins.y)
+		{
+			r.yCase = FIRST_INSIDE;
+		}
+		else
+		{
+			r.yCase = FIRST_ON_MIN;
+		}
+	}
+	else
+	{
+		if (a.mins.y > b.mins.y)
+		{
+			r.yCase = FIRST_ON_MAX;
+		}
+		else
+		{
+			r.yCase = FIRST_ENCAPSULATE;
+		}
+	}
+
+	if (a.maxs.z < b.maxs.z)
+	{
+		if (a.mins.z > b.mins.z)
+		{
+			r.zCase = FIRST_INSIDE;
+		}
+		else
+		{
+			r.zCase = FIRST_ON_MIN;
+		}
+	}
+	else
+	{
+		if (a.mins.z > b.mins.z)
+		{
+			r.zCase = FIRST_ON_MAX;
+		}
+		else
+		{
+			r.zCase = FIRST_ENCAPSULATE;
+		}
+	}
+
+	// X Overlap
+	r.xOverlapf = MinFloat(a.maxs.x - b.mins.x, b.maxs.x - a.mins.x);
+	r.xOverlap = Ceiling(r.xOverlapf);
+	r.xOverlap = ClampInt(r.xOverlap, 0, MinInt(firstDimensions.x, secondDimensions.x));
+
+	ASSERT_OR_DIE(r.xOverlap <= a.GetDimensions().x && r.xOverlap <= b.GetDimensions().x, "Error: xOverlap too large");
 
 	// Y Overlap
-	if (a.maxs.y - b.mins.y < b.maxs.y - a.mins.y)
-	{
-		r.firstBelow = true;
-		r.yOverlap = Ceiling(a.maxs.y - b.mins.y);
-	}
-	else
-	{
-		r.firstBelow = false;
-		r.yOverlap = Ceiling(b.maxs.y - a.mins.y);
-	}
+	r.yOverlapf = MinFloat(a.maxs.y - b.mins.y, b.maxs.y - a.mins.y);
+	r.yOverlap = Ceiling(r.yOverlapf);
+	r.yOverlap = ClampInt(r.yOverlap, 0, MinInt(firstDimensions.y, secondDimensions.y));
+
+	ASSERT_OR_DIE(r.yOverlap <= a.GetDimensions().y && r.yOverlap <= b.GetDimensions().y, "Error: yOverlap too large");
+
 
 	// z Overlap
-	if (a.maxs.z - b.mins.z < b.maxs.z - a.mins.z)
-	{
-		r.firstInFront = true;
-		r.zOverlap = Ceiling(a.maxs.z - b.mins.z);
-	}
-	else
-	{
-		r.firstInFront = false;
-		r.zOverlap = Ceiling(b.maxs.z - a.mins.z);
-	}
+	r.zOverlapf = MinFloat(a.maxs.z - b.mins.z, b.maxs.z - a.mins.z);
+	r.zOverlap = Ceiling(r.xOverlapf);
+	r.zOverlap = ClampInt(r.zOverlap, 0, MinInt(firstDimensions.z, secondDimensions.z));
+
+	ASSERT_OR_DIE(r.zOverlap <= a.GetDimensions().z && r.zOverlap <= b.GetDimensions().z, "Error: zOverlap too large");
 
 	return true;
+}
+
+
+bool IsThereVoxelOverlap(Entity* first, Entity* second, const BoundOverlapResult_t& r)
+{
+	IntVector3 firstDimensions = first->GetDimensions();
+	IntVector3 secondDimensions = second->GetDimensions();
+
+	int firstYOffset = 0;
+	int firstZOffset = 0;
+	int secondYOffset = 0;
+	int secondZOffset = 0;
+
+	switch (r.zCase)
+	{
+	case FIRST_ON_MIN:
+		firstZOffset = (int)firstDimensions.z - r.zOverlap;
+
+		break;
+	case FIRST_ON_MAX:
+		secondZOffset = (int)secondDimensions.z - r.zOverlap;
+
+		break;
+	case FIRST_INSIDE:
+	{
+		secondZOffset = (int)r.firstBounds.mins.z - (int)r.secondBounds.mins.z;
+	}
+
+
+	break;
+	case FIRST_ENCAPSULATE:
+	{
+		firstZOffset = (int)r.secondBounds.mins.z - (int)r.firstBounds.mins.z;
+	}
+
+	break;
+	}
+
+	switch (r.yCase)
+	{
+	case FIRST_ON_MIN:
+		firstYOffset = (int)firstDimensions.y - r.yOverlap;
+
+		break;
+	case FIRST_ON_MAX:
+		secondYOffset = (int)secondDimensions.y - r.yOverlap;
+
+		break;
+	case FIRST_INSIDE:
+	{
+		secondYOffset = (int)r.firstBounds.mins.y - (int)r.secondBounds.mins.y;
+	}
+
+
+	break;
+	case FIRST_ENCAPSULATE:
+	{
+		firstYOffset = (int)r.secondBounds.mins.y - (int)r.firstBounds.mins.y;
+	}
+
+	break;
+	}
+
+
+	const VoxelTexture* firstTexture = first->GetTextureForOrientation();
+	const VoxelTexture* secondTexture = second->GetTextureForOrientation();
+
+	for (int yIndex = 0; yIndex < r.yOverlap; ++yIndex)
+	{
+		for (int zIndex = 0; zIndex < r.zOverlap; ++zIndex)
+		{
+			uint32_t firstFlags = firstTexture->GetCollisionByteForRow(yIndex + firstYOffset, zIndex + firstZOffset);
+			uint32_t secondFlags = secondTexture->GetCollisionByteForRow(yIndex + secondYOffset, zIndex + secondZOffset);
+
+			switch (r.xCase)
+			{
+			case FIRST_ON_MIN:
+				firstFlags = firstFlags << (firstDimensions.x - r.xOverlap);
+				break;
+			case FIRST_ON_MAX:
+				secondFlags = secondFlags << (secondDimensions.x - r.xOverlap);
+				break;
+			case FIRST_INSIDE:
+			{
+				int bitsOnLeft = Ceiling(r.firstBounds.mins.x - r.secondBounds.mins.x);
+
+				ASSERT_OR_DIE(bitsOnLeft >= 0, "Error: BitsOnLeft was negative");
+
+				uint32_t mask = 0;
+				int index = bitsOnLeft;
+				for (int i = 0; i < r.xOverlap; ++i)
+				{
+					mask |= (0x80000000 >> index);
+					++index;
+				}
+
+				secondFlags = secondFlags & mask;
+				secondFlags = secondFlags << bitsOnLeft;
+			}
+
+
+					break;
+			case FIRST_ENCAPSULATE:
+			{
+				int bitsOnLeft = Ceiling(r.secondBounds.mins.x - r.firstBounds.mins.x);
+
+				ASSERT_OR_DIE(bitsOnLeft >= 0, "Error: BitsOnLeft was negative");
+
+				uint32_t mask = 0;
+				int index = bitsOnLeft;
+				for (int i = 0; i < r.xOverlap; ++i)
+				{
+					mask |= (0x80000000 >> index);
+					++index;
+				}
+
+				firstFlags = firstFlags & mask;
+				firstFlags = firstFlags << bitsOnLeft;
+			}
+
+				break;
+			}
+
+			if ((firstFlags & secondFlags) != 0)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
@@ -1254,8 +1493,8 @@ bool World::CheckAndCorrect_Voxel(Entity* first, Entity* second)
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
 
-	Vector3 firstPosition = first->GetEntityPosition();
-	Vector3 secondPosition = second->GetEntityPosition();
+	Vector3 firstPosition = Vector3(first->GetEntityCoordinatePosition());
+	Vector3 secondPosition = Vector3(second->GetEntityCoordinatePosition());
  
 	IntVector3 firstDimensions = first->GetDimensions();
 	IntVector3 secondDimensions = second->GetDimensions();
@@ -1278,74 +1517,7 @@ bool World::CheckAndCorrect_Voxel(Entity* first, Entity* second)
 
 	GUARANTEE_OR_DIE(r.xOverlap != 0 && r.yOverlap != 0 && r.zOverlap != 0, "Overlaps had 0 component values");
 
-	int firstXOffset = 0;
-	int firstYOffset = 0;
-	int firstZOffset = 0;
-	int secondXOffset = 0;
-	int secondYOffset = 0;
-	int secondZOffset = 0;
-
-	if (r.firstOnLeft)
-	{
-		firstXOffset = (int) firstDimensions.x - r.xOverlap;
-	}
-	else
-	{
-		secondXOffset = (int) secondDimensions.x - r.xOverlap;
-	}
-
-	if (r.firstBelow)
-	{
-		firstYOffset = (int) firstDimensions.y - r.yOverlap;
-	}
-	else
-	{
-		secondYOffset = (int) secondDimensions.y - r.yOverlap;
-	}
-
-	if (r.firstInFront)
-	{
-		firstZOffset = (int) firstDimensions.z - r.zOverlap;
-	}
-	else
-	{
-		secondZOffset = (int) secondDimensions.z - r.zOverlap;
-	}
-
-	const VoxelTexture* firstTexture = first->GetTextureForOrientation();
-	const VoxelTexture* secondTexture = second->GetTextureForOrientation();
-
-	boundsOverlap = false;
-	for (int yIndex = 0; yIndex < r.yOverlap; ++yIndex)
-	{
-		for (int zIndex = 0; zIndex < r.zOverlap; ++zIndex)
-		{
-			uint32_t firstFlags = firstTexture->GetCollisionByteForRow(yIndex + firstYOffset, zIndex + firstZOffset);
-			uint32_t secondFlags = secondTexture->GetCollisionByteForRow(yIndex + secondYOffset, zIndex + secondZOffset);
-
-			if (r.firstOnLeft)
-			{
-				firstFlags = firstFlags << (firstDimensions.x - r.xOverlap);
-			}
-			else
-			{
-				secondFlags = secondFlags << (secondDimensions.x - r.xOverlap);
-			}
-
-			if ((firstFlags & secondFlags) != 0)
-			{
-				boundsOverlap = true;
-				break;
-			}
-		}
-
-		if (boundsOverlap)
-		{
-			break;
-		}
-	}
-
-	if (!boundsOverlap)
+	if (!IsThereVoxelOverlap(first, second, r))
 	{
 		return false;
 	}
@@ -1353,22 +1525,22 @@ bool World::CheckAndCorrect_Voxel(Entity* first, Entity* second)
 	Vector2 diff = (firstPosition.xz() - secondPosition.xz());
 	Vector2 absDiff = Vector2(AbsoluteValue(diff.x), AbsoluteValue(diff.y));
 
-	float sumOfX = (firstDimensions.x + secondDimensions.x) * 0.5f;
-	float sumOfZ = (firstDimensions.z + secondDimensions.z) * 0.5f;
-
-	float xActualOverlap = (sumOfX - absDiff.x);
-	float zActualOverlap = (sumOfZ - absDiff.y);
+// 	float sumOfX = (firstDimensions.x + secondDimensions.x) * 0.5f;
+// 	float sumOfZ = (firstDimensions.z + secondDimensions.z) * 0.5f;
+// 
+// 	float xActualOverlap = (sumOfX - absDiff.x);
+// 	float zActualOverlap = (sumOfZ - absDiff.y);
 
 	Vector3 finalCorrection;
-	if (xActualOverlap < zActualOverlap)
+	if (r.xOverlapf < r.zOverlapf)
 	{
 		float sign = (diff.x < 0.f ? -1.f : 1.f);
-		finalCorrection = Vector3(sign * xActualOverlap, 0.f, 0.f);
+		finalCorrection = Vector3(sign * r.xOverlapf, 0.f, 0.f);
 	}
 	else
 	{
 		float sign = (diff.y < 0.f ? -1.f : 1.f);
-		finalCorrection = Vector3(0.f, 0.f, sign * zActualOverlap);
+		finalCorrection = Vector3(0.f, 0.f, sign * r.zOverlapf);
 	}
 
 	float firstScalar, secondScalar;
@@ -1376,6 +1548,7 @@ bool World::CheckAndCorrect_Voxel(Entity* first, Entity* second)
 
 	first->AddCollisionCorrection(firstScalar * finalCorrection);
 	second->AddCollisionCorrection(-secondScalar * finalCorrection);
+
 	return true;
 }
 

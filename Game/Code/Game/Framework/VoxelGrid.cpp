@@ -126,12 +126,17 @@ void VoxelGrid::DrawEntity(const Entity* entity)
 	PROFILE_LOG_SCOPE_FUNCTION();
 
 	const VoxelTexture* texture = entity->GetTextureForOrientation();
-	Vector3 position = entity->GetEntityPosition();
+	IntVector3 position = entity->GetEntityCoordinatePosition();
 
-	// Coordinate the object occupies (object bottom center)
-	IntVector3 coordinatePosition = IntVector3(position.x, position.y, position.z);
+	DebugRenderOptions options;
+	options.m_isWireFrame = true;
+	options.m_lifetime = 0.f;
 
-	Draw3DTexture(texture, coordinatePosition);
+	//DebugRenderSystem::DrawCube(Vector3(entity->GetEntityCoordinatePosition() + entity->GetDimensions() / 2.f), options, Vector3(entity->GetDimensions()));
+	//DebugRenderSystem::DrawUVSphere(m_position, 0.f);
+	//DebugRenderSystem::DrawUVSphere(Vector3(GetEntityCoordinatePosition()), 0.f);
+
+	Draw3DTexture(texture, position);
 }
 
 
@@ -192,6 +197,12 @@ void VoxelGrid::Draw3DTexture(const VoxelTexture* texture, const IntVector3& bot
 //
 void VoxelGrid::DebugDrawEntityCollision(const Entity* entity)
 {
+	DebugRenderOptions options;
+	options.m_isWireFrame = true;
+	options.m_lifetime = 0.f;
+
+	//DebugRenderSystem::DrawCube(Vector3(entity->GetEntityCoordinatePosition() + entity->GetDimensions() / 2.f), options, Vector3(entity->GetDimensions()));
+
 	PROFILE_LOG_SCOPE_FUNCTION();
 
 	const VoxelTexture* texture = entity->GetTextureForOrientation();
