@@ -70,7 +70,7 @@ void World::Inititalize()
 	m_playerHeatmap->SetHeat(targetCoords, 0.f);
 	m_playerHeatmap->SolveMapUpToDistance(NAV_STATIC_COST + 1.f, m_costsMap);
 
-	for (int i = 0; i < 0; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
 		Entity* entity = new Entity(EntityDefinition::GetDefinition("Window"));
 		entity->SetPosition(Vector3(GetRandomFloatInRange(20.f, 200.f), (float) m_groundElevation, GetRandomFloatInRange(20.f, 200.f)));
@@ -1483,6 +1483,7 @@ bool IsThereVoxelOverlap(Entity* first, Entity* second, const BoundOverlapResult
 	return false;
 }
 
+
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 //-----------------------------------------------------------------------------------------------
 // Checks for collision between the two entities on a per-voxel basis, and corrects them if there
@@ -1490,9 +1491,6 @@ bool IsThereVoxelOverlap(Entity* first, Entity* second, const BoundOverlapResult
 //
 bool World::CheckAndCorrect_Voxel(Entity* first, Entity* second)
 {
-	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
-	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
-
 	Vector3 firstPosition = Vector3(first->GetEntityCoordinatePosition());
 	Vector3 secondPosition = Vector3(second->GetEntityCoordinatePosition());
  
@@ -1522,26 +1520,37 @@ bool World::CheckAndCorrect_Voxel(Entity* first, Entity* second)
 		return false;
 	}
 
-	Vector2 diff = (firstPosition.xz() - secondPosition.xz());
-	Vector2 absDiff = Vector2(AbsoluteValue(diff.x), AbsoluteValue(diff.y));
-
-// 	float sumOfX = (firstDimensions.x + secondDimensions.x) * 0.5f;
-// 	float sumOfZ = (firstDimensions.z + secondDimensions.z) * 0.5f;
-// 
-// 	float xActualOverlap = (sumOfX - absDiff.x);
-// 	float zActualOverlap = (sumOfZ - absDiff.y);
+	Vector3 diff = (firstPosition - secondPosition);
+	Vector3 absDiff = Vector3(AbsoluteValue(diff.x), AbsoluteValue(diff.y), AbsoluteValue(diff.z));
 
 	Vector3 finalCorrection;
 	if (r.xOverlapf < r.zOverlapf)
 	{
-		float sign = (diff.x < 0.f ? -1.f : 1.f);
-		finalCorrection = Vector3(sign * r.xOverlapf, 0.f, 0.f);
+		if (r.xOverlapf <= r.yOverlapf)
+		{
+			float sign = (diff.x < 0.f ? -1.f : 1.f);
+			finalCorrection = Vector3(sign * r.xOverlapf, 0.f, 0.f);
+		}
+		else
+		{
+			float sign = (diff.y < 0.f ? -1.f : 1.f);
+			finalCorrection = Vector3(0.f, sign * r.yOverlapf, 0.f);
+		}
 	}
 	else
 	{
-		float sign = (diff.y < 0.f ? -1.f : 1.f);
-		finalCorrection = Vector3(0.f, 0.f, sign * r.zOverlapf);
+		if (r.zOverlapf <= r.yOverlapf)
+		{
+			float sign = (diff.z < 0.f ? -1.f : 1.f);
+			finalCorrection = Vector3(0.f, 0.f, sign * r.zOverlapf);
+		}
+		else
+		{
+			float sign = (diff.y < 0.f ? -1.f : 1.f);
+			finalCorrection = Vector3(0.f, sign * r.yOverlapf, 0.f);
+		}
 	}
+
 
 	float firstScalar, secondScalar;
 	GetMassScalars(first, second, firstScalar, secondScalar);

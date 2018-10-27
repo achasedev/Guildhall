@@ -41,7 +41,7 @@ void AIEntity::OnDeath()
 	MovingEntity::OnDeath();
 
 	m_spawnPoint->StopTrackingEntity(this);
-	Game::GetWorld()->ParticalizeEntity(this);
+	//Game::GetWorld()->ParticalizeEntity(this);
 }
 
 //-----------------------------------------------------------------------------------------------

@@ -21,14 +21,6 @@ enum ePhysicsType
 	PHYSICS_TYPE_UNASSIGNED
 };
 
-// Shape of the collision boundary
-enum eCollisionShape
-{
-	COLLISION_SHAPE_NONE,
-	COLLISION_SHAPE_DISC,
-	COLLISION_SHAPE_BOX,
-	NUM_COLLISION_SHAPES
-};
 
 // How the entity should react to collision corrections
 enum eCollisionResponse
@@ -50,16 +42,13 @@ enum eCollisionTeamException
 // Collision state for a single entity
 struct CollisionDefinition_t
 {
-	CollisionDefinition_t()
-		: m_shape(COLLISION_SHAPE_DISC), m_response(COLLISION_RESPONSE_SHARE_CORRECTION), m_teamException(COLLISION_TEAM_EXCEPTION_NONE) {}
+	CollisionDefinition_t() {}
+	CollisionDefinition_t(eCollisionResponse response, eCollisionTeamException teamBehavior, unsigned int collisionLayer)
+		: m_response(response), m_teamException(teamBehavior), m_collisionLayer(collisionLayer) {}
 
-	CollisionDefinition_t(eCollisionShape shape, eCollisionResponse response, eCollisionTeamException teamBehavior, unsigned int collisionLayer)
-		: m_shape(shape), m_response(response), m_teamException(teamBehavior), m_collisionLayer(collisionLayer) {}
-
-	eCollisionShape				m_shape;
-	eCollisionResponse			m_response;
-	eCollisionTeamException		m_teamException;
-	unsigned int				m_collisionLayer;
+	eCollisionResponse			m_response = COLLISION_RESPONSE_SHARE_CORRECTION;
+	eCollisionTeamException		m_teamException = COLLISION_TEAM_EXCEPTION_NONE;
+	unsigned int				m_collisionLayer = 0;
 };
 
 class VoxelSprite;

@@ -34,20 +34,6 @@ ePhysicsType ConvertPhysicsTypeFromString(const std::string& physicsTypeName)
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the eCollisionShape corresponding to the text
-//
-eCollisionShape ConvertCollisionShapeFromString(const std::string& shapeName)
-{
-	if		(shapeName == "disc")	{ return COLLISION_SHAPE_DISC; }
-	else if (shapeName == "box")	{ return COLLISION_SHAPE_BOX; }
-	else
-	{
-		return COLLISION_SHAPE_NONE;
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Returns the eCollisionResponse corresponding to the text
 //
 eCollisionResponse ConvertCollisionResponseFromString(const std::string& responseName)
@@ -125,7 +111,6 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 		if (collisionElement != nullptr)
 		{
 			std::string shapeText = ParseXmlAttribute(*collisionElement, "shape", "disc");
-			eCollisionShape shape = ConvertCollisionShapeFromString(shapeText);
 
 			std::string responseText = ParseXmlAttribute(*collisionElement, "response", "full_correction");
 			eCollisionResponse response = ConvertCollisionResponseFromString(responseText);
@@ -135,7 +120,7 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 
 			int layer = ParseXmlAttribute(*collisionElement, "layer", 0);
 
-			m_collisionDef = CollisionDefinition_t(shape, response, teamException, (unsigned int) layer);
+			m_collisionDef = CollisionDefinition_t(response, teamException, (unsigned int) layer);
 		}
 	}
 
