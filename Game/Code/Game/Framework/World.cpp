@@ -122,13 +122,6 @@ void World::Inititalize()
 
 	m_groundElevation = 5;
 
-// 	IntVector2 targetCoords = IntVector2(240, 240);
-// 	targetCoords.x /= NAV_DIMENSION_FACTOR;
-// 	targetCoords.y /= NAV_DIMENSION_FACTOR;
-// 
-// 	m_heatMapInUse->SetHeat(targetCoords, 0.f);
-// 	m_heatMapInUse->SolveMapUpToDistance(NAV_STATIC_COST + 1.f, m_costsMap);
-
 	for (int i = 0; i < 100; ++i)
 	{
 		Entity* entity = new Entity(EntityDefinition::GetDefinition("Window"));
@@ -1307,9 +1300,9 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 	collisionResult.yOverlapi = MinInt(r.yOverlapi - minY, maxY + 1);
 	collisionResult.zOverlapi = MinInt(r.zOverlapi - minZ, maxZ + 1);
 
-	collisionResult.xOverlapf = (float)collisionResult.xOverlapi;
-	collisionResult.yOverlapf = (float)collisionResult.yOverlapi;
-	collisionResult.zOverlapf = (float)collisionResult.zOverlapi;
+	collisionResult.xOverlapf = (float)collisionResult.xOverlapi - 1.0f;
+	collisionResult.yOverlapf = (float)collisionResult.yOverlapi - 1.0f;
+	collisionResult.zOverlapf = (float)collisionResult.zOverlapi - 1.0f;
 
 	Vector3 firstPosition = first->GetPosition();
 	Vector3 secondPosition = second->GetPosition();
@@ -1319,48 +1312,37 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 	Vector3 firstError = firstCoord - firstPosition;
 	Vector3 secondError = secondCoord - secondPosition;
 
-	Vector3 firstErrorCorrection = Vector3::ONES - firstError;
-	Vector3 secondErrorCorrection = Vector3::ONES - secondError;
-
-	if (firstError.x == 0.f) { firstErrorCorrection.x = 0.f; }
-	if (firstError.y == 0.f) { firstErrorCorrection.y = 0.f; }
-	if (firstError.z == 0.f) { firstErrorCorrection.z = 0.f; }
-
-	if (secondError.x == 0.f) { secondErrorCorrection.x = 0.f; }
-	if (secondError.y == 0.f) { secondErrorCorrection.y = 0.f; }
-	if (secondError.z == 0.f) { secondErrorCorrection.z = 0.f; }
-
 	if (r.xCase == FIRST_ON_MIN)
 	{
-		collisionResult.xOverlapf += firstErrorCorrection.x;
-		collisionResult.xOverlapf -= secondErrorCorrection.x;
+		collisionResult.xOverlapf -= firstError.x;
+		collisionResult.xOverlapf += secondError.x;
 	}
 	else if (r.xCase == FIRST_ON_MAX)
 	{
-		collisionResult.xOverlapf -= firstErrorCorrection.x;
-		collisionResult.xOverlapf += secondErrorCorrection.x;
+		collisionResult.xOverlapf += firstError.x;
+		collisionResult.xOverlapf -= secondError.x;
 	}
 
 	if (r.yCase == FIRST_ON_MIN)
 	{
-		collisionResult.yOverlapf += firstErrorCorrection.y;
-		collisionResult.yOverlapf -= secondErrorCorrection.y;
+		collisionResult.yOverlapf -= firstError.y;
+		collisionResult.yOverlapf += secondError.y;
 	}
 	else if (r.yCase == FIRST_ON_MAX)
 	{
-		collisionResult.yOverlapf -= firstErrorCorrection.y;
-		collisionResult.yOverlapf += secondErrorCorrection.y;
+		collisionResult.yOverlapf += firstError.y;
+		collisionResult.yOverlapf -= secondError.y;
 	}
 
 	if (r.zCase == FIRST_ON_MIN)
 	{
-		collisionResult.zOverlapf += firstErrorCorrection.z;
-		collisionResult.zOverlapf -= secondErrorCorrection.z;
+		collisionResult.zOverlapf -= firstError.z;
+		collisionResult.zOverlapf += secondError.z;
 	}
 	else if (r.zCase == FIRST_ON_MAX)
 	{
-		collisionResult.zOverlapf -= firstErrorCorrection.z;
-		collisionResult.zOverlapf += secondErrorCorrection.z;
+		collisionResult.zOverlapf += firstError.z;
+		collisionResult.zOverlapf -= secondError.z;
 	}
 
 	return collisionResult;
