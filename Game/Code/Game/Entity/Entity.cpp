@@ -314,5 +314,5 @@ Vector3 Entity::GetPositionForLocalIndex(unsigned int index) const
 //
 IntVector3 Entity::GetCoordinatePosition() const
 {
-	return IntVector3(m_position);
+	return IntVector3(RoundToNearestInt(m_position.x), RoundToNearestInt(m_position.y), RoundToNearestInt(m_position.z));
 }

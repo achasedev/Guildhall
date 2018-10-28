@@ -35,29 +35,46 @@ void GameCamera::UpdatePositionBasedOnPlayers()
 {
 	Player** players = Game::GetPlayers();
 
-	// Average the player's locations
-	Vector3 targetPos = Vector3::ZERO;
-	int playerCount = 0;
+	// Find the middle x and z positions
+	IntVector3 targetPos = IntVector3::ZERO;
+	IntVector3 playerDimensions;
+	int minX = 3000;
+	int minY = 3000;
+	int minZ = 3000;
+	int maxX = -1;
+	int maxY = -1;
+	int maxZ = -1;
 
+	bool foundPlayer = false;
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
 		if (Game::IsPlayerAlive(i))
 		{
-			targetPos += players[i]->GetPosition();
-			playerCount++;
+			foundPlayer = true;
+			playerDimensions = players[i]->GetDimensions(); // All players should be the same dimensions...
+
+			IntVector3 pos = players[i]->GetCoordinatePosition();
+
+			minX = MinInt(minX, pos.x);
+			maxX = MaxInt(maxX, pos.x);
+
+			minY = MinInt(minY, pos.y);
+			maxY = MaxInt(maxY, pos.y);
+
+			minZ = MinInt(minZ, pos.z);
+			maxZ = MaxInt(maxZ, pos.z);
 		}
 	}
 
-	// No players == don't move
-	if (playerCount == 0)
+	if (!foundPlayer)
 	{
 		return;
 	}
 
-	targetPos /= (float) playerCount;
+	Vector3 finalTarget = 0.5f * (Vector3(minX, minY, minZ) + Vector3(maxX, maxY, maxZ)) + Vector3(playerDimensions / 2);
 
-	Vector3 newPos = targetPos + m_offsetDirection * m_offsetDistance;
-	LookAt(newPos, targetPos);
+	Vector3 newPos = finalTarget + m_offsetDirection * m_offsetDistance;
+	LookAt(newPos, finalTarget);
 }
 
 

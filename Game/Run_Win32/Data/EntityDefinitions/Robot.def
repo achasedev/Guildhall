@@ -49,7 +49,7 @@
 	<EntityDefinition name="Robot">
 
 		<!--Movement Parameters-->
-		<Movement maxAcceleration="3000.0" maxSpeed="2.0" maxDeceleration="100.0" jumpImpulse="120.0"/>
+		<Movement maxAcceleration="3000.0" maxSpeed="20.0" maxDeceleration="100.0" jumpImpulse="120.0"/>
 
 		<!--Visuals-->
 		<Animation set="Robot" defaultSprite="Robot_idle_0"/>

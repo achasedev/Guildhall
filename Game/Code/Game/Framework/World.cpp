@@ -32,7 +32,7 @@ enum eOverlapCase
 
 struct BoundOverlapResult_t
 {
-	BoundOverlapResult_t(bool result = false)
+	BoundOverlapResult_t(bool result)
 		: overlapOccurred(result) {}
 
 	bool overlapOccurred = false;
@@ -53,12 +53,22 @@ struct BoundOverlapResult_t
 	AABB3 secondBounds;
 };
 
+struct VoxelOverlapResult_t
+{
+	bool overlapOccurred = false;
+
+	int xOverlap;
+	int yOverlap;
+	int zOverlap;
+};
+
+bool					IsThereTeamException(Entity* first, Entity* second);
 bool					CheckAndCorrectEntityCollision(Entity* first, Entity* second);
 
 BoundOverlapResult_t	PerformBroadphaseCheck(Entity* first, Entity* second);
-bool					PerformNarrowPhaseCheck(Entity* first, Entity* second, const BoundOverlapResult_t& r);
+VoxelOverlapResult_t	PerformNarrowPhaseCheck(Entity* first, Entity* second, const BoundOverlapResult_t& r);
 
-void					ApplyCollisionCorrection(Entity* first, Entity* second, const BoundOverlapResult_t& r);
+void					ApplyCollisionCorrection(Entity* first, Entity* second, const VoxelOverlapResult_t& r);
 void					CalculateMassScalars(Entity* first, Entity* second, float& out_firstScalar, float& out_secondScalar);
 
 
@@ -773,7 +783,7 @@ void World::UpdatePlayerHeatmap()
 }
 
 
-//-----------------------------------------------------------------------------------------------
+//- C FUNCTION ----------------------------------------------------------------------------------------------
 // Checks if the two entities pass the team exception check, and should continue checking for
 // collisions. Returns true if there should be collision checks, false otherwise
 //
@@ -799,7 +809,7 @@ bool IsThereTeamException(Entity* first, Entity* second)
 }
 
 
-//-----------------------------------------------------------------------------------------------
+//- C FUNCTION ----------------------------------------------------------------------------------------------
 // Checks if the two given entities are colliding, and pushes them out if so
 //
 bool CheckAndCorrectEntityCollision(Entity* first, Entity* second)
@@ -813,34 +823,35 @@ bool CheckAndCorrectEntityCollision(Entity* first, Entity* second)
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
 
-	BoundOverlapResult_t result = PerformBroadphaseCheck(first, second);
+	BoundOverlapResult_t boundsResult = PerformBroadphaseCheck(first, second);
 
-	if (!result.overlapOccurred)
+	if (!boundsResult.overlapOccurred)
 	{
 		return false;
 	}
 
 	// Now Do Narrow Phase
-	bool narrowPhaseCollisionOccurred = PerformNarrowPhaseCheck(first, second, result);
+	VoxelOverlapResult_t voxelResult = PerformNarrowPhaseCheck(first, second, boundsResult);
 
-	// Call collision callbacks
-	if (narrowPhaseCollisionOccurred)
+	if (voxelResult.overlapOccurred)
 	{
-		ApplyCollisionCorrection(first, second, result);
+		// Apply corrections and call collision callbacks
+		ApplyCollisionCorrection(first, second, voxelResult);
 
 		first->OnCollision(second);
 		second->OnCollision(first);
 	}
 
-	return narrowPhaseCollisionOccurred;
+	return voxelResult.overlapOccurred;
 }
 
 
-//-----------------------------------------------------------------------------------------------
-// Checks if the AABB3 bounds of the two entities overlap eachother, and returns the result
+//- C FUNCTION ----------------------------------------------------------------------------------------------
+// Checks if the AABB3 bounds of the two entities overlap each other, and returns the result
 //
 BoundOverlapResult_t PerformBroadphaseCheck(Entity* first, Entity* second)
 {
+	// Get state of the entities
 	Vector3 firstPosition = Vector3(first->GetCoordinatePosition());
 	Vector3 secondPosition = Vector3(second->GetCoordinatePosition());
 
@@ -850,51 +861,30 @@ BoundOverlapResult_t PerformBroadphaseCheck(Entity* first, Entity* second)
 	Vector3 firstTopRight = firstPosition + Vector3(firstDimensions);
 	Vector3 secondTopRight = secondPosition + Vector3(secondDimensions);
 
-	AABB3 a = AABB3(firstPosition, firstTopRight);
-	AABB3 b = AABB3(secondPosition, secondTopRight);
+	AABB3 firstBounds = AABB3(firstPosition, firstTopRight);
+	AABB3 secondBounds = AABB3(secondPosition, secondTopRight);
 
-	// Check if a is completely to the left of b
-	if (!DoAABB3sOverlap(a, b))
+	// Check if the bounds overlap, and if not can early out
+	if (!DoAABB3sOverlap(firstBounds, secondBounds))
 	{
 		return BoundOverlapResult_t(false);
 	}
 
-	// 	if (a.maxs.x <= b.mins.x)
-	// 	{
-	// 		return BoundOverlapResult_t();
-	// 		// Check if a is completely to the right of b
-	// 	}
-	// 	else if (a.mins.x >= b.maxs.x)
-	// 	{
-	// 		return false;
-	// 		// Check if a is completely above b
-	// 	}
-	// 	else if (a.mins.y >= b.maxs.y)
-	// 	{
-	// 		return false;
-	// 		// Check if a is completely below b
-	// 	}
-	// 	else if (a.maxs.y <= b.mins.y)
-	// 	{
-	// 		return false;
-	// 	}
-	// 	else if (a.maxs.z <= b.mins.z)
-	// 	{
-	// 		return false;
-	// 	}
-	// 	else if (a.mins.z >= b.maxs.z)
-	// 	{
-	// 		return false;
-	// 	}
-
+	// Bounds overlap, so return details about the collision
 	BoundOverlapResult_t r = BoundOverlapResult_t(true);
-	r.firstBounds = a;
-	r.secondBounds = b;
 
-	// Set up the relative position results for the first entity
-	if (a.maxs.x < b.maxs.x)
+
+	r.firstBounds = firstBounds;
+	r.secondBounds = secondBounds;
+
+	//-----Set up the relative position results for the first entity-----
+	// Important for determining offsets into each entity's collision matrix on
+	// all 3 dimensions
+
+	// X
+	if (firstBounds.maxs.x < secondBounds.maxs.x)
 	{
-		if (a.mins.x > b.mins.x)
+		if (firstBounds.mins.x > secondBounds.mins.x)
 		{
 			r.xCase = FIRST_INSIDE;
 		}
@@ -905,7 +895,7 @@ BoundOverlapResult_t PerformBroadphaseCheck(Entity* first, Entity* second)
 	}
 	else
 	{
-		if (a.mins.x > b.mins.x)
+		if (firstBounds.mins.x > secondBounds.mins.x)
 		{
 			r.xCase = FIRST_ON_MAX;
 		}
@@ -915,9 +905,10 @@ BoundOverlapResult_t PerformBroadphaseCheck(Entity* first, Entity* second)
 		}
 	}
 
-	if (a.maxs.y < b.maxs.y)
+	// Y
+	if (firstBounds.maxs.y < secondBounds.maxs.y)
 	{
-		if (a.mins.y > b.mins.y)
+		if (firstBounds.mins.y > secondBounds.mins.y)
 		{
 			r.yCase = FIRST_INSIDE;
 		}
@@ -928,7 +919,7 @@ BoundOverlapResult_t PerformBroadphaseCheck(Entity* first, Entity* second)
 	}
 	else
 	{
-		if (a.mins.y > b.mins.y)
+		if (firstBounds.mins.y > secondBounds.mins.y)
 		{
 			r.yCase = FIRST_ON_MAX;
 		}
@@ -938,9 +929,10 @@ BoundOverlapResult_t PerformBroadphaseCheck(Entity* first, Entity* second)
 		}
 	}
 
-	if (a.maxs.z < b.maxs.z)
+	// Z
+	if (firstBounds.maxs.z < secondBounds.maxs.z)
 	{
-		if (a.mins.z > b.mins.z)
+		if (firstBounds.mins.z > secondBounds.mins.z)
 		{
 			r.zCase = FIRST_INSIDE;
 		}
@@ -951,7 +943,7 @@ BoundOverlapResult_t PerformBroadphaseCheck(Entity* first, Entity* second)
 	}
 	else
 	{
-		if (a.mins.z > b.mins.z)
+		if (firstBounds.mins.z > secondBounds.mins.z)
 		{
 			r.zCase = FIRST_ON_MAX;
 		}
@@ -962,37 +954,40 @@ BoundOverlapResult_t PerformBroadphaseCheck(Entity* first, Entity* second)
 	}
 
 	// Calculate the X Overlap in voxels
-	r.xOverlapf = MinFloat(a.maxs.x - b.mins.x, b.maxs.x - a.mins.x);
-	r.xOverlap = Ceiling(r.xOverlapf);
+	r.xOverlapf = MinFloat(firstBounds.maxs.x - secondBounds.mins.x, secondBounds.maxs.x - firstBounds.mins.x);
+	r.xOverlap = RoundToNearestInt(r.xOverlapf);
 	r.xOverlap = ClampInt(r.xOverlap, 0, MinInt(firstDimensions.x, secondDimensions.x));
 
-	ASSERT_OR_DIE(r.xOverlap <= a.GetDimensions().x && r.xOverlap <= b.GetDimensions().x, "Error: xOverlap too large");
+	ASSERT_OR_DIE(r.xOverlap <= firstBounds.GetDimensions().x && r.xOverlap <= secondBounds.GetDimensions().x, "Error: xOverlap too large");
 
 	// Calculate the Y Overlap in voxels
-	r.yOverlapf = MinFloat(a.maxs.y - b.mins.y, b.maxs.y - a.mins.y);
-	r.yOverlap = Ceiling(r.yOverlapf);
+	r.yOverlapf = MinFloat(firstBounds.maxs.y - secondBounds.mins.y, secondBounds.maxs.y - firstBounds.mins.y);
+	r.yOverlap = RoundToNearestInt(r.yOverlapf);
 	r.yOverlap = ClampInt(r.yOverlap, 0, MinInt(firstDimensions.y, secondDimensions.y));
 
-	ASSERT_OR_DIE(r.yOverlap <= a.GetDimensions().y && r.yOverlap <= b.GetDimensions().y, "Error: yOverlap too large");
+	ASSERT_OR_DIE(r.yOverlap <= firstBounds.GetDimensions().y && r.yOverlap <= secondBounds.GetDimensions().y, "Error: yOverlap too large");
 
 
 	// Calculate the Z Overlap in voxels
-	r.zOverlapf = MinFloat(a.maxs.z - b.mins.z, b.maxs.z - a.mins.z);
-	r.zOverlap = Ceiling(r.xOverlapf);
+	r.zOverlapf = MinFloat(firstBounds.maxs.z - secondBounds.mins.z, secondBounds.maxs.z - firstBounds.mins.z);
+	r.zOverlap = RoundToNearestInt(r.zOverlapf);
 	r.zOverlap = ClampInt(r.zOverlap, 0, MinInt(firstDimensions.z, secondDimensions.z));
 
-	ASSERT_OR_DIE(r.zOverlap <= a.GetDimensions().z && r.zOverlap <= b.GetDimensions().z, "Error: zOverlap too large");
+	ASSERT_OR_DIE(r.zOverlap <= firstBounds.GetDimensions().z && r.zOverlap <= secondBounds.GetDimensions().z, "Error: zOverlap too large");
 
 	return r;
 }
 
 
-
-bool PerformNarrowPhaseCheck(Entity* first, Entity* second, const BoundOverlapResult_t& r)
+//- C FUNCTION ----------------------------------------------------------------------------------------------
+// Checks if any voxels between the two entity's overlap space collide, and returns true if so
+//
+VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, const BoundOverlapResult_t& r)
 {
 	IntVector3 firstDimensions = first->GetDimensions();
 	IntVector3 secondDimensions = second->GetDimensions();
 
+	//-----Set up offsets based on the relative position of first-----
 	int firstYOffset = 0;
 	int firstZOffset = 0;
 	int secondYOffset = 0;
@@ -1046,9 +1041,18 @@ bool PerformNarrowPhaseCheck(Entity* first, Entity* second, const BoundOverlapRe
 	break;
 	}
 
-
+	// Get the textures
 	const VoxelTexture* firstTexture = first->GetTextureForRender();
 	const VoxelTexture* secondTexture = second->GetTextureForRender();
+
+	int minX = 100;
+	int minY = 100;
+	int minZ = 100;
+	int maxX = -1;
+	int maxY = -1;
+	int maxZ = -1;
+
+	VoxelOverlapResult_t collisionResult;
 
 	for (int yIndex = 0; yIndex < r.yOverlap; ++yIndex)
 	{
@@ -1057,68 +1061,99 @@ bool PerformNarrowPhaseCheck(Entity* first, Entity* second, const BoundOverlapRe
 			uint32_t firstFlags = firstTexture->GetCollisionByteForRow(yIndex + firstYOffset, zIndex + firstZOffset);
 			uint32_t secondFlags = secondTexture->GetCollisionByteForRow(yIndex + secondYOffset, zIndex + secondZOffset);
 
+			// Bitshift the flags based on the x overlaps
 			switch (r.xCase)
 			{
-			case FIRST_ON_MIN:
-				firstFlags = firstFlags << (firstDimensions.x - r.xOverlap);
+				case FIRST_ON_MIN: // First straddles the "left" edge of second
+				{
+					firstFlags = firstFlags << (firstDimensions.x - r.xOverlap);
+				}
 				break;
-			case FIRST_ON_MAX:
-				secondFlags = secondFlags << (secondDimensions.x - r.xOverlap);
+
+				case FIRST_ON_MAX: // First straddles the "right" edge of second
+				{
+					secondFlags = secondFlags << (secondDimensions.x - r.xOverlap);
+				}
 				break;
-			case FIRST_INSIDE:
+
+				case FIRST_INSIDE: // First is within second
+				{
+					int bitsOnLeft = RoundToNearestInt(r.firstBounds.mins.x - r.secondBounds.mins.x);
+
+					ASSERT_OR_DIE(bitsOnLeft >= 0, "Error: BitsOnLeft was negative");
+
+					// Make the mask
+					uint32_t mask = 0;
+					int index = bitsOnLeft;
+					for (int i = 0; i < r.xOverlap; ++i)
+					{
+						mask |= (TEXTURE_LEFTMOST_COLLISION_BIT >> index);
+						++index;
+					}
+
+					// Isolate the bits in the overlap
+					secondFlags = secondFlags & mask;
+					secondFlags = secondFlags << bitsOnLeft;
+				}
+				break;
+
+				case FIRST_ENCAPSULATE: // First encapsulates second
+				{
+					int bitsOnLeft = RoundToNearestInt(r.secondBounds.mins.x - r.firstBounds.mins.x);
+
+					ASSERT_OR_DIE(bitsOnLeft >= 0, "Error: BitsOnLeft was negative");
+
+					// Make the mask
+					uint32_t mask = 0;
+					int index = bitsOnLeft;
+					for (int i = 0; i < r.xOverlap; ++i)
+					{
+						mask |= (TEXTURE_LEFTMOST_COLLISION_BIT >> index);
+						++index;
+					}
+
+					// Isolate the bits in the overlap
+					firstFlags = firstFlags & mask;
+					firstFlags = firstFlags << bitsOnLeft;
+				}
+				break;
+			}
+
+			// Actual check - if they share any bits, return true immediately
+			uint32_t flagResult = (firstFlags & secondFlags);
+			if (flagResult != 0)
 			{
-				int bitsOnLeft = Ceiling(r.firstBounds.mins.x - r.secondBounds.mins.x);
+				collisionResult.overlapOccurred = true;
+				
+				minY = MinInt(minY, yIndex);
+				minZ = MinInt(minZ, zIndex);
+				maxY = MaxInt(maxY, yIndex);
+				maxZ = MaxInt(maxZ, zIndex);
 
-				ASSERT_OR_DIE(bitsOnLeft >= 0, "Error: BitsOnLeft was negative");
-
-				uint32_t mask = 0;
-				int index = bitsOnLeft;
 				for (int i = 0; i < r.xOverlap; ++i)
 				{
-					mask |= (TEXTURE_LEFTMOST_COLLISION_BIT >> index);
-					++index;
+					if ((firstFlags & (TEXTURE_LEFTMOST_COLLISION_BIT >> i)) != 0 || (secondFlags & (TEXTURE_LEFTMOST_COLLISION_BIT >> i)) != 0)
+					{
+						minX = MinInt(minX, i);
+						maxX = MaxInt(maxX, i);
+					}
 				}
-
-				secondFlags = secondFlags & mask;
-				secondFlags = secondFlags << bitsOnLeft;
-			}
-
-
-					break;
-			case FIRST_ENCAPSULATE:
-			{
-				int bitsOnLeft = Ceiling(r.secondBounds.mins.x - r.firstBounds.mins.x);
-
-				ASSERT_OR_DIE(bitsOnLeft >= 0, "Error: BitsOnLeft was negative");
-
-				uint32_t mask = 0;
-				int index = bitsOnLeft;
-				for (int i = 0; i < r.xOverlap; ++i)
-				{
-					mask |= (TEXTURE_LEFTMOST_COLLISION_BIT >> index);
-					++index;
-				}
-
-				firstFlags = firstFlags & mask;
-				firstFlags = firstFlags << bitsOnLeft;
-			}
-
-				break;
-			}
-
-			if ((firstFlags & secondFlags) != 0)
-			{
-				return true;
 			}
 		}
 	}
 
-	return false;
+	collisionResult.xOverlap = MinInt(r.xOverlap - minX, maxX + 1);
+	collisionResult.yOverlap = MinInt(r.yOverlap - minY, maxY + 1);
+	collisionResult.zOverlap = MinInt(r.zOverlap - minZ, maxZ + 1);
+
+	return collisionResult;
 }
 
 
-
-void ApplyCollisionCorrection(Entity* first, Entity* second, const BoundOverlapResult_t& r)
+//- C FUNCTION ----------------------------------------------------------------------------------------------
+// Applies a corrective collision offset to both entities so they are no longer overlapping
+//
+void ApplyCollisionCorrection(Entity* first, Entity* second, const VoxelOverlapResult_t& r)
 {
 	Vector3 firstPosition = first->GetPosition();
 	Vector3 secondPosition = second->GetPosition();
@@ -1126,45 +1161,48 @@ void ApplyCollisionCorrection(Entity* first, Entity* second, const BoundOverlapR
 	Vector3 diff = (firstPosition - secondPosition);
 	Vector3 absDiff = Vector3(AbsoluteValue(diff.x), AbsoluteValue(diff.y), AbsoluteValue(diff.z));
 
+	// Determine the correction offset by pushing across the least amount of overlap
 	Vector3 finalCorrection;
-	if (r.xOverlapf < r.zOverlapf)
+	if (r.xOverlap < r.zOverlap)
 	{
-		if (r.xOverlapf <= r.yOverlapf)
+		if (r.xOverlap <= r.yOverlap)
 		{
 			float sign = (diff.x < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(sign * r.xOverlapf, 0.f, 0.f);
+			finalCorrection = Vector3(sign * (float) r.xOverlap, 0.f, 0.f);
 		}
 		else
 		{
 			float sign = (diff.y < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(0.f, sign * r.yOverlapf, 0.f);
+			finalCorrection = Vector3(0.f, sign * (float) r.yOverlap, 0.f);
 		}
 	}
 	else
 	{
-		if (r.zOverlapf <= r.yOverlapf)
+		if (r.zOverlap <= r.yOverlap)
 		{
 			float sign = (diff.z < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(0.f, 0.f, sign * r.zOverlapf);
+			finalCorrection = Vector3(0.f, 0.f, sign * (float) r.zOverlap);
 		}
 		else
 		{
 			float sign = (diff.y < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(0.f, sign * r.yOverlapf, 0.f);
+			finalCorrection = Vector3(0.f, sign * (float) r.yOverlap, 0.f);
 		}
 	}
 
-
+	// Get the scalars that determine how they will share the correction
 	float firstScalar, secondScalar;
 	CalculateMassScalars(first, second, firstScalar, secondScalar);
 
+	// Apply the correction
 	first->AddCollisionCorrection(firstScalar * finalCorrection);
 	second->AddCollisionCorrection(-secondScalar * finalCorrection);
 }
 
 
-//-----------------------------------------------------------------------------------------------
-// Returns the two scalars to use during a collision correction, based on the entities' masses
+//- C FUNCTION ----------------------------------------------------------------------------------------------
+// Returns the two scalars to use during a collision correction, based on the entities' masses and collision
+// definitions
 //
 void CalculateMassScalars(Entity* first, Entity* second, float& out_firstScalar, float& out_secondScalar)
 {
@@ -1238,6 +1276,7 @@ void CalculateMassScalars(Entity* first, Entity* second, float& out_firstScalar,
 		}
 	}
 }
+
 
 //-----------------------------------------------------------------------------------------------
 // Creates a bunch of particles to represent the exploded entity
