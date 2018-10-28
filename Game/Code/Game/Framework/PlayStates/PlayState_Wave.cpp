@@ -140,7 +140,7 @@ void PlayState_Wave::Render_Enter() const
 void PlayState_Wave::Render() const
 {
 	Game::GetWorld()->Render();
-	DebugRenderSystem::Draw2DText(Stringf("Wave %i of %i", Game::GetWaveManager()->GetCurrentWaveNumber() + 1, Game::GetWaveManager()->GetWaveCount()), Window::GetInstance()->GetWindowBounds(), 0.f);
+	//DebugRenderSystem::Draw2DText(Stringf("Wave %i of %i", Game::GetWaveManager()->GetCurrentWaveNumber() + 1, Game::GetWaveManager()->GetWaveCount()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
 

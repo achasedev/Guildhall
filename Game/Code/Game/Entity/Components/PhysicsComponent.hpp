@@ -24,6 +24,9 @@ public:
 
 	void			SetForce(const Vector3& force);
 	void			SetVelocity(const Vector3& velocity);
+	void			ZeroXVelocity();
+	void			ZeroYVelocity();
+	void			ZeroZVelocity();
 
 	void			StopAllMovement();
 

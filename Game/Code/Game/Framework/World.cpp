@@ -37,9 +37,9 @@ struct BoundOverlapResult_t
 
 	bool overlapOccurred = false;
 
-	int xOverlap;
-	int yOverlap;
-	int zOverlap;
+	int xOverlapi;
+	int yOverlapi;
+	int zOverlapi;
 
 	float xOverlapf;
 	float yOverlapf;
@@ -57,9 +57,13 @@ struct VoxelOverlapResult_t
 {
 	bool overlapOccurred = false;
 
-	int xOverlap;
-	int yOverlap;
-	int zOverlap;
+	int xOverlapi;
+	int yOverlapi;
+	int zOverlapi;
+
+	float xOverlapf;
+	float yOverlapf;
+	float zOverlapf;
 };
 
 bool					IsThereTeamException(Entity* first, Entity* second);
@@ -459,6 +463,7 @@ void World::CheckStaticEntityCollisions()
 			if (staticEntity->GetPhysicsType() != PHYSICS_TYPE_STATIC || staticEntity->IsMarkedForDelete()) { continue; }
 
 			// Do detection and fix here
+			bool isPlayer = (dynamic_cast<Player*>(dynamicEntity) != nullptr);
 			CheckAndCorrectEntityCollision(dynamicEntity, staticEntity);
 		}
 	}
@@ -852,8 +857,8 @@ bool CheckAndCorrectEntityCollision(Entity* first, Entity* second)
 BoundOverlapResult_t PerformBroadphaseCheck(Entity* first, Entity* second)
 {
 	// Get state of the entities
-	Vector3 firstPosition = Vector3(first->GetCoordinatePosition());
-	Vector3 secondPosition = Vector3(second->GetCoordinatePosition());
+	Vector3 firstPosition = first->GetPosition();
+	Vector3 secondPosition = second->GetPosition();
 
 	IntVector3 firstDimensions = first->GetDimensions();
 	IntVector3 secondDimensions = second->GetDimensions();
@@ -955,25 +960,25 @@ BoundOverlapResult_t PerformBroadphaseCheck(Entity* first, Entity* second)
 
 	// Calculate the X Overlap in voxels
 	r.xOverlapf = MinFloat(firstBounds.maxs.x - secondBounds.mins.x, secondBounds.maxs.x - firstBounds.mins.x);
-	r.xOverlap = RoundToNearestInt(r.xOverlapf);
-	r.xOverlap = ClampInt(r.xOverlap, 0, MinInt(firstDimensions.x, secondDimensions.x));
+	r.xOverlapi = Ceiling(r.xOverlapf);
+	r.xOverlapi = ClampInt(r.xOverlapi, 0, MinInt(firstDimensions.x, secondDimensions.x));
 
-	ASSERT_OR_DIE(r.xOverlap <= firstBounds.GetDimensions().x && r.xOverlap <= secondBounds.GetDimensions().x, "Error: xOverlap too large");
+	ASSERT_OR_DIE(r.xOverlapi <= firstDimensions.x && r.xOverlapi <= secondDimensions.x, "Error: xOverlap too large");
 
 	// Calculate the Y Overlap in voxels
 	r.yOverlapf = MinFloat(firstBounds.maxs.y - secondBounds.mins.y, secondBounds.maxs.y - firstBounds.mins.y);
-	r.yOverlap = RoundToNearestInt(r.yOverlapf);
-	r.yOverlap = ClampInt(r.yOverlap, 0, MinInt(firstDimensions.y, secondDimensions.y));
+	r.yOverlapi = Ceiling(r.yOverlapf);
+	r.yOverlapi = ClampInt(r.yOverlapi, 0, MinInt(firstDimensions.y, secondDimensions.y));
 
-	ASSERT_OR_DIE(r.yOverlap <= firstBounds.GetDimensions().y && r.yOverlap <= secondBounds.GetDimensions().y, "Error: yOverlap too large");
+	ASSERT_OR_DIE(r.yOverlapi <= firstDimensions.y && r.yOverlapi <= secondDimensions.y, "Error: yOverlap too large");
 
 
 	// Calculate the Z Overlap in voxels
 	r.zOverlapf = MinFloat(firstBounds.maxs.z - secondBounds.mins.z, secondBounds.maxs.z - firstBounds.mins.z);
-	r.zOverlap = RoundToNearestInt(r.zOverlapf);
-	r.zOverlap = ClampInt(r.zOverlap, 0, MinInt(firstDimensions.z, secondDimensions.z));
+	r.zOverlapi = Ceiling(r.zOverlapf);
+	r.zOverlapi = ClampInt(r.zOverlapi, 0, MinInt(firstDimensions.z, secondDimensions.z));
 
-	ASSERT_OR_DIE(r.zOverlap <= firstBounds.GetDimensions().z && r.zOverlap <= secondBounds.GetDimensions().z, "Error: zOverlap too large");
+	ASSERT_OR_DIE(r.zOverlapi <= firstDimensions.z && r.zOverlapi <= secondDimensions.z, "Error: zOverlap too large");
 
 	return r;
 }
@@ -996,11 +1001,11 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 	switch (r.zCase)
 	{
 	case FIRST_ON_MIN:
-		firstZOffset = (int)firstDimensions.z - r.zOverlap;
+		firstZOffset = (int)firstDimensions.z - r.zOverlapi;
 
 		break;
 	case FIRST_ON_MAX:
-		secondZOffset = (int)secondDimensions.z - r.zOverlap;
+		secondZOffset = (int)secondDimensions.z - r.zOverlapi;
 
 		break;
 	case FIRST_INSIDE:
@@ -1019,11 +1024,11 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 	switch (r.yCase)
 	{
 	case FIRST_ON_MIN:
-		firstYOffset = (int)firstDimensions.y - r.yOverlap;
+		firstYOffset = (int)firstDimensions.y - r.yOverlapi;
 
 		break;
 	case FIRST_ON_MAX:
-		secondYOffset = (int)secondDimensions.y - r.yOverlap;
+		secondYOffset = (int)secondDimensions.y - r.yOverlapi;
 
 		break;
 	case FIRST_INSIDE:
@@ -1054,9 +1059,9 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 
 	VoxelOverlapResult_t collisionResult;
 
-	for (int yIndex = 0; yIndex < r.yOverlap; ++yIndex)
+	for (int yIndex = 0; yIndex < r.yOverlapi; ++yIndex)
 	{
-		for (int zIndex = 0; zIndex < r.zOverlap; ++zIndex)
+		for (int zIndex = 0; zIndex < r.zOverlapi; ++zIndex)
 		{
 			uint32_t firstFlags = firstTexture->GetCollisionByteForRow(yIndex + firstYOffset, zIndex + firstZOffset);
 			uint32_t secondFlags = secondTexture->GetCollisionByteForRow(yIndex + secondYOffset, zIndex + secondZOffset);
@@ -1066,13 +1071,13 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 			{
 				case FIRST_ON_MIN: // First straddles the "left" edge of second
 				{
-					firstFlags = firstFlags << (firstDimensions.x - r.xOverlap);
+					firstFlags = firstFlags << (firstDimensions.x - r.xOverlapi);
 				}
 				break;
 
 				case FIRST_ON_MAX: // First straddles the "right" edge of second
 				{
-					secondFlags = secondFlags << (secondDimensions.x - r.xOverlap);
+					secondFlags = secondFlags << (secondDimensions.x - r.xOverlapi);
 				}
 				break;
 
@@ -1085,7 +1090,7 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 					// Make the mask
 					uint32_t mask = 0;
 					int index = bitsOnLeft;
-					for (int i = 0; i < r.xOverlap; ++i)
+					for (int i = 0; i < r.xOverlapi; ++i)
 					{
 						mask |= (TEXTURE_LEFTMOST_COLLISION_BIT >> index);
 						++index;
@@ -1106,7 +1111,7 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 					// Make the mask
 					uint32_t mask = 0;
 					int index = bitsOnLeft;
-					for (int i = 0; i < r.xOverlap; ++i)
+					for (int i = 0; i < r.xOverlapi; ++i)
 					{
 						mask |= (TEXTURE_LEFTMOST_COLLISION_BIT >> index);
 						++index;
@@ -1120,31 +1125,97 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 			}
 
 			// Actual check - if they share any bits, return true immediately
-			uint32_t flagResult = (firstFlags & secondFlags);
+			// Make the mask
+			uint32_t mask = 0;
+			for (int i = 0; i < r.xOverlapi; ++i)
+			{
+				mask |= (TEXTURE_LEFTMOST_COLLISION_BIT >> i);
+			}
+
+			uint32_t flagResult = (firstFlags & secondFlags & mask);
 			if (flagResult != 0)
 			{
 				collisionResult.overlapOccurred = true;
-				
+			}
+
+			if (firstFlags != 0 || secondFlags != 0)
+			{
 				minY = MinInt(minY, yIndex);
 				minZ = MinInt(minZ, zIndex);
 				maxY = MaxInt(maxY, yIndex);
 				maxZ = MaxInt(maxZ, zIndex);
+			}
 
-				for (int i = 0; i < r.xOverlap; ++i)
+			for (int i = 0; i < r.xOverlapi; ++i)
+			{
+				if ((firstFlags & (TEXTURE_LEFTMOST_COLLISION_BIT >> i)) != 0 || (secondFlags & (TEXTURE_LEFTMOST_COLLISION_BIT >> i)) != 0)
 				{
-					if ((firstFlags & (TEXTURE_LEFTMOST_COLLISION_BIT >> i)) != 0 || (secondFlags & (TEXTURE_LEFTMOST_COLLISION_BIT >> i)) != 0)
-					{
-						minX = MinInt(minX, i);
-						maxX = MaxInt(maxX, i);
-					}
+					minX = MinInt(minX, i);
+					maxX = MaxInt(maxX, i);
 				}
 			}
 		}
 	}
 
-	collisionResult.xOverlap = MinInt(r.xOverlap - minX, maxX + 1);
-	collisionResult.yOverlap = MinInt(r.yOverlap - minY, maxY + 1);
-	collisionResult.zOverlap = MinInt(r.zOverlap - minZ, maxZ + 1);
+	collisionResult.xOverlapi = MinInt(r.xOverlapi - minX, maxX + 1);
+	collisionResult.yOverlapi = MinInt(r.yOverlapi - minY, maxY + 1);
+	collisionResult.zOverlapi = MinInt(r.zOverlapi - minZ, maxZ + 1);
+
+	collisionResult.xOverlapf = (float)collisionResult.xOverlapi;
+	collisionResult.yOverlapf = (float)collisionResult.yOverlapi;
+	collisionResult.zOverlapf = (float)collisionResult.zOverlapi;
+
+	Vector3 firstPosition = first->GetPosition();
+	Vector3 secondPosition = second->GetPosition();
+	Vector3 firstCoord = Vector3(first->GetCoordinatePosition());
+	Vector3 secondCoord = Vector3(second->GetCoordinatePosition());
+
+	Vector3 firstError = firstCoord - firstPosition;
+	Vector3 secondError = secondCoord - secondPosition;
+
+	Vector3 firstErrorCorrection = Vector3::ONES - firstError;
+	Vector3 secondErrorCorrection = Vector3::ONES - secondError;
+
+	if (firstError.x == 0.f) { firstErrorCorrection.x = 0.f; }
+	if (firstError.y == 0.f) { firstErrorCorrection.y = 0.f; }
+	if (firstError.z == 0.f) { firstErrorCorrection.z = 0.f; }
+
+	if (secondError.x == 0.f) { secondErrorCorrection.x = 0.f; }
+	if (secondError.y == 0.f) { secondErrorCorrection.y = 0.f; }
+	if (secondError.z == 0.f) { secondErrorCorrection.z = 0.f; }
+
+	if (r.xCase == FIRST_ON_MIN)
+	{
+		collisionResult.xOverlapf += firstErrorCorrection.x;
+		collisionResult.xOverlapf -= secondErrorCorrection.x;
+	}
+	else if (r.xCase == FIRST_ON_MAX)
+	{
+		collisionResult.xOverlapf -= firstErrorCorrection.x;
+		collisionResult.xOverlapf += secondErrorCorrection.x;
+	}
+
+	if (r.yCase == FIRST_ON_MIN)
+	{
+		collisionResult.yOverlapf += firstErrorCorrection.y;
+		collisionResult.yOverlapf -= secondErrorCorrection.y;
+	}
+	else if (r.yCase == FIRST_ON_MAX)
+	{
+		collisionResult.yOverlapf -= firstErrorCorrection.y;
+		collisionResult.yOverlapf += secondErrorCorrection.y;
+	}
+
+	if (r.zCase == FIRST_ON_MIN)
+	{
+		collisionResult.zOverlapf += firstErrorCorrection.z;
+		collisionResult.zOverlapf -= secondErrorCorrection.z;
+	}
+	else if (r.zCase == FIRST_ON_MAX)
+	{
+		collisionResult.zOverlapf -= firstErrorCorrection.z;
+		collisionResult.zOverlapf += secondErrorCorrection.z;
+	}
 
 	return collisionResult;
 }
@@ -1163,30 +1234,80 @@ void ApplyCollisionCorrection(Entity* first, Entity* second, const VoxelOverlapR
 
 	// Determine the correction offset by pushing across the least amount of overlap
 	Vector3 finalCorrection;
-	if (r.xOverlap < r.zOverlap)
+	if (r.xOverlapf < r.zOverlapf)
 	{
-		if (r.xOverlap <= r.yOverlap)
+		if (r.xOverlapf <= r.yOverlapf)
 		{
 			float sign = (diff.x < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(sign * (float) r.xOverlap, 0.f, 0.f);
+			finalCorrection = Vector3(sign * (float) r.xOverlapf, 0.f, 0.f);
+
+			PhysicsComponent* firstComp = first->GetPhysicsComponent();
+			if (firstComp != nullptr)
+			{
+				firstComp->ZeroXVelocity();
+			}
+
+			PhysicsComponent* secondComp = second->GetPhysicsComponent();
+			if (secondComp != nullptr)
+			{
+				secondComp->ZeroXVelocity();
+			}
 		}
 		else
 		{
 			float sign = (diff.y < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(0.f, sign * (float) r.yOverlap, 0.f);
+			finalCorrection = Vector3(0.f, sign * (float) r.yOverlapf, 0.f);
+
+			PhysicsComponent* firstComp = first->GetPhysicsComponent();
+			if (firstComp != nullptr)
+			{
+				firstComp->ZeroYVelocity();
+			}
+
+			PhysicsComponent* secondComp = second->GetPhysicsComponent();
+			if (secondComp != nullptr)
+			{
+				secondComp->ZeroYVelocity();
+			}
 		}
 	}
 	else
 	{
-		if (r.zOverlap <= r.yOverlap)
+		if (r.zOverlapf <= r.yOverlapf)
 		{
 			float sign = (diff.z < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(0.f, 0.f, sign * (float) r.zOverlap);
+			finalCorrection = Vector3(0.f, 0.f, sign * (float) r.zOverlapf);
+
+
+			PhysicsComponent* firstComp = first->GetPhysicsComponent();
+			if (firstComp != nullptr)
+			{
+				firstComp->ZeroZVelocity();
+			}
+
+			PhysicsComponent* secondComp = second->GetPhysicsComponent();
+			if (secondComp != nullptr)
+			{
+				secondComp->ZeroZVelocity();
+			}
 		}
 		else
 		{
 			float sign = (diff.y < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(0.f, sign * (float) r.yOverlap, 0.f);
+			finalCorrection = Vector3(0.f, sign * (float) r.yOverlapf, 0.f);
+
+
+			PhysicsComponent* firstComp = first->GetPhysicsComponent();
+			if (firstComp != nullptr)
+			{
+				firstComp->ZeroYVelocity();
+			}
+
+			PhysicsComponent* secondComp = second->GetPhysicsComponent();
+			if (secondComp != nullptr)
+			{
+				secondComp->ZeroYVelocity();
+			}
 		}
 	}
 

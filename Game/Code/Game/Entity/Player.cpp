@@ -49,6 +49,17 @@ Player::~Player()
 //
 void Player::ProcessGameplayInput()
 {
+	if (!AreMostlyEqual(m_physicsComponent->GetVelocity().y, 0.f))
+	{
+		DebugRenderSystem::Draw2DText(Stringf("%.2f", m_physicsComponent->GetVelocity().y), Window::GetInstance()->GetWindowBounds(), 0.f);
+	}
+	else
+	{
+		DebugRenderSystem::Draw2DText("VELOCITY IS ZERO", Window::GetInstance()->GetWindowBounds(), 0.f, Rgba::RED);
+	}
+
+	Vector3 velocity = m_physicsComponent->GetVelocity();
+
 	XboxController& controller = InputSystem::GetInstance()->GetController(m_playerID);
 	Vector2 leftStick = controller.GetCorrectedStickPosition(XBOX_STICK_LEFT);
 
@@ -115,14 +126,6 @@ void Player::Update()
 void Player::OnCollision(Entity* other)
 {
 	Entity::OnCollision(other);
-
-	// The player takes damage if the other is an enemy AI
-// 	if (other->GetTeam() != ENTITY_TEAM_PLAYER && dynamic_cast<AIEntity*>(other) != nullptr)
-// 	{
-// 		TakeDamage(1);
-// 		Vector3 direction = (m_position - other->GetEntityPosition()).GetNormalized();
-// 		m_physicsComponent->AddImpulse(direction * 50.f);
-// 	}
 }
 
 

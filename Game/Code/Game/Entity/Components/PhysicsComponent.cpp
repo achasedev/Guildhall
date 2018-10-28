@@ -76,6 +76,33 @@ void PhysicsComponent::SetVelocity(const Vector3& velocity)
 
 
 //-----------------------------------------------------------------------------------------------
+// Sets the x-component of the velocity to 0; used during collision correction
+//
+void PhysicsComponent::ZeroXVelocity()
+{
+	m_velocity.x = 0.f;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the y-component of the velocity to 0; used during collision correction
+//
+void PhysicsComponent::ZeroYVelocity()
+{
+	m_velocity.y = 0.f;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the z-component of the velocity to 0; used during collision correction
+//
+void PhysicsComponent::ZeroZVelocity()
+{
+	m_velocity.z = 0.f;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Immediately stops all movement on the component
 //
 void PhysicsComponent::StopAllMovement()
@@ -106,7 +133,7 @@ void PhysicsComponent::ApplyPhysicsStep()
 	currAcceleration = ClampFloat(currAcceleration, 0.f, m_maxAcceleration);
 	acceleration *= currAcceleration;
 
-	float deltaTime = Game::GetDeltaTime();
+	float deltaTime =Game::GetDeltaTime();
 	m_velocity += (acceleration * deltaTime);
 
 	// Clamp velocity - component wise

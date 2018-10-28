@@ -43,6 +43,7 @@ public:
 
 	// Accessors
 	Vector3							GetPosition() const;
+	Vector3							GetCenterPosition() const;
 	float							GetOrientation() const;
 	eEntityTeam						GetTeam() const;
 	virtual const VoxelTexture*		GetTextureForRender() const;

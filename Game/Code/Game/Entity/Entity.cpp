@@ -170,6 +170,16 @@ Vector3 Entity::GetPosition() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the floating point position of the entity's absolute center
+//
+Vector3 Entity::GetCenterPosition() const
+{
+	Vector3 halfDimensions = Vector3(GetDimensions()) * 0.5f;
+	return m_position + halfDimensions;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the orientation of the entity
 //
 float Entity::GetOrientation() const
