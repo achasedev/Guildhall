@@ -6,11 +6,12 @@
 /************************************************************************/
 #pragma once
 #include <vector>
+#include <thread>
+#include <shared_mutex>
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Math/IntVector3.hpp"
 
 #define MAX_PLAYERS (4)
-#define NAV_DIMENSION_FACTOR (4)
 #define NAV_STATIC_COST (9999.f)
 
 class Player;
@@ -19,6 +20,21 @@ class Entity;
 class VoxelTexture;
 class Particle;
 class HeatMap;
+
+struct HeatMapSet_t
+{
+	HeatMap* m_navigationMap = nullptr;
+	HeatMap* m_costMap = nullptr;
+};
+
+struct StaticSection_t
+{
+	StaticSection_t(const IntVector3& _coordPosition, const IntVector3& _dimensions)
+		: coordPosition(_coordPosition), dimensions(_dimensions) {}
+
+	IntVector3 coordPosition;
+	IntVector3 dimensions;
+};
 
 class World
 {
@@ -44,6 +60,7 @@ public:
 	unsigned int	GetGroundElevation() const;
 
 	// Producers
+	IntVector3	GetCoordsForPosition(const Vector3& position) const;
 	Vector3		GetNextPositionTowardsPlayer(const Vector3& currPosition) const;
 	bool		IsPositionInStatic(const Vector3& position) const;
 	bool		HasLineOfSight(const Vector3& startPosition, const Vector3& endPosition) const;
@@ -59,7 +76,6 @@ private:
 
 	// -- Update Loop -- 
 	void UpdateCostMap();
-	void UpdatePlayerHeatmap();
 
 	void UpdateEntities();
 	void UpdateParticles();
@@ -79,6 +95,12 @@ private:
 	void DrawDynamicEntitiesToGrid();
 	void DrawParticlesToGrid();
 
+	// Thread
+	void InitializeHeatMaps();
+	void HeatMapUpdate_Main();
+	void HeatMapUpdate_Thread();
+	void CleanUpHeatMaps();
+
 
 private:
 	//-----Private Data-----
@@ -90,9 +112,21 @@ private:
 	std::vector<Entity*> m_entities;
 	std::vector<Particle*> m_particles;
 
-	HeatMap*		m_playerHeatmap = nullptr;
-	HeatMap*		m_costsMap = nullptr;
-
 	bool			m_drawCollision = false;
+	bool			m_drawHeatmap = false;
+
+	// For AI
+	bool				m_isQuitting = false;
+	HeatMapSet_t		m_navMapInUse;
+	HeatMapSet_t		m_intermediateMap;
+	HeatMapSet_t		m_backBufferMap;
+
+	std::thread						m_heatMapThread;
+	bool							m_swapReady = false;
+	std::vector<StaticSection_t>	m_staticSectionsMain;
+	std::vector<StaticSection_t>	m_staticSectionsThread;
+	std::vector<IntVector3>			m_playerSeeds;
+
+	std::shared_mutex				m_mapSwapLock;
 
 };

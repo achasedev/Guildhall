@@ -12,6 +12,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/IntVector3.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/Utility/HeatMap.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
 #include "Engine/Rendering/Shaders/ComputeShader.hpp"
@@ -143,7 +144,7 @@ void VoxelGrid::DrawEntity(const Entity* entity)
 //-----------------------------------------------------------------------------------------------
 // Draws the ground to the grid, up to the given elevation
 //
-void VoxelGrid::DrawGround(unsigned int groundElevation)
+void VoxelGrid::DrawGround(unsigned int groundElevation, HeatMap* heatMap)
 {
 	for (int y = 0; y < (int) groundElevation; ++y)
 	{
@@ -152,8 +153,16 @@ void VoxelGrid::DrawGround(unsigned int groundElevation)
 			for (int x = 0; x < m_dimensions.x; ++x)
 			{
 				int index = GetIndexForCoords(IntVector3(x, y, z));
+				
+				Rgba color = Rgba::DARK_GREEN;
 
-				m_gridColors[index] = Rgba::DARK_GREEN;
+				if (heatMap != nullptr)
+				{
+					float t = heatMap->GetHeat(IntVector2(x, z)) / (m_dimensions.x + m_dimensions.z);
+					color = Interpolate(Rgba::GREEN, Rgba::RED, t);
+				}
+
+				m_gridColors[index] = color;
 			}
 		}
 	}

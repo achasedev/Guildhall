@@ -89,11 +89,24 @@ World::World()
 //
 World::~World()
 {
-	if (m_playerHeatmap != nullptr)
-	{
-		delete m_playerHeatmap;
-		m_playerHeatmap = nullptr;
-	}
+	m_isQuitting = true;
+	m_heatMapThread.join();
+
+	// Delete all maps
+	delete m_navMapInUse.m_navigationMap;
+	m_navMapInUse.m_navigationMap = nullptr;
+	delete m_navMapInUse.m_costMap;
+	m_navMapInUse.m_costMap = nullptr;
+
+	delete m_intermediateMap.m_navigationMap;
+	m_intermediateMap.m_navigationMap = nullptr;
+	delete m_intermediateMap.m_costMap;
+	m_intermediateMap.m_costMap = nullptr;
+
+	delete m_backBufferMap.m_navigationMap;
+	m_backBufferMap.m_navigationMap = nullptr;
+	delete m_backBufferMap.m_costMap;
+	m_backBufferMap.m_costMap = nullptr;
 }
 
 
@@ -109,29 +122,22 @@ void World::Inititalize()
 
 	m_groundElevation = 5;
 
-	IntVector2 mapDimensions = m_dimensions.xz();
-	mapDimensions.x /= NAV_DIMENSION_FACTOR;
-	mapDimensions.y /= NAV_DIMENSION_FACTOR;
+// 	IntVector2 targetCoords = IntVector2(240, 240);
+// 	targetCoords.x /= NAV_DIMENSION_FACTOR;
+// 	targetCoords.y /= NAV_DIMENSION_FACTOR;
+// 
+// 	m_heatMapInUse->SetHeat(targetCoords, 0.f);
+// 	m_heatMapInUse->SolveMapUpToDistance(NAV_STATIC_COST + 1.f, m_costsMap);
 
-	m_playerHeatmap = new HeatMap(mapDimensions, NAV_STATIC_COST);
-	m_costsMap = new HeatMap(mapDimensions, 1.0f);
-
-	IntVector2 targetCoords = IntVector2(240, 240);
-	targetCoords.x /= NAV_DIMENSION_FACTOR;
-	targetCoords.y /= NAV_DIMENSION_FACTOR;
-
-	UpdateCostMap();
-	
-	m_playerHeatmap->SetHeat(targetCoords, 0.f);
-	m_playerHeatmap->SolveMapUpToDistance(NAV_STATIC_COST + 1.f, m_costsMap);
-
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < 100; ++i)
 	{
 		Entity* entity = new Entity(EntityDefinition::GetDefinition("Window"));
 		entity->SetPosition(Vector3(GetRandomFloatInRange(20.f, 200.f), (float) m_groundElevation, GetRandomFloatInRange(20.f, 200.f)));
 		entity->SetOrientation(90.f);
 		m_entities.push_back(entity);
 	}
+
+	InitializeHeatMaps();
 }
 
 
@@ -145,12 +151,6 @@ void World::CleanUp()
 	
 	delete m_voxelGrid;
 	m_voxelGrid = nullptr;
-
-	delete m_playerHeatmap;
-	m_playerHeatmap = nullptr;
-
-	delete m_costsMap;
-	m_costsMap = nullptr;
 
 	for (int i = 0; i < (int)m_entities.size(); ++i)
 	{
@@ -168,6 +168,8 @@ void World::CleanUp()
 	}
 
 	m_particles.clear();
+
+	CleanUpHeatMaps();
 }
 
 #include "Engine/Input/InputSystem.hpp"
@@ -179,6 +181,11 @@ void World::Update()
 	if (InputSystem::GetInstance()->WasKeyJustPressed('F'))
 	{
 		m_drawCollision = !m_drawCollision;
+	}
+
+	if (InputSystem::GetInstance()->WasKeyJustPressed('G'))
+	{
+		m_drawHeatmap = !m_drawHeatmap;
 	}
 
 	PROFILE_LOG_SCOPE_FUNCTION();
@@ -198,8 +205,7 @@ void World::Update()
 	DeleteMarkedEntities();
 
 	// Navigation
-	//UpdateCostMap();
-	//UpdatePlayerHeatmap();
+	HeatMapUpdate_Main();
 }	
 
 
@@ -214,7 +220,8 @@ void World::Render()
 	m_voxelGrid->Clear();
 
 	// Color in the ground
-	m_voxelGrid->DrawGround(m_groundElevation);
+	HeatMap* mapToUse = (m_drawHeatmap ? m_navMapInUse.m_navigationMap : nullptr);
+	m_voxelGrid->DrawGround(m_groundElevation, mapToUse);
 
 	// Color in static geometry
 	DrawStaticEntitiesToGrid();
@@ -269,11 +276,11 @@ IntVector3 World::GetDimensions() const
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the navigation map of the world
+// Returns the navigation map of the world (one currently in use)
 //
 HeatMap* World::GetNavMap() const
 {
-	return m_playerHeatmap;
+	return m_navMapInUse.m_navigationMap;
 }
 
 
@@ -287,21 +294,23 @@ unsigned int World::GetGroundElevation() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the coordinate that contains the position (round to nearest int)
+//
+IntVector3 World::GetCoordsForPosition(const Vector3& position) const
+{
+	return IntVector3(RoundToNearestInt(position.x), RoundToNearestInt(position.y), RoundToNearestInt(position.z));
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the next position along the path
 //
 Vector3 World::GetNextPositionTowardsPlayer(const Vector3& currPosition) const
 {
-	IntVector2 currCoords = IntVector2(currPosition.x, currPosition.z);
+	IntVector2 currCoords = GetCoordsForPosition(currPosition).xz();
+	IntVector2 neighborCoords = m_navMapInUse.m_navigationMap->GetMinNeighborCoords(currCoords);
 
-	currCoords.x /= NAV_DIMENSION_FACTOR;
-	currCoords.y /= NAV_DIMENSION_FACTOR;
-
-	IntVector2 neighborCoords = m_playerHeatmap->GetMinNeighborCoords(currCoords);
-
-	neighborCoords.x *= NAV_DIMENSION_FACTOR;
-	neighborCoords.y *= NAV_DIMENSION_FACTOR;
-
-	return Vector3((float) neighborCoords.x + (NAV_DIMENSION_FACTOR * .5f), (float) m_groundElevation, (float) neighborCoords.y + (NAV_DIMENSION_FACTOR * .5f));
+	return Vector3((float) neighborCoords.x, (float) m_groundElevation, (float) neighborCoords.y);
 }
 
 
@@ -310,8 +319,8 @@ Vector3 World::GetNextPositionTowardsPlayer(const Vector3& currPosition) const
 //
 bool World::IsPositionInStatic(const Vector3& position) const
 {
-	IntVector2 coords = IntVector2(position.xz()) / NAV_DIMENSION_FACTOR;
-	return (m_playerHeatmap->GetHeat(coords) >= NAV_STATIC_COST);
+	IntVector2 coords = GetCoordsForPosition(position).xz();
+	return (m_navMapInUse.m_navigationMap->GetHeat(coords) >= NAV_STATIC_COST);
 }
 
 
@@ -590,52 +599,38 @@ void World::ApplyCollisionCorrections()
 //
 void World::UpdateCostMap()
 {
-	m_costsMap->Clear(1.f);
+	m_backBufferMap.m_costMap->Clear(1.f);
 
-	int numEntities = (int) m_entities.size();
+	int numSections = (int) m_staticSectionsThread.size();
 
-	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
+	for (int sectionIndex = 0; sectionIndex < numSections; ++sectionIndex)
 	{
-		Entity* currEntity = m_entities[entityIndex];
+		StaticSection_t currSection = m_staticSectionsThread[sectionIndex];
 
-		if (!currEntity->IsMarkedForDelete() && currEntity->GetPhysicsType() == PHYSICS_TYPE_STATIC)
+		for (int xOffset = 0; xOffset < currSection.dimensions.x; ++xOffset)
 		{
-			Vector3 position = currEntity->GetPosition();
-			IntVector3 dimensions = currEntity->GetTextureForRender()->GetDimensions();
-			IntVector3 halfDimensions = dimensions / 2;
-
-			// Coordinate the object occupies (object bottom center)
-			IntVector3 coordinatePosition = IntVector3(position.x, position.y, position.z);
-
-			IntVector3 bottomLeft = coordinatePosition;
-			bottomLeft.x -= halfDimensions.x;
-			bottomLeft.z -= halfDimensions.z;
-
-			for (int xOffset = 0; xOffset < dimensions.x; ++xOffset)
+			for (int zOffset = 0; zOffset < currSection.dimensions.z; ++zOffset)
 			{
-				for (int zOffset = 0; zOffset < dimensions.z; ++zOffset)
-				{
-					IntVector2 coord = (bottomLeft.xz() + IntVector2(xOffset, zOffset)) / NAV_DIMENSION_FACTOR;
+				IntVector2 coord = (currSection.coordPosition.xz() + IntVector2(xOffset, zOffset));
 
-					if (m_costsMap->AreCoordsValid(coord))
-					{
-						m_costsMap->SetHeat(coord, NAV_STATIC_COST);
-					}
+				if (m_backBufferMap.m_costMap->AreCoordsValid(coord))
+				{
+					m_backBufferMap.m_costMap->SetHeat(coord, NAV_STATIC_COST);
 				}
 			}
 		}
 	}
 
 	// Cellular automata pass
-	int neighborhoodSize = 1;
+	int neighborhoodSize = 8;
 	bool currCoordsDone = false;
-	for (unsigned int index = 0; index < m_costsMap->GetCellCount(); ++index)
+	for (unsigned int index = 0; index < m_backBufferMap.m_costMap->GetCellCount(); ++index)
 	{
 		// No need to update cells that are occupied by static entities
-		if (m_costsMap->GetHeat(index) >= NAV_STATIC_COST) { continue; }
+		if (m_backBufferMap.m_costMap->GetHeat(index) >= NAV_STATIC_COST) { continue; }
 
 		currCoordsDone = false;
-		IntVector2 currCoords = m_costsMap->GetCoordsForIndex(index);
+		IntVector2 currCoords = m_backBufferMap.m_costMap->GetCoordsForIndex(index);
 
 		for (int y = -neighborhoodSize; y <= neighborhoodSize; ++y)
 		{
@@ -643,9 +638,9 @@ void World::UpdateCostMap()
 			{
 				IntVector2 neighborCoords = currCoords + IntVector2(x, y);
 
-				if (m_costsMap->AreCoordsValid(neighborCoords) && m_costsMap->GetHeat(neighborCoords) >= NAV_STATIC_COST)
+				if (m_backBufferMap.m_costMap->AreCoordsValid(neighborCoords) && m_backBufferMap.m_costMap->GetHeat(neighborCoords) >= NAV_STATIC_COST)
 				{
-					m_costsMap->AddHeat(currCoords, 5.f);
+					m_backBufferMap.m_costMap->AddHeat(currCoords, 5.f);
 					currCoordsDone = true;
 					break;
 				}
@@ -787,25 +782,155 @@ void World::DrawParticlesToGrid()
 
 
 //-----------------------------------------------------------------------------------------------
-// Resolves the navigation map
+// Creates all heatmaps that will be used for AI navigation
 //
-void World::UpdatePlayerHeatmap()
+void World::InitializeHeatMaps()
 {
-	m_playerHeatmap->Clear(NAV_STATIC_COST);
+	IntVector2 mapDimensions = m_dimensions.xz();
+
+	m_navMapInUse.m_navigationMap = new HeatMap(mapDimensions, NAV_STATIC_COST);
+	m_intermediateMap.m_navigationMap = new HeatMap(mapDimensions, NAV_STATIC_COST);
+	m_backBufferMap.m_navigationMap = new HeatMap(mapDimensions, NAV_STATIC_COST);
+
+	m_navMapInUse.m_costMap = new HeatMap(mapDimensions, 1.0f);
+	m_intermediateMap.m_costMap = new HeatMap(mapDimensions, 1.0f);
+	m_backBufferMap.m_costMap = new HeatMap(mapDimensions, 1.0f);
+
+	// Start up the thread
+	m_heatMapThread = std::thread(&World::HeatMapUpdate_Thread, this);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Gives the map thread updated static section and player positions, and swaps the heatmap in 
+// use to the intermediate buffer if it's ready
+//
+void World::HeatMapUpdate_Main()
+{
+	PROFILE_LOG_SCOPE_FUNCTION();
+
+	m_mapSwapLock.lock();
+
+	// Update the static section data
+	m_staticSectionsMain.clear();
+
+	int numEntities = (int) m_entities.size();
+
+	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
+	{
+		if (m_entities[entityIndex]->GetPhysicsType() != PHYSICS_TYPE_STATIC) { continue; }
+
+		IntVector3 coords = m_entities[entityIndex]->GetCoordinatePosition();
+		IntVector3 dimensions = m_entities[entityIndex]->GetDimensions();
+
+		m_staticSectionsMain.push_back(StaticSection_t(coords, dimensions));
+	}
+
+	// Update the player seeds
+	m_playerSeeds.clear();
 
 	Player** players = Game::GetPlayers();
 
-	// Seed in the player positions
-	for (int i = 0; i < MAX_PLAYERS; ++i)
+	for (int playerIndex = 0; playerIndex < MAX_PLAYERS; ++playerIndex)
 	{
-		if (Game::IsPlayerAlive(i))
+		if (Game::IsPlayerAlive(playerIndex))
 		{
-			IntVector3 position = players[i]->GetCoordinatePosition();
-			m_playerHeatmap->Seed(0.f, (position.xz() / NAV_DIMENSION_FACTOR));
+			m_playerSeeds.push_back(players[playerIndex]->GetCoordinatePosition());
 		}
 	}
 
-	m_playerHeatmap->SolveMapUpToDistance(NAV_STATIC_COST + 1.f, m_costsMap);
+	// Lastly check for a map update
+	if (m_swapReady)
+	{
+		HeatMapSet_t temp = m_navMapInUse;
+		m_navMapInUse = m_intermediateMap;
+		m_intermediateMap = temp;
+		m_swapReady = false;
+	}
+
+	m_mapSwapLock.unlock();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Updates the cost and heat maps used for AI navigation
+//
+void World::HeatMapUpdate_Thread()
+{
+	while (!m_isQuitting)
+	{
+		m_backBufferMap.m_navigationMap->Clear(NAV_STATIC_COST);
+
+		// Get the lock to read the static sections
+		m_mapSwapLock.lock_shared();
+
+		// Update our list of positions
+		m_staticSectionsThread.clear();
+
+		int numSections = (int) m_staticSectionsMain.size();
+		for (int sectionIndex = 0; sectionIndex < numSections; ++sectionIndex)
+		{
+			m_staticSectionsThread.push_back(m_staticSectionsMain[sectionIndex]);
+		}
+
+		// Also grab the player seeds and seed the navigation map
+		int numSeeds = (int)m_playerSeeds.size();
+
+		for (int seedIndex = 0; seedIndex < numSeeds; ++seedIndex)
+		{
+			m_backBufferMap.m_navigationMap->Seed(0.f, (m_playerSeeds[seedIndex].xz()));
+		}
+
+		// Unlock the lock
+		m_mapSwapLock.unlock_shared();
+
+		// Update the back cost map
+		UpdateCostMap();
+
+		// Solve the navigation map
+		m_backBufferMap.m_navigationMap->SolveMapUpToDistance(NAV_STATIC_COST + 1.f, m_backBufferMap.m_costMap);
+
+		// Update the intermediate map
+		m_mapSwapLock.lock();
+
+		HeatMapSet_t temp = m_backBufferMap;
+		m_backBufferMap = m_intermediateMap;
+		m_intermediateMap = temp;
+		m_swapReady = true;
+
+		m_mapSwapLock.unlock();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Joins the heat map thread and deletes all existing heat maps
+//
+void World::CleanUpHeatMaps()
+{
+	m_isQuitting = true;
+	m_heatMapThread.join();
+
+	// Delete all maps
+	delete m_navMapInUse.m_navigationMap;
+	m_navMapInUse.m_navigationMap = nullptr;
+	delete m_navMapInUse.m_costMap;
+	m_navMapInUse.m_costMap = nullptr;
+
+	delete m_intermediateMap.m_navigationMap;
+	m_intermediateMap.m_navigationMap = nullptr;
+	delete m_intermediateMap.m_costMap;
+	m_intermediateMap.m_costMap = nullptr;
+
+	delete m_backBufferMap.m_navigationMap;
+	m_backBufferMap.m_navigationMap = nullptr;
+	delete m_backBufferMap.m_costMap;
+	m_backBufferMap.m_costMap = nullptr;
+
+	m_staticSectionsMain.clear();
+	m_staticSectionsThread.clear();
+	m_swapReady = false;
+	m_isQuitting = false;
 }
 
 

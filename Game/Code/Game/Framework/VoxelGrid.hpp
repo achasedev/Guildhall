@@ -15,6 +15,7 @@ class Renderable;
 class ComputeShader;
 class VoxelTexture;
 class Entity;
+class HeatMap;
 
 class VoxelGrid
 {
@@ -32,7 +33,7 @@ public:
 	// Mutators
 	void				Clear();
 	void				DrawEntity(const Entity* entity);
-	void				DrawGround(unsigned int groundElevation);
+	void				DrawGround(unsigned int groundElevation, HeatMap* heatMap);
 	void				Draw3DTexture(const VoxelTexture* texture, const IntVector3& position);
 
 	void				DebugDrawEntityCollision(const Entity* entity);
