@@ -73,6 +73,7 @@ public:
 
 	// Collision	
 	void							AddCollisionCorrection(const Vector3& correction);
+	void							ApplyCollisionCorrection();
 
 
 protected:
@@ -90,6 +91,7 @@ protected:
 	float					m_inverseMass = 1.f / DEFAULT_MASS;		// Cache off inverse for efficiency
 	PhysicsComponent*		m_physicsComponent = nullptr;
 	const EntityDefinition* m_definition = nullptr;
+	Vector3					m_collisionCorrection = Vector3::ZERO;
 
 	bool					m_isPlayer = false;
 

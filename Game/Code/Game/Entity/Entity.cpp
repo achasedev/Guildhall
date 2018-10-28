@@ -156,7 +156,17 @@ void Entity::OnSpawn()
 //
 void Entity::AddCollisionCorrection(const Vector3& correction)
 {
-	m_position += correction;
+	m_collisionCorrection += correction;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Applies the net collision correction for the current frame
+//
+void Entity::ApplyCollisionCorrection()
+{
+	m_position += m_collisionCorrection;
+	m_collisionCorrection = Vector3::ZERO;
 }
 
 

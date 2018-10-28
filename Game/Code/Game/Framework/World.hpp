@@ -70,6 +70,8 @@ private:
 	void CheckStaticEntityCollisions();
 	void CheckDynamicEntityCollisions();
 
+	void ApplyCollisionCorrections();
+
 	void DeleteMarkedEntities();
 
 	// Render
