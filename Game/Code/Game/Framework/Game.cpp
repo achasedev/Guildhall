@@ -315,7 +315,7 @@ void ThreadWork_ReliableTest(void* args)
 			message->Write(data->messageCount);
 
 			sent++;
-			timer.SetInterval(0.03f);
+			timer.SetInterval(0.02f);
 
 			if (data->useAddress)
 			{
