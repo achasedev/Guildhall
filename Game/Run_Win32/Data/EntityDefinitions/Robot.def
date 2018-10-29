@@ -112,6 +112,18 @@
 
 	</EntityDefinition>
 
+  <EntityDefinition name="Stand">
+
+    <!--Visuals-->
+    <Animation defaultSprite="Stand"/>
+
+    <!--Physics-->
+    <Physics physicsType="static">
+      <CollisionDefinition response="no_correction"/>
+    </Physics>
+
+  </EntityDefinition>
+
 
 	<EntityDefinition name="Particle">
 

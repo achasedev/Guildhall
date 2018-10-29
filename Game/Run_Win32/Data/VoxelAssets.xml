@@ -6,6 +6,7 @@
 		<VoxelSprite file="Data/VoxelSprites/Bullet.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/TestCube.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Window.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Stand.sprite"/>
 	</VoxelSprites>
 
 

@@ -122,9 +122,9 @@ void World::Inititalize()
 
 	m_groundElevation = 5;
 
-	for (int i = 0; i < 100; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
-		Entity* entity = new Entity(EntityDefinition::GetDefinition("Window"));
+		Entity* entity = new Entity(EntityDefinition::GetDefinition("Stand"));
 		entity->SetPosition(Vector3(GetRandomFloatInRange(20.f, 200.f), (float) m_groundElevation, GetRandomFloatInRange(20.f, 200.f)));
 		entity->SetOrientation(90.f);
 		m_entities.push_back(entity);
@@ -1300,9 +1300,9 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 	collisionResult.yOverlapi = MinInt(r.yOverlapi - minY, maxY + 1);
 	collisionResult.zOverlapi = MinInt(r.zOverlapi - minZ, maxZ + 1);
 
-	collisionResult.xOverlapf = (float)collisionResult.xOverlapi - 1.0f;
-	collisionResult.yOverlapf = (float)collisionResult.yOverlapi - 1.0f;
-	collisionResult.zOverlapf = (float)collisionResult.zOverlapi - 1.0f;
+	collisionResult.xOverlapf = (float)collisionResult.xOverlapi;
+	collisionResult.yOverlapf = (float)collisionResult.yOverlapi;
+	collisionResult.zOverlapf = (float)collisionResult.zOverlapi;
 
 	Vector3 firstPosition = first->GetPosition();
 	Vector3 secondPosition = second->GetPosition();
@@ -1344,6 +1344,10 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 		collisionResult.zOverlapf += firstError.z;
 		collisionResult.zOverlapf -= secondError.z;
 	}
+
+	if (collisionResult.xOverlapf > 1.0f) { collisionResult.xOverlapf -= 1.0f; }
+	if (collisionResult.yOverlapf > 1.0f) { collisionResult.yOverlapf -= 1.0f; }
+	if (collisionResult.zOverlapf > 1.0f) { collisionResult.zOverlapf -= 1.0f; }
 
 	return collisionResult;
 }
