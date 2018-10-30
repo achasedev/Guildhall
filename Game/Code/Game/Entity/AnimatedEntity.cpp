@@ -126,8 +126,6 @@ void AnimatedEntity::Move(const Vector2& direction)
 //
 void AnimatedEntity::Jump()
 {
-	unsigned int groundElevation = Game::GetWorld()->GetGroundElevation();
-
 	if (AreMostlyEqual(m_physicsComponent->GetVelocity().y, 0.f))
 	{
 		m_physicsComponent->AddImpulse(Vector3::DIRECTION_UP * m_definition->m_jumpImpulse * 1.2f);

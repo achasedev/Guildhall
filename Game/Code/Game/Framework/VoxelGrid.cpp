@@ -206,12 +206,6 @@ void VoxelGrid::Draw3DTexture(const VoxelTexture* texture, const IntVector3& bot
 //
 void VoxelGrid::DebugDrawEntityCollision(const Entity* entity)
 {
-	DebugRenderOptions options;
-	options.m_isWireFrame = true;
-	options.m_lifetime = 0.f;
-
-	//DebugRenderSystem::DrawCube(Vector3(entity->GetEntityCoordinatePosition() + entity->GetDimensions() / 2.f), options, Vector3(entity->GetDimensions()));
-
 	PROFILE_LOG_SCOPE_FUNCTION();
 
 	const VoxelTexture* texture = entity->GetTextureForRender();
@@ -219,9 +213,7 @@ void VoxelGrid::DebugDrawEntityCollision(const Entity* entity)
 	IntVector3 dimensions = entity->GetDimensions();
 
 	// Coordinate the object occupies (object bottom center)
-	IntVector3 coordinatePosition = IntVector3(position.x, position.y, position.z);
-
-	IntVector3 bottomLeft = coordinatePosition;
+	IntVector3 coordinatePosition = entity->GetCoordinatePosition();
 
 	for (int xOff = 0; xOff < dimensions.x; ++xOff)
 	{
@@ -230,7 +222,7 @@ void VoxelGrid::DebugDrawEntityCollision(const Entity* entity)
 			for (int zOff = 0; zOff < dimensions.z; ++zOff)
 			{
 				IntVector3 localCoords = IntVector3(xOff, yOff, zOff);
-				IntVector3 globalCoords = bottomLeft + localCoords;
+				IntVector3 globalCoords = coordinatePosition + localCoords;
 
 				int globalIndex = GetIndexForCoords(globalCoords);
 				if (globalIndex != -1)

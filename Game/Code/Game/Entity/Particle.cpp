@@ -5,6 +5,7 @@
 /* Description: Implementation of the Particle class
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/World.hpp"
 #include "Game/Entity/Particle.hpp"
 #include "Game/Animation/VoxelAnimator.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
@@ -42,28 +43,15 @@ Particle::~Particle()
 //
 void Particle::Update()
 {
+	if (Game::GetWorld()->IsEntityOnGround(this))
+	{
+		m_physicsEnabled = false;
+	}
+
 	if (m_stopwatch.HasIntervalElapsed())
 	{
 		m_isMarkedForDelete = true;
 	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Sets the flag used to check whether the particle should continue simulating physics
-//
-void Particle::SetApplyPhysics(bool newState)
-{
-	m_applyPhysics = newState;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns whether this particle should have physics applied to it
-//
-bool Particle::ShouldApplyPhysics() const
-{
-	return m_applyPhysics;
 }
 
 

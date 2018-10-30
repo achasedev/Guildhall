@@ -49,15 +49,6 @@ Player::~Player()
 //
 void Player::ProcessGameplayInput()
 {
-	if (!AreMostlyEqual(m_physicsComponent->GetVelocity().y, 0.f))
-	{
-		DebugRenderSystem::Draw2DText(Stringf("%.2f", m_physicsComponent->GetVelocity().y), Window::GetInstance()->GetWindowBounds(), 0.f);
-	}
-	else
-	{
-		DebugRenderSystem::Draw2DText("VELOCITY IS ZERO", Window::GetInstance()->GetWindowBounds(), 0.f, Rgba::RED);
-	}
-
 	Vector3 velocity = m_physicsComponent->GetVelocity();
 
 	XboxController& controller = InputSystem::GetInstance()->GetController(m_playerID);
@@ -68,7 +59,6 @@ void Player::ProcessGameplayInput()
 	// If we have input, apply a movement force
 	if (leftStick != Vector2::ZERO)
 	{
-		//ApplyInputAcceleration(leftStick);
 		Move(leftStick);
 		m_animator->Play("walk");
 	}
@@ -117,6 +107,7 @@ void Player::ProcessGameplayInput()
 void Player::Update()
 {
 	Entity::Update();
+	DebugDrawState();
 }
 
 
@@ -187,4 +178,44 @@ void Player::Respawn()
 	m_health = 10;
 	
 	m_physicsComponent->StopAllMovement();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the given items to the player's inventory
+//
+void Player::AddItemSet(const ItemSet_t& itemsToAdd)
+{
+	m_items += itemsToAdd;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Debug draws text to the screen to represent this player's state
+//
+void Player::DebugDrawState() const
+{
+	Vector2 alignment = Vector2::ZERO;
+
+	switch (m_playerID)
+	{
+	case 1:
+		alignment = Vector2(1.f, 0.f);
+		break;
+	case 2:
+		alignment = Vector2(0.f, 1.f);
+		break;
+	case 3: 
+		alignment = Vector2(1.f, 1.f);
+		break;
+	default:
+		break;
+	}
+
+	AABB2 bounds = Window::GetInstance()->GetWindowBounds();
+
+	std::string text = Stringf("Player: %i\nBullets: %i\nShells: %i\nEnergy: %i\nExplosives: %i\nMoney: %i",
+		m_playerID + 1, m_items.bullets, m_items.shells, m_items.energy, m_items.explosives, m_items.money);
+
+	DebugRenderSystem::Draw2DText(text, bounds, 0.f, Rgba::GRAY, 20.f, alignment);
 }

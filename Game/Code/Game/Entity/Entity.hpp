@@ -44,6 +44,7 @@ public:
 	// Accessors
 	Vector3							GetPosition() const;
 	Vector3							GetCenterPosition() const;
+	Vector3							GetBottomCenterPosition() const;
 	float							GetOrientation() const;
 	eEntityTeam						GetTeam() const;
 	virtual const VoxelTexture*		GetTextureForRender() const;
@@ -52,6 +53,7 @@ public:
 	const EntityDefinition*			GetEntityDefinition() const;
 	PhysicsComponent*				GetPhysicsComponent() const;
 	virtual IntVector3				GetDimensions() const;
+	bool							IsPhysicsEnabled() const;
 
 	float							GetMass() const;
 	float							GetInverseMass() const;
@@ -75,15 +77,18 @@ public:
 	void							AddCollisionCorrection(const Vector3& correction);
 	void							ApplyCollisionCorrection();
 
+	// Physics 
+	void							SetPhysicsEnabled(bool newState);
+
 
 protected:
 	//-----Protected Data-----
-
+	
 	// Basic state
 	Vector3					m_position = Vector3::ZERO;
 	float					m_orientation = 0.f;
 	bool					m_isMarkedForDelete = false;
-	int						m_health = 1;
+	int						m_health = 9999999;
 	eEntityTeam				m_entityTeam = ENTITY_TEAM_UNASSIGNED;
 
 	// Physics
@@ -92,6 +97,7 @@ protected:
 	PhysicsComponent*		m_physicsComponent = nullptr;
 	const EntityDefinition* m_definition = nullptr;
 	Vector3					m_collisionCorrection = Vector3::ZERO;
+	bool					m_physicsEnabled = true;
 
 	bool					m_isPlayer = false;
 

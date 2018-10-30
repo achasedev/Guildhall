@@ -15,7 +15,7 @@
 	<Waves>
 
 		<Wave>
-			<Spawn entity="Robot" min_spawned="1" max_spawned="1" total_to_spawn="1"/>
+			<Spawn entity="Robot" min_spawned="100" max_spawned="200" total_to_spawn="1000"/>
 		</Wave> 
 
 	</Waves>

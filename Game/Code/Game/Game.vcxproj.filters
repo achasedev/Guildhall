@@ -127,6 +127,9 @@
     <ClCompile Include="Entity\AnimatedEntity.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\Item.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -185,5 +188,6 @@
     <ClInclude Include="Framework\PlayStates\PlayState_Victory.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Defeat.hpp" />
     <ClInclude Include="Entity\AnimatedEntity.hpp" />
+    <ClInclude Include="Entity\Item.hpp" />
   </ItemGroup>
 </Project>

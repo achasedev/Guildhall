@@ -260,6 +260,48 @@ void World::ParticalizeAllEntities()
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns whether the entity is completely on the map
+//
+bool World::IsEntityOnMap(const Entity* entity) const
+{
+	Vector2 bottomLeft = entity->GetPosition().xz();
+	Vector2 topRight = bottomLeft + Vector2(entity->GetDimensions().xz()) + Vector2::ONES;
+
+	if (bottomLeft.x < 0.f || bottomLeft.y < 0.f)
+	{
+		return false;
+	}
+
+	if (topRight.x > (float) m_dimensions.x || topRight.y > (float) m_dimensions.z)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the entity to be on the ground at their current map position
+//
+void World::SnapEntityToGround(Entity* entity)
+{
+	if (IsEntityOnMap(entity))
+	{
+		Vector3 position = entity->GetPosition();
+		position.y = (float)m_groundElevation;
+		entity->SetPosition(position);
+
+		PhysicsComponent* comp = entity->GetPhysicsComponent();
+		if (comp != nullptr)
+		{
+			comp->ZeroYVelocity();
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the voxel dimensions of the world
 //
 IntVector3 World::GetDimensions() const
@@ -344,6 +386,11 @@ bool World::HasLineOfSight(const Vector3& startPosition, const Vector3& endPosit
 //
 bool World::IsEntityOnGround(const Entity* entity) const
 {
+	if (!IsEntityOnMap(entity))
+	{
+		return false;
+	}
+
 	return (entity->GetPosition().y <= (float)m_groundElevation);
 }
 
@@ -397,7 +444,7 @@ void World::ApplyPhysicsStep()
 	{
 		Entity* currDynamic = m_entities[i];
 
-		if (currDynamic->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC && !currDynamic->IsMarkedForDelete())
+		if (currDynamic->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC && !currDynamic->IsMarkedForDelete() && currDynamic->IsPhysicsEnabled())
 		{
 			m_entities[i]->GetPhysicsComponent()->ApplyPhysicsStep();
 		}
@@ -408,15 +455,9 @@ void World::ApplyPhysicsStep()
 
 	for (int i = 0; i < numParticles; ++i)
 	{
-		if (!m_particles[i]->IsMarkedForDelete() && m_particles[i]->ShouldApplyPhysics())
+		if (!m_particles[i]->IsMarkedForDelete() && m_particles[i]->IsPhysicsEnabled())
 		{
 			m_particles[i]->GetPhysicsComponent()->ApplyPhysicsStep();
-
-			// Optimization - set the particle to not keep simulating if it already hit the ground
-			if (IsEntityOnGround(m_particles[i]))
-			{
-				m_particles[i]->SetApplyPhysics(false);
-			}
 		}
 	}
 }
@@ -431,16 +472,17 @@ void World::CheckForGroundCollisions()
 	{
 		Entity* entity = m_entities[entityIndex];
 
-		// Also check for clipping into the ground
 		Vector3 position = entity->GetPosition();
 		if (position.y < (float)m_groundElevation)
 		{
-			position.y = (float)m_groundElevation;
-			entity->SetPosition(position);
+			SnapEntityToGround(entity);
 
-			Vector3 velocity = entity->GetPhysicsComponent()->GetVelocity();
-			velocity.y = 0.f;
-			entity->GetPhysicsComponent()->SetVelocity(velocity);
+// 			position.y = (float)m_groundElevation;
+// 			entity->SetPosition(position);
+// 
+// 			Vector3 velocity = entity->GetPhysicsComponent()->GetVelocity();
+// 			velocity.y = 0.f;
+// 			entity->GetPhysicsComponent()->SetVelocity(velocity);
 		}
 	}
 }
@@ -465,7 +507,6 @@ void World::CheckStaticEntityCollisions()
 			if (staticEntity->GetPhysicsType() != PHYSICS_TYPE_STATIC || staticEntity->IsMarkedForDelete()) { continue; }
 
 			// Do detection and fix here
-			bool isPlayer = (dynamic_cast<Player*>(dynamicEntity) != nullptr);
 			CheckEntityCollision(dynamicEntity, staticEntity);
 		}
 	}
@@ -485,9 +526,10 @@ void World::CheckStaticEntityCollisions()
 		Vector3 position = currParticle->GetPosition();
 		if (position.y < (float)m_groundElevation)
 		{
-			position.y = (float)m_groundElevation;
-			currParticle->SetPosition(position);
-			currParticle->GetPhysicsComponent()->SetVelocity(Vector3::ZERO);
+			SnapEntityToGround(currParticle);
+// 			position.y = (float)m_groundElevation;
+// 			currParticle->SetPosition(position);
+// 			currParticle->GetPhysicsComponent()->SetVelocity(Vector3::ZERO);
 		}
 	}
 }
@@ -1366,41 +1408,20 @@ void CalculateCollisionCorrection(Entity* first, Entity* second, const VoxelOver
 
 	// Determine the correction offset by pushing across the least amount of overlap
 	Vector3 finalCorrection;
+	int direction = -1; // 0 for x, 1 for y, 2 for z
 	if (r.xOverlapf < r.zOverlapf)
 	{
 		if (r.xOverlapf <= r.yOverlapf)
 		{
 			float sign = (diff.x < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(sign * (float) r.xOverlapf, 0.f, 0.f);
-
-			PhysicsComponent* firstComp = first->GetPhysicsComponent();
-			if (firstComp != nullptr)
-			{
-				firstComp->ZeroXVelocity();
-			}
-
-			PhysicsComponent* secondComp = second->GetPhysicsComponent();
-			if (secondComp != nullptr)
-			{
-				secondComp->ZeroXVelocity();
-			}
+			finalCorrection = Vector3(sign * (float)r.xOverlapf, 0.f, 0.f);
+			direction = 0;
 		}
 		else
 		{
 			float sign = (diff.y < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(0.f, sign * (float) r.yOverlapf, 0.f);
-
-			PhysicsComponent* firstComp = first->GetPhysicsComponent();
-			if (firstComp != nullptr)
-			{
-				firstComp->ZeroYVelocity();
-			}
-
-			PhysicsComponent* secondComp = second->GetPhysicsComponent();
-			if (secondComp != nullptr)
-			{
-				secondComp->ZeroYVelocity();
-			}
+			finalCorrection = Vector3(0.f, sign * (float)r.yOverlapf, 0.f);
+			direction = 1;
 		}
 	}
 	else
@@ -1408,38 +1429,14 @@ void CalculateCollisionCorrection(Entity* first, Entity* second, const VoxelOver
 		if (r.zOverlapf <= r.yOverlapf)
 		{
 			float sign = (diff.z < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(0.f, 0.f, sign * (float) r.zOverlapf);
-
-
-			PhysicsComponent* firstComp = first->GetPhysicsComponent();
-			if (firstComp != nullptr)
-			{
-				firstComp->ZeroZVelocity();
-			}
-
-			PhysicsComponent* secondComp = second->GetPhysicsComponent();
-			if (secondComp != nullptr)
-			{
-				secondComp->ZeroZVelocity();
-			}
+			finalCorrection = Vector3(0.f, 0.f, sign * (float)r.zOverlapf);
+			direction = 2;
 		}
 		else
 		{
 			float sign = (diff.y < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(0.f, sign * (float) r.yOverlapf, 0.f);
-
-
-			PhysicsComponent* firstComp = first->GetPhysicsComponent();
-			if (firstComp != nullptr)
-			{
-				firstComp->ZeroYVelocity();
-			}
-
-			PhysicsComponent* secondComp = second->GetPhysicsComponent();
-			if (secondComp != nullptr)
-			{
-				secondComp->ZeroYVelocity();
-			}
+			finalCorrection = Vector3(0.f, sign * (float)r.yOverlapf, 0.f);
+			direction = 1;
 		}
 	}
 
@@ -1447,9 +1444,61 @@ void CalculateCollisionCorrection(Entity* first, Entity* second, const VoxelOver
 	float firstScalar, secondScalar;
 	CalculateMassScalars(first, second, firstScalar, secondScalar);
 
-	// Apply the correction
-	first->AddCollisionCorrection(firstScalar * finalCorrection);
-	second->AddCollisionCorrection(-secondScalar * finalCorrection);
+	bool shouldCorrect = (firstScalar > 0.f || secondScalar > 0.f);
+
+	if (shouldCorrect)
+	{
+		// Apply the correction
+		first->AddCollisionCorrection(firstScalar * finalCorrection);
+		second->AddCollisionCorrection(-secondScalar * finalCorrection);
+
+		// Zero out velocities if colliding against static
+		if (first->GetPhysicsType() == PHYSICS_TYPE_STATIC && second->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC)
+		{
+			PhysicsComponent* secondComp = second->GetPhysicsComponent();
+
+			if (secondComp != nullptr)
+			{
+				switch (direction)
+				{
+				case 0:
+					secondComp->ZeroXVelocity();
+					break;
+				case 1:
+					secondComp->ZeroYVelocity();
+					break;
+				case 2:
+					secondComp->ZeroZVelocity();
+					break;
+				default:
+					break;
+				}
+			}
+		}
+
+		if (first->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC && second->GetPhysicsType() == PHYSICS_TYPE_STATIC)
+		{
+			PhysicsComponent* firstComp = first->GetPhysicsComponent();
+
+			if (firstComp != nullptr)
+			{
+				switch (direction)
+				{
+				case 0:
+					firstComp->ZeroXVelocity();
+					break;
+				case 1:
+					firstComp->ZeroYVelocity();
+					break;
+				case 2:
+					firstComp->ZeroZVelocity();
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
 }
 
 
@@ -1537,21 +1586,22 @@ void CalculateMassScalars(Entity* first, Entity* second, float& out_firstScalar,
 void World::ParticalizeEntity(Entity* entity)
 {
 	const VoxelTexture* texture = entity->GetTextureForRender();
-	Vector3 entityPosition = entity->GetPosition();
+	Vector3 entityPosition = entity->GetBottomCenterPosition();
 
 	unsigned int voxelCount = texture->GetVoxelCount();
 	for (unsigned int i = 0; i < voxelCount; ++i)
 	{
 		Rgba color = texture->GetColorAtIndex(i);
 
-		if (color.a != 0 && CheckRandomChance(0.25f))
+		if (color.a != 0)
 		{
 			Vector3 voxelPosition = entity->GetPositionForLocalIndex(i);
 
 			Vector3 velocity = (voxelPosition - entityPosition).GetNormalized();
-			velocity *= 50.f;
+			float speed = (20.f * GetRandomFloatInRange(0.f, 1.0f)) + 30.f;
+			velocity *= speed;
 
-			Particle* particle = new Particle(color, 1.0f, voxelPosition, velocity);
+			Particle* particle = new Particle(color, GetRandomFloatInRange(1.0f, 4.0f), voxelPosition, velocity);
 			particle->OnSpawn();
 
 			m_particles.push_back(particle);

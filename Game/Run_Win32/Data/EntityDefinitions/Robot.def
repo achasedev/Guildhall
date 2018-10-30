@@ -46,10 +46,10 @@
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Robot">
+	<EntityDefinition name="Robot" defaultHealth="1">
 
 		<!--Movement Parameters-->
-		<Movement maxAcceleration="3000.0" maxSpeed="0.0" maxDeceleration="100.0" jumpImpulse="120.0"/>
+		<Movement maxAcceleration="3000.0" maxSpeed="20.0" maxDeceleration="100.0" jumpImpulse="120.0"/>
 
 		<!--Visuals-->
 		<Animation set="Robot" defaultSprite="Robot_idle_0"/>
@@ -67,24 +67,16 @@
 
 	</EntityDefinition>
 
-  <EntityDefinition name="Robot_test">
+  <EntityDefinition name="Item_test">
 
-    <!--Movement Parameters-->
-    <Movement maxAcceleration="3000.0" maxSpeed="0.0" maxDeceleration="100.0" jumpImpulse="120.0"/>
-
-    <!--Visuals-->
-    <Animation defaultSprite="TestCube"/>
+	<Animation defaultSprite="Item_test"/>
 
     <!--Physics-->
     <Physics physicsType="dynamic" hasGravity="true">
-      <CollisionDefinition response="share_correction" />
+      <CollisionDefinition response="ignore_correction" />
     </Physics>
 
-    <!--AI-->
-    <AI>
-      <!--<Shoot projectile="Bullet" fireRate="1.0"/>-->
-      <PursueDirect/>
-    </AI>
+    <Item bullets="1" shells="2" energy="3" explosives="4" money="5"/>
 
   </EntityDefinition>
 

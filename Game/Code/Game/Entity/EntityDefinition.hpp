@@ -51,6 +51,38 @@ struct CollisionDefinition_t
 	unsigned int				m_collisionLayer = 0;
 };
 
+// For items
+struct ItemSet_t
+{
+	void operator+=(const ItemSet_t& toAdd)
+	{
+		bullets += toAdd.bullets;
+		shells += toAdd.shells;
+		energy += toAdd.energy;
+		explosives += toAdd.explosives;
+		money += toAdd.money;
+	}
+
+	const ItemSet_t& operator+(const ItemSet_t& toAdd) const
+	{
+		ItemSet_t toReturn;
+
+		toReturn.bullets += toAdd.bullets;
+		toReturn.shells += toAdd.shells;
+		toReturn.energy += toAdd.energy;
+		toReturn.explosives += toAdd.explosives;
+		toReturn.money += toAdd.money;
+
+		return toReturn;
+	}
+
+	int bullets = 0;
+	int shells = 0;
+	int energy = 0;
+	int explosives = 0;
+	int money = 0;
+};
+
 class VoxelSprite;
 class VoxelAnimationSet;
 class BehaviorComponent;
@@ -60,6 +92,7 @@ class EntityDefinition
 	friend class Entity;
 	friend class AnimatedEntity;
 	friend class Player;
+	friend class Item;
 
 public:
 	//-----Public Methods-----
@@ -86,25 +119,27 @@ private:
 private:
 	//-----Private Data-----
 	
-	std::string					m_name;
+	// Entity Base class
+	std::string								m_name;
+	int										m_defaultHealth = 99999;
+	ePhysicsType							m_physicsType = PHYSICS_TYPE_UNASSIGNED;
+	bool									m_affectedByGravity = false;
+	CollisionDefinition_t					m_collisionDef;
 
-	// Movement
-	float						m_maxMoveAcceleration = 300.f;
-	float						m_maxMoveSpeed = 40.f;
-	float						m_maxMoveDeceleration = 100.f;
-	float						m_jumpImpulse = 80.f;
+	// AnimatedEntity
+	float									m_maxMoveAcceleration = 300.f;
+	float									m_maxMoveSpeed = 40.f;
+	float									m_maxMoveDeceleration = 100.f;
+	float									m_jumpImpulse = 80.f;
 
-	// Animation
-	const VoxelAnimationSet*	m_animationSet = nullptr;
-	const VoxelSprite*			m_defaultSprite = nullptr;
+	const VoxelAnimationSet*				m_animationSet = nullptr;
+	const VoxelSprite*						m_defaultSprite = nullptr;
 
-	// Physics
-	ePhysicsType				m_physicsType		= PHYSICS_TYPE_UNASSIGNED;
-	bool						m_affectedByGravity = false;
-	CollisionDefinition_t		m_collisionDef;
+	// AIEntity
+	std::vector<const BehaviorComponent*>	m_behaviorPrototypes;
 
-	// AI
-	std::vector<const BehaviorComponent*> m_behaviorPrototypes;
+	// Item
+	ItemSet_t								m_initialItems;
 
 	// Static registry
 	static std::map<std::string, const EntityDefinition*> s_definitions;

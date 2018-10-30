@@ -34,6 +34,8 @@ Entity::Entity(const EntityDefinition* definition)
 	{
 		m_defaultTexture = definition->m_defaultSprite->GetTextureForOrientation(90.f)->Clone();
 	}
+
+	m_health = definition->m_defaultHealth;
 }
 
 
@@ -171,6 +173,15 @@ void Entity::ApplyCollisionCorrection()
 
 
 //-----------------------------------------------------------------------------------------------
+// Sets whether the physics step should be applied to this entity
+//
+void Entity::SetPhysicsEnabled(bool newState)
+{
+	m_physicsEnabled = newState;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the world position of the entity
 //
 Vector3 Entity::GetPosition() const
@@ -186,6 +197,17 @@ Vector3 Entity::GetCenterPosition() const
 {
 	Vector3 halfDimensions = Vector3(GetDimensions()) * 0.5f;
 	return m_position + halfDimensions;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the center position of the entity at its bottom
+//
+Vector3 Entity::GetBottomCenterPosition() const
+{
+	Vector3 center = GetCenterPosition();
+	center.y = m_position.y;
+	return center;
 }
 
 
@@ -263,6 +285,15 @@ IntVector3 Entity::GetDimensions() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns whether this entity should have the physics step applied to it
+//
+bool Entity::IsPhysicsEnabled() const
+{
+	return m_physicsEnabled;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the mass of the entity
 //
 float Entity::GetMass() const
@@ -281,7 +312,7 @@ float Entity::GetInverseMass() const
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns whether this entity is a player entitys
+// Returns whether this entity is a player entity
 //
 bool Entity::IsPlayer() const
 {
@@ -303,12 +334,10 @@ bool Entity::IsMarkedForDelete() const
 //
 Vector3 Entity::GetPositionForLocalCoords(const IntVector3& localCoords) const
 {
-	IntVector3 bottomLeft = GetCoordinatePosition();
+	Vector3 bottomLeft = m_position;
+	Vector3 voxelPosition = Vector3(bottomLeft + Vector3(localCoords));
 
-	Vector3 position = Vector3(bottomLeft + localCoords);
-	position += Vector3(0.5f, 0.f, 0.5f);
-
-	return position;
+	return voxelPosition;
 }
 
 

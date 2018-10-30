@@ -299,6 +299,7 @@
     <ClCompile Include="Entity\Entity.cpp" />
     <ClCompile Include="Entity\EntityDefinition.cpp" />
     <ClCompile Include="Entity\AnimatedEntity.cpp" />
+    <ClCompile Include="Entity\Item.cpp" />
     <ClCompile Include="Entity\Particle.cpp" />
     <ClCompile Include="Entity\Components\PhysicsComponent.cpp" />
     <ClCompile Include="Entity\Player.cpp" />
@@ -339,6 +340,7 @@
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\EntityDefinition.hpp" />
     <ClInclude Include="Entity\AnimatedEntity.hpp" />
+    <ClInclude Include="Entity\Item.hpp" />
     <ClInclude Include="Entity\Particle.hpp" />
     <ClInclude Include="Entity\Components\PhysicsComponent.hpp" />
     <ClInclude Include="Entity\Player.hpp" />

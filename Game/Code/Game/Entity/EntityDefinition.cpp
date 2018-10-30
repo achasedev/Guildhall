@@ -73,6 +73,8 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 	m_name = ParseXmlAttribute(entityElement, "name");
 	ASSERT_OR_DIE(m_name.size() > 0, "Error: EntityDefinition lacks a name");
 
+	m_defaultHealth = ParseXmlAttribute(entityElement, "defaultHealth", m_defaultHealth);
+
 	// Movement
 	const XMLElement* moveElement = entityElement.FirstChildElement("Movement");
 	if (moveElement != nullptr)
@@ -137,6 +139,17 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 
 			behaviorElement = behaviorElement->NextSiblingElement();
 		}	
+	}
+
+	// Item
+	const XMLElement* itemElement = entityElement.FirstChildElement("Item");
+	if (itemElement != nullptr)
+	{
+		m_initialItems.bullets = ParseXmlAttribute(*itemElement, "bullets", 0);
+		m_initialItems.shells = ParseXmlAttribute(*itemElement, "shells", 0);
+		m_initialItems.energy = ParseXmlAttribute(*itemElement, "energy", 0);
+		m_initialItems.explosives = ParseXmlAttribute(*itemElement, "explosives", 0);
+		m_initialItems.money = ParseXmlAttribute(*itemElement, "money", 0);
 	}
 }
 

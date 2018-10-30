@@ -19,18 +19,12 @@ public:
 	~Particle();
 	
 	virtual void					Update() override;
-
-	void SetApplyPhysics(bool newState);
-	bool ShouldApplyPhysics() const;
-
 	virtual void					OnSpawn() override;
 	
 	
 private:
 	//-----Private Data-----
 	
-	bool m_applyPhysics = true;
-
 	Stopwatch m_stopwatch;
 	float m_lifetime = DEFAULT_LIFETIME;
 	float m_initialSpeed = DEFAULT_SPEED;

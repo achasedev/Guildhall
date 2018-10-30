@@ -69,7 +69,9 @@ public:
 	// Utility
 	void		ParticalizeEntity(Entity* entity);
 	void		ParticalizeAllEntities();
-	
+	bool		IsEntityOnMap(const Entity* entity) const;
+	void		SnapEntityToGround(Entity* entity);
+
 
 private:
 	//-----Private Methods-----
