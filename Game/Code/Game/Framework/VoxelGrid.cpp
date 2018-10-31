@@ -158,7 +158,7 @@ void VoxelGrid::DrawGround(unsigned int groundElevation, HeatMap* heatMap)
 
 				if (heatMap != nullptr)
 				{
-					float t = heatMap->GetHeat(IntVector2(x, z)) / (m_dimensions.x + m_dimensions.z);
+					float t = heatMap->GetHeat(IntVector2(x, z)) / (0.5f * (m_dimensions.x + m_dimensions.z));
 					color = Interpolate(Rgba::GREEN, Rgba::RED, t);
 				}
 

@@ -17,6 +17,7 @@
 Item::Item(const EntityDefinition* definition)
 	: Entity(definition)
 {
+	m_entityTeam = ENTITY_TEAM_PLAYER;
 }
 
 void Item::Update()

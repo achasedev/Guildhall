@@ -62,7 +62,7 @@
 		<!--AI-->
 		<AI>
 			<!--<Shoot projectile="Bullet" fireRate="1.0"/>-->
-			<PursuePath/>
+			<PursueDirect/>
 		</AI>
 
 	</EntityDefinition>

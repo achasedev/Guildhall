@@ -38,11 +38,14 @@ void Projectile::Update()
 //
 void Projectile::OnCollision(Entity* other)
 {
-	Entity::OnCollision(other);
-	other->TakeDamage(m_damage);
+	if (other->GetTeam() != m_entityTeam)
+	{
+		Entity::OnCollision(other);
+		other->TakeDamage(m_damage);
 
-	// Projectiles are only good for one collision
-	m_isMarkedForDelete = true;
+		// Projectiles are only good for one collision
+		m_isMarkedForDelete = true;
+	}
 }
 
 
