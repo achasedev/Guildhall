@@ -5,6 +5,7 @@
 /* Description: Class to represent a font drawn in a VoxelGrid
 /************************************************************************/
 #pragma once
+#include "Engine/Math/IntVector3.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 #include "Engine/Rendering/Resources/VoxelTexture.hpp"
 #include <map>
@@ -16,6 +17,9 @@ public:
 	//-----Public Methods-----
 	
 	const VoxelTexture* GetImageForGlyph(const char glyph) const;
+
+	// Producers
+	IntVector3 GetTextDimensions(const std::string& text) const;
 
 	static void LoadFont(const std::string& filename);
 	static VoxelFont* GetFont(const std::string& fontName);

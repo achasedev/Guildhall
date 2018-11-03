@@ -173,9 +173,11 @@ void VoxelGrid::DrawGround(unsigned int groundElevation, HeatMap* heatMap)
 //-----------------------------------------------------------------------------------------------
 // Draws the 3D texture to the grid
 //
-void VoxelGrid::Draw3DTexture(const VoxelTexture* texture, const IntVector3& bottomLeft)
+void VoxelGrid::Draw3DTexture(const VoxelTexture* texture, const IntVector3& startCoord, const IntVector3& right /*= IntVector3(1, 0, 0)*/, const IntVector3& up /*= IntVector3(0, 1, 0)*/)
 {
 	IntVector3 dimensions = texture->GetDimensions();
+
+	IntVector3 forward = IntVector3(CrossProduct(Vector3(right), Vector3(up)));
 
 	for (int xOff = 0; xOff < dimensions.x; ++xOff)
 	{
@@ -184,7 +186,9 @@ void VoxelGrid::Draw3DTexture(const VoxelTexture* texture, const IntVector3& bot
 			for (int zOff = 0; zOff < dimensions.z; ++zOff)
 			{
 				IntVector3 localCoords = IntVector3(xOff, yOff, zOff);
-				IntVector3 currCoords = bottomLeft + localCoords;
+				IntVector3 offset = xOff * right + yOff * up + zOff * forward;
+
+				IntVector3 currCoords = startCoord + offset;
 
 				int index = GetIndexForCoords(currCoords);
 
@@ -242,15 +246,43 @@ void VoxelGrid::DebugDrawEntityCollision(const Entity* entity)
 //-----------------------------------------------------------------------------------------------
 // Draws the given text to the grid
 //
-void VoxelGrid::DrawText(const std::string& text, const VoxelFont* font, const IntVector3& start)
+void VoxelGrid::DrawText(const std::string& text, const VoxelFont* font, const IntVector3& start, int glyphScale /*= 1*/, const IntVector3& right /*= IntVector3(1, 0, 0)*/, const IntVector3& up /*= IntVector3(0, 1, 0)*/)
 {
-	int numChars = (int) text.size();
+	IntVector3 textDimensions = glyphScale * font->GetTextDimensions(text);
+	IntVector3 forward = IntVector3(CrossProduct(Vector3(right), Vector3(up)));
+	IntVector3 worldSpan = right * textDimensions.x + up * textDimensions.y + forward * textDimensions.z;
+	IntVector3 offset = IntVector3::ZERO;
 
-	for (int charIndex = 0; charIndex < numChars; ++charIndex)
+	for (int zOff = 0; zOff < textDimensions.z; ++zOff)
 	{
-		const VoxelTexture* glyph = font->GetImageForGlyph(text[charIndex]);
+		for (int yOff = 0; yOff < textDimensions.y; ++yOff)
+		{
+			for (int xOff = 0; xOff < textDimensions.x; ++xOff)
+			{
+				int glyphX = xOff;
+				int charOff = 0;
+				while (glyphX >= font->GetImageForGlyph(text[charOff])->GetDimensions().x * glyphScale)
+				{
+					glyphX -= font->GetImageForGlyph(text[charOff])->GetDimensions().x * glyphScale;
+					charOff++;
+				}
 
-		Draw3DTexture(glyph, start);
+				IntVector3 glyphCoords = IntVector3(glyphX, yOff, zOff) / glyphScale;
+				const VoxelTexture* glyphTexture = font->GetImageForGlyph(text[charOff]);
+				IntVector3 offset = right * xOff + up * yOff + forward * zOff;
+
+				int index = GetIndexForCoords(start + offset);
+
+				if (index != -1)
+				{
+					Rgba colorToRender = glyphTexture->GetColorAtCoords(glyphCoords);
+					if (colorToRender.a > 0)
+					{
+						m_gridColors[index] = colorToRender;
+					}
+				}
+			}
+		}
 	}
 }
 

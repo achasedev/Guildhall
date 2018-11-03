@@ -227,7 +227,7 @@ void World::Render()
 	DrawParticlesToGrid();
 
 	// Draw text
-	m_voxelGrid->DrawText("A", VoxelFont::GetFont("Default"), IntVector3(0, 54, 255));
+	m_voxelGrid->DrawText("A", VoxelFont::GetFont("Default"), IntVector3(10, 54, 80), 5, IntVector3(1,0,0), IntVector3(0,0,1));
 
 	// Rebuild the mesh and draw it to screen
 	m_voxelGrid->BuildMeshAndDraw();

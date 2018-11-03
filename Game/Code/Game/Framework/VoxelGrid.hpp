@@ -36,11 +36,11 @@ public:
 	void				Clear();
 	void				DrawEntity(const Entity* entity);
 	void				DrawGround(unsigned int groundElevation, HeatMap* heatMap);
-	void				Draw3DTexture(const VoxelTexture* texture, const IntVector3& position);
+	void				Draw3DTexture(const VoxelTexture* texture, const IntVector3& startCoord, const IntVector3& right = IntVector3(1, 0, 0), const IntVector3& up = IntVector3(0, 1, 0));
 
 	void				DebugDrawEntityCollision(const Entity* entity);
 
-	void				DrawText(const std::string& text, const VoxelFont* font, const IntVector3& start);
+	void				DrawText(const std::string& text, const VoxelFont* font, const IntVector3& start, int glyphScale = 1, const IntVector3& right = IntVector3(1, 0, 0), const IntVector3& up = IntVector3(0, 1, 0));
 
 	// Accessors
 	int					GetVoxelCount() const;

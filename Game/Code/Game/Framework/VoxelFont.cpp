@@ -10,6 +10,20 @@ const VoxelTexture* VoxelFont::GetImageForGlyph(const char glyph) const
 	return &m_textures[glyph];
 }
 
+IntVector3 VoxelFont::GetTextDimensions(const std::string& text) const
+{
+	int numChars = (int)text.size();
+
+	IntVector3 total = IntVector3::ZERO;
+
+	for (int charIndex = 0; charIndex < numChars; ++charIndex)
+	{
+		total += m_textures[text[charIndex]].GetDimensions();
+	}
+
+	return total;
+}
+
 void VoxelFont::LoadFont(const std::string& filename)
 {
 	XMLDocument document;
