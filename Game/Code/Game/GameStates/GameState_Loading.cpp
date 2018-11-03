@@ -5,6 +5,7 @@
 /* Description: Implementation of the GameState_Loading class
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
@@ -153,6 +154,24 @@ void GameState_Loading::LoadVoxelResources() const
 			VoxelAnimation::LoadVoxelAnimations(filename);
 
 			currAnimElement = currAnimElement->NextSiblingElement();
+		}
+	}
+
+	// Voxel fonts
+	{
+		const XMLElement* fontsElement = rootElement->FirstChildElement("VoxelFonts");
+		ASSERT_OR_DIE(fontsElement != nullptr, "Error: VoxelAssets.xml has no VoxelFonts element.");
+
+		const XMLElement* currFontElement = fontsElement->FirstChildElement();
+
+		while (currFontElement != nullptr)
+		{
+			std::string filename = ParseXmlAttribute(*currFontElement, "file");
+			ASSERT_OR_DIE(filename.size() > 0, "Error: VoxelAssets.xml has animation element with no filename specified");
+
+			VoxelFont::LoadFont(filename);
+
+			currFontElement = currFontElement->NextSiblingElement();
 		}
 	}
 }

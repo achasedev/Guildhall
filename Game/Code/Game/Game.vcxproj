@@ -312,6 +312,7 @@
     <ClCompile Include="Framework\PlayStates\PlayState_Rest.cpp" />
     <ClCompile Include="Framework\PlayStates\PlayState_Victory.cpp" />
     <ClCompile Include="Framework\PlayStates\PlayState_Wave.cpp" />
+    <ClCompile Include="Framework\VoxelFont.cpp" />
     <ClCompile Include="Framework\WaveManager.cpp" />
     <ClCompile Include="Framework\SpawnPoint.cpp" />
     <ClCompile Include="Framework\VoxelGrid.cpp" />
@@ -355,6 +356,7 @@
     <ClInclude Include="Framework\PlayStates\PlayState_Rest.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Victory.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Wave.hpp" />
+    <ClInclude Include="Framework\VoxelFont.hpp" />
     <ClInclude Include="Framework\WaveManager.hpp" />
     <ClInclude Include="Framework\SpawnPoint.hpp" />
     <ClInclude Include="Framework\VoxelGrid.hpp" />

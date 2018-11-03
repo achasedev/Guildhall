@@ -1,0 +1,5 @@
+<VoxelFont name="Default">
+
+	<Glyph glyph="A" file="Data/VoxelFonts/Default/A.png"/>
+
+</VoxelFont>

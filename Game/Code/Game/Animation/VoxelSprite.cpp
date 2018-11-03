@@ -22,7 +22,7 @@ VoxelSprite::VoxelSprite(const std::string& name, const std::string& filename)
 	: m_name(name)
 {
 	VoxelTexture* northTexture = new VoxelTexture();
-	bool success = northTexture->CreateFromFile(filename.c_str());
+	bool success = northTexture->CreateFromFile(filename.c_str(), true);
 
 	ASSERT_OR_DIE(success, Stringf("Error: VoxelSprite::VoxelSprite() couldn't open file %s", filename.c_str()));
 

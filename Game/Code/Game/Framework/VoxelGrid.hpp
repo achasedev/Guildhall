@@ -10,12 +10,14 @@
 #include "Engine/Math/IntVector3.hpp"
 #include "Engine/Rendering/Meshes/Mesh.hpp"
 #include "Engine/Rendering/Buffers/RenderBuffer.hpp"
+#include <string>
 
 class Renderable;
 class ComputeShader;
 class VoxelTexture;
 class Entity;
 class HeatMap;
+class VoxelFont;
 
 class VoxelGrid
 {
@@ -38,6 +40,7 @@ public:
 
 	void				DebugDrawEntityCollision(const Entity* entity);
 
+	void				DrawText(const std::string& text, const VoxelFont* font, const IntVector3& start);
 
 	// Accessors
 	int					GetVoxelCount() const;

@@ -130,6 +130,9 @@
     <ClCompile Include="Entity\Item.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\VoxelFont.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -189,5 +192,6 @@
     <ClInclude Include="Framework\PlayStates\PlayState_Defeat.hpp" />
     <ClInclude Include="Entity\AnimatedEntity.hpp" />
     <ClInclude Include="Entity\Item.hpp" />
+    <ClInclude Include="Framework\VoxelFont.hpp" />
   </ItemGroup>
 </Project>

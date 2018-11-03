@@ -7,6 +7,7 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Entity/Entity.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
+#include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -234,6 +235,22 @@ void VoxelGrid::DebugDrawEntityCollision(const Entity* entity)
 				}
 			}
 		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Draws the given text to the grid
+//
+void VoxelGrid::DrawText(const std::string& text, const VoxelFont* font, const IntVector3& start)
+{
+	int numChars = (int) text.size();
+
+	for (int charIndex = 0; charIndex < numChars; ++charIndex)
+	{
+		const VoxelTexture* glyph = font->GetImageForGlyph(text[charIndex]);
+
+		Draw3DTexture(glyph, start);
 	}
 }
 

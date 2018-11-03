@@ -8,6 +8,7 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Entity/Particle.hpp"
 #include "Game/Framework/World.hpp"
+#include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
@@ -224,6 +225,9 @@ void World::Render()
 
 	// Color in the particles
 	DrawParticlesToGrid();
+
+	// Draw text
+	m_voxelGrid->DrawText("A", VoxelFont::GetFont("Default"), IntVector3(0, 54, 255));
 
 	// Rebuild the mesh and draw it to screen
 	m_voxelGrid->BuildMeshAndDraw();
