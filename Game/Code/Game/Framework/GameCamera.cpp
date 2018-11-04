@@ -14,8 +14,8 @@
 // Constructor
 //
 GameCamera::GameCamera()
-	: m_offsetDirection(Vector3(0.f, 0.75f, -1.f))
-	, m_offsetDistance(150.f)
+	: m_offsetDirection(Vector3(0.f, 1.f, -1.3f).GetNormalized())
+	, m_offsetDistance(220.f)
 {
 }
 
@@ -72,6 +72,7 @@ void GameCamera::UpdatePositionBasedOnPlayers()
 	}
 
 	Vector3 finalTarget = 0.5f * (Vector3(minX, minY, minZ) + Vector3(maxX, maxY, maxZ)) + Vector3(playerDimensions / 2);
+	finalTarget.y = 5.f;
 
 	Vector3 newPos = finalTarget + m_offsetDirection * m_offsetDistance;
 	LookAt(newPos, finalTarget);
@@ -113,6 +114,17 @@ void GameCamera::UpdatePositionOnInput()
 	Vector3 rotation = Vector3(rotationOffset.x * CAMERA_ROTATION_SPEED * deltaTime, rotationOffset.y * CAMERA_ROTATION_SPEED * deltaTime, 0.f);
 
 	gameCamera->Rotate(rotation);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the camera back to it's offset position looking at the grid's center
+//
+void GameCamera::LookAtGridCenter()
+{
+	Vector3 target = Vector3(128.f, 5.f, 128.f);
+	Vector3 newPos = target + m_offsetDirection * m_offsetDistance;
+	LookAt(newPos, target);
 }
 
 

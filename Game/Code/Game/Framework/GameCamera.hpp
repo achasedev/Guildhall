@@ -17,6 +17,7 @@ public:
 
 	void UpdatePositionBasedOnPlayers();
 	void UpdatePositionOnInput();
+	void LookAtGridCenter();
 
 	void ToggleEjected();
 	void SetEjected(bool newState);
