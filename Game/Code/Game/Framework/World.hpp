@@ -67,10 +67,11 @@ public:
 	bool		IsEntityOnGround(const Entity* entity) const;
 
 	// Utility
-	void		ParticalizeEntity(Entity* entity);
-	void		ParticalizeAllEntities();
-	bool		IsEntityOnMap(const Entity* entity) const;
-	void		SnapEntityToGround(Entity* entity);
+	void						ParticalizeEntity(Entity* entity);
+	void						ParticalizeAllEntities();
+	bool						IsEntityOnMap(const Entity* entity) const;
+	void						SnapEntityToGround(Entity* entity);
+	std::vector<const Entity*>	GetEnemiesWithinDistance(const Vector3& position, float radius) const;
 
 
 private:

@@ -6,6 +6,7 @@
 /************************************************************************/
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/World.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursueDirect.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
@@ -47,8 +48,30 @@ void BehaviorComponent_PursueDirect::Update()
 		return;
 	}
 
-	Vector3 directionToMove = (closestPlayerPosition - currentPosition).GetNormalized();
-	m_owningEntity->Move(directionToMove.xz());
+	Vector3 directionToPlayer = (closestPlayerPosition - currentPosition).GetNormalized();
+
+
+	// Get direction away from  local entities
+	std::vector<const Entity*> localEntities = Game::GetWorld()->GetEnemiesWithinDistance(currentPosition, 10.f);
+
+	Vector3 directionAwayFromEntities = Vector3::ZERO;
+
+	int numEntities = (int)localEntities.size();
+
+	for (int i = 0; i < numEntities; ++i)
+	{
+		const Entity* entity = localEntities[i];
+		Vector3 directionToEntity = (entity->GetPosition() - currentPosition).GetNormalized();
+
+		directionAwayFromEntities -= directionToEntity;
+	}
+
+	directionAwayFromEntities.NormalizeAndGetLength();
+	directionAwayFromEntities *= 1.f;
+
+	Vector3 finalDirection = (directionAwayFromEntities + directionToPlayer).GetNormalized();
+
+	m_owningEntity->Move(finalDirection.xz());
 }
 
 

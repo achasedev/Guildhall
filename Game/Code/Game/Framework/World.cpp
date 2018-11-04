@@ -179,11 +179,21 @@ void World::Update()
 	PROFILE_LOG_SCOPE_FUNCTION();
 
 	// "Thinking" and other general updating (animation)
-	UpdateEntities();
+	static bool updateEntities = true;
+
+	if (InputSystem::GetInstance()->WasKeyJustPressed('K'))
+	{
+		updateEntities = !updateEntities;
+	}
+
+	if (updateEntities)
+	{
+		UpdateEntities();
+		ApplyPhysicsStep();
+	}
 	UpdateParticles();
 
 	// Moving the entities (Forward Euler)
-	ApplyPhysicsStep();
 
 	// Collision
 	CheckDynamicEntityCollisions();
@@ -306,6 +316,36 @@ void World::SnapEntityToGround(Entity* entity)
 			comp->ZeroYVelocity();
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns all entities that are within the given radius from the position
+//
+std::vector<const Entity*> World::GetEnemiesWithinDistance(const Vector3& position, float radius) const
+{
+	std::vector<const Entity*> entitiesInRange;
+
+	int numEntities = (int)m_entities.size();
+	float radiusSquared = (radius * radius);
+
+	for (int index = 0; index < numEntities; ++index)
+	{
+		Entity* currEntity = m_entities[index];
+
+		if (currEntity->GetTeam() != ENTITY_TEAM_ENEMY) { continue; }
+
+		Vector3 entityPosition = currEntity->GetPosition();
+
+		float distanceSquared = (position - entityPosition).GetLengthSquared();
+
+		if (distanceSquared <= radiusSquared)
+		{
+			entitiesInRange.push_back(currEntity);
+		}
+	}
+
+	return entitiesInRange;
 }
 
 

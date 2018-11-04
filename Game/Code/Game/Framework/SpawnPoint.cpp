@@ -41,6 +41,7 @@ void SpawnPoint::SpawnEntity(const EntityDefinition* spawnType)
 	AIEntity* entity = new AIEntity(spawnType);
 	entity->SetPosition(spawnPosition);
 	entity->SetSpawnPoint(this);
+	entity->SetTeam(ENTITY_TEAM_ENEMY);
 
 	m_spawnedEntities.push_back(entity);
 	Game::GetWorld()->AddEntity(entity);
