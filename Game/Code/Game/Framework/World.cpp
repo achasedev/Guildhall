@@ -118,9 +118,6 @@ void World::Inititalize()
 {
 	m_dimensions = IntVector3(256, 64, 256);
 
-	m_voxelGrid = new VoxelGrid();
-	m_voxelGrid->Initialize(m_dimensions);
-
 	m_groundElevation = 5;
 
 	for (int i = 0; i < 1; ++i)
@@ -142,9 +139,6 @@ void World::CleanUp()
 {
 	m_dimensions = IntVector3(-1, -1, -1);
 	m_groundElevation = 0;
-	
-	delete m_voxelGrid;
-	m_voxelGrid = nullptr;
 
 	for (int i = 0; i < (int)m_entities.size(); ++i)
 	{
@@ -210,12 +204,14 @@ void World::Render()
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
+	VoxelGrid* grid = Game::GetVoxelGrid();
+
 	// Clear grid
-	m_voxelGrid->Clear();
+	grid->Clear();
 
 	// Color in the ground
 	HeatMap* mapToUse = (m_drawHeatmap ? m_navMapInUse.m_navigationMap : nullptr);
-	m_voxelGrid->DrawGround(m_groundElevation, mapToUse);
+	grid->DrawGround(m_groundElevation, mapToUse);
 
 	// Color in static geometry
 	DrawStaticEntitiesToGrid();
@@ -227,10 +223,10 @@ void World::Render()
 	DrawParticlesToGrid();
 
 	// Draw text
-	m_voxelGrid->DrawText("A", VoxelFont::GetFont("Default"), IntVector3(10, 54, 80), 5, IntVector3(1,0,0), IntVector3(0,0,1));
+	grid->DrawText("A", VoxelFont::GetFont("Default"), IntVector3(10, 54, 80), 5, IntVector3(1,0,0), IntVector3(0,0,1));
 
 	// Rebuild the mesh and draw it to screen
-	m_voxelGrid->BuildMeshAndDraw();
+	grid->BuildMeshAndDraw();
 }
 
 
@@ -758,6 +754,8 @@ void World::DrawStaticEntitiesToGrid()
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
+	VoxelGrid* grid = Game::GetVoxelGrid();
+
 	int numEntities = (int)m_entities.size();
 
 	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
@@ -766,11 +764,11 @@ void World::DrawStaticEntitiesToGrid()
 		{
 			if (m_drawCollision)
 			{
-				m_voxelGrid->DebugDrawEntityCollision(m_entities[entityIndex]);
+				grid->DebugDrawEntityCollision(m_entities[entityIndex]);
 			}
 			else
 			{
-				m_voxelGrid->DrawEntity(m_entities[entityIndex]);
+				grid->DrawEntity(m_entities[entityIndex]);
 			}
 		}
 	}
@@ -784,6 +782,8 @@ void World::DrawDynamicEntitiesToGrid()
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
+	VoxelGrid* grid = Game::GetVoxelGrid();
+
 	int numEntities = (int)m_entities.size();
 
 	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
@@ -792,11 +792,11 @@ void World::DrawDynamicEntitiesToGrid()
 		{
 			if (m_drawCollision)
 			{
-				m_voxelGrid->DebugDrawEntityCollision(m_entities[entityIndex]);
+				grid->DebugDrawEntityCollision(m_entities[entityIndex]);
 			}
 			else
 			{
-				m_voxelGrid->DrawEntity(m_entities[entityIndex]);
+				grid->DrawEntity(m_entities[entityIndex]);
 			}
 		}
 	}
@@ -808,13 +808,15 @@ void World::DrawDynamicEntitiesToGrid()
 //
 void World::DrawParticlesToGrid()
 {
+	VoxelGrid* grid = Game::GetVoxelGrid();
+
 	int numParticles = (int)m_particles.size();
 
 	for (int i = 0; i < numParticles; ++i)
 	{
 		if (!m_particles[i]->IsMarkedForDelete())
 		{
-			m_voxelGrid->DrawEntity(m_particles[i]);
+			grid->DrawEntity(m_particles[i]);
 		}
 	}
 }

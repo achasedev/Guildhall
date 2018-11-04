@@ -108,7 +108,6 @@ private:
 	//-----Private Data-----
 
 	IntVector3 m_dimensions;
-	VoxelGrid*	m_voxelGrid;		
 	unsigned int m_groundElevation = 0;
 
 	std::vector<Entity*> m_entities;

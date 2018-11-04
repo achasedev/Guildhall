@@ -17,6 +17,7 @@ class WaveManager;
 class GameCamera;
 class Player;
 class GameState;
+class VoxelGrid;
 
 class Game
 {
@@ -38,6 +39,7 @@ public:
 	static Game*	GetInstance();
 	static void		TransitionToGameState(GameState* newState);
 
+	static VoxelGrid*			GetVoxelGrid();
 	static Clock*				GetGameClock();
 	static GameCamera*			GetGameCamera();
 	static float				GetDeltaTime();
@@ -66,7 +68,7 @@ private:
 	Clock*						m_gameClock = nullptr;
 	World*						m_world = nullptr;
 	WaveManager*				m_waveManager = nullptr;
-
+	VoxelGrid*				m_voxelGrid = nullptr;
 	Player*						m_players[MAX_PLAYERS];
 
 	// Camera

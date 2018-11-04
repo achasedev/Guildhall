@@ -7,6 +7,7 @@
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
+#include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/WaveManager.hpp"
@@ -53,6 +54,10 @@ Game::Game()
 	// Game world
 	m_world = new World();
 
+	// Voxel Grid
+	m_voxelGrid = new VoxelGrid();
+	m_voxelGrid->Initialize(IntVector3(256, 64, 256));
+
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
 		m_players[i] = nullptr;
@@ -65,6 +70,17 @@ Game::Game()
 //
 Game::~Game()
 {
+	if (m_world != nullptr)
+	{
+		delete m_world;
+		m_world = nullptr;
+	}
+
+	if (m_voxelGrid != nullptr)
+	{
+		delete m_voxelGrid;
+		m_voxelGrid = nullptr;
+	}
 }
 
 
@@ -145,6 +161,15 @@ GameState* Game::GetGameState() const
 void Game::TransitionToGameState(GameState* newState)
 {
 	s_instance->m_pendingState = newState;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the voxel grid used by the game
+//
+VoxelGrid* Game::GetVoxelGrid()
+{
+	return s_instance->m_voxelGrid;
 }
 
 
