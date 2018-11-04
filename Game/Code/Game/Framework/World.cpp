@@ -223,7 +223,15 @@ void World::Render()
 	DrawParticlesToGrid();
 
 	// Draw text
-	grid->DrawText("A", VoxelFont::GetFont("Default"), IntVector3(10, 54, 80), 5, IntVector3(1,0,0), IntVector3(0,0,1));
+	VoxelFontDraw_t options;
+	options.mode = FILL_MODE_TOTAL;
+	options.optionColor = Rgba::BLUE;
+	options.font = VoxelFont::GetFont("Default");
+	options.scale = IntVector3(5, 5, 1);
+	options.up = IntVector3(0, 0, 1);
+	options.borderThickness = 20;
+
+	grid->DrawText("AA", IntVector3(10, 54, 80), options);
 
 	// Rebuild the mesh and draw it to screen
 	grid->BuildMeshAndDraw();

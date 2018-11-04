@@ -12,12 +12,36 @@
 #include "Engine/Rendering/Buffers/RenderBuffer.hpp"
 #include <string>
 
+
 class Renderable;
 class ComputeShader;
 class VoxelTexture;
 class Entity;
 class HeatMap;
 class VoxelFont;
+
+enum eFillMode
+{
+	FILL_MODE_NONE,
+	FILL_MODE_TOTAL,
+	FILL_MODE_EDGE
+};
+
+struct VoxelFontDraw_t
+{
+	const VoxelFont* font;
+
+	Rgba color;
+	eFillMode mode = FILL_MODE_NONE;
+	Rgba optionColor;
+
+	int borderThickness = 0;
+
+	IntVector3 right = IntVector3(1, 0, 0);
+	IntVector3 up = IntVector3(0, 1, 0);
+
+	IntVector3 scale = IntVector3::ONES;
+};
 
 class VoxelGrid
 {
@@ -36,11 +60,11 @@ public:
 	void				Clear();
 	void				DrawEntity(const Entity* entity);
 	void				DrawGround(unsigned int groundElevation, HeatMap* heatMap);
-	void				Draw3DTexture(const VoxelTexture* texture, const IntVector3& startCoord, const IntVector3& right = IntVector3(1, 0, 0), const IntVector3& up = IntVector3(0, 1, 0));
+	void				Draw3DTexture(const VoxelTexture* texture, const IntVector3& startCoord);
 
 	void				DebugDrawEntityCollision(const Entity* entity);
 
-	void				DrawText(const std::string& text, const VoxelFont* font, const IntVector3& start, int glyphScale = 1, const IntVector3& right = IntVector3(1, 0, 0), const IntVector3& up = IntVector3(0, 1, 0));
+	void				DrawText(const std::string& text, const IntVector3& startCoord, const VoxelFontDraw_t& options);
 
 	// Accessors
 	int					GetVoxelCount() const;

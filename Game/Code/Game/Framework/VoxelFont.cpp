@@ -2,6 +2,7 @@
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 #include "Engine/Core/Image.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 std::map<std::string, VoxelFont*> VoxelFont::s_fonts;
 
@@ -18,7 +19,9 @@ IntVector3 VoxelFont::GetTextDimensions(const std::string& text) const
 
 	for (int charIndex = 0; charIndex < numChars; ++charIndex)
 	{
-		total += m_textures[text[charIndex]].GetDimensions();
+		total.x += m_textures[text[charIndex]].GetDimensions().x;
+		total.y = MaxInt(total.y, m_textures[text[charIndex]].GetDimensions().y);
+		total.z = MaxInt(total.z, m_textures[text[charIndex]].GetDimensions().z);
 	}
 
 	return total;
