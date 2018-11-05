@@ -63,6 +63,9 @@ uint g_indexOffsets[6] = uint[](
 	0, 1, 2,
 	0, 2, 3);
 
+float g_colorScalar[4] = float[](
+	0.8f, 0.6f, 0.6f, 1.0f);
+
 bool IsNeighborEmpty(uvec3 currCoords, uint directionIndex)
 {
 	ivec3 direction = g_neighborDirections[directionIndex];
@@ -81,6 +84,33 @@ bool IsNeighborEmpty(uvec3 currCoords, uint directionIndex)
 	return ((VOXEL_COLORS[neighborIndex] & 0xff000000) == 0);
 }
 
+vec4 FromUInt(uint intColor)
+{
+	float red = float(intColor & 0xff) / 255.0f;
+	float green = float((intColor & 0xff00) >> 8) / 255.0f;
+	float blue = float((intColor & 0xff0000) >> 16) / 255.0f;
+	float alpha = float((intColor & 0xff000000) >> 24) / 255.0f;
+
+	return vec4(red, green, blue, alpha);
+
+}
+
+uint ToUInt(vec4 floatColor)
+{
+	floatColor = clamp(floatColor, vec4(0.0f), vec4(1.0f));
+
+	uint red = uint(floatColor.x * 255.0f);
+	uint green = uint(floatColor.y * 255.0f);
+	uint blue = uint(floatColor.z * 255.0f);
+	uint alpha = uint(floatColor.w * 255.0f);
+
+	green = green << 8;
+	blue = blue << 16;
+	alpha = alpha << 24;
+
+	return (red | green | blue | alpha);
+}
+
 void AddQuad(uvec3 coords, uint directionIndex, inout uint faceIndex)
 {
 	uint globalVertexOffset = faceIndex * 4;
@@ -95,7 +125,11 @@ void AddQuad(uvec3 coords, uint directionIndex, inout uint faceIndex)
 		VERTICES[globalVertexOffset + i].position = coords + g_vertexOffsets[directionIndex][i];
 		//VERTICES[chunkVertexOffset + vertexOffset + i].position = vec3(vertexOffset + i);
 
-		VERTICES[globalVertexOffset + i].color = VOXEL_COLORS[voxelIndex];
+		uint baseColor = VOXEL_COLORS[voxelIndex];
+		vec4 floatColor = FromUInt(baseColor) * g_colorScalar[directionIndex];
+		uint finalColor = ToUInt(floatColor);
+
+		VERTICES[globalVertexOffset + i].color = finalColor;
 	}
 
 	// Push Indices
