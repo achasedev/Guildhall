@@ -1,85 +1,52 @@
+#include "Engine/Assets/AssetDB.hpp"
 #include "Game/Framework/VoxelFont.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
-std::map<std::string, VoxelFont*> VoxelFont::s_fonts;
 
-const VoxelTexture* VoxelFont::GetImageForGlyph(const char glyph) const
+Rgba VoxelFont::GetColorForGlyphPixel(const char glyph, const IntVector2& offset) const
 {
-	return &m_textures[glyph];
+	IntVector2 totalDimensions = m_image->GetTexelDimensions();
+	IntVector2 spriteLayout = IntVector2(16, 16);
+	int glyphIndex = (int)glyph;
+
+	// Get the glyph bottom left
+	IntVector2 spriteCoord;
+	spriteCoord.x = (glyphIndex % spriteLayout.x);
+	spriteCoord.y = (glyphIndex / spriteLayout.x);
+	spriteCoord.y = spriteLayout.y - spriteCoord.y - 1;
+
+	int spriteStepX = (totalDimensions.x / spriteLayout.x);
+	int spriteStepY = (totalDimensions.y / spriteLayout.y);
+
+	IntVector2 spriteBottomLeft = IntVector2(spriteCoord.x * spriteStepX, spriteCoord.y * spriteStepY);
+	IntVector2 finalCoord = spriteBottomLeft + offset;
+
+	return m_image->GetTexelColor(finalCoord.x, finalCoord.y);
+}
+
+IntVector3 VoxelFont::GetGlyphDimensions() const
+{
+	IntVector2 spriteLayout = IntVector2(16, 16);
+	IntVector2 imageDimensions = m_image->GetTexelDimensions();
+
+	return IntVector3(imageDimensions.x / spriteLayout.x, imageDimensions.y / spriteLayout.y, 1);
 }
 
 IntVector3 VoxelFont::GetTextDimensions(const std::string& text) const
 {
+	IntVector2 glyphDimensions = m_image->GetTexelDimensions() / 16;
+
 	int numChars = (int)text.size();
-
-	IntVector3 total = IntVector3::ZERO;
-
-	for (int charIndex = 0; charIndex < numChars; ++charIndex)
-	{
-		total.x += m_textures[text[charIndex]].GetDimensions().x;
-		total.y = MaxInt(total.y, m_textures[text[charIndex]].GetDimensions().y);
-		total.z = MaxInt(total.z, m_textures[text[charIndex]].GetDimensions().z);
-	}
-
-	return total;
+	
+	return IntVector3(numChars * glyphDimensions.x, glyphDimensions.y, 1);
 }
 
-void VoxelFont::LoadFont(const std::string& filename)
+VoxelFont::VoxelFont(const std::string& name, const std::string& imageFile)
+	: m_glyphLayout(IntVector2(16, 16))
 {
-	XMLDocument document;
-	XMLError error = document.LoadFile(filename.c_str());
-
-	ASSERT_OR_DIE(error == tinyxml2::XML_SUCCESS, Stringf("Error: Couldn't open file %s", filename.c_str()));
-
-	const XMLElement* root = document.RootElement();
-	std::string fontName = ParseXmlAttribute(*root, "name", fontName);
-
-	if (root != nullptr)
-	{
-		VoxelFont* font = new VoxelFont(fontName);
-
-		const XMLElement* glyphElement = root->FirstChildElement();
-
-		while (glyphElement != nullptr)
-		{
-			char glyph = ParseXmlAttribute(*glyphElement, "glyph", '\0');
-
-			std::string imageFile = ParseXmlAttribute(*glyphElement, "file", imageFile);
-
-			Image image;
-
-			image.LoadFromFile(imageFile.c_str());
-			image.FlipVertical();
-			IntVector2 imageDimensions = image.GetTexelDimensions();
-			IntVector3 glyphDimensions = IntVector3(imageDimensions.x, imageDimensions.y, 1);
-
-			ASSERT_OR_DIE(image.GetNumComponentsPerTexel() == 4, "Error: VoxelFont Glyph doesn't have 4 color components per texel");
-
-			font->m_textures[glyph].CreateFromColorStream((Rgba*)image.GetImageData(), glyphDimensions, false);
-
-			glyphElement = glyphElement->NextSiblingElement();
-		}
-
-		s_fonts[fontName] = font;
-	}
-}
-
-VoxelFont* VoxelFont::GetFont(const std::string& fontName)
-{
-	bool fontExists = (s_fonts.find(fontName) != s_fonts.end());
-
-	if (fontExists)
-	{
-		return s_fonts.at(fontName);
-	}
-
-	return nullptr;
-}
-
-VoxelFont::VoxelFont(const std::string& name)
-	: m_name(name)
-{
+	m_image = AssetDB::CreateOrGetImage(imageFile);
+	m_image->FlipVertical();
 }

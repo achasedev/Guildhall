@@ -19,9 +19,5 @@
 	<VoxelAnimations>
 		<VoxelAnimation file="Data/VoxelAnimations/Robot.animation"/>
 	</VoxelAnimations>
-	
-	<VoxelFonts>
-		<VoxelFont file="Data/VoxelFonts/Default.voxelfont"/>
-	</VoxelFonts>
 
 </VoxelAssets>

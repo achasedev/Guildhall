@@ -129,6 +129,7 @@ void World::Inititalize()
 	}
 
 	InitializeHeatMaps();
+ 	m_font = new VoxelFont("Test", "Data/Images/Fonts/Test.png");
 }
 
 
@@ -156,6 +157,9 @@ void World::CleanUp()
 	}
 
 	m_particles.clear();
+
+	delete m_font;
+	m_font = nullptr;
 
 	CleanUpHeatMaps();
 }
@@ -234,14 +238,14 @@ void World::Render()
 
 	// Draw text
 	VoxelFontDraw_t options;
-	options.mode = FILL_MODE_TOTAL;
+	options.mode = FILL_MODE_NONE;
 	options.optionColor = Rgba::BLUE;
-	options.font = VoxelFont::GetFont("Default");
-	options.scale = IntVector3(5, 5, 1);
+	options.font = m_font;
+	options.scale = IntVector3(1, 1, 1);
 	options.up = IntVector3(0, 0, 1);
-	options.borderThickness = 20;
+	options.borderThickness = 0;
 
-	grid->DrawText("AA", IntVector3(10, 54, 80), options);
+	grid->DrawText("Hello, world!", IntVector3(10, 20, 10), options);
 
 	// Rebuild the mesh and draw it to screen
 	grid->BuildMeshAndDraw();

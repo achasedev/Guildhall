@@ -20,6 +20,7 @@ class Entity;
 class VoxelTexture;
 class Particle;
 class HeatMap;
+class VoxelFont;
 
 struct HeatMapSet_t
 {
@@ -130,5 +131,7 @@ private:
 	std::vector<IntVector3>			m_playerSeeds;
 
 	std::shared_mutex				m_mapSwapLock;
+
+	VoxelFont* m_font = nullptr;
 
 };

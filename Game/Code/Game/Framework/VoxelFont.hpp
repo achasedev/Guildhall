@@ -11,24 +11,25 @@
 #include <map>
 #include <string>
 
+class Image;
+
 class VoxelFont
 {
 public:
 	//-----Public Methods-----
 	
-	const VoxelTexture* GetImageForGlyph(const char glyph) const;
+	VoxelFont(const std::string& name, const std::string& imageFile);
+
+	Rgba GetColorForGlyphPixel(const char glyph, const IntVector2& offset) const;
 
 	// Producers
+	IntVector3 GetGlyphDimensions() const;
 	IntVector3 GetTextDimensions(const std::string& text) const;
-
-	static void LoadFont(const std::string& filename);
-	static VoxelFont* GetFont(const std::string& fontName);
 
 
 public:
 	//-----Public Data-----
 	
-	VoxelFont(const std::string& name);
 
 
 private:
@@ -40,8 +41,6 @@ private:
 	//-----Private Data-----
 	
 	std::string m_name;
-	VoxelTexture m_textures[256];
-
-	static std::map<std::string, VoxelFont*> s_fonts;
-
+	Image* m_image = nullptr;
+	const IntVector2 m_glyphLayout;
 };
