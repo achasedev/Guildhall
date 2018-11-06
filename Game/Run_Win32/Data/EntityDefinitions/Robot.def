@@ -49,7 +49,7 @@
 	<EntityDefinition name="Robot" defaultHealth="1">
 
 		<!--Movement Parameters-->
-		<Movement maxAcceleration="3000.0" maxSpeed="20.0" maxDeceleration="100.0" jumpImpulse="120.0"/>
+		<Movement maxAcceleration="3000.0" maxSpeed="0.0" maxDeceleration="100.0" jumpImpulse="120.0"/>
 
 		<!--Visuals-->
 		<Animation set="Robot" defaultSprite="Robot_idle_0"/>
@@ -83,7 +83,7 @@
 	<EntityDefinition name="Wall">
 
 		<!--Visuals-->
-		<Animation defaultSprite="Wall"/>
+		<Animation defaultSprite="Wall" destructible="true"/>
 
 		<!--Physics-->
 		<Physics physicsType="static">
@@ -107,7 +107,7 @@
   <EntityDefinition name="Stand">
 
     <!--Visuals-->
-    <Animation defaultSprite="Stand"/>
+    <Animation defaultSprite="Stand" destructible="true"/>
 
     <!--Physics-->
     <Physics physicsType="static">

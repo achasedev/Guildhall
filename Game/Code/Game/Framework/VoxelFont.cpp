@@ -48,5 +48,5 @@ VoxelFont::VoxelFont(const std::string& name, const std::string& imageFile)
 	: m_glyphLayout(IntVector2(16, 16))
 {
 	m_image = AssetDB::CreateOrGetImage(imageFile);
-	m_image->FlipVertical();
+	//m_image->FlipVertical();
 }

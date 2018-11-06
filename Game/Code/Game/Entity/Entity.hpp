@@ -69,6 +69,7 @@ public:
 
 	// Events
 	virtual void					OnCollision(Entity* other);
+	virtual void					OnVoxelCollision(std::vector<IntVector3> voxelCoords);
 	virtual void					OnDamageTaken(int damageAmount);
 	virtual void					OnDeath();
 	virtual void					OnSpawn();

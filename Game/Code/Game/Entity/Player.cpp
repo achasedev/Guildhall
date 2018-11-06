@@ -162,7 +162,9 @@ void Player::Shoot()
 	proj->SetTeam(m_entityTeam);
 
 	Vector2 direction = Vector2::MakeDirectionAtDegrees(m_orientation);	
-	proj->GetPhysicsComponent()->SetVelocity(Vector3(direction.x, 0.f, direction.y) * 100.f);
+	Vector3 finalDirection = Vector3(GetRandomFloatInRange(-0.1f, 0.1f) + direction.x, GetRandomFloatInRange(-0.1f, 0.1f), GetRandomFloatInRange(-0.1f, 0.1f) + direction.y);
+
+	proj->GetPhysicsComponent()->SetVelocity(finalDirection * 100.f);
 	
 	World* world = Game::GetWorld();
 	world->AddEntity(proj);

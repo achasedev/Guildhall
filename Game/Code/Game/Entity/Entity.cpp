@@ -6,6 +6,8 @@
 /************************************************************************/
 #include "Game/Entity/Entity.hpp"
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/World.hpp"
+#include "Game/Entity/Particle.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
@@ -72,6 +74,40 @@ void Entity::Update()
 void Entity::OnCollision(Entity* other)
 {
 	UNUSED(other);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Callback for individual voxels hit during collision
+//
+void Entity::OnVoxelCollision(std::vector<IntVector3> voxelCoords)
+{
+	if (!m_definition->m_destructible)
+	{
+		return;
+	}
+
+	int numVoxels = (int) voxelCoords.size();
+
+	for (int i = 0; i < numVoxels; ++i)
+	{
+		IntVector3 currCoords = voxelCoords[i];
+
+		Rgba currColor = m_defaultTexture->GetColorAtCoords(currCoords);
+
+		if (currColor.a > 0)
+		{
+			Vector3 position = GetPositionForLocalCoords(currCoords);
+
+			Vector3 velocity = Vector3(GetRandomFloatZeroToOne(), 1.0f, GetRandomFloatZeroToOne());
+			velocity = 50.f * velocity.GetNormalized();
+
+			Particle* particle = new Particle(currColor, 10.0f, position, velocity);
+			Game::GetWorld()->AddParticle(particle);
+
+			m_defaultTexture->SetColorAtCoords(currCoords, Rgba(0, 0, 0, 0));
+		}
+	}
 }
 
 

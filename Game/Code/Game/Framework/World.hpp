@@ -53,7 +53,7 @@ public:
 
 	// Mutators
 	void AddEntity(Entity* entity);
-
+	void AddParticle(Particle* particle);
 
 	// Accessors
 	IntVector3		GetDimensions() const;

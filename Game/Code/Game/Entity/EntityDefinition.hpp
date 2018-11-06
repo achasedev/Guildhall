@@ -134,6 +134,7 @@ private:
 
 	const VoxelAnimationSet*				m_animationSet = nullptr;
 	const VoxelSprite*						m_defaultSprite = nullptr;
+	bool									m_destructible = false;
 
 	// AIEntity
 	std::vector<const BehaviorComponent*>	m_behaviorPrototypes;

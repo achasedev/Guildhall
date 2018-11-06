@@ -65,6 +65,9 @@ struct VoxelOverlapResult_t
 	float xOverlapf;
 	float yOverlapf;
 	float zOverlapf;
+
+	std::vector<IntVector3> firstHitCoords;
+	std::vector<IntVector3> secondHitCoords;
 };
 
 bool					IsThereTeamException(Entity* first, Entity* second);
@@ -120,16 +123,16 @@ void World::Inititalize()
 
 	m_groundElevation = 5;
 
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < 5; ++i)
 	{
-		Entity* entity = new Entity(EntityDefinition::GetDefinition("Stand"));
+		Entity* entity = new Entity(EntityDefinition::GetDefinition("Wall"));
 		entity->SetPosition(Vector3(GetRandomFloatInRange(20.f, 200.f), (float) m_groundElevation, GetRandomFloatInRange(20.f, 200.f)));
 		entity->SetOrientation(90.f);
 		m_entities.push_back(entity);
 	}
 
 	InitializeHeatMaps();
- 	m_font = new VoxelFont("Test", "Data/Images/Fonts/Test.png");
+ 	m_font = new VoxelFont("Test", "Data/Images/Fonts/Default.png");
 }
 
 
@@ -259,6 +262,16 @@ void World::AddEntity(Entity* entity)
 {
 	m_entities.push_back(entity);
 	entity->OnSpawn();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the given particle to the world
+//
+void World::AddParticle(Particle* particle)
+{
+	m_particles.push_back(particle);
+	particle->OnSpawn();
 }
 
 
@@ -1084,6 +1097,9 @@ bool CheckEntityCollision(Entity* first, Entity* second)
 
 		first->OnCollision(second);
 		second->OnCollision(first);
+
+		first->OnVoxelCollision(voxelResult.firstHitCoords);
+		second->OnVoxelCollision(voxelResult.secondHitCoords);
 	}
 
 	return voxelResult.overlapOccurred;
@@ -1375,6 +1391,48 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 			if (flagResult != 0)
 			{
 				collisionResult.overlapOccurred = true;
+
+				for (int xIndex = 0; xIndex < r.xOverlapi; ++xIndex)
+				{
+					// Need to get the relative offsets into the collision for when each entity starts
+					int firstXOffset = 0;
+					int secondXOffset = 0;
+					if ((flagResult & (TEXTURE_LEFTMOST_COLLISION_BIT >> xIndex)) != 0)
+					{
+						switch (r.xCase)
+						{
+						case FIRST_ON_MIN:
+						{
+							firstXOffset = (firstDimensions.x - r.xOverlapi);
+						}
+						break;
+
+						case FIRST_ON_MAX:
+						{
+							secondXOffset = (secondDimensions.x - r.xOverlapi);
+						}
+						break;
+
+						case FIRST_INSIDE:
+						{
+							secondXOffset = RoundToNearestInt(r.firstBounds.mins.x - r.secondBounds.mins.x);
+						}
+						break;
+
+						case FIRST_ENCAPSULATE:
+						{
+							firstXOffset = RoundToNearestInt(r.secondBounds.mins.x - r.firstBounds.mins.x);
+						}
+						break;
+						}
+
+						IntVector3 firstCoords = IntVector3(xIndex + firstXOffset, yIndex + firstYOffset, zIndex + firstZOffset);
+						IntVector3 secondCoords = IntVector3(xIndex + secondXOffset, yIndex + secondYOffset, zIndex + secondZOffset);
+
+						collisionResult.firstHitCoords.push_back(firstCoords);
+						collisionResult.secondHitCoords.push_back(secondCoords);
+					}
+				}
 			}
 
 			if (firstFlags != 0 || secondFlags != 0)
@@ -1385,12 +1443,12 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 				maxZ = MaxInt(maxZ, zIndex);
 			}
 
-			for (int i = 0; i < r.xOverlapi; ++i)
+			for (int xIndex = 0; xIndex < r.xOverlapi; ++xIndex)
 			{
-				if ((firstFlags & (TEXTURE_LEFTMOST_COLLISION_BIT >> i)) != 0 || (secondFlags & (TEXTURE_LEFTMOST_COLLISION_BIT >> i)) != 0)
+				if ((firstFlags & (TEXTURE_LEFTMOST_COLLISION_BIT >> xIndex)) != 0 || (secondFlags & (TEXTURE_LEFTMOST_COLLISION_BIT >> xIndex)) != 0)
 				{
-					minX = MinInt(minX, i);
-					maxX = MaxInt(maxX, i);
+					minX = MinInt(minX, xIndex);
+					maxX = MaxInt(maxX, xIndex);
 				}
 			}
 		}
@@ -1660,9 +1718,8 @@ void World::ParticalizeEntity(Entity* entity)
 			velocity *= speed;
 
 			Particle* particle = new Particle(color, GetRandomFloatInRange(1.0f, 4.0f), voxelPosition, velocity);
-			particle->OnSpawn();
 
-			m_particles.push_back(particle);
+			AddParticle(particle);
 		}
 	}
 }

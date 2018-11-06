@@ -95,6 +95,8 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 		std::string defaultSpriteName = ParseXmlAttribute(*animElement, "defaultSprite", "default");
 		m_defaultSprite = VoxelSprite::CreateVoxelSpriteClone(defaultSpriteName);
 
+		m_destructible = ParseXmlAttribute(*animElement, "destructible", false);
+
 		ASSERT_OR_DIE(m_defaultSprite != nullptr, "Error: Default sprite not found");
 	}
 
