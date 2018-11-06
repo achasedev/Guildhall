@@ -4,11 +4,14 @@
 /* Date: March 24th, 2018
 /* Description: Implementation of the GameState_MainMenu class
 /************************************************************************/
+#include "Game/Framework/Game.hpp"
 #include "Game/Framework/App.hpp"
+#include "Game/Framework/World.hpp"
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/GameCommon.hpp"
+#include "Game/Animation/VoxelEmitter.hpp"
 #include "Game/GameStates/GameState_Ready.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 #include "Game/GameStates/GameState_MainMenu.hpp"
@@ -28,6 +31,9 @@ GameState_MainMenu::GameState_MainMenu()
 
 	m_menuOptions.push_back("Play");
 	m_menuOptions.push_back("Quit");
+
+	m_emitters[0] = new VoxelEmitter(50.f, 2.0f, Vector3(64.f, 8.f, 160.f), Vector3(0.f, 100.f, 0.f), 20.f);
+	m_emitters[1] = new VoxelEmitter(50.f, 2.0f, Vector3(192.f, 8.f, 160.f), Vector3(0.f, 100.f, 0.f), 20.f);
 }
 
 
@@ -38,6 +44,12 @@ GameState_MainMenu::~GameState_MainMenu()
 {
 	delete m_menuFont;
 	m_menuFont = nullptr;
+
+	delete m_emitters[0];
+	m_emitters[0] = nullptr;
+
+	delete m_emitters[1];
+	m_emitters[1] = nullptr;
 }
 
 
@@ -107,6 +119,11 @@ void GameState_MainMenu::Update()
 	{
 		Game::GetGameCamera()->LookAt(m_defaultCameraPosition, Vector3(128.f, 32.f, 128.f));
 	}
+
+	m_emitters[0]->Update();
+	m_emitters[1]->Update();
+
+	Game::GetWorld()->Update();
 }
 
 
@@ -115,6 +132,8 @@ void GameState_MainMenu::Update()
 //
 void GameState_MainMenu::Render() const
 {
+	Game::GetWorld()->Render();
+
 	IntVector3 drawPosition = m_menuStartCoord;
 
 	for (int menuIndex = 0; menuIndex < static_cast<int>(m_menuOptions.size()); ++menuIndex)
@@ -159,6 +178,7 @@ void GameState_MainMenu::Render() const
 //
 void GameState_MainMenu::Enter()
 {
+
 }
 
 

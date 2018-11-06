@@ -133,6 +133,9 @@
     <ClCompile Include="Framework\VoxelGrid.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Animation\VoxelEmitter.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -193,5 +196,6 @@
     <ClInclude Include="Entity\Item.hpp" />
     <ClInclude Include="Framework\VoxelFont.hpp" />
     <ClInclude Include="Framework\VoxelGrid.hpp" />
+    <ClInclude Include="Animation\VoxelEmitter.hpp" />
   </ItemGroup>
 </Project>

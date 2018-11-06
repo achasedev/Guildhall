@@ -287,6 +287,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animation\VoxelAnimation.cpp" />
+    <ClCompile Include="Animation\VoxelEmitter.cpp" />
     <ClCompile Include="Animation\VoxelSprite.cpp" />
     <ClCompile Include="Animation\VoxelAnimationSet.cpp" />
     <ClCompile Include="Animation\VoxelAnimator.cpp" />
@@ -329,6 +330,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation\VoxelAnimation.hpp" />
+    <ClInclude Include="Animation\VoxelEmitter.hpp" />
     <ClInclude Include="Animation\VoxelSprite.hpp" />
     <ClInclude Include="Animation\VoxelAnimationSet.hpp" />
     <ClInclude Include="Animation\VoxelAnimator.hpp" />

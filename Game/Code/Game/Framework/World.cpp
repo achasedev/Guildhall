@@ -134,8 +134,7 @@ void World::Inititalize()
 		m_entities.push_back(entity);
 	}
 
-	InitializeHeatMaps();
- 	m_font = new VoxelFont("Test", "Data/Images/Fonts/Default.png");
+	//InitializeHeatMaps();
 }
 
 
@@ -163,9 +162,6 @@ void World::CleanUp()
 	}
 
 	m_particles.clear();
-
-	delete m_font;
-	m_font = nullptr;
 
 	CleanUpHeatMaps();
 }
@@ -238,18 +234,6 @@ void World::Render()
 
 	// Color in the particles
 	DrawParticlesToGrid();
-
-	// Draw text
-	VoxelFontDraw_t options;
-	options.mode = FILL_MODE_NONE;
-	options.optionColor = Rgba::BLUE;
-	options.font = m_font;
-	options.scale = IntVector3(1, 1, 1);
-	options.up = IntVector3(0, 0, 1);
-	options.alignment = Vector3(0.5f, 0.5f, 0.5f);
-	options.borderThickness = 0;
-
-	grid->DrawVoxelText("Hello, world!", IntVector3(128, 32, 128), options);
 }
 
 
@@ -539,13 +523,6 @@ void World::CheckForGroundCollisions()
 		if (position.y < (float)m_groundElevation)
 		{
 			SnapEntityToGround(entity);
-
-// 			position.y = (float)m_groundElevation;
-// 			entity->SetPosition(position);
-// 
-// 			Vector3 velocity = entity->GetPhysicsComponent()->GetVelocity();
-// 			velocity.y = 0.f;
-// 			entity->GetPhysicsComponent()->SetVelocity(velocity);
 		}
 	}
 }
