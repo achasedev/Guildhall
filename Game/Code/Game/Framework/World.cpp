@@ -246,9 +246,10 @@ void World::Render()
 	options.font = m_font;
 	options.scale = IntVector3(1, 1, 1);
 	options.up = IntVector3(0, 0, 1);
+	options.alignment = Vector3(0.5f, 0.5f, 0.5f);
 	options.borderThickness = 0;
 
-	grid->DrawText("Hello, world!", IntVector3(10, 20, 10), options);
+	grid->DrawText("Hello, world!", IntVector3(128, 32, 128), options);
 
 	// Rebuild the mesh and draw it to screen
 	grid->BuildMeshAndDraw();

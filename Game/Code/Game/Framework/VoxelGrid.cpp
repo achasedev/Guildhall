@@ -243,7 +243,7 @@ void VoxelGrid::DebugDrawEntityCollision(const Entity* entity)
 //-----------------------------------------------------------------------------------------------
 // Draws the given text to the grid
 //
-void VoxelGrid::DrawText(const std::string& text, const IntVector3& startWorldCoord, const VoxelFontDraw_t& options)
+void VoxelGrid::DrawText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options)
 {
 	IntVector3 textDimensions = options.font->GetTextDimensions(text);
 	textDimensions.x *= options.scale.x;
@@ -255,7 +255,12 @@ void VoxelGrid::DrawText(const std::string& text, const IntVector3& startWorldCo
 	textDimensions.y += 2 * options.borderThickness;
 
 	IntVector3 forward = IntVector3(CrossProduct(Vector3(options.right), Vector3(options.up)));
-	IntVector3 worldSpan = options.right * textDimensions.x + options.up * textDimensions.y + forward * textDimensions.z;
+	IntVector3 startWorldCoord = referenceStart;
+	startWorldCoord -= options.right * (int)((float)textDimensions.x * options.alignment.x);
+	startWorldCoord -= options.up * (int)((float)textDimensions.y * options.alignment.y);
+	startWorldCoord -= forward * (int)((float)textDimensions.z * options.alignment.z);
+
+	//.IntVector3 worldSpan = options.right * textDimensions.x + options.up * textDimensions.y + forward * textDimensions.z;
 
 	IntVector3 glyphDimensions = options.font->GetGlyphDimensions();
 
@@ -274,7 +279,7 @@ void VoxelGrid::DrawText(const std::string& text, const IntVector3& startWorldCo
 
 				if (index == -1)
 				{
-					return;
+					continue;
 				}
 
 				// Border check

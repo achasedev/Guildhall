@@ -40,6 +40,8 @@ struct VoxelFontDraw_t
 	IntVector3 right = IntVector3(1, 0, 0);
 	IntVector3 up = IntVector3(0, 1, 0);
 
+	Vector3 alignment = Vector3::ZERO;
+
 	IntVector3 scale = IntVector3::ONES;
 };
 
