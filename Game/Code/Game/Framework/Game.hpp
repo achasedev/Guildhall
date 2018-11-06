@@ -57,22 +57,22 @@ private:
 	~Game();
 	Game(const Game& copy) = delete;
 
-	void		CheckToUpdateGameState();
-
 
 private:
 	//-----Private Data-----
 
-	GameState*					m_currentState = nullptr;
-	GameState*					m_pendingState = nullptr;
-	Clock*						m_gameClock = nullptr;
-	World*						m_world = nullptr;
-	WaveManager*				m_waveManager = nullptr;
-	VoxelGrid*				m_voxelGrid = nullptr;
-	Player*						m_players[MAX_PLAYERS];
+	GameState*		m_currentState = nullptr;
+	GameState*		m_transitionState = nullptr;
+	bool			m_isTransitioning = false;
+
+	Clock*			m_gameClock = nullptr;
+	World*			m_world = nullptr;
+	WaveManager*	m_waveManager = nullptr;
+	VoxelGrid*		m_voxelGrid = nullptr;
+	Player*			m_players[MAX_PLAYERS];
 
 	// Camera
-	GameCamera*					m_gameCamera = nullptr;
+	GameCamera*		m_gameCamera = nullptr;
 
 	static Game* s_instance;			// The singleton Game instance
 

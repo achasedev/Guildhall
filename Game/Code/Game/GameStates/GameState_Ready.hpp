@@ -15,12 +15,17 @@ class GameState_Ready : public GameState
 public:
 	//-----Public Methods-----
 
-	virtual void ProcessInput() override;
-	virtual void Update() override;
-	virtual void Render() const override;
+	GameState_Ready();
 
-	virtual void Enter() override;
-	virtual void Leave() override;
+	virtual void ProcessInput() override;
+
+	virtual bool Enter() override;
+	virtual void Update() override;
+	virtual bool Leave() override;
+
+	virtual void Render_Enter() const override;
+	virtual void Render() const override;
+	virtual void Render_Leave() const override;
 
 private:
 	//-----Private Data-----

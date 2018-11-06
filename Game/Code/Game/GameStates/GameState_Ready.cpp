@@ -14,6 +14,15 @@
 
 
 //-----------------------------------------------------------------------------------------------
+// Constructor
+//
+GameState_Ready::GameState_Ready()
+	: GameState(0.f, 0.f)
+{
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Checks for input
 //
 void GameState_Ready::ProcessInput()
@@ -55,21 +64,41 @@ void GameState_Ready::Render() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Renders the leave state transition
+//
+void GameState_Ready::Render_Leave() const
+{
+	Render();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Called when the game transitions into this state, before the first update
 //
-void GameState_Ready::Enter()
+bool GameState_Ready::Enter()
 {
 	float aspect = Window::GetInstance()->GetAspect();
 	float height = Renderer::UI_ORTHO_HEIGHT;
 
 	m_textBoxBounds = AABB2(Vector2(0.1f * aspect * height, 0.1f * height), Vector2(0.9f * aspect * height, 0.4f * height));
+
+	return true;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Called when the game transitions out of this state, before deletion
 //
-void GameState_Ready::Leave()
+bool GameState_Ready::Leave()
 {
+	return true;
+}
 
+
+//-----------------------------------------------------------------------------------------------
+// Renders the enter state
+//
+void GameState_Ready::Render_Enter() const
+{
+	Render();
 }

@@ -26,6 +26,7 @@
 // Base constructor
 //
 GameState_Playing::GameState_Playing()
+	: GameState(0.f, 0.f)
 {
 }
 
@@ -52,7 +53,7 @@ GameState_Playing::~GameState_Playing()
 //-----------------------------------------------------------------------------------------------
 // Sets up state before updating
 //
-void GameState_Playing::Enter()
+bool GameState_Playing::Enter()
 {
  	// Set up the mouse for FPS controls
 	Mouse& mouse = InputSystem::GetMouse();
@@ -78,13 +79,15 @@ void GameState_Playing::Enter()
 	Game::GetWaveManager()->Initialize("Data/Spawning.xml");
 
 	TransitionToPlayState(new PlayState_Wave());
+
+	return true;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Cleans up/finishes any operations before the game leaves this state
 //
-void GameState_Playing::Leave()
+bool GameState_Playing::Leave()
 {
 	Game::GetWaveManager()->CleanUp();
 	Game::GetWorld()->CleanUp();
@@ -99,6 +102,17 @@ void GameState_Playing::Leave()
 			players[i] = nullptr;
 		}
 	}
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Renders the enter state transition
+//
+void GameState_Playing::Render_Enter() const
+{
+	Render();
 }
 
 
@@ -225,8 +239,17 @@ void GameState_Playing::Render() const
 			m_transitionState->Render_Enter();
 		}
 	}
-	else
+	else if (m_currentState != nullptr)
 	{
 		m_currentState->Render();
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Renders the leave state transition
+//
+void GameState_Playing::Render_Leave() const
+{
+	Render();
 }

@@ -45,8 +45,12 @@ IntVector3 VoxelFont::GetTextDimensions(const std::string& text) const
 }
 
 VoxelFont::VoxelFont(const std::string& name, const std::string& imageFile)
-	: m_glyphLayout(IntVector2(16, 16))
+	: m_name(name)
+	, m_glyphLayout(IntVector2(16, 16))
 {
 	m_image = AssetDB::CreateOrGetImage(imageFile);
-	//m_image->FlipVertical();
+	if (!m_image->IsFlippedForTextures())
+	{
+		m_image->FlipVertical();
+	}
 }

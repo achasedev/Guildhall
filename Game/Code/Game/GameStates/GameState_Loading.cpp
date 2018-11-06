@@ -23,6 +23,16 @@
 #include "Engine/Rendering/Materials/Material.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
+
+//-----------------------------------------------------------------------------------------------
+// Constructor
+//
+GameState_Loading::GameState_Loading()
+	: GameState(0.f, 0.f)
+{
+}
+
+
 //-----------------------------------------------------------------------------------------------
 // Necessary override imposed by the GameState base class, is unused
 //
@@ -68,13 +78,36 @@ void GameState_Loading::Render() const
 }
 
 
-void GameState_Loading::Enter()
+//-----------------------------------------------------------------------------------------------
+// Renders the leave state of the state
+//
+void GameState_Loading::Render_Leave() const
 {
+	Render();
 }
 
 
-void GameState_Loading::Leave()
+//-----------------------------------------------------------------------------------------------
+// Enter updating step
+//
+bool GameState_Loading::Enter()
 {
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Leave updating step
+//
+bool GameState_Loading::Leave()
+{
+	return true;
+}
+
+
+void GameState_Loading::Render_Enter() const
+{
+	Render();
 }
 
 

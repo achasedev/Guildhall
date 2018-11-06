@@ -117,7 +117,10 @@ void Game::ShutDown()
 //
 void Game::ProcessInput()
 {
-	m_currentState->ProcessInput();
+	if (m_currentState != nullptr)
+	{
+		m_currentState->ProcessInput();
+	}
 }
 
 
@@ -127,11 +130,37 @@ void Game::ProcessInput()
 //
 void Game::Update()
 {
-	// Check for state change
-	CheckToUpdateGameState();
+	if (m_isTransitioning)
+	{
+		// Update on leave of the current state
+		if (m_currentState != nullptr)
+		{
+			bool leaveFinished = m_currentState->Leave();
 
-	// Update the current state
-	m_currentState->Update();
+			if (leaveFinished)
+			{
+				delete m_currentState;
+				m_currentState = nullptr;
+
+				m_transitionState->StartEnterTimer();
+			}
+		}
+		else // Update on enter of the transition state
+		{
+			bool enterFinished = m_transitionState->Enter();
+
+			if (enterFinished)
+			{
+				m_currentState = m_transitionState;
+				m_transitionState = nullptr;
+ 				m_isTransitioning = false;
+			}
+		}
+	}
+	else
+	{
+		m_currentState->Update();
+	}
 }
 
 
@@ -142,8 +171,21 @@ void Game::Render() const
 {
 	m_voxelGrid->Clear();
 
-	//PROFILE_LOG_SCOPE_FUNCTION();
-	m_currentState->Render();
+	if (m_isTransitioning)
+	{
+		if (m_currentState != nullptr)
+		{
+			m_currentState->Render_Leave();
+		}
+		else
+		{
+			m_transitionState->Render_Enter();
+		}
+	}
+	else if (m_currentState != nullptr)
+	{
+		m_currentState->Render();
+	}
 
 	m_voxelGrid->BuildMeshAndDraw();
 }
@@ -164,7 +206,13 @@ GameState* Game::GetGameState() const
 //
 void Game::TransitionToGameState(GameState* newState)
 {
-	s_instance->m_pendingState = newState;
+	s_instance->m_transitionState = newState;
+	s_instance->m_isTransitioning = true;
+
+	if (s_instance->m_currentState != nullptr)
+	{
+		s_instance->m_currentState->StartLeaveTimer();
+	}
 }
 
 
@@ -252,29 +300,4 @@ bool Game::IsPlayerAlive(unsigned int index)
 Game* Game::GetInstance()
 {
 	return s_instance;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Checks if there is a pending 
-//
-void Game::CheckToUpdateGameState()
-{
-	// Have a state pending
-	if (m_pendingState != nullptr)
-	{
-		if (m_currentState != nullptr)
-		{
-			// Leave and destroy current
-			m_currentState->Leave();
-			delete m_currentState;
-		}
-
-		// Set new as current
-		m_currentState = m_pendingState;
-		m_pendingState = nullptr;
-
-		// Enter the new state
-		m_currentState->Enter();
-	}
 }

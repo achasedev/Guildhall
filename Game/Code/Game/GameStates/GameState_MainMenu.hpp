@@ -24,11 +24,14 @@ public:
 	~GameState_MainMenu();
 
 	virtual void ProcessInput() override;
-	virtual void Update() override;
-	virtual void Render() const override;
 
-	virtual void Enter() override;
-	virtual void Leave() override;
+	virtual bool Enter() override;
+	virtual void Update() override;
+	virtual bool Leave() override;
+
+	virtual void Render_Enter() const override;
+	virtual void Render() const override;
+	virtual void Render_Leave() const override;
 
 
 private:
@@ -48,4 +51,5 @@ private:
 	Vector3						m_defaultCameraPosition = Vector3(128.f, 100.f, 35.f);
 
 	VoxelEmitter* m_emitters[2];
+
 };

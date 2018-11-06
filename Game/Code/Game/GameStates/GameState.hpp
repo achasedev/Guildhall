@@ -6,21 +6,36 @@
 /************************************************************************/
 #pragma once
 #include "Game/Framework/Game.hpp"
-
+#include "Engine/Core/Time/Stopwatch.hpp"
 
 class GameState
 {
 public:
 	//-----Public Methods-----
 
-	virtual void ProcessInput() = 0;
-	virtual void Update() = 0;
-	virtual void Render() const = 0;
+	GameState(float transitionInTime, float transitionOutTime);
+	~GameState();
 
-	virtual void Enter() = 0;
-	virtual void Leave() = 0;
+	virtual void ProcessInput() = 0;
+
+	virtual bool Enter() = 0;
+	virtual void Update() = 0;
+	virtual bool Leave() = 0;
+
+	virtual void Render_Enter() const = 0;
+	virtual void Render() const = 0;
+	virtual void Render_Leave() const = 0;
+
+	void StartEnterTimer();
+	void StartLeaveTimer();
+
 
 private:
 	//-----Private Data-----
+
+	Stopwatch m_transitionTimer;
+
+	float m_transitionInTime = 0.f;
+	float m_transitionOutTime = 0.f;
 
 };

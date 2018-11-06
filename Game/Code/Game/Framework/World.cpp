@@ -93,27 +93,7 @@ World::World()
 //
 World::~World()
 {
-	m_isQuitting = true;
-	if (m_heatMapThread.joinable())
-	{
-		m_heatMapThread.join();
-	}
-
-	// Delete all maps
-	delete m_navMapInUse.m_navigationMap;
-	m_navMapInUse.m_navigationMap = nullptr;
-	delete m_navMapInUse.m_costMap;
-	m_navMapInUse.m_costMap = nullptr;
-
-	delete m_intermediateMap.m_navigationMap;
-	m_intermediateMap.m_navigationMap = nullptr;
-	delete m_intermediateMap.m_costMap;
-	m_intermediateMap.m_costMap = nullptr;
-
-	delete m_backBufferMap.m_navigationMap;
-	m_backBufferMap.m_navigationMap = nullptr;
-	delete m_backBufferMap.m_costMap;
-	m_backBufferMap.m_costMap = nullptr;
+	CleanUp();
 }
 
 
@@ -990,7 +970,11 @@ void World::HeatMapUpdate_Thread()
 void World::CleanUpHeatMaps()
 {
 	m_isQuitting = true;
-	m_heatMapThread.join();
+
+	if (m_heatMapThread.joinable())
+	{
+		m_heatMapThread.join();
+	}
 
 	// Delete all maps
 	delete m_navMapInUse.m_navigationMap;

@@ -25,7 +25,8 @@
 // Default constructor
 //
 GameState_MainMenu::GameState_MainMenu()
-	: m_cursorPosition(0)
+	: GameState(0.f, 0.f)
+	, m_cursorPosition(0)
 {
 	m_menuFont = new VoxelFont("Menu", "Data/Images/Fonts/Default.png");
 
@@ -174,19 +175,39 @@ void GameState_MainMenu::Render() const
 
 
 //-----------------------------------------------------------------------------------------------
-// Called when the game transitions into this state, before the first update
+// Renders the leave state
 //
-void GameState_MainMenu::Enter()
+void GameState_MainMenu::Render_Leave() const
 {
-
+	Render();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// Called when the game transitios out of this state, before deletion
+// Called when the game transitions into this state, before the first running update
 //
-void GameState_MainMenu::Leave()
+bool GameState_MainMenu::Enter()
 {
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Called when the game transitions out of this state, before deletion
+//
+bool GameState_MainMenu::Leave()
+{
+	Game::GetWorld()->CleanUp();
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Renders the enter state
+//
+void GameState_MainMenu::Render_Enter() const
+{
+	Render();
 }
 
 
