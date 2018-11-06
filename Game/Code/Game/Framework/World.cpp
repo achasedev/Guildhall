@@ -94,7 +94,10 @@ World::World()
 World::~World()
 {
 	m_isQuitting = true;
-	m_heatMapThread.join();
+	if (m_heatMapThread.joinable())
+	{
+		m_heatMapThread.join();
+	}
 
 	// Delete all maps
 	delete m_navMapInUse.m_navigationMap;
@@ -223,9 +226,6 @@ void World::Render()
 
 	VoxelGrid* grid = Game::GetVoxelGrid();
 
-	// Clear grid
-	grid->Clear();
-
 	// Color in the ground
 	HeatMap* mapToUse = (m_drawHeatmap ? m_navMapInUse.m_navigationMap : nullptr);
 	grid->DrawGround(m_groundElevation, mapToUse);
@@ -249,10 +249,7 @@ void World::Render()
 	options.alignment = Vector3(0.5f, 0.5f, 0.5f);
 	options.borderThickness = 0;
 
-	grid->DrawText("Hello, world!", IntVector3(128, 32, 128), options);
-
-	// Rebuild the mesh and draw it to screen
-	grid->BuildMeshAndDraw();
+	grid->DrawVoxelText("Hello, world!", IntVector3(128, 32, 128), options);
 }
 
 

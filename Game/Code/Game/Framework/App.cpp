@@ -244,10 +244,6 @@ void App::ProcessInput()
 			Game::GetInstance()->ProcessInput();
 		}
 	}
-	else
-	{
-		Game::GetInstance()->ProcessInput();
-	}
 }
 
 

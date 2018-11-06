@@ -243,7 +243,7 @@ void VoxelGrid::DebugDrawEntityCollision(const Entity* entity)
 //-----------------------------------------------------------------------------------------------
 // Draws the given text to the grid
 //
-void VoxelGrid::DrawText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options)
+void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options)
 {
 	IntVector3 textDimensions = options.font->GetTextDimensions(text);
 	textDimensions.x *= options.scale.x;
@@ -289,11 +289,11 @@ void VoxelGrid::DrawText(const std::string& text, const IntVector3& referenceSta
 					continue;
 				}
 
-				Rgba color = options.font->GetColorForGlyphPixel(text[charIndex], IntVector2(xOffset, yOffset));
+				Rgba baseColor = options.font->GetColorForGlyphPixel(text[charIndex], IntVector2(xOffset, yOffset));
 
-				if (color.a > 0)
+				if (baseColor.a > 0)
 				{
-					m_gridColors[index] = color;
+					m_gridColors[index] = options.color;
 				}
 				else if (options.mode == FILL_MODE_TOTAL)
 				{

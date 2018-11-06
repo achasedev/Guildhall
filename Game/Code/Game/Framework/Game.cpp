@@ -140,8 +140,12 @@ void Game::Update()
 //
 void Game::Render() const
 {
+	m_voxelGrid->Clear();
+
 	//PROFILE_LOG_SCOPE_FUNCTION();
 	m_currentState->Render();
+
+	m_voxelGrid->BuildMeshAndDraw();
 }
 
 

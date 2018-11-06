@@ -78,7 +78,9 @@ void GameCamera::UpdatePositionBasedOnPlayers()
 	LookAt(newPos, finalTarget);
 }
 
-
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
+#include "Engine/Core/Window.hpp"
+#include "Engine/Core/Utility/StringUtils.hpp"
 //-----------------------------------------------------------------------------------------------
 // Updates the camera by checking for input
 //
@@ -114,6 +116,9 @@ void GameCamera::UpdatePositionOnInput()
 	Vector3 rotation = Vector3(rotationOffset.x * CAMERA_ROTATION_SPEED * deltaTime, rotationOffset.y * CAMERA_ROTATION_SPEED * deltaTime, 0.f);
 
 	gameCamera->Rotate(rotation);
+
+	DebugRenderSystem::Draw2DText(Stringf("Camera Position: (%.2f, %.2f, %.2f)", gameCamera->GetPosition().x, gameCamera->GetPosition().y, gameCamera->GetPosition().z),
+		Window::GetInstance()->GetWindowBounds(), 0.f, Rgba::GREEN, 10.f, Vector2(0.5f, 0.f));
 }
 
 

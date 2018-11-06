@@ -66,7 +66,7 @@ public:
 
 	void				DebugDrawEntityCollision(const Entity* entity);
 
-	void				DrawText(const std::string& text, const IntVector3& startCoord, const VoxelFontDraw_t& options);
+	void				DrawVoxelText(const std::string& text, const IntVector3& startCoord, const VoxelFontDraw_t& options);
 
 	// Accessors
 	int					GetVoxelCount() const;
