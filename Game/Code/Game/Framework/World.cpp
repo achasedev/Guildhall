@@ -22,6 +22,7 @@
 
 #define DYNAMIC_COLLISION_MAX_ITERATION_COUNT (10)
 #define MAX_COLLISION_LAYERS (3)
+//#define PARTICLES_COLLIDE
 
 enum eOverlapCase
 {
@@ -613,6 +614,8 @@ void World::CheckDynamicEntityCollisions()
 	}
 
 	// Check against particles
+#ifdef PARTICLES_COLLIDE
+
 	for (int iteration = 0; iteration < (int)DYNAMIC_COLLISION_MAX_ITERATION_COUNT; ++iteration)
 	{
 		collisionDetectedOverall = false;
@@ -649,6 +652,7 @@ void World::CheckDynamicEntityCollisions()
 
 		ApplyCollisionCorrections();
 	}
+#endif
 }
 
 
