@@ -5,10 +5,8 @@
 /* Description: Class to represent a font drawn in a VoxelGrid
 /************************************************************************/
 #pragma once
+#include "Engine/Core/Rgba.hpp"
 #include "Engine/Math/IntVector3.hpp"
-#include "Engine/Core/Utility/XmlUtilities.hpp"
-#include "Engine/Rendering/Resources/VoxelTexture.hpp"
-#include <map>
 #include <string>
 
 class Image;
@@ -20,6 +18,7 @@ public:
 	
 	VoxelFont(const std::string& name, const std::string& imageFile);
 
+	// For drawing to the grid
 	Rgba GetColorForGlyphPixel(const char glyph, const IntVector2& offset) const;
 
 	// Producers
@@ -27,20 +26,11 @@ public:
 	IntVector3 GetTextDimensions(const std::string& text) const;
 
 
-public:
-	//-----Public Data-----
-	
-
-
-private:
-	//-----Private Methods-----
-	
-	
-
 private:
 	//-----Private Data-----
 	
 	std::string m_name;
-	Image* m_image = nullptr;
-	const IntVector2 m_glyphLayout;
+	Image* m_image = nullptr;		// Monospace, 16x16 glyph font png
+	const IntVector2 m_glyphLayout; // Always 16x16
+
 };

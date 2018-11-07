@@ -20,7 +20,7 @@
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
-#define DYNAMIC_COLLISION_MAX_ITERATION_COUNT (20)
+#define DYNAMIC_COLLISION_MAX_ITERATION_COUNT (10)
 #define MAX_COLLISION_LAYERS (3)
 
 enum eOverlapCase
@@ -70,7 +70,8 @@ struct VoxelOverlapResult_t
 	std::vector<IntVector3> secondHitCoords;
 };
 
-bool					IsThereTeamException(Entity* first, Entity* second);
+//bool					IsThereTeamException(Entity* first, Entity* second);
+bool					DoEntitiesCollide(Entity* firstEntity, Entity* secondEntity);
 bool					CheckEntityCollision(Entity* first, Entity* second);
 
 BoundOverlapResult_t	PerformBroadphaseCheck(Entity* first, Entity* second);
@@ -106,10 +107,10 @@ void World::Inititalize()
 
 	m_groundElevation = 5;
 
-	for (int i = 0; i < 5; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
 		Entity* entity = new Entity(EntityDefinition::GetDefinition("Wall"));
-		entity->SetPosition(Vector3(GetRandomFloatInRange(20.f, 200.f), (float) m_groundElevation, GetRandomFloatInRange(20.f, 200.f)));
+		entity->SetPosition(Vector3(128.f, 5.f, 128.f));
 		entity->SetOrientation(90.f);
 		m_entities.push_back(entity);
 	}
@@ -165,25 +166,25 @@ void World::Update()
 	PROFILE_LOG_SCOPE_FUNCTION();
 
 	// "Thinking" and other general updating (animation)
-	static bool updateEntities = true;
+	static bool updateEntities = false;
 
 	if (InputSystem::GetInstance()->WasKeyJustPressed('K'))
 	{
 		updateEntities = !updateEntities;
 	}
 
-	if (updateEntities)
-	{
-		UpdateEntities();
-		ApplyPhysicsStep();
-	}
+
+	UpdateEntities();
+	ApplyPhysicsStep();
 	UpdateParticles();
 
 	// Moving the entities (Forward Euler)
 
 	// Collision
+
 	CheckDynamicEntityCollisions();
 	CheckStaticEntityCollisions();
+	
 
 	// Clean Up
 	DeleteMarkedEntities();
@@ -517,21 +518,31 @@ void World::CheckStaticEntityCollisions()
 	{
 		Entity* dynamicEntity = m_entities[dynamicIndex];
 		
-		// Don't bother with an entity marked for delete
-		if (dynamicEntity->GetPhysicsType() != PHYSICS_TYPE_DYNAMIC || dynamicEntity->IsMarkedForDelete()) { continue; }
+		// Find an entity that is dynamic and not marked for delete
+		if (!dynamicEntity->IsDynamic() || dynamicEntity->IsMarkedForDelete()) 
+		{ 
+			continue; 
+		}
 
 		for (int staticIndex = 0; staticIndex < (int)m_entities.size(); ++staticIndex)
 		{
 			Entity* staticEntity = m_entities[staticIndex];
 
-			if (staticEntity->GetPhysicsType() != PHYSICS_TYPE_STATIC || staticEntity->IsMarkedForDelete()) { continue; }
+			// Only check against static entities that aren't marked for delete
+			if (staticEntity->IsDynamic() || staticEntity->IsMarkedForDelete()) 
+			{ 
+				continue; 
+			}
 
 			// Do detection and fix here
 			CheckEntityCollision(dynamicEntity, staticEntity);
 		}
 	}
 
+	// Apply the cached off corrections
 	ApplyCollisionCorrections();
+
+	// Ensure the entities are above ground
 	CheckForGroundCollisions();
 
 	// Check particles for ground collisions
@@ -547,9 +558,6 @@ void World::CheckStaticEntityCollisions()
 		if (position.y < (float)m_groundElevation)
 		{
 			SnapEntityToGround(currParticle);
-// 			position.y = (float)m_groundElevation;
-// 			currParticle->SetPosition(position);
-// 			currParticle->GetPhysicsComponent()->SetVelocity(Vector3::ZERO);
 		}
 	}
 }
@@ -560,75 +568,87 @@ void World::CheckStaticEntityCollisions()
 //
 void World::CheckDynamicEntityCollisions()
 {
-
-	for (unsigned int layer = 0; layer < MAX_COLLISION_LAYERS; ++layer)
+	bool collisionDetectedOverall = true;
+	for (int iteration = 0; iteration < (int)DYNAMIC_COLLISION_MAX_ITERATION_COUNT; ++iteration)
 	{
-		CheckForGroundCollisions();
+		collisionDetectedOverall = false;
 
-		bool collisionDetected = true;
-		for (int iteration = 0; iteration < (int)DYNAMIC_COLLISION_MAX_ITERATION_COUNT; ++iteration)
+		for (int firstIndex = 0; firstIndex < (int)m_entities.size(); ++firstIndex)
 		{
-			collisionDetected = false;
+			Entity* firstEntity = m_entities[firstIndex];
 
-			for (int firstIndex = 0; firstIndex < (int)m_entities.size(); ++firstIndex)
+			// Don't bother with the entity if it isn't dynamic or is marked for delete
+			if (!firstEntity->IsDynamic() || firstEntity->IsMarkedForDelete())
 			{
-				Entity* firstEntity = m_entities[firstIndex];
+				continue;
+			}
 
-				// Don't bother with an entity not on this layer, or marked for delete
-				if (firstEntity->GetPhysicsType() != PHYSICS_TYPE_DYNAMIC || firstEntity->GetCollisionDefinition().m_collisionLayer != layer || firstEntity->IsMarkedForDelete()) { continue; }
+			for (int secondIndex = firstIndex + 1; secondIndex < (int)m_entities.size(); ++secondIndex)
+			{
+				if (firstIndex == secondIndex) { continue; }
 
-				for (int secondIndex = 0; secondIndex < (int)m_entities.size(); ++secondIndex)
+				Entity* secondEntity = m_entities[secondIndex];
+
+				if (!secondEntity->IsDynamic() || secondEntity->IsMarkedForDelete())
 				{
-					if (firstIndex == secondIndex) { continue; }
+					continue;
+				}
 
-					Entity* secondEntity = m_entities[secondIndex];
-
-					if (secondEntity->GetPhysicsType() != PHYSICS_TYPE_DYNAMIC || secondEntity->GetCollisionDefinition().m_collisionLayer > layer || secondEntity->IsMarkedForDelete()) { continue; }
-
-					// Do detection and fix here
-					collisionDetected = collisionDetected || CheckEntityCollision(firstEntity, secondEntity);
+				// Make sure the entities are on colliding collision layers
+				if (DoEntitiesCollide(firstEntity, secondEntity))
+				{
+					// Do detection and cache off correction here
+					bool collisionDetected = CheckEntityCollision(firstEntity, secondEntity) || collisionDetectedOverall;
+					collisionDetectedOverall = collisionDetected || collisionDetectedOverall;
 				}
 			}
-
-			if (!collisionDetected)
-			{
-				break;
-			}
-		
-			ApplyCollisionCorrections();
 		}
+
+		if (!collisionDetectedOverall)
+		{
+			break;
+		}
+
+		ApplyCollisionCorrections();
 	}
 
 	// Check against particles
-	//bool collisionDetected = false;
+	for (int iteration = 0; iteration < (int)DYNAMIC_COLLISION_MAX_ITERATION_COUNT; ++iteration)
+	{
+		collisionDetectedOverall = false;
 
-// 	for (int iteration = 0; iteration < (int)DYNAMIC_COLLISION_MAX_ITERATION_COUNT; ++iteration)
-// 	{
-// 		collisionDetected = false;
-// 
-// 		for (int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex)
-// 		{
-// 			Entity* entity = m_entities[entityIndex];
-// 
-// 			// Don't bother with an entity marked for delete
-// 			if (entity->GetPhysicsType() != PHYSICS_TYPE_DYNAMIC || entity->IsMarkedForDelete()) { continue; }
-// 
-// 			for (int particleIndex = 0; particleIndex < (int)m_particles.size(); ++particleIndex)
-// 			{
-// 				Particle* particle = m_particles[particleIndex];
-// 
-// 				if (particle->IsMarkedForDelete()) { continue; }
-// 
-// 				// Do detection and fix here
-// 				collisionDetected = collisionDetected || CheckEntityCollision(entity, particle);
-// 			}
-// 		}
-// 
-// 		if (!collisionDetected)
-// 		{
-// 			break;
-// 		}
-// 	}
+		for (int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex)
+		{
+			Entity* entity = m_entities[entityIndex];
+
+			// Only check against dynamic entities
+			if (!entity->IsDynamic() || entity->IsMarkedForDelete())
+			{ 
+				continue; 
+			}
+
+			for (int particleIndex = 0; particleIndex < (int)m_particles.size(); ++particleIndex)
+			{
+				Particle* particle = m_particles[particleIndex];
+
+				if (particle->IsMarkedForDelete()) 
+				{ 
+					continue; 
+				}
+
+				// Do detection and fix here
+				bool collisionDetected = CheckEntityCollision(entity, particle);
+				collisionDetectedOverall = collisionDetectedOverall || collisionDetected;
+			}
+		}
+
+		if (!collisionDetectedOverall)
+		{
+			break;
+		}
+
+		ApplyCollisionCorrections();
+	}
 }
 
 
@@ -644,6 +664,15 @@ void World::ApplyCollisionCorrections()
 		if (!m_entities[i]->IsMarkedForDelete())
 		{
 			m_entities[i]->ApplyCollisionCorrection();
+		}
+	}
+
+	int particleCount = (int)m_particles.size();
+	for (int i = 0; i < particleCount; ++i)
+	{
+		if (!m_particles[i]->IsMarkedForDelete())
+		{
+			m_particles[i]->ApplyCollisionCorrection();
 		}
 	}
 }
@@ -1003,25 +1032,37 @@ void World::CleanUpHeatMaps()
 // Checks if the two entities pass the team exception check, and should continue checking for
 // collisions. Returns true if there should be collision checks, false otherwise
 //
-bool IsThereTeamException(Entity* first, Entity* second)
+// bool IsThereTeamException(Entity* first, Entity* second)
+// {
+// 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
+// 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
+// 	eEntityTeam firstTeam = first->GetTeam();
+// 	eEntityTeam secondTeam = second->GetTeam();
+// 
+// 	bool teamsMatch = (firstTeam == secondTeam);
+// 
+// 	// Same checks
+// 	if (firstDef.m_teamException == COLLISION_TEAM_EXCEPTION_SAME && teamsMatch) { return false; }
+// 	if (secondDef.m_teamException == COLLISION_TEAM_EXCEPTION_SAME && teamsMatch) { return false; }
+// 
+// 	// Different checks
+// 	if (firstDef.m_teamException == COLLISION_TEAM_EXCEPTION_DIFFERENT && !teamsMatch) { return false; }
+// 	if (secondDef.m_teamException == COLLISION_TEAM_EXCEPTION_DIFFERENT && !teamsMatch) { return false; }
+// 
+// 	// Either both are always, or we don't meet the exception criteria
+// 	return true;
+// }
+
+
+//- C FUNCTION ----------------------------------------------------------------------------------------------
+// Returns true if the two given collision layers collide with eachother
+//
+bool DoEntitiesCollide(Entity* firstEntity, Entity* secondEntity)
 {
-	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
-	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
-	eEntityTeam firstTeam = first->GetTeam();
-	eEntityTeam secondTeam = second->GetTeam();
+	eCollisionLayer firstLayer = firstEntity->GetCollisionDefinition().layer;
+	eCollisionLayer secondLayer = secondEntity->GetCollisionDefinition().layer;
 
-	bool teamsMatch = (firstTeam == secondTeam);
-
-	// Same checks
-	if (firstDef.m_teamException == COLLISION_TEAM_EXCEPTION_SAME && teamsMatch) { return false; }
-	if (secondDef.m_teamException == COLLISION_TEAM_EXCEPTION_SAME && teamsMatch) { return false; }
-
-	// Different checks
-	if (firstDef.m_teamException == COLLISION_TEAM_EXCEPTION_DIFFERENT && !teamsMatch) { return false; }
-	if (secondDef.m_teamException == COLLISION_TEAM_EXCEPTION_DIFFERENT && !teamsMatch) { return false; }
-
-	// Either both are always, or we don't meet the exception criteria
-	return true;
+	return (firstLayer & secondLayer) != 0;
 }
 
 
@@ -1030,12 +1071,6 @@ bool IsThereTeamException(Entity* first, Entity* second)
 //
 bool CheckEntityCollision(Entity* first, Entity* second)
 {
-	// First check for team exceptions
-	if (!IsThereTeamException(first, second))
-	{
-		return false;
-	}
-
 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
 
@@ -1462,10 +1497,6 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 		collisionResult.zOverlapf -= secondError.z;
 	}
 
-	if (collisionResult.xOverlapf > 1.0f) { collisionResult.xOverlapf -= 1.0f; }
-	if (collisionResult.yOverlapf > 1.0f) { collisionResult.yOverlapf -= 1.0f; }
-	if (collisionResult.zOverlapf > 1.0f) { collisionResult.zOverlapf -= 1.0f; }
-
 	return collisionResult;
 }
 
@@ -1668,7 +1699,7 @@ void World::ParticalizeEntity(Entity* entity)
 	{
 		Rgba color = texture->GetColorAtIndex(i);
 
-		if (color.a != 0)
+		if (color.a != 0 && CheckRandomChance(0.25f))
 		{
 			Vector3 voxelPosition = entity->GetPositionForLocalIndex(i);
 
@@ -1676,7 +1707,7 @@ void World::ParticalizeEntity(Entity* entity)
 			float speed = (20.f * GetRandomFloatInRange(0.f, 1.0f)) + 30.f;
 			velocity *= speed;
 
-			Particle* particle = new Particle(color, GetRandomFloatInRange(1.0f, 4.0f), voxelPosition, velocity);
+			Particle* particle = new Particle(color, 1000.f, voxelPosition, velocity);
 
 			AddParticle(particle);
 		}

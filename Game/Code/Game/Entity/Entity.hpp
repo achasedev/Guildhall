@@ -62,6 +62,7 @@ public:
 
 	// Producers
 	bool							IsMarkedForDelete() const;
+	bool							IsDynamic() const;
 	Vector3							GetPositionForLocalCoords(const IntVector3& localCoords) const;
 	Vector3							GetPositionForLocalIndex(unsigned int index) const;
 

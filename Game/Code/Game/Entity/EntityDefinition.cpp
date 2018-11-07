@@ -33,10 +33,27 @@ ePhysicsType ConvertPhysicsTypeFromString(const std::string& physicsTypeName)
 }
 
 
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Converts the string name of a collision layer into the corresponding enum
+//
+eCollisionLayer ConvertCollisionLayerFromString(const std::string& layerName)
+{
+	if		(layerName == "world")			{ return COLLISION_LAYER_WORLD; }
+	else if (layerName == "player")			{ return COLLISION_LAYER_PLAYER; }
+	else if (layerName == "enemy")			{ return COLLISION_LAYER_ENEMY; }
+	else if (layerName == "player_bullet")	{ return COLLISION_LAYER_PLAYER_BULLET; }
+	else if (layerName == "enemy_bullet")	{ return COLLISION_LAYER_ENEMY_BULLET; }
+	else
+	{
+		return COLLISION_LAYER_WORLD; // Default to layer that collides with everything
+	}
+}
+
+
 //-----------------------------------------------------------------------------------------------
 // Returns the eCollisionResponse corresponding to the text
 //
-eCollisionResponse ConvertCollisionResponseFromString(const std::string& responseName)
+eCorrectionResponse ConvertCollisionResponseFromString(const std::string& responseName)
 {
 	if		(responseName == "share_correction")	{ return COLLISION_RESPONSE_SHARE_CORRECTION; }
 	else if (responseName == "no_correction")		{ return COLLISION_RESPONSE_NO_CORRECTION; }
@@ -45,21 +62,6 @@ eCollisionResponse ConvertCollisionResponseFromString(const std::string& respons
 	else
 	{
 		ERROR_AND_DIE(Stringf("Invalid collision response: %s", responseName.c_str()));
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns the eCollisionTeamException corresponding to the text
-//
-eCollisionTeamException ConvertCollisionTeamExceptionFromString(const std::string& exceptionName)
-{
-	if (exceptionName == "none") { return COLLISION_TEAM_EXCEPTION_NONE; }
-	else if (exceptionName == "same") { return COLLISION_TEAM_EXCEPTION_SAME; }
-	else if (exceptionName == "different") { return COLLISION_TEAM_EXCEPTION_DIFFERENT; }
-	else
-	{
-		ERROR_AND_DIE(Stringf("Invalid collision team exception: %s", exceptionName.c_str()));
 	}
 }
 
@@ -117,14 +119,11 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 			std::string shapeText = ParseXmlAttribute(*collisionElement, "shape", "disc");
 
 			std::string responseText = ParseXmlAttribute(*collisionElement, "response", "full_correction");
-			eCollisionResponse response = ConvertCollisionResponseFromString(responseText);
+			eCorrectionResponse response = ConvertCollisionResponseFromString(responseText);
 
-			std::string teamExceptionText = ParseXmlAttribute(*collisionElement, "teamException", "none");
-			eCollisionTeamException teamException = ConvertCollisionTeamExceptionFromString(teamExceptionText);
-
-			int layer = ParseXmlAttribute(*collisionElement, "layer", 0);
-
-			m_collisionDef = CollisionDefinition_t(response, teamException, (unsigned int) layer);
+			std::string layerName = ParseXmlAttribute(*collisionElement, "layer", "");
+			eCollisionLayer layer = ConvertCollisionLayerFromString(layerName);
+			m_collisionDef = CollisionDefinition_t(response, layer);
 		}
 	}
 

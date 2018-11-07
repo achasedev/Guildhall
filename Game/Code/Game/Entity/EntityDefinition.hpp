@@ -23,7 +23,7 @@ enum ePhysicsType
 
 
 // How the entity should react to collision corrections
-enum eCollisionResponse
+enum eCorrectionResponse
 {
 	COLLISION_RESPONSE_IGNORE_CORRECTION,
 	COLLISION_RESPONSE_NO_CORRECTION,
@@ -32,23 +32,38 @@ enum eCollisionResponse
 	NUM_COLLISION_RESPONSES
 };
 
-enum eCollisionTeamException
+
+// Which bits correspond to which layer (columns of collision matrix)
+enum eCollisionLayerBit : uint8_t
 {
-	COLLISION_TEAM_EXCEPTION_NONE,
-	COLLISION_TEAM_EXCEPTION_SAME,
-	COLLISION_TEAM_EXCEPTION_DIFFERENT,
+	COLLISION_LAYER_BIT_WORLD = (1 << 0),
+	COLLISION_LAYER_BIT_PLAYER = (1 << 1),
+	COLLISION_LAYER_BIT_ENEMY = (1 << 2),
+	COLLISION_LAYER_BIT_PLAYER_BULLET = (1 << 3),
+	COLLISION_LAYER_BIT_ENEMY_BULLET = (1 << 4)
 };
+
+
+// Rows of collision matrix
+enum eCollisionLayer : uint8_t
+{
+	COLLISION_LAYER_WORLD = (0xff), // Collide with everything
+	COLLISION_LAYER_PLAYER = (COLLISION_LAYER_BIT_WORLD | COLLISION_LAYER_BIT_PLAYER | COLLISION_LAYER_BIT_ENEMY | COLLISION_LAYER_BIT_ENEMY_BULLET),
+	COLLISION_LAYER_ENEMY = (COLLISION_LAYER_BIT_WORLD | COLLISION_LAYER_BIT_PLAYER | COLLISION_LAYER_BIT_ENEMY | COLLISION_LAYER_BIT_PLAYER_BULLET),
+	COLLISION_LAYER_PLAYER_BULLET = (COLLISION_LAYER_BIT_WORLD | COLLISION_LAYER_BIT_ENEMY),
+	COLLISION_LAYER_ENEMY_BULLET = (COLLISION_LAYER_BIT_WORLD | COLLISION_LAYER_BIT_PLAYER)
+};
+
 
 // Collision state for a single entity
 struct CollisionDefinition_t
 {
 	CollisionDefinition_t() {}
-	CollisionDefinition_t(eCollisionResponse response, eCollisionTeamException teamBehavior, unsigned int collisionLayer)
-		: m_response(response), m_teamException(teamBehavior), m_collisionLayer(collisionLayer) {}
+	CollisionDefinition_t(eCorrectionResponse response, eCollisionLayer collisionLayer)
+		: m_response(response), layer(collisionLayer) {}
 
-	eCollisionResponse			m_response = COLLISION_RESPONSE_SHARE_CORRECTION;
-	eCollisionTeamException		m_teamException = COLLISION_TEAM_EXCEPTION_NONE;
-	unsigned int				m_collisionLayer = 0;
+	eCollisionLayer				layer = COLLISION_LAYER_WORLD;
+	eCorrectionResponse			m_response = COLLISION_RESPONSE_SHARE_CORRECTION;
 };
 
 // For items

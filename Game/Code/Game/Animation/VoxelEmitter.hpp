@@ -16,14 +16,6 @@ public:
 	VoxelEmitter(float spawnRate, float particleLifetime, const Vector3& position, const Vector3& initialVelocity, float spread);
 
 	void Update();
-
-	
-public:
-	//-----Public Data-----
-	
-
-private:
-	//-----Private Methods-----
 	
 	
 private:
@@ -37,4 +29,5 @@ private:
 	Stopwatch m_stopwatch;
 	
 	bool m_shouldEmit = true;
+
 };

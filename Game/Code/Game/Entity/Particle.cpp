@@ -20,7 +20,7 @@ Particle::Particle(const Rgba& color, float lifetime, const Vector3& position, c
 	ASSERT_OR_DIE(m_defaultTexture == nullptr, "Error: Particle definition has a default texture!");
 
 	m_defaultTexture = new VoxelTexture();
-	m_defaultTexture->CreateFromColorStream(&color, IntVector3(1, 1, 1), false);
+	m_defaultTexture->CreateFromColorStream(&color, IntVector3(1, 1, 1), true);
 
 	m_position = position;
 	m_lifetime = lifetime;

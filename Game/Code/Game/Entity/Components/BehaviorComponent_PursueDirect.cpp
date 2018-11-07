@@ -52,24 +52,24 @@ void BehaviorComponent_PursueDirect::Update()
 
 
 	// Get direction away from  local entities
-	std::vector<const Entity*> localEntities = Game::GetWorld()->GetEnemiesWithinDistance(currentPosition, 10.f);
+// 	std::vector<const Entity*> localEntities = Game::GetWorld()->GetEnemiesWithinDistance(currentPosition, 10.f);
+// 
+// 	Vector3 directionAwayFromEntities = Vector3::ZERO;
+// 
+// 	int numEntities = (int)localEntities.size();
+// 
+// 	for (int i = 0; i < numEntities; ++i)
+// 	{
+// 		const Entity* entity = localEntities[i];
+// 		Vector3 directionToEntity = (entity->GetPosition() - currentPosition).GetNormalized();
+// 
+// 		directionAwayFromEntities -= directionToEntity;
+// 	}
+// 
+// 	directionAwayFromEntities.NormalizeAndGetLength();
+// 	directionAwayFromEntities *= 1.f;
 
-	Vector3 directionAwayFromEntities = Vector3::ZERO;
-
-	int numEntities = (int)localEntities.size();
-
-	for (int i = 0; i < numEntities; ++i)
-	{
-		const Entity* entity = localEntities[i];
-		Vector3 directionToEntity = (entity->GetPosition() - currentPosition).GetNormalized();
-
-		directionAwayFromEntities -= directionToEntity;
-	}
-
-	directionAwayFromEntities.NormalizeAndGetLength();
-	directionAwayFromEntities *= 1.f;
-
-	Vector3 finalDirection = (directionAwayFromEntities + directionToPlayer).GetNormalized();
+	Vector3 finalDirection = (directionToPlayer).GetNormalized();
 
 	m_owningEntity->Move(finalDirection.xz());
 }

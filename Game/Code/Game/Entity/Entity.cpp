@@ -366,6 +366,15 @@ bool Entity::IsMarkedForDelete() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns whether this entity has dynamic physics or not (has the physics step applied)
+//
+bool Entity::IsDynamic() const
+{
+	return (m_definition->m_physicsType == PHYSICS_TYPE_DYNAMIC);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the position of the entity's voxel at the given local coords
 //
 Vector3 Entity::GetPositionForLocalCoords(const IntVector3& localCoords) const

@@ -134,10 +134,6 @@ void VoxelGrid::DrawEntity(const Entity* entity)
 	options.m_isWireFrame = true;
 	options.m_lifetime = 0.f;
 
-	//DebugRenderSystem::DrawCube(Vector3(entity->GetEntityCoordinatePosition() + entity->GetDimensions() / 2.f), options, Vector3(entity->GetDimensions()));
-	//DebugRenderSystem::DrawUVSphere(m_position, 0.f);
-	//DebugRenderSystem::DrawUVSphere(Vector3(GetEntityCoordinatePosition()), 0.f);
-
 	Draw3DTexture(texture, position);
 }
 

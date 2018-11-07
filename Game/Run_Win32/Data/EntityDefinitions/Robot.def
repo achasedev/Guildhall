@@ -10,38 +10,21 @@
 
 		<!--Physics-->
 		<Physics physicsType="dynamic" hasGravity="true">
-			<CollisionDefinition response="share_correction"/>
+			<CollisionDefinition response="share_correction" layer="player"/>
 		</Physics>
 
 		<!--AI-->
 
 	</EntityDefinition>
 
-  <EntityDefinition name="Player_test">
-
-    <!--Movement Parameters-->
-    <Movement maxAcceleration="300.0" maxSpeed="40.0" maxDeceleration="100.0" jumpImpulse="80.0"/>
-
-    <!--Visuals-->
-    <Animation defaultSprite="TestCube"/>
-
-    <!--Physics-->
-    <Physics physicsType="dynamic" hasGravity="true">
-      <CollisionDefinition response="share_correction"/>
-    </Physics>
-
-    <!--AI-->
-
-  </EntityDefinition>
-
-		<EntityDefinition name="Bullet">
+	<EntityDefinition name="Bullet">
 
 		<!--Visuals-->
 		<Animation defaultSprite="Bullet"/>
 
 		<!--Physics-->
 		<Physics physicsType="dynamic" hasGravity="false">
-			<CollisionDefinition response="ignore_correction" teamException="same" layer="1"/>
+			<CollisionDefinition response="ignore_correction"/>
 		</Physics>
 
 	</EntityDefinition>
@@ -56,7 +39,7 @@
 
 		<!--Physics-->
 		<Physics physicsType="dynamic" hasGravity="true">
-			<CollisionDefinition response="share_correction" />
+			<CollisionDefinition response="share_correction" layer="enemy"/>
 		</Physics>
 
 		<!--AI-->
@@ -73,7 +56,7 @@
 
     <!--Physics-->
     <Physics physicsType="dynamic" hasGravity="true">
-      <CollisionDefinition response="ignore_correction" />
+      <CollisionDefinition response="ignore_correction" layer="world"/>
     </Physics>
 
     <Item bullets="1" shells="2" energy="3" explosives="4" money="5"/>
@@ -87,7 +70,7 @@
 
 		<!--Physics-->
 		<Physics physicsType="static">
-			<CollisionDefinition response="no_correction"/>
+			<CollisionDefinition response="no_correction" layer="world"/>
 		</Physics>
 
 	</EntityDefinition>
@@ -99,7 +82,7 @@
 
 		<!--Physics-->
 		<Physics physicsType="static">
-			<CollisionDefinition response="no_correction"/>
+			<CollisionDefinition response="no_correction" layer="world"/>
 		</Physics>
 
 	</EntityDefinition>
@@ -111,7 +94,7 @@
 
     <!--Physics-->
     <Physics physicsType="static">
-      <CollisionDefinition response="no_correction"/>
+      <CollisionDefinition response="no_correction" layer="world"/>
     </Physics>
 
   </EntityDefinition>
@@ -121,7 +104,7 @@
 
 		<!--Physics-->
 		<Physics physicsType="dynamic" hasGravity="true">
-			<CollisionDefinition response="full_correction"/>
+			<CollisionDefinition response="full_correction" layer="world"/>
 		</Physics>
 
 		<!--AI-->
