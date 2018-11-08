@@ -40,54 +40,6 @@ bool OnReliableTest(NetMessage* msg, const NetSender_t& sender);
 bool OnSequenceTest(NetMessage* msg, const NetSender_t& sender);
 
 // Commands for testing the NetSession
-
-//-----------------------------------------------------------------------------------------------
-// Sends an add request message to the given connection index
-//
-void Command_AddConnection(Command& cmd)
-{
-	int index = -1;
-	if (!cmd.GetParam("i", index))
-	{
-		ConsoleErrorf("No index specified");
-		return;
-	}
-
-	if (index < 0)
-	{
-		ConsoleErrorf("Invalid index");
-		return;
-	}
-
-	std::string addr;
-	if (!cmd.GetParam("a", addr))
-	{
-		ConsoleErrorf("No address specified");
-		return;
-	}
-
-	NetAddress_t netAddr(addr.c_str());
-	NetSession* session = Game::GetNetSession();
-
-	if (session == nullptr)
-	{
-		ConsoleErrorf("No Session set up in game");
-		return;
-	}
-
-	bool added = session->AddConnection((uint8_t)index, netAddr);
-
-	if (added)
-	{
-		ConsolePrintf(Rgba::GREEN, "Connection to %s added at index %i", addr.c_str(), (uint8_t)index);
-	}
-	else
-	{
-		ConsoleErrorf("Couldn't add connection to %s at index %i", addr.c_str(), (uint8_t)index);
-	}
-}
-
-
 //-----------------------------------------------------------------------------------------------
 // Sends a ping message to the given connection index
 //
@@ -511,7 +463,7 @@ Game::Game()
 	// Net Session
 	m_netSession = new NetSession();
 	RegisterGameMessages();
-	m_netSession->Bind(GAME_PORT, 10);
+	//m_netSession->Bind(GAME_PORT, 10);
 }
 
 
@@ -539,7 +491,6 @@ void Game::Initialize()
 	// Set the game clock on the Renderer
 	Renderer::GetInstance()->SetRendererGameClock(s_instance->m_gameClock);
 
-	Command::Register("add_connection", "Adds a connection to the game session for the given index and address", Command_AddConnection);
 	Command::Register("send_ping", "Sends a ping on the current net session to the given connection index", Command_SendPing);
 
 	Command::Register("net_sim_lag", "Sets the simulated latency of the game net session", Command_SetNetSimLag);
