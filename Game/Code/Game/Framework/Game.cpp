@@ -191,6 +191,14 @@ void Command_SetHeartbeat(Command& cmd)
 	ConsolePrintf(Rgba::GREEN, "Set the NetSession's heartbeat to %f hz", hertz);
 }
 
+void Command_Host(Command& cmd)
+{
+	unsigned int port = GAME_PORT;
+	cmd.GetParam("p", port, &port);
+
+	Game::GetNetSession()->Host("Host_Test", (uint16_t)port, 10);
+}
+
 #include "Engine/Core/Threading/Threading.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
 
@@ -491,6 +499,7 @@ void Game::Initialize()
 	// Set the game clock on the Renderer
 	Renderer::GetInstance()->SetRendererGameClock(s_instance->m_gameClock);
 
+	Command::Register("host", "Hosts a NetSession on this local address", Command_Host);
 	Command::Register("send_ping", "Sends a ping on the current net session to the given connection index", Command_SendPing);
 
 	Command::Register("net_sim_lag", "Sets the simulated latency of the game net session", Command_SetNetSimLag);
