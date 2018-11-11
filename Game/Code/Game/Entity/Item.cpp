@@ -27,8 +27,8 @@ void Item::Update()
 	if (world->IsEntityOnGround(this))
 	{
 		m_physicsEnabled = false;
-		world->SnapEntityToGround(this);
 		m_basePosition = m_position;
+		m_basePosition.y = (float) RoundToNearestInt(m_basePosition.y);
 	}
 
 	// Have the item bob/spin while on the ground (not simulating physics)

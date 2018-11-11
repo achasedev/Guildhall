@@ -12,6 +12,7 @@
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
+#include "Engine/Core/Image.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -87,6 +88,7 @@ void					CalculateMassScalars(Entity* first, Entity* second, float& out_firstSca
 //
 World::World()
 {
+	m_heightMap = new HeatMap(IntVector2(256, 256), 0.f);
 }
 
 
@@ -96,6 +98,12 @@ World::World()
 World::~World()
 {
 	CleanUp();
+	
+	if (m_heightMap != nullptr)
+	{
+		delete m_heightMap;
+		m_heightMap = nullptr;
+	}
 }
 
 
@@ -106,8 +114,6 @@ void World::Inititalize()
 {
 	m_dimensions = IntVector3(256, 64, 256);
 
-	m_groundElevation = 5;
-
 	for (int i = 0; i < 1; ++i)
 	{
 		Entity* entity = new Entity(EntityDefinition::GetDefinition("Wall"));
@@ -116,6 +122,7 @@ void World::Inititalize()
 		m_entities.push_back(entity);
 	}
 
+	InitializeHeightMap();
 	//InitializeHeatMaps();
 }
 
@@ -126,7 +133,6 @@ void World::Inititalize()
 void World::CleanUp()
 {
 	m_dimensions = IntVector3(-1, -1, -1);
-	m_groundElevation = 0;
 
 	for (int i = 0; i < (int)m_entities.size(); ++i)
 	{
@@ -144,6 +150,11 @@ void World::CleanUp()
 	}
 
 	m_particles.clear();
+
+	if (m_heightMap != nullptr)
+	{
+		m_heightMap->Clear(0.f);
+	}
 
 	CleanUpHeatMaps();
 }
@@ -205,8 +216,7 @@ void World::Render()
 	VoxelGrid* grid = Game::GetVoxelGrid();
 
 	// Color in the ground
-	HeatMap* mapToUse = (m_drawHeatmap ? m_navMapInUse.m_navigationMap : nullptr);
-	grid->DrawGround(m_groundElevation, mapToUse);
+	grid->DrawTerrain(m_heightMap);
 
 	// Color in static geometry
 	DrawStaticEntitiesToGrid();
@@ -283,21 +293,21 @@ bool World::IsEntityOnMap(const Entity* entity) const
 //-----------------------------------------------------------------------------------------------
 // Sets the entity to be on the ground at their current map position
 //
-void World::SnapEntityToGround(Entity* entity)
-{
-	if (IsEntityOnMap(entity))
-	{
-		Vector3 position = entity->GetPosition();
-		position.y = (float)m_groundElevation;
-		entity->SetPosition(position);
-
-		PhysicsComponent* comp = entity->GetPhysicsComponent();
-		if (comp != nullptr)
-		{
-			comp->ZeroYVelocity();
-		}
-	}
-}
+// void World::SnapEntityToGround(Entity* entity)
+// {
+// 	if (IsEntityOnMap(entity))
+// 	{
+// 		Vector3 position = entity->GetPosition();
+// 		position.y = (float)m_groundElevation;
+// 		entity->SetPosition(position);
+// 
+// 		PhysicsComponent* comp = entity->GetPhysicsComponent();
+// 		if (comp != nullptr)
+// 		{
+// 			comp->ZeroYVelocity();
+// 		}
+// 	}
+// }
 
 
 //-----------------------------------------------------------------------------------------------
@@ -349,11 +359,11 @@ HeatMap* World::GetNavMap() const
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the ground elevation of the world
+// Returns the height of the map at the given coordinate location
 //
-unsigned int World::GetGroundElevation() const
+unsigned int World::GetGroundElevationAtCoord(const IntVector2& coord) const
 {
-	return m_groundElevation;
+	return (unsigned int)m_heightMap->GetHeat(coord);
 }
 
 
@@ -374,7 +384,8 @@ Vector3 World::GetNextPositionTowardsPlayer(const Vector3& currPosition) const
 	IntVector2 currCoords = GetCoordsForPosition(currPosition).xz();
 	IntVector2 neighborCoords = m_navMapInUse.m_navigationMap->GetMinNeighborCoords(currCoords);
 
-	return Vector3((float) neighborCoords.x, (float) m_groundElevation, (float) neighborCoords.y);
+	float height = m_heightMap->GetHeat(neighborCoords);
+	return Vector3((float) neighborCoords.x, height, (float) neighborCoords.y);
 }
 
 
@@ -420,7 +431,7 @@ bool World::IsEntityOnGround(const Entity* entity) const
 		return false;
 	}
 
-	return (entity->GetPosition().y <= (float)m_groundElevation);
+	return (entity->GetPosition().y <= GetMapHeightForEntity(entity));
 }
 
 
@@ -493,18 +504,54 @@ void World::ApplyPhysicsStep()
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the height of the map under the given entity
+//
+float World::GetMapHeightForEntity(const Entity* entity) const
+{
+	Vector3 position = entity->GetPosition();
+	IntVector3 coordPosition = entity->GetCoordinatePosition();
+	IntVector2 dimensions = entity->GetDimensions().xz();
+
+	float maxHeight = -1.f;
+
+	// Check all voxels on the entity's bottom, ensuring that it's not clipping into the ground
+	for (int z = 0; z < dimensions.y; ++z)
+	{
+		for (int x = 0; x < dimensions.x; ++x)
+		{
+			IntVector3 currPos = coordPosition + IntVector3(x, 0, z);
+			float currHeight = m_heightMap->GetHeat(currPos.xz());
+
+			// Update the max height over this area
+			maxHeight = MaxFloat(maxHeight, currHeight);
+		}
+	}
+
+	return maxHeight;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Checks for entities clipping into the ground, and if so fixes them
 //
-void World::CheckForGroundCollisions()
+void World::CheckEntityForGroundCollision(Entity* entity)
 {
-	for (int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex)
-	{
-		Entity* entity = m_entities[entityIndex];
+	Vector3 position = entity->GetPosition();
+	IntVector3 coordPosition = entity->GetCoordinatePosition();
+	IntVector2 dimensions = entity->GetDimensions().xz();
 
-		Vector3 position = entity->GetPosition();
-		if (position.y < (float)m_groundElevation)
+	float mapHeight = GetMapHeightForEntity(entity);
+	bool clippingIntoGround = mapHeight > position.y;
+
+	if (clippingIntoGround)
+	{
+		position.y = mapHeight;
+		entity->SetPosition(position);
+
+		PhysicsComponent* comp = entity->GetPhysicsComponent();
+		if (comp != nullptr)
 		{
-			SnapEntityToGround(entity);
+			comp->ZeroYVelocity();
 		}
 	}
 }
@@ -544,7 +591,18 @@ void World::CheckStaticEntityCollisions()
 	ApplyCollisionCorrections();
 
 	// Ensure the entities are above ground
-	CheckForGroundCollisions();
+	for (int i = 0; i < (int)m_entities.size(); ++i)
+	{ 
+		Entity* dynamicEntity = m_entities[i];
+
+		// Find an entity that is dynamic and not marked for delete
+		if (!dynamicEntity->IsDynamic() || dynamicEntity->IsMarkedForDelete())
+		{
+			continue;
+		}
+
+		CheckEntityForGroundCollision(dynamicEntity);
+	}
 
 	// Check particles for ground collisions
 	for (int particleIndex = 0; particleIndex < (int)m_particles.size(); ++particleIndex)
@@ -554,12 +612,7 @@ void World::CheckStaticEntityCollisions()
 		// Don't bother with particles marked for delete
 		if (currParticle->IsMarkedForDelete()) { continue; }
 
-		// Also check for clipping into the ground
-		Vector3 position = currParticle->GetPosition();
-		if (position.y < (float)m_groundElevation)
-		{
-			SnapEntityToGround(currParticle);
-		}
+		CheckEntityForGroundCollision(currParticle);
 	}
 }
 
@@ -1032,30 +1085,27 @@ void World::CleanUpHeatMaps()
 }
 
 
-//- C FUNCTION ----------------------------------------------------------------------------------------------
-// Checks if the two entities pass the team exception check, and should continue checking for
-// collisions. Returns true if there should be collision checks, false otherwise
+//-----------------------------------------------------------------------------------------------
+// Creates the heightmap for the world
 //
-// bool IsThereTeamException(Entity* first, Entity* second)
-// {
-// 	CollisionDefinition_t firstDef = first->GetCollisionDefinition();
-// 	CollisionDefinition_t secondDef = second->GetCollisionDefinition();
-// 	eEntityTeam firstTeam = first->GetTeam();
-// 	eEntityTeam secondTeam = second->GetTeam();
-// 
-// 	bool teamsMatch = (firstTeam == secondTeam);
-// 
-// 	// Same checks
-// 	if (firstDef.m_teamException == COLLISION_TEAM_EXCEPTION_SAME && teamsMatch) { return false; }
-// 	if (secondDef.m_teamException == COLLISION_TEAM_EXCEPTION_SAME && teamsMatch) { return false; }
-// 
-// 	// Different checks
-// 	if (firstDef.m_teamException == COLLISION_TEAM_EXCEPTION_DIFFERENT && !teamsMatch) { return false; }
-// 	if (secondDef.m_teamException == COLLISION_TEAM_EXCEPTION_DIFFERENT && !teamsMatch) { return false; }
-// 
-// 	// Either both are always, or we don't meet the exception criteria
-// 	return true;
-// }
+void World::InitializeHeightMap()
+{
+	m_heightMap = new HeatMap(m_dimensions.xz(), 0.f);
+
+	Image image;
+	image.LoadFromFile("Data/Images/HeightMap.png");
+
+	for (int y = 0; y < m_dimensions.z; ++y)
+	{
+		for (int x = 0; x < m_dimensions.x; ++x)
+		{
+			float greyscale = image.GetTexelGrayScale(x, y);
+			int height = (int) RangeMapFloat(greyscale, 0.f, 1.0f, 0.f, (float) (m_dimensions.y - 1));
+
+			m_heightMap->SetHeat(IntVector2(x, y), (float) height);
+		}
+	}
+}
 
 
 //- C FUNCTION ----------------------------------------------------------------------------------------------

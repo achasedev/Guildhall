@@ -139,27 +139,48 @@ void VoxelGrid::DrawEntity(const Entity* entity)
 
 
 //-----------------------------------------------------------------------------------------------
-// Draws the ground to the grid, up to the given elevation
+// Draws the terrain to the grid with the given heightmap
 //
-void VoxelGrid::DrawGround(unsigned int groundElevation, HeatMap* heatMap)
+void VoxelGrid::DrawTerrain(HeatMap* heightMap)
 {
-	for (int y = 0; y < (int) groundElevation; ++y)
+	PROFILE_LOG_SCOPE_FUNCTION();
+
+	for (int z = 0; z < m_dimensions.z; ++z)
 	{
-		for (int z = 0; z < m_dimensions.z; ++z)
+		for (int x = 0; x < m_dimensions.x; ++x)
 		{
-			for (int x = 0; x < m_dimensions.x; ++x)
+			int height = (int)heightMap->GetHeat(IntVector2(x, z));
+
+			int westDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(x - 1, z)) - height);
+			int eastDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(x + 1, z)) - height);
+			int southDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(x, z - 1)) - height);
+
+			bool needToFillAll = (westDiff > 1 || eastDiff > 1 || southDiff > 1);
+
+			if (needToFillAll)
 			{
-				int index = GetIndexForCoords(IntVector3(x, y, z));
-				
+				int maxFill = ClampInt(MaxInt(MaxInt(westDiff, eastDiff), southDiff), 0, height);
+
+				for (int y = height - 1; y >= height - maxFill; --y)
+				{
+					int index = GetIndexForCoords(IntVector3(x, y, z));
+					Rgba color = Rgba::DARK_GREEN;
+
+					if (index >= 0)
+					{
+						m_gridColors[index] = color;
+					}
+				}
+			}
+			else
+			{
+				int index = GetIndexForCoords(IntVector3(x, height - 1, z));
 				Rgba color = Rgba::DARK_GREEN;
 
-				if (heatMap != nullptr)
+				if (index >= 0)
 				{
-					float t = heatMap->GetHeat(IntVector2(x, z)) / (0.5f * (m_dimensions.x + m_dimensions.z));
-					color = Interpolate(Rgba::GREEN, Rgba::RED, t);
+					m_gridColors[index] = color;
 				}
-
-				m_gridColors[index] = color;
 			}
 		}
 	}

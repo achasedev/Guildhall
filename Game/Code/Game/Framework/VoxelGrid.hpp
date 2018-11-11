@@ -61,7 +61,7 @@ public:
 	// Mutators
 	void				Clear();
 	void				DrawEntity(const Entity* entity);
-	void				DrawGround(unsigned int groundElevation, HeatMap* heatMap);
+	void				DrawTerrain(HeatMap* heightMap);
 	void				Draw3DTexture(const VoxelTexture* texture, const IntVector3& startCoord);
 
 	void				DebugDrawEntityCollision(const Entity* entity);

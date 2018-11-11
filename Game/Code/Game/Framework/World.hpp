@@ -58,7 +58,7 @@ public:
 	// Accessors
 	IntVector3		GetDimensions() const;
 	HeatMap*		GetNavMap() const;
-	unsigned int	GetGroundElevation() const;
+	unsigned int	GetGroundElevationAtCoord(const IntVector2& coord) const;
 
 	// Producers
 	IntVector3	GetCoordsForPosition(const Vector3& position) const;
@@ -71,7 +71,8 @@ public:
 	void						ParticalizeEntity(Entity* entity);
 	void						ParticalizeAllEntities();
 	bool						IsEntityOnMap(const Entity* entity) const;
-	void						SnapEntityToGround(Entity* entity);
+	float						GetMapHeightForEntity(const Entity* entity) const;
+	//void						SnapEntityToGround(Entity* entity);
 	std::vector<const Entity*>	GetEnemiesWithinDistance(const Vector3& position, float radius) const;
 
 
@@ -86,7 +87,6 @@ private:
 
 	void ApplyPhysicsStep();
 
-	void CheckForGroundCollisions();
 	void CheckStaticEntityCollisions();
 	void CheckDynamicEntityCollisions();
 
@@ -105,12 +105,18 @@ private:
 	void HeatMapUpdate_Thread();
 	void CleanUpHeatMaps();
 
+	// Terrain
+	void CheckEntityForGroundCollision(Entity* entity);
+	void InitializeHeightMap();
+
 
 private:
 	//-----Private Data-----
 
 	IntVector3 m_dimensions;
-	unsigned int m_groundElevation = 0;
+
+	// Terrain
+	HeatMap* m_heightMap = nullptr;
 
 	std::vector<Entity*> m_entities;
 	std::vector<Particle*> m_particles;
