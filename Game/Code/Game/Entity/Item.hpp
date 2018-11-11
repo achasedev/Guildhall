@@ -18,7 +18,7 @@ public:
 
 	virtual void					Update();
 
-	virtual void					OnCollision(Entity* other);
+	virtual void					OnEntityCollision(Entity* other);
 	virtual void					OnDeath();
 	virtual void					OnSpawn();
 

@@ -71,9 +71,17 @@ void Entity::Update()
 //-----------------------------------------------------------------------------------------------
 // Callback for when collision is detected
 //
-void Entity::OnCollision(Entity* other)
+void Entity::OnEntityCollision(Entity* other)
 {
 	UNUSED(other);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Called when the entity makes collision with the ground (falls below it)
+//
+void Entity::OnGroundCollision()
+{
 }
 
 

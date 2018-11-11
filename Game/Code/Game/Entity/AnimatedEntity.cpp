@@ -63,9 +63,9 @@ const VoxelTexture* AnimatedEntity::GetTextureForRender() const
 //-----------------------------------------------------------------------------------------------
 // Collision event
 //
-void AnimatedEntity::OnCollision(Entity* other)
+void AnimatedEntity::OnEntityCollision(Entity* other)
 {
-	Entity::OnCollision(other);
+	Entity::OnEntityCollision(other);
 }
 
 

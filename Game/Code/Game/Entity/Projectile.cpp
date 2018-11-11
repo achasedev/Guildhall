@@ -5,9 +5,9 @@
 /* Description: Implementation of the projectile class
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/World.hpp"
 #include "Game/Entity/Projectile.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor from a definition
@@ -36,16 +36,26 @@ void Projectile::Update()
 //-----------------------------------------------------------------------------------------------
 // On Collision event
 //
-void Projectile::OnCollision(Entity* other)
+void Projectile::OnEntityCollision(Entity* other)
 {
 	if (other->GetTeam() != m_entityTeam)
 	{
-		Entity::OnCollision(other);
+		Entity::OnEntityCollision(other);
 		other->TakeDamage(m_damage);
 
 		// Projectiles are only good for one collision
 		m_isMarkedForDelete = true;
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Destroys the terrain the projectile hit and kills the projectile
+//
+void Projectile::OnGroundCollision()
+{
+	Game::GetWorld()->DestroyTerrain(GetCoordinatePosition());
+	m_isMarkedForDelete = true;
 }
 
 

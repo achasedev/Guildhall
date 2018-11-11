@@ -69,7 +69,8 @@ public:
 	IntVector3						GetCoordinatePosition() const;
 
 	// Events
-	virtual void					OnCollision(Entity* other);
+	virtual void					OnEntityCollision(Entity* other);
+	virtual void					OnGroundCollision();
 	virtual void					OnVoxelCollision(std::vector<IntVector3> voxelCoords);
 	virtual void					OnDamageTaken(int damageAmount);
 	virtual void					OnDeath();

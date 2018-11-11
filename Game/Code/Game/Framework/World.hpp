@@ -9,6 +9,7 @@
 #include <thread>
 #include <shared_mutex>
 #include "Engine/Core/Rgba.hpp"
+#include "Engine/Math/IntRange.hpp"
 #include "Engine/Math/IntVector3.hpp"
 
 #define MAX_PLAYERS (4)
@@ -54,11 +55,15 @@ public:
 	// Mutators
 	void AddEntity(Entity* entity);
 	void AddParticle(Particle* particle);
+	void DestroyTerrain(const IntVector3& coord, const IntRange& radius = IntRange(0, 0));
+	void SetTerrainHeightAtCoord(const IntVector3& coord, int height);
 
 	// Accessors
 	IntVector3		GetDimensions() const;
 	HeatMap*		GetNavMap() const;
 	unsigned int	GetGroundElevationAtCoord(const IntVector2& coord) const;
+	HeatMap*		GetHeightMap() const;
+
 
 	// Producers
 	IntVector3	GetCoordsForPosition(const Vector3& position) const;
@@ -72,7 +77,6 @@ public:
 	void						ParticalizeAllEntities();
 	bool						IsEntityOnMap(const Entity* entity) const;
 	float						GetMapHeightForEntity(const Entity* entity) const;
-	//void						SnapEntityToGround(Entity* entity);
 	std::vector<const Entity*>	GetEnemiesWithinDistance(const Vector3& position, float radius) const;
 
 

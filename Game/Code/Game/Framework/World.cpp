@@ -12,13 +12,13 @@
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
+#include "Engine/Math/AABB3.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/HeatMap.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
-#include "Engine/Math/AABB3.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
 #define DYNAMIC_COLLISION_MAX_ITERATION_COUNT (10)
@@ -250,6 +250,51 @@ void World::AddParticle(Particle* particle)
 
 
 //-----------------------------------------------------------------------------------------------
+// Destroys the terrain at the given location within the radius
+// Always removes voxels above the hit location in the 
+//
+void World::DestroyTerrain(const IntVector3& coord, const IntRange& radius /*= IntRange(0, 0)*/)
+{
+	if (!m_heightMap->AreCoordsValid(coord.xz()))
+	{
+		return;
+	}
+
+	int heightAtCoord = (int) m_heightMap->GetHeat(coord.xz());
+	
+	// For the ground I hit, blow it away! (anything within radius)
+	Vector3 velocity = 40.f * Vector3(GetRandomFloatInRange(-1.f, 1.f), 1.f, GetRandomFloatInRange(-1.f, 1.f));
+	
+	Particle* particle = new Particle(Rgba::DARK_GREEN, 2.0f, Vector3(coord), velocity);
+	AddParticle(particle);
+
+	// For all particles above the hit, have them fall straight down
+	for (int y = coord.y + 1; y < heightAtCoord; ++y)
+	{
+		Vector3 position = Vector3(IntVector3(coord.x, y, coord.z));
+
+		Particle* particle = new Particle(Rgba::DARK_GREEN, 2.0f, position, Vector3::ZERO, true);
+		AddParticle(particle);	
+	}
+
+
+	m_heightMap->SetHeat(coord.xz(), (float) MinInt(coord.y - 1, heightAtCoord));
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the height of the terrain at the given coordinate to the height specified
+//
+void World::SetTerrainHeightAtCoord(const IntVector3& coord, int height)
+{
+	if (m_heightMap->AreCoordsValid(coord.xz()))
+	{
+		m_heightMap->SetHeat(coord.xz(), (float)height);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Blows up the given entity
 //
 void World::ParticalizeAllEntities()
@@ -364,6 +409,15 @@ HeatMap* World::GetNavMap() const
 unsigned int World::GetGroundElevationAtCoord(const IntVector2& coord) const
 {
 	return (unsigned int)m_heightMap->GetHeat(coord);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the height map for the world
+//
+HeatMap* World::GetHeightMap() const
+{
+	return m_heightMap;
 }
 
 
@@ -545,6 +599,10 @@ void World::CheckEntityForGroundCollision(Entity* entity)
 
 	if (clippingIntoGround)
 	{
+		// Call the event *before* we correct, to get the exact hit location
+		entity->OnGroundCollision();
+
+		// Then snap to map height
 		position.y = mapHeight;
 		entity->SetPosition(position);
 
@@ -1143,8 +1201,8 @@ bool CheckEntityCollision(Entity* first, Entity* second)
 		// Apply corrections and call collision callbacks
 		CalculateCollisionCorrection(first, second, voxelResult);
 
-		first->OnCollision(second);
-		second->OnCollision(first);
+		first->OnEntityCollision(second);
+		second->OnEntityCollision(first);
 
 		first->OnVoxelCollision(voxelResult.firstHitCoords);
 		second->OnVoxelCollision(voxelResult.secondHitCoords);

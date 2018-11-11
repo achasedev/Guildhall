@@ -43,7 +43,7 @@ void Item::Update()
 	}
 }
 
-void Item::OnCollision(Entity* other)
+void Item::OnEntityCollision(Entity* other)
 {
 	if (other->IsPlayer())
 	{

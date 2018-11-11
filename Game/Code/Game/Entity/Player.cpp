@@ -114,9 +114,9 @@ void Player::Update()
 //-----------------------------------------------------------------------------------------------
 // Collision callback
 //
-void Player::OnCollision(Entity* other)
+void Player::OnEntityCollision(Entity* other)
 {
-	Entity::OnCollision(other);
+	Entity::OnEntityCollision(other);
 }
 
 
