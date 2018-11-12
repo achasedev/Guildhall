@@ -196,7 +196,24 @@ void Command_Host(Command& cmd)
 	unsigned int port = GAME_PORT;
 	cmd.GetParam("p", port, &port);
 
-	Game::GetNetSession()->Host("Host_Test", (uint16_t)port, 10);
+	Game::GetNetSession()->Host("HOSTY", (uint16_t)port, 10);
+}
+#include "Engine/Networking/Net.hpp"
+
+void Command_Join(Command& cmd)
+{
+	std::string address;
+	bool specified = cmd.GetParam("a", address);
+
+	if (!specified)
+	{
+		ConsoleErrorf("Need to specify and address and port");
+		return;
+	}
+
+	NetConnectionInfo_t info;
+	info.address = NetAddress_t(address.c_str());
+	Game::GetNetSession()->Join("JOINY", info);
 }
 
 #include "Engine/Core/Threading/Threading.hpp"
@@ -500,6 +517,8 @@ void Game::Initialize()
 	Renderer::GetInstance()->SetRendererGameClock(s_instance->m_gameClock);
 
 	Command::Register("host", "Hosts a NetSession on this local address", Command_Host);
+	Command::Register("join", "Joins a NetSession at the given address", Command_Join);
+
 	Command::Register("send_ping", "Sends a ping on the current net session to the given connection index", Command_SendPing);
 
 	Command::Register("net_sim_lag", "Sets the simulated latency of the game net session", Command_SetNetSimLag);
@@ -541,7 +560,7 @@ void Game::ProcessInput()
 //
 void Game::Update()
 {
-	m_netSession->ProcessIncoming();
+	m_netSession->Update();
 
 	// Check for state change
 	CheckToUpdateGameState();
