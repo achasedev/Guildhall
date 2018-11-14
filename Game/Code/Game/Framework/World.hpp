@@ -60,13 +60,14 @@ public:
 	void AddParticle(Particle* particle);
 	void DestroyTerrain(const IntVector3& coord, const IntRange& radius = IntRange(0, 0));
 	void SetTerrainHeightAtCoord(const IntVector3& coord, int height);
+	bool DecrementTerrainHeight(int decrementAmount);
 
 	// Accessors
 	IntVector3			GetDimensions() const;
 	HeatMap*			GetNavMap() const;
 	unsigned int		GetGroundElevationAtCoord(const IntVector2& coord) const;
 	const HeatMap*		GetHeightMap() const;
-
+	int					GetCurrentMaxHeightOfTerrain() const;
 
 	// Producers
 	IntVector3	GetCoordsForPosition(const Vector3& position) const;

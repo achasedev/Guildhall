@@ -12,9 +12,13 @@
 
 	<Stages>
 
-		<Stage height_map="Data/Images/HeightMap.png" max_terrain_height="10">
+		<Stage height_map="Data/Images/HeightMap1.png" max_terrain_height="100">
 			<SpawnEvent entity="Robot" spawn_point="0" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="5"/>
 		</Stage> 
+
+		<Stage height_map="Data/Images/HeightMap2.png" max_terrain_height="10">
+			<SpawnEvent entity="Robot" spawn_point="0" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="5"/>
+		</Stage>
 
 	</Stages>
 

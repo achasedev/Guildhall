@@ -73,7 +73,6 @@ bool PlayState_Rest::Enter()
 
 	if (m_transitionTimer.HasIntervalElapsed())
 	{
-		m_restTimer.SetInterval(REST_INTERVAL);
 		return true;
 	}
 
@@ -86,7 +85,28 @@ bool PlayState_Rest::Enter()
 //
 void PlayState_Rest::Update()
 {
-	if (m_restTimer.HasIntervalElapsed())
+	// Check if the players are near the move location
+	bool playersReady = true;
+	Vector2 moveLocation = Vector2(10.f, 128.f);
+
+	Player** players = Game::GetPlayers();
+
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		if (players[i] != nullptr)
+		{
+			Vector2 playerPos = players[i]->GetPosition().xz();
+
+			float distance = (playerPos - moveLocation).GetLengthSquared();
+			if (distance > 200.f)
+			{
+				playersReady = false;
+				break;
+			}
+		}
+	}
+
+	if (playersReady)
 	{
 		m_gameState->TransitionToPlayState(new PlayState_Stage());
 	}
@@ -110,14 +130,28 @@ void PlayState_Rest::Update()
 //
 bool PlayState_Rest::Leave()
 {
-	UpdateWorldAndCamera();
+	static bool firstEnter = true;
 
-	if (m_transitionTimer.HasIntervalElapsed())
+	if (firstEnter)
 	{
-		return true;
+		int maxHeight = Game::GetWorld()->GetCurrentMaxHeightOfTerrain();
+
+		float decrementInterval = (float)maxHeight / REST_TRANSITION_OUT_TIME;
+
+		m_transitionTimer.SetInterval(1.f / decrementInterval);
+		firstEnter = false;
 	}
 
-	return false;
+	int numDecrements = m_transitionTimer.DecrementByIntervalAll();
+	bool worldFlat = false;
+	if (numDecrements > 0)
+	{
+		worldFlat = Game::GetWorld()->DecrementTerrainHeight(numDecrements);
+	}
+
+	UpdateWorldAndCamera();
+
+	return worldFlat;
 }
 
 
@@ -138,7 +172,7 @@ void PlayState_Rest::Render_Enter() const
 void PlayState_Rest::Render() const
 {
 	Game::GetWorld()->Render();
-	DebugRenderSystem::Draw2DText(Stringf("Rest: %.2f seconds remaining", m_restTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
+	DebugRenderSystem::Draw2DText(Stringf("Rest - GOGOGO"), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
 

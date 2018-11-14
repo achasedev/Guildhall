@@ -42,6 +42,9 @@ CampaignStage::CampaignStage(const XMLElement& element)
 	m_heightMapImage.LoadFromFile(heightMapPath);
 
 	m_maxTerrainHeight = ParseXmlAttribute(element, "max_terrain_height", m_maxTerrainHeight);
+
+	// We don't support anything over 64
+	m_maxTerrainHeight = MinInt(m_maxTerrainHeight, 64);
 }
 
 

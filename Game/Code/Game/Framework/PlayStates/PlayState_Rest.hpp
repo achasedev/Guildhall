@@ -30,10 +30,12 @@ private:
 	//-----Private Data-----
 	
 	// Timer for controlling when to move to the next stage state
-	Stopwatch				m_restTimer;
-		
+	//Stopwatch				m_restTimer;
+	
+	int m_decrementCount = 0;
+
 	static constexpr float REST_INTERVAL = 5.f;
 	static constexpr float REST_TRANSITION_IN_TIME = 1.0f;
-	static constexpr float REST_TRANSITION_OUT_TIME = 1.0f;
+	static constexpr float REST_TRANSITION_OUT_TIME = 2.0f;
 
 };

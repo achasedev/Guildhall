@@ -292,6 +292,32 @@ void World::SetTerrainHeightAtCoord(const IntVector3& coord, int height)
 
 
 //-----------------------------------------------------------------------------------------------
+// Lowers the world height by the amount, for cool effects
+// Returns true if the world is completely flat at 0.f
+//
+bool World::DecrementTerrainHeight(int decrementAmount)
+{
+	bool completelyFlat = true;
+	float floatAmount = (float)decrementAmount;
+
+	for (int i = 0; i < m_heightMap.GetCellCount(); ++i)
+	{
+		float newValue = m_heightMap.GetHeat(i);
+		newValue = ClampFloat(newValue - floatAmount, 0.f, newValue);
+
+		if (newValue > 0.f)
+		{
+			completelyFlat = false;
+		}
+
+		m_heightMap.SetHeat(i, newValue);
+	}
+
+	return completelyFlat;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Blows up the given entity
 //
 void World::ParticalizeAllEntities()
@@ -395,6 +421,25 @@ unsigned int World::GetGroundElevationAtCoord(const IntVector2& coord) const
 const HeatMap* World::GetHeightMap() const
 {
 	return &m_heightMap;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the max elevation of the terrain
+//
+int World::GetCurrentMaxHeightOfTerrain() const
+{
+	int max = -1;
+
+	for (int x = 0; x < m_dimensions.x; ++x)
+	{
+		for (int z = 0; z < m_dimensions.z; ++z)
+		{
+			max = MaxInt(max, (int) GetGroundElevationAtCoord(IntVector2(x, z)));
+		}
+	}
+
+	return max;
 }
 
 
