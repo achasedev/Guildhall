@@ -10,10 +10,10 @@
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Framework/GameCamera.hpp"
-#include "Game/Framework/WaveManager.hpp"
+#include "Game/Framework/CampaignManager.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 #include "Game/Framework/PlayStates/PlayState.hpp"
-#include "Game/Framework/PlayStates/PlayState_Wave.hpp"
+#include "Game/Framework/PlayStates/PlayState_Stage.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
@@ -76,9 +76,9 @@ bool GameState_Playing::Enter()
 	}
 
 	Game::GetWorld()->Inititalize();
-	Game::GetWaveManager()->Initialize("Data/Spawning.xml");
+	Game::GetCampaignManager()->Initialize("Data/Spawning.xml");
 
-	TransitionToPlayState(new PlayState_Wave());
+	TransitionToPlayState(new PlayState_Stage());
 
 	return true;
 }
@@ -89,7 +89,7 @@ bool GameState_Playing::Enter()
 //
 bool GameState_Playing::Leave()
 {
-	Game::GetWaveManager()->CleanUp();
+	Game::GetCampaignManager()->CleanUp();
 	Game::GetWorld()->CleanUp();
 
 	// Delete the players

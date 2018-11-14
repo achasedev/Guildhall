@@ -10,7 +10,7 @@
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Framework/GameCamera.hpp"
-#include "Game/Framework/WaveManager.hpp"
+#include "Game/Framework/CampaignManager.hpp"
 #include "Game/GameStates/GameState_Loading.hpp"
 
 #include "Engine/Core/Time/Clock.hpp"
@@ -92,8 +92,8 @@ void Game::Initialize()
 	GUARANTEE_OR_DIE(s_instance == nullptr, "Error: Game::Initialize called when a Game instance already exists.");
 	s_instance = new Game();
 
-	// Wave manager initialize here, since it refers to the instance above
-	s_instance->m_waveManager = new WaveManager();
+	// Campaign manager initialize here, since it refers to the instance above
+	s_instance->m_campaignManager = new CampaignManager();
 
 	// Set the game clock on the Renderer
 	Renderer::GetInstance()->SetRendererGameClock(s_instance->m_gameClock);
@@ -271,11 +271,11 @@ Player** Game::GetPlayers()
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the Wave Manager for the game
+// Returns the Campaign Manager for the game
 //
-WaveManager* Game::GetWaveManager()
+CampaignManager* Game::GetCampaignManager()
 {
-	return s_instance->m_waveManager;
+	return s_instance->m_campaignManager;
 }
 
 

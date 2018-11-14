@@ -13,7 +13,7 @@
 
 class Clock;
 class World;
-class WaveManager;
+class CampaignManager;
 class GameCamera;
 class Player;
 class GameState;
@@ -45,7 +45,7 @@ public:
 	static float				GetDeltaTime();
 	static World*				GetWorld();
 	static Player**				GetPlayers();
-	static WaveManager*			GetWaveManager();
+	static CampaignManager*			GetCampaignManager();
 
 	static bool					IsPlayerAlive(unsigned int index);
 
@@ -67,7 +67,7 @@ private:
 
 	Clock*			m_gameClock = nullptr;
 	World*			m_world = nullptr;
-	WaveManager*	m_waveManager = nullptr;
+	CampaignManager*	m_campaignManager = nullptr;
 	VoxelGrid*		m_voxelGrid = nullptr;
 	Player*			m_players[MAX_PLAYERS];
 

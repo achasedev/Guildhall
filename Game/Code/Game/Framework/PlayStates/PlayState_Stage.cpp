@@ -1,14 +1,14 @@
 /************************************************************************/
-/* File: PlayState_Wave.cpp
+/* File: PlayState_Stage.cpp
 /* Author: Andrew Chase
 /* Date: October 25th 2018
-/* Description: Implementation of the Wave PlayState
+/* Description: Implementation of the Stage PlayState
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/GameCamera.hpp"
-#include "Game/Framework/WaveManager.hpp"
-#include "Game/Framework/PlayStates/PlayState_Wave.hpp"
+#include "Game/Framework/CampaignManager.hpp"
+#include "Game/Framework/PlayStates/PlayState_Stage.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 #include "Game/Framework/PlayStates/PlayState_Rest.hpp"
 #include "Game/Framework/PlayStates/PlayState_Victory.hpp"
@@ -24,8 +24,8 @@
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
-PlayState_Wave::PlayState_Wave()
-	: PlayState(WAVE_TRANSITION_IN_TIME, WAVE_TRANSITION_OUT_TIME)
+PlayState_Stage::PlayState_Stage()
+	: PlayState(STAGE_TRANSITION_IN_TIME, STAGE_TRANSITION_OUT_TIME)
 {
 }
 
@@ -33,7 +33,7 @@ PlayState_Wave::PlayState_Wave()
 //-----------------------------------------------------------------------------------------------
 // Destructor
 //
-PlayState_Wave::~PlayState_Wave()
+PlayState_Stage::~PlayState_Stage()
 {
 }
 
@@ -41,7 +41,7 @@ PlayState_Wave::~PlayState_Wave()
 //-----------------------------------------------------------------------------------------------
 // Checks for player gameplay input and applies it
 //
-void PlayState_Wave::ProcessInput()
+void PlayState_Stage::ProcessInput()
 {
 	// Check player input
 	Player** players = Game::GetPlayers();
@@ -57,21 +57,21 @@ void PlayState_Wave::ProcessInput()
 
 
 //-----------------------------------------------------------------------------------------------
-// Updates the wave manager and then world
+// Updates the Stage manager and then world
 //
-void PlayState_Wave::Update()
+void PlayState_Stage::Update()
 {
-	WaveManager* waveMan = Game::GetWaveManager();
+	CampaignManager* stageMan = Game::GetCampaignManager();
 
-	// Update the wave logic first
-	waveMan->Update();
+	// Update the stage logic first
+	stageMan->Update();
 
 	UpdateWorldAndCamera();
 
-	// Check for end of wave and victory
-	if (waveMan->IsCurrentWaveFinished())
+	// Check for end of stage and victory
+	if (stageMan->IsCurrentStageFinished())
 	{
-		if (waveMan->IsCurrentWaveFinal())
+		if (stageMan->IsCurrentStageFinal())
 		{
 			m_gameState->TransitionToPlayState(new PlayState_Victory());
 		}
@@ -92,14 +92,14 @@ void PlayState_Wave::Update()
 //-----------------------------------------------------------------------------------------------
 // Update the enter transition
 //
-bool PlayState_Wave::Enter()
+bool PlayState_Stage::Enter()
 {
 	UpdateWorldAndCamera();
 
 	// Do stuff
 	if (m_transitionTimer.HasIntervalElapsed())
 	{
-		Game::GetWaveManager()->StartNextWave();
+		Game::GetCampaignManager()->StartNextStage();
 		return true;
 	}
 
@@ -110,7 +110,7 @@ bool PlayState_Wave::Enter()
 //-----------------------------------------------------------------------------------------------
 // Updates the leave transition
 //
-bool PlayState_Wave::Leave()
+bool PlayState_Stage::Leave()
 {
 	UpdateWorldAndCamera();
 
@@ -127,28 +127,28 @@ bool PlayState_Wave::Leave()
 //-----------------------------------------------------------------------------------------------
 // Renders the enter transition
 //
-void PlayState_Wave::Render_Enter() const
+void PlayState_Stage::Render_Enter() const
 {
 	Game::GetWorld()->Render();
-	DebugRenderSystem::Draw2DText(Stringf("Wave Enter: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
+	DebugRenderSystem::Draw2DText(Stringf("Stage Enter: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Renders the normal state of the game
 //
-void PlayState_Wave::Render() const
+void PlayState_Stage::Render() const
 {
 	Game::GetWorld()->Render();
-	//DebugRenderSystem::Draw2DText(Stringf("Wave %i of %i", Game::GetWaveManager()->GetCurrentWaveNumber() + 1, Game::GetWaveManager()->GetWaveCount()), Window::GetInstance()->GetWindowBounds(), 0.f);
+	DebugRenderSystem::Draw2DText(Stringf("Stage %i of %i", Game::GetCampaignManager()->GetCurrentStageNumber() + 1, Game::GetCampaignManager()->GetStageCount()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Renders the leave transition of the game
 //
-void PlayState_Wave::Render_Leave() const
+void PlayState_Stage::Render_Leave() const
 {
 	Game::GetWorld()->Render();
-	DebugRenderSystem::Draw2DText(Stringf("Wave Leave: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
+	DebugRenderSystem::Draw2DText(Stringf("Stage Leave: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }

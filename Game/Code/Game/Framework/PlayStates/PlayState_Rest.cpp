@@ -88,7 +88,7 @@ void PlayState_Rest::Update()
 {
 	if (m_restTimer.HasIntervalElapsed())
 	{
-		m_gameState->TransitionToPlayState(new PlayState_Wave());
+		m_gameState->TransitionToPlayState(new PlayState_Stage());
 	}
 	else
 	{

@@ -1,10 +1,10 @@
 /************************************************************************/
-/* File: Wave.cpp
+/* File: CampaignStage.cpp
 /* Author: Andrew Chase
 /* Date: October 20th 2018
-/* Description: Implementation of the Wave class
+/* Description: Implementation of the CampaignStage class
 /************************************************************************/
-#include "Game/Framework/Wave.hpp"
+#include "Game/Framework/CampaignStage.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
@@ -13,11 +13,8 @@
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
-Wave::Wave(const XMLElement& element)
+CampaignStage::CampaignStage(const XMLElement& element)
 {
-	// Base info
-	m_maxSpawned = ParseXmlAttribute(element, "max_spawned", m_maxSpawned);
-
 	// Spawn info
 	const XMLElement* spawnElement = element.FirstChildElement();
 
@@ -25,17 +22,14 @@ Wave::Wave(const XMLElement& element)
 	{
 		EntitySpawnEvent_t info;
 
-		info.maxLiveSpawned		= ParseXmlAttribute(*spawnElement,	"max_spawned",		info.maxLiveSpawned);
-		info.minLiveSpawned		= ParseXmlAttribute(*spawnElement,	"min_spawned",		info.minLiveSpawned);
-		info.spawnDelay			= ParseXmlAttribute(*spawnElement,	"spawn_delay",		info.spawnDelay);
+		info.spawnCountDelay	= ParseXmlAttribute(*spawnElement,	"spawn_count_delay",		info.spawnCountDelay);
+		info.spawnTimeDelay		= ParseXmlAttribute(*spawnElement, "spawn_time_delay", info.spawnTimeDelay);
 		info.countToSpawn		= ParseXmlAttribute(*spawnElement,	"total_to_spawn",	info.countToSpawn);
-
-		// Calculate the max threshold given the min and max live counts
-		int range = info.maxLiveSpawned - info.minLiveSpawned;
-		info.maxLiveThreshold = Ceiling((float)range * 0.8f) + info.minLiveSpawned;
+		info.spawnRate			= ParseXmlAttribute(*spawnElement, "spawn_rate", info.spawnRate);
+		info.spawnPointID		= ParseXmlAttribute(*spawnElement, "spawn_point", info.spawnPointID);
 
 		std::string typeName = ParseXmlAttribute(*spawnElement, "entity", "");
-		GUARANTEE_OR_DIE(typeName != "", "Error: Missing entity type in wave definition");
+		GUARANTEE_OR_DIE(typeName != "", "Error: Missing entity type in stage definition");
 		info.definition = EntityDefinition::GetDefinition(typeName);
 
 		m_events.push_back(info);
@@ -48,6 +42,6 @@ Wave::Wave(const XMLElement& element)
 //-----------------------------------------------------------------------------------------------
 // Destructor
 //
-Wave::~Wave()
+CampaignStage::~CampaignStage()
 {
 }

@@ -22,7 +22,7 @@ enum ePlayState
 
 
 class World;
-class WaveManager;
+class CampaignManager;
 class PlayState;
 
 class GameState_Playing : public GameState

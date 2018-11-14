@@ -1,25 +1,25 @@
 /************************************************************************/
-/* File: WaveManager.hpp
+/* File: CampaignManager.hpp
 /* Author: Andrew Chase
 /* Date: October 20th 2018
-/* Description: Class to control per-wave entity spawning
+/* Description: Class to control per-stage entity spawning
 /************************************************************************/
 #pragma once
 #include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 #include <vector>
 
-class Wave;
+class CampaignStage;
 class SpawnPoint;
 class EntityDefinition;
 
-class WaveManager
+class CampaignManager
 {
 public:
 	//-----Public Methods-----
 	
-	WaveManager();
-	~WaveManager();
+	CampaignManager();
+	~CampaignManager();
 
 	void	Initialize(const char* filename);
 	void	CleanUp();
@@ -27,13 +27,13 @@ public:
 	void	Update();
 
 	// Accessors
-	int		GetWaveCount() const;
-	bool	IsCurrentWaveFinal() const;
-	int		GetCurrentWaveNumber() const;
-	bool	IsCurrentWaveFinished() const;
+	int		GetStageCount() const;
+	bool	IsCurrentStageFinal() const;
+	int		GetCurrentStageNumber() const;
+	bool	IsCurrentStageFinished() const;
 
 	// Mutators
-	void	StartNextWave();
+	void	StartNextStage();
 
 
 public:
@@ -43,11 +43,10 @@ public:
 private:
 	//-----Private Methods-----
 	
-	void	InitializeCoreInfo(const XMLElement& rootElement);
 	void	InitializeSpawnPoints(const XMLElement& rootElement);
-	void	InitializeWaves(const XMLElement& rootElement);
+	void	InitializeStages(const XMLElement& rootElement);
 
-	bool	PerformWaveEndCheck();
+	bool	PerformStageEndCheck();
 
 	int		GetTotalSpawnCount() const;
 	int		GetSpawnCountForType(const EntityDefinition* definition) const;
@@ -57,14 +56,15 @@ private:
 	//-----Private Data-----
 
 	// State
+	Stopwatch					m_stageTimer;
 	Stopwatch					m_spawnTick;
 
-	bool						m_currWaveFinished = false;
-	int							m_currWaveIndex = -1;
-	int							m_totalSpawnedThisWave = 0;
+	bool						m_currStageFinished = false;
+	int							m_currStageIndex = -1;
+	int							m_totalSpawnedThisStage = 0;
 
 	// Data
-	std::vector<Wave*>			m_waves;
+	std::vector<CampaignStage*>			m_stages;
 	std::vector<SpawnPoint*>	m_spawnPoints;
 	int							m_maxSpawnedEntities = 100000;
 

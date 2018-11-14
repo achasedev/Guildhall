@@ -1,6 +1,4 @@
-<Spawning>
-
-	<Core max_spawned_entities="55555"/>
+<Campaign>
 
 	<SpawnPoints>
 
@@ -11,12 +9,12 @@
 
 	</SpawnPoints>
 
-	<Waves>
+	<Stages>
 
-		<Wave>
-			<Spawn entity="Robot" min_spawned="10" max_spawned="10" total_to_spawn="100"/>
-		</Wave> 
+		<Stage height_map="Data/Images/HeightMap1.png">
+			<SpawnEvent entity="Robot" spawn_point="1" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="30.0" total_to_spawn="100"/>
+		</Stage> 
 
-	</Waves>
+	</Stages>
 
-</Spawning>
+</Campaign>

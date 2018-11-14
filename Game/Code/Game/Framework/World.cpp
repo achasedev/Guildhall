@@ -265,16 +265,16 @@ void World::DestroyTerrain(const IntVector3& coord, const IntRange& radius /*= I
 	// For the ground I hit, blow it away! (anything within radius)
 	Vector3 velocity = 40.f * Vector3(GetRandomFloatInRange(-1.f, 1.f), 1.f, GetRandomFloatInRange(-1.f, 1.f));
 	
-	Particle* particle = new Particle(Rgba::DARK_GREEN, 2.0f, Vector3(coord), velocity);
-	AddParticle(particle);
+	Particle* looseParticle = new Particle(Rgba::DARK_GREEN, 2.0f, Vector3(coord), velocity);
+	AddParticle(looseParticle);
 
 	// For all particles above the hit, have them fall straight down
 	for (int y = coord.y + 1; y < heightAtCoord; ++y)
 	{
 		Vector3 position = Vector3(IntVector3(coord.x, y, coord.z));
 
-		Particle* particle = new Particle(Rgba::DARK_GREEN, 2.0f, position, Vector3::ZERO, true);
-		AddParticle(particle);	
+		Particle* groundParticle = new Particle(Rgba::DARK_GREEN, 2.0f, position, Vector3::ZERO, true);
+		AddParticle(groundParticle);	
 	}
 
 

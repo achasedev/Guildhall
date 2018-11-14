@@ -1,19 +1,19 @@
 /************************************************************************/
-/* File: PlayState_Wave.hpp
+/* File: PlayState_Stage.hpp
 /* Author: Andrew Chase
 /* Date: October 23rd 2018
-/* Description: Class to represent the state of play during a wave
+/* Description: Class to represent the state of play during a stage
 /************************************************************************/
 #pragma once
 #include "Game/Framework/PlayStates/PlayState.hpp"
 
-class PlayState_Wave : public PlayState
+class PlayState_Stage : public PlayState
 {
 public:
 	//-----Public Methods-----
 	
-	PlayState_Wave();
-	~PlayState_Wave();
+	PlayState_Stage();
+	~PlayState_Stage();
 
 	virtual void ProcessInput() override;
 
@@ -29,7 +29,7 @@ public:
 private:
 	//-----Private Data-----
 	
-	static constexpr float WAVE_TRANSITION_IN_TIME = 1.0f;
-	static constexpr float WAVE_TRANSITION_OUT_TIME = 1.0f;
+	static constexpr float STAGE_TRANSITION_IN_TIME = 1.0f;
+	static constexpr float STAGE_TRANSITION_OUT_TIME = 1.0f;
 
 };

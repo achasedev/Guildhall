@@ -1,13 +1,13 @@
 /************************************************************************/
-/* File: WaveManager.cpp
+/* File: CampaignManager.cpp
 /* Author: Andrew Chase
 /* Date: October 20th 2018
-/* Description: Implementation of the WaveManager class
+/* Description: Implementation of the CampaignManager class
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
-#include "Game/Framework/Wave.hpp"
+#include "Game/Framework/CampaignStage.hpp"
 #include "Game/Framework/SpawnPoint.hpp"
-#include "Game/Framework/WaveManager.hpp"
+#include "Game/Framework/CampaignManager.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
@@ -17,8 +17,9 @@
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
-WaveManager::WaveManager()
-	: m_spawnTick(Stopwatch(Game::GetGameClock()))
+CampaignManager::CampaignManager()
+	: m_stageTimer(Stopwatch(Game::GetGameClock()))
+	, m_spawnTick(Stopwatch(Game::GetGameClock()))
 {
 }
 
@@ -26,16 +27,16 @@ WaveManager::WaveManager()
 //-----------------------------------------------------------------------------------------------
 // Destructor
 //
-WaveManager::~WaveManager()
+CampaignManager::~CampaignManager()
 {
 	CleanUp();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// Sets the manager's wave data to the data given by the xml filename
+// Sets the manager's campaign data to the data given by the xml filename
 //
-void WaveManager::Initialize(const char* filename)
+void CampaignManager::Initialize(const char* filename)
 {
 	// Load the file
 	XMLDocument document;
@@ -46,43 +47,40 @@ void WaveManager::Initialize(const char* filename)
 	const XMLElement* rootElement = document.RootElement();
 	GUARANTEE_OR_DIE(rootElement != nullptr, Stringf("Error: SpawnManager file %s has no root element", filename));
 
-	// Core
-	InitializeCoreInfo(*rootElement);
-
 	// Spawnpoints
 	InitializeSpawnPoints(*rootElement);
 
-	// Waves
-	InitializeWaves(*rootElement);
+	// Stages
+	InitializeStages(*rootElement);
 
 	m_spawnTick.SetInterval(1.0f);
 
 	// Reset the state
-	m_currWaveFinished = false;
-	m_currWaveIndex = -1;
-	m_totalSpawnedThisWave = 0;
+	m_currStageFinished = false;
+	m_currStageIndex = -1;
+	m_totalSpawnedThisStage = 0;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Resets the manager to be used again in another game
 //
-void WaveManager::CleanUp()
+void CampaignManager::CleanUp()
 {
 	// Basic state
 	m_spawnTick.Reset();
-	m_currWaveFinished = false;
-	m_currWaveIndex = -1;
+	m_currStageFinished = false;
+	m_currStageIndex = -1;
 	m_maxSpawnedEntities = 100000;
-	m_totalSpawnedThisWave = 0;
+	m_totalSpawnedThisStage = 0;
 
-	// Clean up waves
-	for (int i = 0; i < (int)m_waves.size(); ++i)
+	// Clean up stages
+	for (int i = 0; i < (int)m_stages.size(); ++i)
 	{
-		delete m_waves[i];
+		delete m_stages[i];
 	}
 
-	m_waves.clear();
+	m_stages.clear();
 
 	// Clean up spawn points
 	for (int i = 0; i < (int)m_spawnPoints.size(); ++i)
@@ -97,12 +95,12 @@ void WaveManager::CleanUp()
 //-----------------------------------------------------------------------------------------------
 // Update
 //
-void WaveManager::Update()
+void CampaignManager::Update()
 {
-	// Check for end of wave
-	PerformWaveEndCheck();
+	// Check for end of stage
+	PerformStageEndCheck();
 
-	if (m_currWaveFinished)
+	if (m_currStageFinished)
 	{
 		return;
 	}
@@ -113,13 +111,13 @@ void WaveManager::Update()
 		return;
 	}
 
-	// Check the spawn conditions for the current wave
-	Wave* wave = m_waves[m_currWaveIndex];
+	// Check the spawn conditions for the current stage
+	CampaignStage* stage = m_stages[m_currStageIndex];
 
-	int numSpawns = (int) wave->m_events.size();
+	int numSpawns = (int) stage->m_events.size();
 	for (int spawnIndex = 0; spawnIndex < numSpawns; ++spawnIndex)
 	{
-		EntitySpawnEvent_t& event = wave->m_events[spawnIndex];
+		EntitySpawnEvent_t& event = stage->m_events[spawnIndex];
 
 		// We've spawned all of this event
 		if (event.countToSpawn <= 0)
@@ -127,106 +125,63 @@ void WaveManager::Update()
 			continue;
 		}
 
-		int spawnCount = GetSpawnCountForType(event.definition);
-
-		// If the number on the field is already above threshold, continue
-		if (spawnCount >= event.maxLiveThreshold)
-		{
-			continue;
-		}
-
-
 		// If this event should still be delayed, continue
-		if (m_totalSpawnedThisWave < event.spawnDelay)
+		if (m_totalSpawnedThisStage < event.spawnCountDelay || m_stageTimer.GetElapsedTime() < event.spawnTimeDelay)
 		{
 			continue;
 		}
 
-		// If the number is less than the min amount, force a spawn to the min amount
-		int amountToSpawn = 0;
-		int lowerBound = spawnCount;
-
-		if (spawnCount < event.minLiveSpawned)
-		{
-			amountToSpawn += event.minLiveSpawned - spawnCount;
-			lowerBound = event.minLiveSpawned;
-		}
-
-		// Add a random amount on top of that for variance
-		int range = (int)(event.maxLiveSpawned - lowerBound);
-		
-		int addition = GetRandomIntInRange(0, range);
-		amountToSpawn += addition;
-
-		// Ensure we don't go over the max to spawn
-		if (amountToSpawn > event.countToSpawn)
-		{
-			amountToSpawn = event.countToSpawn;
-		}
+		// Spawn based on the spawn rate and the amount remaining to spawn
+		int amountToSpawn = MinInt(event.countToSpawn, event.spawnRate);
 
 		// Update how many we still have to spawn
 		event.countToSpawn -= amountToSpawn;
 
-		int spawnerIndex = GetRandomIntLessThan((int) m_spawnPoints.size());
-
-		SpawnPoint* point = m_spawnPoints[spawnerIndex];
+		SpawnPoint* point = m_spawnPoints[event.spawnPointID];
 
 		for (int i = 0; i < amountToSpawn; ++i)
 		{
 			point->SpawnEntity(event.definition);
-			m_totalSpawnedThisWave++;
+			m_totalSpawnedThisStage++;
 		}
 	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// Sets up the manager to begin the next wave
+// Sets up the manager to begin the next stage
 //
-void WaveManager::StartNextWave()
+void CampaignManager::StartNextStage()
 {
-	m_currWaveIndex++;
-	m_currWaveFinished = false;
-	m_totalSpawnedThisWave = 0;
+	m_currStageIndex++;
+	m_currStageFinished = false;
+	m_totalSpawnedThisStage = 0;
+	m_stageTimer.Reset();
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns whether the current wave has finished playing
+// Returns whether the current stage has finished playing
 //
-bool WaveManager::IsCurrentWaveFinished() const
+bool CampaignManager::IsCurrentStageFinished() const
 {
-	return m_currWaveFinished;
+	return m_currStageFinished;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns whether the current wave is the last wave, for testing victory
+// Returns whether the current stage is the last stage, for testing victory
 //
-bool WaveManager::IsCurrentWaveFinal() const
+bool CampaignManager::IsCurrentStageFinal() const
 {
-	return (m_currWaveIndex == (int)m_waves.size() - 1);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Parses for any core information for the spawn manager
-//
-void WaveManager::InitializeCoreInfo(const XMLElement& rootElement)
-{
-	const XMLElement* coreElement = rootElement.FirstChildElement("Core");
-
-	if (coreElement != nullptr)
-	{
-		m_maxSpawnedEntities = ParseXmlAttribute(*coreElement, "max_spawned_entities", m_maxSpawnedEntities);
-	}
+	return (m_currStageIndex == (int)m_stages.size() - 1);
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Parses for the spawn point information
 //
-void WaveManager::InitializeSpawnPoints(const XMLElement& rootElement)
+void CampaignManager::InitializeSpawnPoints(const XMLElement& rootElement)
 {
 	const XMLElement* pointsElement = rootElement.FirstChildElement("SpawnPoints");
 
@@ -247,60 +202,60 @@ void WaveManager::InitializeSpawnPoints(const XMLElement& rootElement)
 
 
 //-----------------------------------------------------------------------------------------------
-// Parses for the waves descriptions
+// Parses for the stages descriptions
 //
-void WaveManager::InitializeWaves(const XMLElement& rootElement)
+void CampaignManager::InitializeStages(const XMLElement& rootElement)
 {
-	const XMLElement* wavesElement = rootElement.FirstChildElement("Waves");
+	const XMLElement* stagesElement = rootElement.FirstChildElement("Stages");
 
-	GUARANTEE_OR_DIE(wavesElement != nullptr, "Error: SpawnManager file has no waves element");
+	GUARANTEE_OR_DIE(stagesElement != nullptr, "Error: SpawnManager file has no stages element");
 
-	const XMLElement* currWaveElement = wavesElement->FirstChildElement();
+	const XMLElement* currStageElement = stagesElement->FirstChildElement();
 
-	GUARANTEE_OR_DIE(currWaveElement != nullptr, "Error: SpawnManager file has no waves specified");
+	GUARANTEE_OR_DIE(currStageElement != nullptr, "Error: SpawnManager file has no stages specified");
 
-	while (currWaveElement != nullptr)
+	while (currStageElement != nullptr)
 	{
-		Wave* wave = new Wave(*currWaveElement);
-		m_waves.push_back(wave);
+		CampaignStage* stage = new CampaignStage(*currStageElement);
+		m_stages.push_back(stage);
 
-		currWaveElement = currWaveElement->NextSiblingElement();
+		currStageElement = currStageElement->NextSiblingElement();
 	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// Checks if all entities for this wave have spawned and are dead, signalling this wave is finished
+// Checks if all entities for this stage have spawned and are dead, signalling this stage is finished
 //
-bool WaveManager::PerformWaveEndCheck()
+bool CampaignManager::PerformStageEndCheck()
 {
-	if (m_currWaveFinished)
+	if (m_currStageFinished)
 	{
 		return true;
 	}
 
-	Wave* wave = m_waves[m_currWaveIndex];
+	CampaignStage* stage = m_stages[m_currStageIndex];
 
 	bool allSpawnsDone = true;
-	int numSpawns = (int) wave->m_events.size();
+	int numSpawns = (int) stage->m_events.size();
 	for (int spawnIndex = 0; spawnIndex < numSpawns; ++spawnIndex)
 	{
-		if (wave->m_events[spawnIndex].countToSpawn > 0)
+		if (stage->m_events[spawnIndex].countToSpawn > 0)
 		{
 			allSpawnsDone = false;
 		}
 	}
 
-	m_currWaveFinished = allSpawnsDone && (GetTotalSpawnCount() == 0);
+	m_currStageFinished = allSpawnsDone && (GetTotalSpawnCount() == 0);
 
-	return m_currWaveFinished;
+	return m_currStageFinished;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Returns the total number of entities spawned by this manager
 //
-int WaveManager::GetTotalSpawnCount() const
+int CampaignManager::GetTotalSpawnCount() const
 {
 	int numSpawners = (int) m_spawnPoints.size();
 
@@ -317,7 +272,7 @@ int WaveManager::GetTotalSpawnCount() const
 //-----------------------------------------------------------------------------------------------
 // Returns the number of entities of the given definition are spawned currently
 //
-int WaveManager::GetSpawnCountForType(const EntityDefinition* definition) const
+int CampaignManager::GetSpawnCountForType(const EntityDefinition* definition) const
 {
 	int numSpawners = (int)m_spawnPoints.size();
 
@@ -332,18 +287,18 @@ int WaveManager::GetSpawnCountForType(const EntityDefinition* definition) const
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the current wave index
+// Returns the current stage index
 //
-int WaveManager::GetCurrentWaveNumber() const
+int CampaignManager::GetCurrentStageNumber() const
 {
-	return m_currWaveIndex;
+	return m_currStageIndex;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the number of waves currently in the wave manager
+// Returns the number of stages currently in the campaign manager
 //
-int WaveManager::GetWaveCount() const
+int CampaignManager::GetStageCount() const
 {
-	return (int)m_waves.size();
+	return (int)m_stages.size();
 }

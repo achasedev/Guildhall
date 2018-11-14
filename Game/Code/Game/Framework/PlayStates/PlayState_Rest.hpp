@@ -2,10 +2,10 @@
 /* File: PlayState_Rest.hpp
 /* Author: Andrew Chase
 /* Date: October 23rd 2018
-/* Description: Class representing the state of play between waves
+/* Description: Class representing the state of play between stages
 /************************************************************************/
 #pragma once
-#include "Game/Framework/PlayStates/PlayState_Wave.hpp"
+#include "Game/Framework/PlayStates/PlayState_Stage.hpp"
 
 class PlayState_Rest : public PlayState
 {
@@ -29,7 +29,7 @@ public:
 private:
 	//-----Private Data-----
 	
-	// Timer for controlling when to move to the next wave state
+	// Timer for controlling when to move to the next stage state
 	Stopwatch				m_restTimer;
 		
 	static constexpr float REST_INTERVAL = 5.f;
