@@ -19,6 +19,14 @@ class Player;
 class GameState;
 class VoxelGrid;
 
+enum eGameStateState
+{
+	GAME_STATE_TRANSITIONING_IN,
+	GAME_STATE_UPDATING,
+	GAME_STATE_TRANSITIONING_OUT
+};
+
+
 class Game
 {
 	
@@ -63,13 +71,13 @@ private:
 
 	GameState*		m_currentState = nullptr;
 	GameState*		m_transitionState = nullptr;
-	bool			m_isTransitioning = false;
+	eGameStateState m_gameStateState = GAME_STATE_TRANSITIONING_IN;
 
-	Clock*			m_gameClock = nullptr;
-	World*			m_world = nullptr;
+	Clock*				m_gameClock = nullptr;
+	World*				m_world = nullptr;
 	CampaignManager*	m_campaignManager = nullptr;
-	VoxelGrid*		m_voxelGrid = nullptr;
-	Player*			m_players[MAX_PLAYERS];
+	VoxelGrid*			m_voxelGrid = nullptr;
+	Player*				m_players[MAX_PLAYERS];
 
 	// Camera
 	GameCamera*		m_gameCamera = nullptr;

@@ -5,6 +5,7 @@
 /* Description: Class to represent a single stage in a campaign
 /************************************************************************/
 #pragma once
+#include "Engine/Core/Image.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 #include <vector>
 
@@ -24,6 +25,7 @@ struct EntitySpawnEvent_t
 class CampaignStage
 {
 public:
+	friend class World;
 	friend class CampaignManager;
 
 	//-----Public Methods-----
@@ -35,6 +37,9 @@ public:
 private:
 	//-----Private Data-----
 	
+	Image							m_heightMapImage;
+	int								m_maxTerrainHeight = 0;
+
 	std::vector<EntitySpawnEvent_t> m_events;
 	
 };

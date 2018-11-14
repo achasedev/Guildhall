@@ -11,6 +11,7 @@
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/GameCamera.hpp"
+#include "Game/Framework/CampaignStage.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Core/Image.hpp"
@@ -87,8 +88,8 @@ void					CalculateMassScalars(Entity* first, Entity* second, float& out_firstSca
 // Constructor
 //
 World::World()
+	: m_heightMap(HeatMap(m_dimensions.xz(), 0.f))
 {
-	m_heightMap = new HeatMap(IntVector2(256, 256), 0.f);
 }
 
 
@@ -98,32 +99,33 @@ World::World()
 World::~World()
 {
 	CleanUp();
-	
-	if (m_heightMap != nullptr)
-	{
-		delete m_heightMap;
-		m_heightMap = nullptr;
-	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets up the world to be ready for the main/character select menu
+//
+void World::InitializeForMenu()
+{
+	m_heightMap.Clear(0.f);
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Initializes the grid and any other setup
 //
-void World::Inititalize()
+void World::InititalizeForStage(CampaignStage* stage)
 {
-	m_dimensions = IntVector3(256, 64, 256);
-
-	for (int i = 0; i < 1; ++i)
+	for (int y = 0; y < m_dimensions.z; ++y)
 	{
-		Entity* entity = new Entity(EntityDefinition::GetDefinition("Wall"));
-		entity->SetPosition(Vector3(128.f, 5.f, 128.f));
-		entity->SetOrientation(90.f);
-		m_entities.push_back(entity);
-	}
+		for (int x = 0; x < m_dimensions.x; ++x)
+		{
+			float greyscale = stage->m_heightMapImage.GetTexelGrayScale(x, y);
+			int height = (int)RangeMapFloat(greyscale, 0.f, 1.0f, 0.f, (float)stage->m_maxTerrainHeight);
 
-	InitializeHeightMap();
-	//InitializeHeatMaps();
+			m_heightMap.SetHeat(IntVector2(x, y), (float)height);
+		}
+	}
 }
 
 
@@ -132,8 +134,6 @@ void World::Inititalize()
 //
 void World::CleanUp()
 {
-	m_dimensions = IntVector3(-1, -1, -1);
-
 	for (int i = 0; i < (int)m_entities.size(); ++i)
 	{
 		if (dynamic_cast<Player*>(m_entities[i]) == nullptr)
@@ -151,10 +151,7 @@ void World::CleanUp()
 
 	m_particles.clear();
 
-	if (m_heightMap != nullptr)
-	{
-		m_heightMap->Clear(0.f);
-	}
+	m_heightMap.Clear(0.f);
 
 	CleanUpHeatMaps();
 }
@@ -216,7 +213,7 @@ void World::Render()
 	VoxelGrid* grid = Game::GetVoxelGrid();
 
 	// Color in the ground
-	grid->DrawTerrain(m_heightMap);
+	grid->DrawTerrain(&m_heightMap);
 
 	// Color in static geometry
 	DrawStaticEntitiesToGrid();
@@ -255,12 +252,12 @@ void World::AddParticle(Particle* particle)
 //
 void World::DestroyTerrain(const IntVector3& coord, const IntRange& radius /*= IntRange(0, 0)*/)
 {
-	if (!m_heightMap->AreCoordsValid(coord.xz()))
+	if (!m_heightMap.AreCoordsValid(coord.xz()))
 	{
 		return;
 	}
 
-	int heightAtCoord = (int) m_heightMap->GetHeat(coord.xz());
+	int heightAtCoord = (int) m_heightMap.GetHeat(coord.xz());
 	
 	// For the ground I hit, blow it away! (anything within radius)
 	Vector3 velocity = 40.f * Vector3(GetRandomFloatInRange(-1.f, 1.f), 1.f, GetRandomFloatInRange(-1.f, 1.f));
@@ -278,7 +275,7 @@ void World::DestroyTerrain(const IntVector3& coord, const IntRange& radius /*= I
 	}
 
 
-	m_heightMap->SetHeat(coord.xz(), (float) MinInt(coord.y - 1, heightAtCoord));
+	m_heightMap.SetHeat(coord.xz(), (float) MinInt(coord.y - 1, heightAtCoord));
 }
 
 
@@ -287,9 +284,9 @@ void World::DestroyTerrain(const IntVector3& coord, const IntRange& radius /*= I
 //
 void World::SetTerrainHeightAtCoord(const IntVector3& coord, int height)
 {
-	if (m_heightMap->AreCoordsValid(coord.xz()))
+	if (m_heightMap.AreCoordsValid(coord.xz()))
 	{
-		m_heightMap->SetHeat(coord.xz(), (float)height);
+		m_heightMap.SetHeat(coord.xz(), (float)height);
 	}
 }
 
@@ -333,26 +330,6 @@ bool World::IsEntityOnMap(const Entity* entity) const
 
 	return true;
 }
-
-
-//-----------------------------------------------------------------------------------------------
-// Sets the entity to be on the ground at their current map position
-//
-// void World::SnapEntityToGround(Entity* entity)
-// {
-// 	if (IsEntityOnMap(entity))
-// 	{
-// 		Vector3 position = entity->GetPosition();
-// 		position.y = (float)m_groundElevation;
-// 		entity->SetPosition(position);
-// 
-// 		PhysicsComponent* comp = entity->GetPhysicsComponent();
-// 		if (comp != nullptr)
-// 		{
-// 			comp->ZeroYVelocity();
-// 		}
-// 	}
-// }
 
 
 //-----------------------------------------------------------------------------------------------
@@ -408,16 +385,16 @@ HeatMap* World::GetNavMap() const
 //
 unsigned int World::GetGroundElevationAtCoord(const IntVector2& coord) const
 {
-	return (unsigned int)m_heightMap->GetHeat(coord);
+	return (unsigned int)m_heightMap.GetHeat(coord);
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Returns the height map for the world
 //
-HeatMap* World::GetHeightMap() const
+const HeatMap* World::GetHeightMap() const
 {
-	return m_heightMap;
+	return &m_heightMap;
 }
 
 
@@ -438,7 +415,7 @@ Vector3 World::GetNextPositionTowardsPlayer(const Vector3& currPosition) const
 	IntVector2 currCoords = GetCoordsForPosition(currPosition).xz();
 	IntVector2 neighborCoords = m_navMapInUse.m_navigationMap->GetMinNeighborCoords(currCoords);
 
-	float height = m_heightMap->GetHeat(neighborCoords);
+	float height = m_heightMap.GetHeat(neighborCoords);
 	return Vector3((float) neighborCoords.x, height, (float) neighborCoords.y);
 }
 
@@ -574,7 +551,7 @@ float World::GetMapHeightForEntity(const Entity* entity) const
 		for (int x = 0; x < dimensions.x; ++x)
 		{
 			IntVector3 currPos = coordPosition + IntVector3(x, 0, z);
-			float currHeight = m_heightMap->GetHeat(currPos.xz());
+			float currHeight = m_heightMap.GetHeat(currPos.xz());
 
 			// Update the max height over this area
 			maxHeight = MaxFloat(maxHeight, currHeight);
@@ -1140,29 +1117,6 @@ void World::CleanUpHeatMaps()
 	m_staticSectionsThread.clear();
 	m_swapReady = false;
 	m_isQuitting = false;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Creates the heightmap for the world
-//
-void World::InitializeHeightMap()
-{
-	m_heightMap = new HeatMap(m_dimensions.xz(), 0.f);
-
-	Image image;
-	image.LoadFromFile("Data/Images/HeightMap.png");
-
-	for (int y = 0; y < m_dimensions.z; ++y)
-	{
-		for (int x = 0; x < m_dimensions.x; ++x)
-		{
-			float greyscale = image.GetTexelGrayScale(x, y);
-			int height = (int) RangeMapFloat(greyscale, 0.f, 1.0f, 0.f, (float) (m_dimensions.y - 1));
-
-			m_heightMap->SetHeat(IntVector2(x, y), (float) height);
-		}
-	}
 }
 
 

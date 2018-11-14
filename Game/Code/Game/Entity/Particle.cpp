@@ -76,7 +76,7 @@ void Particle::OnGroundCollision()
 	{
 		IntVector3 coordPosition = GetCoordinatePosition();
 		World* world = Game::GetWorld();
-		HeatMap* heightMap = world->GetHeightMap();
+		const HeatMap* heightMap = world->GetHeightMap();
 
 		if (heightMap->AreCoordsValid(coordPosition.xz()))
 		{

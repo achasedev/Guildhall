@@ -5,6 +5,7 @@
 /* Description: Implementation of the CampaignManager class
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/World.hpp"
 #include "Game/Framework/CampaignStage.hpp"
 #include "Game/Framework/SpawnPoint.hpp"
 #include "Game/Framework/CampaignManager.hpp"
@@ -156,6 +157,8 @@ void CampaignManager::StartNextStage()
 	m_currStageIndex++;
 	m_currStageFinished = false;
 	m_totalSpawnedThisStage = 0;
+
+	Game::GetWorld()->InititalizeForStage(m_stages[m_currStageIndex]);
 	m_stageTimer.Reset();
 }
 

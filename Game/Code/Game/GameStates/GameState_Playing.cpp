@@ -13,6 +13,7 @@
 #include "Game/Framework/CampaignManager.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 #include "Game/Framework/PlayStates/PlayState.hpp"
+#include "Game/Framework/PlayStates/PlayState_Rest.hpp"
 #include "Game/Framework/PlayStates/PlayState_Stage.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
@@ -75,7 +76,6 @@ bool GameState_Playing::Enter()
 		}
 	}
 
-	Game::GetWorld()->Inititalize();
 	Game::GetCampaignManager()->Initialize("Data/Spawning.xml");
 
 	TransitionToPlayState(new PlayState_Stage());

@@ -2,6 +2,7 @@
 
 	<SpawnPoints>
 
+		<SpawnPoint position="128, 20, 128" radius="5"/>
 		<SpawnPoint position="10, 5, 10" radius="10.0"/>
 		<SpawnPoint position="10, 5, 240" radius="10.0"/>
 		<SpawnPoint position="240, 5, 10" radius="10.0"/>
@@ -11,8 +12,8 @@
 
 	<Stages>
 
-		<Stage height_map="Data/Images/HeightMap1.png">
-			<SpawnEvent entity="Robot" spawn_point="1" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="30.0" total_to_spawn="100"/>
+		<Stage height_map="Data/Images/HeightMap.png" max_terrain_height="10">
+			<SpawnEvent entity="Robot" spawn_point="0" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="5"/>
 		</Stage> 
 
 	</Stages>

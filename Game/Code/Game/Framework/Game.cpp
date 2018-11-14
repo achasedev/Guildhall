@@ -130,7 +130,7 @@ void Game::ProcessInput()
 //
 void Game::Update()
 {
-	if (m_isTransitioning)
+	if (m_gameStateState == GAME_STATE_TRANSITIONING_OUT)
 	{
 		// Update on leave of the current state
 		if (m_currentState != nullptr)
@@ -140,24 +140,26 @@ void Game::Update()
 			if (leaveFinished)
 			{
 				delete m_currentState;
-				m_currentState = nullptr;
-
-				m_transitionState->StartEnterTimer();
-			}
-		}
-		else // Update on enter of the transition state
-		{
-			bool enterFinished = m_transitionState->Enter();
-
-			if (enterFinished)
-			{
 				m_currentState = m_transitionState;
 				m_transitionState = nullptr;
- 				m_isTransitioning = false;
+
+				m_currentState->StartEnterTimer();
+				m_gameStateState = GAME_STATE_TRANSITIONING_IN;
 			}
 		}
 	}
-	else
+	
+	if (m_gameStateState == GAME_STATE_TRANSITIONING_IN) // Update on enter of the transition state
+	{
+		bool enterFinished = m_currentState->Enter();
+
+		if (enterFinished)
+		{
+			m_gameStateState = GAME_STATE_UPDATING;
+		}
+	}
+	
+	if (m_gameStateState == GAME_STATE_UPDATING)
 	{
 		m_currentState->Update();
 	}
@@ -171,20 +173,19 @@ void Game::Render() const
 {
 	m_voxelGrid->Clear();
 
-	if (m_isTransitioning)
+	switch (m_gameStateState)
 	{
-		if (m_currentState != nullptr)
-		{
-			m_currentState->Render_Leave();
-		}
-		else
-		{
-			m_transitionState->Render_Enter();
-		}
-	}
-	else if (m_currentState != nullptr)
-	{
+	case GAME_STATE_TRANSITIONING_IN:
+		m_currentState->Render_Enter();
+		break;
+	case GAME_STATE_UPDATING:
 		m_currentState->Render();
+		break;
+	case GAME_STATE_TRANSITIONING_OUT:
+		m_currentState->Render_Leave();
+		break;
+	default:
+		break;
 	}
 
 	m_voxelGrid->BuildMeshAndDraw();
@@ -207,7 +208,7 @@ GameState* Game::GetGameState() const
 void Game::TransitionToGameState(GameState* newState)
 {
 	s_instance->m_transitionState = newState;
-	s_instance->m_isTransitioning = true;
+	s_instance->m_gameStateState = GAME_STATE_TRANSITIONING_OUT;
 
 	if (s_instance->m_currentState != nullptr)
 	{

@@ -11,6 +11,7 @@
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Math/IntRange.hpp"
 #include "Engine/Math/IntVector3.hpp"
+#include "Engine/Core/Utility/HeatMap.hpp"
 
 #define MAX_PLAYERS (4)
 #define NAV_STATIC_COST (9999.f)
@@ -22,6 +23,7 @@ class VoxelTexture;
 class Particle;
 class HeatMap;
 class VoxelFont;
+class CampaignStage;
 
 struct HeatMapSet_t
 {
@@ -46,7 +48,8 @@ public:
 	World();
 	~World();
 
-	void Inititalize();
+	void InitializeForMenu();
+	void InititalizeForStage(CampaignStage* stage);
 	void CleanUp();
 
 	void Update();
@@ -59,10 +62,10 @@ public:
 	void SetTerrainHeightAtCoord(const IntVector3& coord, int height);
 
 	// Accessors
-	IntVector3		GetDimensions() const;
-	HeatMap*		GetNavMap() const;
-	unsigned int	GetGroundElevationAtCoord(const IntVector2& coord) const;
-	HeatMap*		GetHeightMap() const;
+	IntVector3			GetDimensions() const;
+	HeatMap*			GetNavMap() const;
+	unsigned int		GetGroundElevationAtCoord(const IntVector2& coord) const;
+	const HeatMap*		GetHeightMap() const;
 
 
 	// Producers
@@ -111,16 +114,15 @@ private:
 
 	// Terrain
 	void CheckEntityForGroundCollision(Entity* entity);
-	void InitializeHeightMap();
 
 
 private:
 	//-----Private Data-----
 
-	IntVector3 m_dimensions;
+	const IntVector3 m_dimensions = IntVector3(256, 64, 256);
 
 	// Terrain
-	HeatMap* m_heightMap = nullptr;
+	HeatMap m_heightMap;
 
 	std::vector<Entity*> m_entities;
 	std::vector<Particle*> m_particles;
