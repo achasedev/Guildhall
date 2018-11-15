@@ -160,7 +160,7 @@ bool PlayState_Rest::Leave()
 //
 void PlayState_Rest::Render_Enter() const
 {
-	Game::GetWorld()->Render();
+	Game::GetWorld()->DrawToGrid();
 
 	DebugRenderSystem::Draw2DText(Stringf("Rest Enter: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
@@ -171,7 +171,7 @@ void PlayState_Rest::Render_Enter() const
 //
 void PlayState_Rest::Render() const
 {
-	Game::GetWorld()->Render();
+	Game::GetWorld()->DrawToGrid();
 	DebugRenderSystem::Draw2DText(Stringf("Rest - GOGOGO"), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
@@ -181,7 +181,7 @@ void PlayState_Rest::Render() const
 //
 void PlayState_Rest::Render_Leave() const
 {
-	Game::GetWorld()->Render();
+	Game::GetWorld()->DrawToGrid();
 
 	DebugRenderSystem::Draw2DText(Stringf("Rest Leave: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }

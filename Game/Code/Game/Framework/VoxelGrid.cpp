@@ -123,13 +123,13 @@ void VoxelGrid::Clear()
 //-----------------------------------------------------------------------------------------------
 // Draws the 3D texture to the grid
 //
-void VoxelGrid::DrawEntity(const Entity* entity)
+void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset)
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
 	const VoxelTexture* texture = entity->GetTextureForRender();
-	IntVector3 position = entity->GetCoordinatePosition();
-
+	IntVector3 position = entity->GetCoordinatePosition() + offset;
+	
 	DebugRenderOptions options;
 	options.m_isWireFrame = true;
 	options.m_lifetime = 0.f;
@@ -141,19 +141,34 @@ void VoxelGrid::DrawEntity(const Entity* entity)
 //-----------------------------------------------------------------------------------------------
 // Draws the terrain to the grid with the given heightmap
 //
-void VoxelGrid::DrawTerrain(HeatMap* heightMap)
+void VoxelGrid::DrawTerrain(HeatMap* heightMap, const IntVector3& offset)
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
-	for (int z = 0; z < m_dimensions.z; ++z)
+	int xSpan = MinInt(m_dimensions.x, m_dimensions.x + offset.x);
+	int zSpan = MinInt(m_dimensions.z, m_dimensions.z + offset.z);
+
+	for (int z = offset.z; z < zSpan; ++z)
 	{
-		for (int x = 0; x < m_dimensions.x; ++x)
+		for (int x = offset.x; x < xSpan; ++x)
 		{
+			if (!heightMap->AreCoordsValid(IntVector2(x, z)))
+			{
+				continue;
+			}
+
 			int height = (int)heightMap->GetHeat(IntVector2(x, z));
 
-			int westDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(x - 1, z)) - height);
-			int eastDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(x + 1, z)) - height);
-			int southDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(x, z - 1)) - height);
+			height = ClampInt(height + offset.y, 0, m_dimensions.y);
+
+			if (height == 0)
+			{
+				continue;
+			}
+
+			int westDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(x - 1, z)) + offset.y - height);
+			int eastDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(x + 1, z)) + offset.y - height);
+			int southDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(x, z - 1)) + offset.y - height);
 
 			bool needToFillAll = (westDiff > 1 || eastDiff > 1 || southDiff > 1);
 
@@ -223,7 +238,7 @@ void VoxelGrid::Draw3DTexture(const VoxelTexture* texture, const IntVector3& sta
 //-----------------------------------------------------------------------------------------------
 // Draws the collision representation of the entity to the grid
 //
-void VoxelGrid::DebugDrawEntityCollision(const Entity* entity)
+void VoxelGrid::DebugDrawEntityCollision(const Entity* entity, const IntVector3& offset)
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
@@ -232,7 +247,7 @@ void VoxelGrid::DebugDrawEntityCollision(const Entity* entity)
 	IntVector3 dimensions = entity->GetDimensions();
 
 	// Coordinate the object occupies (object bottom center)
-	IntVector3 coordinatePosition = entity->GetCoordinatePosition();
+	IntVector3 coordinatePosition = entity->GetCoordinatePosition() + offset;
 
 	for (int xOff = 0; xOff < dimensions.x; ++xOff)
 	{

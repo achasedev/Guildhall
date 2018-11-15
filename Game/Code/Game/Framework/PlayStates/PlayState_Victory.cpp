@@ -95,7 +95,7 @@ bool PlayState_Victory::Leave()
 //
 void PlayState_Victory::Render_Enter() const
 {
-	Game::GetWorld()->Render();
+	Game::GetWorld()->DrawToGrid();
 	DebugRenderSystem::Draw2DText(Stringf("Victory Enter: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
@@ -105,7 +105,7 @@ void PlayState_Victory::Render_Enter() const
 //
 void PlayState_Victory::Render() const
 {
-	Game::GetWorld()->Render();
+	Game::GetWorld()->DrawToGrid();
 	DebugRenderSystem::Draw2DText(Stringf("Victory!: Press Start/Space/A to return"), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
@@ -115,6 +115,6 @@ void PlayState_Victory::Render() const
 //
 void PlayState_Victory::Render_Leave() const
 {
-	Game::GetWorld()->Render();
+	Game::GetWorld()->DrawToGrid();
 	DebugRenderSystem::Draw2DText(Stringf("Victory Leave: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }

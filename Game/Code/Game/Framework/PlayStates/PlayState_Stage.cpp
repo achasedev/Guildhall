@@ -129,7 +129,7 @@ bool PlayState_Stage::Leave()
 //
 void PlayState_Stage::Render_Enter() const
 {
-	Game::GetWorld()->Render();
+	Game::GetWorld()->DrawToGrid();
 	DebugRenderSystem::Draw2DText(Stringf("Stage Enter: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
@@ -139,7 +139,7 @@ void PlayState_Stage::Render_Enter() const
 //
 void PlayState_Stage::Render() const
 {
-	Game::GetWorld()->Render();
+	Game::GetWorld()->DrawToGrid();
 	DebugRenderSystem::Draw2DText(Stringf("Stage %i of %i", Game::GetCampaignManager()->GetCurrentStageNumber() + 1, Game::GetCampaignManager()->GetStageCount()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
@@ -149,6 +149,6 @@ void PlayState_Stage::Render() const
 //
 void PlayState_Stage::Render_Leave() const
 {
-	Game::GetWorld()->Render();
+	Game::GetWorld()->DrawToGrid();
 	DebugRenderSystem::Draw2DText(Stringf("Stage Leave: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }

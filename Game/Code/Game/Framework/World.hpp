@@ -53,7 +53,8 @@ public:
 	void CleanUp();
 
 	void Update();
-	void Render();
+	void DrawToGrid();
+	void DrawToGridWithOffset(const IntVector3& offset);
 
 	// Mutators
 	void AddEntity(Entity* entity);
@@ -103,9 +104,9 @@ private:
 	void DeleteMarkedEntities();
 
 	// Render
-	void DrawStaticEntitiesToGrid();
-	void DrawDynamicEntitiesToGrid();
-	void DrawParticlesToGrid();
+	void DrawStaticEntitiesToGrid(const IntVector3& offset);
+	void DrawDynamicEntitiesToGrid(const IntVector3& offset);
+	void DrawParticlesToGrid(const IntVector3& offset);
 
 	// Thread
 	void InitializeHeatMaps();

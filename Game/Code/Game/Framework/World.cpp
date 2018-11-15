@@ -206,23 +206,32 @@ void World::Update()
 //-----------------------------------------------------------------------------------------------
 // Render
 //
-void World::Render()
+void World::DrawToGrid()
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
+	DrawToGridWithOffset(IntVector3::ZERO);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Draws the world to the grid, treating offset as the origin
+//
+void World::DrawToGridWithOffset(const IntVector3& offset)
+{
 	VoxelGrid* grid = Game::GetVoxelGrid();
 
 	// Color in the ground
-	grid->DrawTerrain(&m_heightMap);
+	grid->DrawTerrain(&m_heightMap, offset);
 
 	// Color in static geometry
-	DrawStaticEntitiesToGrid();
+	DrawStaticEntitiesToGrid(offset);
 
 	// Color in each entity (shouldn't overlap, this is after physics step)
-	DrawDynamicEntitiesToGrid();
+	DrawDynamicEntitiesToGrid(offset);
 
 	// Color in the particles
-	DrawParticlesToGrid();
+	DrawParticlesToGrid(offset);
 }
 
 
@@ -936,7 +945,7 @@ void World::DeleteMarkedEntities()
 //-----------------------------------------------------------------------------------------------
 // Draws all static entities into the voxel grid
 //
-void World::DrawStaticEntitiesToGrid()
+void World::DrawStaticEntitiesToGrid(const IntVector3& offset)
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
@@ -950,11 +959,11 @@ void World::DrawStaticEntitiesToGrid()
 		{
 			if (m_drawCollision)
 			{
-				grid->DebugDrawEntityCollision(m_entities[entityIndex]);
+				grid->DebugDrawEntityCollision(m_entities[entityIndex], offset);
 			}
 			else
 			{
-				grid->DrawEntity(m_entities[entityIndex]);
+				grid->DrawEntity(m_entities[entityIndex], offset);
 			}
 		}
 	}
@@ -964,7 +973,7 @@ void World::DrawStaticEntitiesToGrid()
 //-----------------------------------------------------------------------------------------------
 // Draws all dynamic entities into the grid
 //
-void World::DrawDynamicEntitiesToGrid()
+void World::DrawDynamicEntitiesToGrid(const IntVector3& offset)
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
@@ -978,11 +987,11 @@ void World::DrawDynamicEntitiesToGrid()
 		{
 			if (m_drawCollision)
 			{
-				grid->DebugDrawEntityCollision(m_entities[entityIndex]);
+				grid->DebugDrawEntityCollision(m_entities[entityIndex], offset);
 			}
 			else
 			{
-				grid->DrawEntity(m_entities[entityIndex]);
+				grid->DrawEntity(m_entities[entityIndex], offset);
 			}
 		}
 	}
@@ -992,7 +1001,7 @@ void World::DrawDynamicEntitiesToGrid()
 //-----------------------------------------------------------------------------------------------
 // Draws the particles to the voxel grid
 //
-void World::DrawParticlesToGrid()
+void World::DrawParticlesToGrid(const IntVector3& offset)
 {
 	VoxelGrid* grid = Game::GetVoxelGrid();
 
@@ -1002,7 +1011,7 @@ void World::DrawParticlesToGrid()
 	{
 		if (!m_particles[i]->IsMarkedForDelete())
 		{
-			grid->DrawEntity(m_particles[i]);
+			grid->DrawEntity(m_particles[i], offset);
 		}
 	}
 }

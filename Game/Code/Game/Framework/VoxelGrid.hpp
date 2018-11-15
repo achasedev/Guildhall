@@ -60,11 +60,11 @@ public:
 
 	// Mutators
 	void				Clear();
-	void				DrawEntity(const Entity* entity);
-	void				DrawTerrain(HeatMap* heightMap);
+	void				DrawEntity(const Entity* entity, const IntVector3& offset);
+	void				DrawTerrain(HeatMap* heightMap, const IntVector3& offset);
 	void				Draw3DTexture(const VoxelTexture* texture, const IntVector3& startCoord);
 
-	void				DebugDrawEntityCollision(const Entity* entity);
+	void				DebugDrawEntityCollision(const Entity* entity, const IntVector3& offset);
 
 	void				DrawVoxelText(const std::string& text, const IntVector3& startCoord, const VoxelFontDraw_t& options);
 

@@ -133,7 +133,7 @@ void GameState_MainMenu::Update()
 //
 void GameState_MainMenu::Render() const
 {
-	Game::GetWorld()->Render();
+	Game::GetWorld()->DrawToGrid();
 
 	IntVector3 drawPosition = m_menuStartCoord;
 
