@@ -158,7 +158,6 @@ void CampaignManager::StartNextStage()
 	m_currStageFinished = false;
 	m_totalSpawnedThisStage = 0;
 
-	Game::GetWorld()->InititalizeForStage(m_stages[m_currStageIndex]);
 	m_stageTimer.Reset();
 }
 
@@ -169,6 +168,20 @@ void CampaignManager::StartNextStage()
 bool CampaignManager::IsCurrentStageFinished() const
 {
 	return m_currStageFinished;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the next stage of the manager, for transitions
+//
+CampaignStage* CampaignManager::GetNextStage() const
+{
+	if (IsCurrentStageFinal())
+	{
+		return nullptr;
+	}
+
+	return m_stages[m_currStageIndex + 1];
 }
 
 

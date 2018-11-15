@@ -7,6 +7,8 @@
 #pragma once
 #include "Game/Framework/PlayStates/PlayState_Stage.hpp"
 
+class World;
+
 class PlayState_Rest : public PlayState
 {
 public:
@@ -32,6 +34,9 @@ private:
 	// Timer for controlling when to move to the next stage state
 	//Stopwatch				m_restTimer;
 	
+	IntVector3 m_transitionOffset = IntVector3::ZERO;
+	World* m_worldToTransitionTo = nullptr;
+
 	int m_decrementCount = 0;
 
 	static constexpr float REST_INTERVAL = 5.f;

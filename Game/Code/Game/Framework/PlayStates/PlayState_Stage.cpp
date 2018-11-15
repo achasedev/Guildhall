@@ -94,6 +94,8 @@ void PlayState_Stage::Update()
 //
 bool PlayState_Stage::Enter()
 {
+	// Move the players back on to the map
+
 	UpdateWorldAndCamera();
 
 	// Do stuff

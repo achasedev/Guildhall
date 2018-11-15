@@ -52,8 +52,9 @@ public:
 	static GameCamera*			GetGameCamera();
 	static float				GetDeltaTime();
 	static World*				GetWorld();
+	static void 				SetWorld(World* world);
 	static Player**				GetPlayers();
-	static CampaignManager*			GetCampaignManager();
+	static CampaignManager*		GetCampaignManager();
 
 	static bool					IsPlayerAlive(unsigned int index);
 

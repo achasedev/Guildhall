@@ -4,12 +4,13 @@
 /* Date: October 24th 2018
 /* Description: Implementation of the Rest PlayState
 /************************************************************************/
-#include "Game/Framework/PlayStates/PlayState_Rest.hpp"
+#include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/GameCamera.hpp"
+#include "Game/Framework/CampaignManager.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
-#include "Game/Entity/Player.hpp"
+#include "Game/Framework/PlayStates/PlayState_Rest.hpp"
 
 // For debug rendering
 #include "Engine/Core/Window.hpp"
@@ -73,6 +74,11 @@ bool PlayState_Rest::Enter()
 
 	if (m_transitionTimer.HasIntervalElapsed())
 	{
+		// Get the next stage and initialize the next world to enter
+		CampaignStage* nextStage = Game::GetCampaignManager()->GetNextStage();
+		m_worldToTransitionTo = new World();
+		m_worldToTransitionTo->InititalizeForStage(nextStage);
+
 		return true;
 	}
 
@@ -119,7 +125,6 @@ void PlayState_Rest::Update()
 		if (!camera->IsEjected())
 		{
 			Game::GetGameCamera()->UpdatePositionBasedOnPlayers();
-			//Game::GetGameCamera()->LookAtGridCenter();
 		}
 	}
 }
@@ -130,28 +135,15 @@ void PlayState_Rest::Update()
 //
 bool PlayState_Rest::Leave()
 {
-	static bool firstEnter = true;
-
-	if (firstEnter)
-	{
-		int maxHeight = Game::GetWorld()->GetCurrentMaxHeightOfTerrain();
-
-		float decrementInterval = (float)maxHeight / REST_TRANSITION_OUT_TIME;
-
-		m_transitionTimer.SetInterval(1.f / decrementInterval);
-		firstEnter = false;
-	}
-
-	int numDecrements = m_transitionTimer.DecrementByIntervalAll();
-	bool worldFlat = false;
-	if (numDecrements > 0)
-	{
-		worldFlat = Game::GetWorld()->DecrementTerrainHeight(numDecrements);
-	}
-
 	UpdateWorldAndCamera();
 
-	return worldFlat;
+	if (m_transitionTimer.HasIntervalElapsed())
+	{
+		Game::SetWorld(m_worldToTransitionTo);
+		return true;
+	}
+	
+	return false;
 }
 
 
@@ -161,7 +153,6 @@ bool PlayState_Rest::Leave()
 void PlayState_Rest::Render_Enter() const
 {
 	Game::GetWorld()->DrawToGrid();
-
 	DebugRenderSystem::Draw2DText(Stringf("Rest Enter: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
@@ -181,7 +172,11 @@ void PlayState_Rest::Render() const
 //
 void PlayState_Rest::Render_Leave() const
 {
-	Game::GetWorld()->DrawToGrid();
+	// For testing, always enter from the west
+	int xOffset = -1 * (int)(m_transitionTimer.GetElapsedTimeNormalized() * 256.f);
+
+	Game::GetWorld()->DrawToGridWithOffset(IntVector3(xOffset, 0, 0));
+	m_worldToTransitionTo->DrawToGridWithOffset(IntVector3(xOffset + 256, 0, 0));
 
 	DebugRenderSystem::Draw2DText(Stringf("Rest Leave: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }

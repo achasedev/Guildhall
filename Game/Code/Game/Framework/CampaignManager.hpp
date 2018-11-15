@@ -31,9 +31,10 @@ public:
 	bool	IsCurrentStageFinal() const;
 	int		GetCurrentStageNumber() const;
 	bool	IsCurrentStageFinished() const;
+	CampaignStage* GetNextStage() const;
 
 	// Mutators
-	void	StartNextStage();
+	void			StartNextStage();
 
 
 public:

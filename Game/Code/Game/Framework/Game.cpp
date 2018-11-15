@@ -263,6 +263,20 @@ World* Game::GetWorld()
 
 
 //-----------------------------------------------------------------------------------------------
+// Sets the current world to the one specified
+//
+void Game::SetWorld(World* world)
+{
+	if (s_instance->m_world != nullptr)
+	{
+		delete s_instance->m_world;
+	}
+
+	s_instance->m_world = world;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the players array (not necessarily full)
 //
 Player** Game::GetPlayers()

@@ -126,6 +126,36 @@ void World::InititalizeForStage(CampaignStage* stage)
 			m_heightMap.SetHeat(IntVector2(x, y), (float)height);
 		}
 	}
+
+	// Clean up entities
+	for (int i = 0; i < (int)m_entities.size(); ++i)
+	{
+		if (!m_entities[i]->IsPlayer())
+		{
+			delete m_entities[i];
+		}
+	}
+
+	m_entities.clear();
+
+	// Clean up particles
+	for (int i = 0; i < (int)m_particles.size(); ++i)
+	{
+		delete m_particles[i];
+	}
+
+	m_particles.clear();
+
+	// Add in the players
+	Player** players = Game::GetPlayers();
+
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		if (players[i] != nullptr)
+		{
+			AddEntity(players[i]);
+		}
+	}
 }
 
 

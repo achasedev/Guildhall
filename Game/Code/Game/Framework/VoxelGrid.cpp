@@ -145,19 +145,11 @@ void VoxelGrid::DrawTerrain(HeatMap* heightMap, const IntVector3& offset)
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
-	int xSpan = MinInt(m_dimensions.x, m_dimensions.x + offset.x);
-	int zSpan = MinInt(m_dimensions.z, m_dimensions.z + offset.z);
-
-	for (int z = offset.z; z < zSpan; ++z)
+	for (int heightMapZ = 0; heightMapZ < m_dimensions.z; ++heightMapZ)
 	{
-		for (int x = offset.x; x < xSpan; ++x)
+		for (int heightMapX = 0; heightMapX < m_dimensions.x; ++heightMapX)
 		{
-			if (!heightMap->AreCoordsValid(IntVector2(x, z)))
-			{
-				continue;
-			}
-
-			int height = (int)heightMap->GetHeat(IntVector2(x, z));
+			int height = (int)heightMap->GetHeat(IntVector2(heightMapX, heightMapZ));
 
 			height = ClampInt(height + offset.y, 0, m_dimensions.y);
 
@@ -166,35 +158,41 @@ void VoxelGrid::DrawTerrain(HeatMap* heightMap, const IntVector3& offset)
 				continue;
 			}
 
-			int westDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(x - 1, z)) + offset.y - height);
-			int eastDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(x + 1, z)) + offset.y - height);
-			int southDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(x, z - 1)) + offset.y - height);
+			int westDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(heightMapX - 1, heightMapZ)) + offset.y - height);
+			int eastDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(heightMapX + 1, heightMapZ)) + offset.y - height);
+			int southDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(heightMapX, heightMapZ - 1)) + offset.y - height);
 
-			bool needToFillAll = (westDiff > 1 || eastDiff > 1 || southDiff > 1);
+			bool hasSharpDiff = (westDiff > 1 || eastDiff > 1 || southDiff > 1);
 
-			if (needToFillAll)
+			IntVector3 gridCoords = IntVector3(heightMapX, height - 1, heightMapZ) + IntVector3(offset.x, 0, offset.z);
+
+			bool isOnGridEdge = (gridCoords.x == 0 || gridCoords.z == 0 || gridCoords.x == m_dimensions.x - 1);
+
+			if (hasSharpDiff || isOnGridEdge)
 			{
 				int maxFill = ClampInt(MaxInt(MaxInt(westDiff, eastDiff), southDiff), 0, height);
 
 				for (int y = height - 1; y >= height - maxFill; --y)
 				{
-					int index = GetIndexForCoords(IntVector3(x, y, z));
 					Rgba color = Rgba::DARK_GREEN;
 
-					if (index >= 0)
+					int gridIndex = GetIndexForCoords(IntVector3(gridCoords.x, y, gridCoords.z));
+
+					if (gridIndex >= 0)
 					{
-						m_gridColors[index] = color;
+						m_gridColors[gridIndex] = color;
 					}
 				}
 			}
 			else
 			{
-				int index = GetIndexForCoords(IntVector3(x, height - 1, z));
 				Rgba color = Rgba::DARK_GREEN;
 
-				if (index >= 0)
+				int gridIndex = GetIndexForCoords(gridCoords);
+
+				if (gridIndex >= 0)
 				{
-					m_gridColors[index] = color;
+					m_gridColors[gridIndex] = color;
 				}
 			}
 		}

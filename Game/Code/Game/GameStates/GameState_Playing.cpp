@@ -63,6 +63,7 @@ bool GameState_Playing::Enter()
 	mouse.LockCursorToClient(true);
 	mouse.SetCursorMode(CURSORMODE_RELATIVE);
 
+	// Create the players
 	Player** players = Game::GetPlayers();
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
@@ -71,12 +72,11 @@ bool GameState_Playing::Enter()
 		{
 			players[i] = new Player(i);
 			players[i]->SetPosition(Vector3(50.f * (float)i + 30.f, 0.f, 60.f));
-
-			Game::GetWorld()->AddEntity(players[i]);
 		}
 	}
 
 	Game::GetCampaignManager()->Initialize("Data/Spawning.xml");
+	Game::GetWorld()->InititalizeForStage(Game::GetCampaignManager()->GetNextStage());
 
 	TransitionToPlayState(new PlayState_Stage());
 
