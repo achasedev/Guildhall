@@ -456,6 +456,15 @@ void Command_SequenceTest(Command& cmd)
 	Thread::CreateAndDetach(ThreadWork_SequenceTest, data);
 }
 
+
+void Command_Disconnect(Command& cmd)
+{
+	NetSession* session = Game::GetNetSession();
+
+	session->ShutdownSession();
+}
+
+
 //-----------------------------------------------------------------------------------------------
 //--------------------------------- Game Class --------------------------------------------------
 //-----------------------------------------------------------------------------------------------
