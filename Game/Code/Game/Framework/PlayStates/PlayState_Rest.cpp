@@ -287,14 +287,17 @@ PlayState_Rest::~PlayState_Rest()
 //
 void PlayState_Rest::ProcessInput()
 {
-	// Check player input
-	Player** players = Game::GetPlayers();
-
-	for (int i = 0; i < MAX_PLAYERS; ++i)
+	if (m_state != TRANSITION_STATE_LEAVING)
 	{
-		if (Game::IsPlayerAlive(i))
+		// Check player input
+		Player** players = Game::GetPlayers();
+
+		for (int i = 0; i < MAX_PLAYERS; ++i)
 		{
-			players[i]->ProcessGameplayInput();
+			if (Game::IsPlayerAlive(i))
+			{
+				players[i]->ProcessGameplayInput();
+			}
 		}
 	}
 }
@@ -366,12 +369,15 @@ bool PlayState_Rest::Leave()
 		if (players[i] != nullptr)
 		{
 			// Check if the player is far enough into the new map space
-			Vector3 oldPos = players[i]->GetPosition();
-			Vector3 newPos = oldPos + Vector3(256.f, 0.f, 0.f);
+			bool shouldMove = ShouldPlayerKeepMoving(players[i], m_edgeToEnter);
 
-			if (ShouldPlayerKeepMoving(players[i], m_edgeToEnter))
+			if (shouldMove)
 			{
 				players[i]->Move(GetTransitionDirectionForEnterEdge(m_edgeToEnter));
+			}
+			else
+			{
+				players[i]->Decelerate();
 			}
 		}
 	}

@@ -7,6 +7,13 @@
 #pragma once
 #include "Engine/Core/Time/Stopwatch.hpp"
 
+enum ePlayStateTransitionState
+{
+	TRANSITION_STATE_ENTERING,
+	TRANSITION_STATE_UPDATING,
+	TRANSITION_STATE_LEAVING
+};
+
 class GameState_Playing;
 
 class PlayState
@@ -29,6 +36,7 @@ public:
 
 	// Called before the state first enters/leaves
 	void StartEnterTimer();
+	void StartUpdating();
 	void StartLeaveTimer();
 
 	
@@ -43,6 +51,8 @@ protected:
 	
 	GameState_Playing*	m_gameState = nullptr;
 	Stopwatch			m_transitionTimer;
+
+	ePlayStateTransitionState m_state;
 
 	float m_transitionInTime = 0.f;
 	float m_transitionOutTime = 0.f;

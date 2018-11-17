@@ -211,6 +211,7 @@ void GameState_Playing::Update()
 			if (enterFinished)
 			{
 				m_currentState = m_transitionState;
+				m_currentState->StartUpdating();
 				m_transitionState = nullptr;
 				m_isTransitioning = false;
 			}

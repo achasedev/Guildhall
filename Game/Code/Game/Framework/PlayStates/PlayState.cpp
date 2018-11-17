@@ -37,6 +37,17 @@ PlayState::~PlayState()
 void PlayState::StartEnterTimer()
 {
 	m_transitionTimer.SetInterval(m_transitionInTime);
+	m_state = TRANSITION_STATE_ENTERING;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Called when the state first begins updating
+//
+void PlayState::StartUpdating()
+{
+	m_transitionTimer.Reset();
+	m_state = TRANSITION_STATE_UPDATING;
 }
 
 
@@ -46,6 +57,7 @@ void PlayState::StartEnterTimer()
 void PlayState::StartLeaveTimer()
 {
 	m_transitionTimer.SetInterval(m_transitionOutTime);
+	m_state = TRANSITION_STATE_LEAVING;
 }
 
 
