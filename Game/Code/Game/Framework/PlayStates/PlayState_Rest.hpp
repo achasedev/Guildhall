@@ -37,6 +37,9 @@ private:
 	IntVector3 m_transitionOffset = IntVector3::ZERO;
 	World* m_worldToTransitionTo = nullptr;
 
+	eTransitionEdge m_edgeToEnter;
+	eTransitionEdge m_edgeToExit;
+
 	int m_decrementCount = 0;
 
 	static constexpr float REST_INTERVAL = 5.f;

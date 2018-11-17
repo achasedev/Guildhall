@@ -40,6 +40,14 @@ struct StaticSection_t
 	IntVector3 dimensions;
 };
 
+enum eTransitionEdge
+{
+	EDGE_NORTH,
+	EDGE_SOUTH,
+	EDGE_EAST,
+	EDGE_WEST
+};
+
 class World
 {
 public:
@@ -69,6 +77,7 @@ public:
 	unsigned int		GetGroundElevationAtCoord(const IntVector2& coord) const;
 	const HeatMap*		GetHeightMap() const;
 	int					GetCurrentMaxHeightOfTerrain() const;
+	eTransitionEdge		GetDirectionToEnter() const;
 
 	// Producers
 	IntVector3	GetCoordsForPosition(const Vector3& position) const;
@@ -82,6 +91,7 @@ public:
 	void						ParticalizeAllEntities();
 	bool						IsEntityOnMap(const Entity* entity) const;
 	float						GetMapHeightForEntity(const Entity* entity) const;
+	float						GetMapHeightForBounds(const IntVector3& coordPosition, const IntVector2& dimensions) const;
 	std::vector<const Entity*>	GetEnemiesWithinDistance(const Vector3& position, float radius) const;
 
 
@@ -122,6 +132,7 @@ private:
 	//-----Private Data-----
 
 	const IntVector3 m_dimensions = IntVector3(256, 64, 256);
+	eTransitionEdge m_enterDirection = EDGE_WEST;
 
 	// Terrain
 	HeatMap m_heightMap;

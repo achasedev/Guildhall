@@ -623,11 +623,20 @@ void World::ApplyPhysicsStep()
 //
 float World::GetMapHeightForEntity(const Entity* entity) const
 {
-	Vector3 position = entity->GetPosition();
 	IntVector3 coordPosition = entity->GetCoordinatePosition();
 	IntVector2 dimensions = entity->GetDimensions().xz();
 
-	float maxHeight = -1.f;
+	return GetMapHeightForBounds(coordPosition, dimensions);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the max terrain height at the given position and dimensions
+//
+float World::GetMapHeightForBounds(const IntVector3& coordPosition, const IntVector2& dimensions) const
+{
+
+	float maxHeight = 0.f;
 
 	// Check all voxels on the entity's bottom, ensuring that it's not clipping into the ground
 	for (int z = 0; z < dimensions.y; ++z)
@@ -635,10 +644,13 @@ float World::GetMapHeightForEntity(const Entity* entity) const
 		for (int x = 0; x < dimensions.x; ++x)
 		{
 			IntVector3 currPos = coordPosition + IntVector3(x, 0, z);
-			float currHeight = m_heightMap.GetHeat(currPos.xz());
+			if (m_heightMap.AreCoordsValid(currPos.xz()))
+			{
+				float currHeight = m_heightMap.GetHeat(currPos.xz());
 
-			// Update the max height over this area
-			maxHeight = MaxFloat(maxHeight, currHeight);
+				// Update the max height over this area
+				maxHeight = MaxFloat(maxHeight, currHeight);
+			}
 		}
 	}
 

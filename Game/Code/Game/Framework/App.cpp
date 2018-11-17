@@ -103,7 +103,6 @@ void App::Initialize()
 		s_instance->RenderInitScreen();
 		LogSystem::Initialize();
 		Profiler::Initialize();
-		Thread::RegisterConsoleCommands();
 
 		Clock::Initialize();
 		AudioSystem::Initialize();
