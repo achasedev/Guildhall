@@ -156,6 +156,9 @@ void World::InititalizeForStage(CampaignStage* stage)
 			AddEntity(players[i]);
 		}
 	}
+
+	// Set the transition edge
+	m_enterEdge = stage->m_edgeToEnter;
 }
 
 
@@ -479,6 +482,15 @@ int World::GetCurrentMaxHeightOfTerrain() const
 	}
 
 	return max;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the edge that the players enter on for this map
+//
+eTransitionEdge World::GetDirectionToEnter() const
+{
+	return m_enterEdge;
 }
 
 

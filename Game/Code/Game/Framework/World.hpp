@@ -8,6 +8,8 @@
 #include <vector>
 #include <thread>
 #include <shared_mutex>
+#include "Game/Framework/CampaignStage.hpp"
+
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Math/IntRange.hpp"
 #include "Engine/Math/IntVector3.hpp"
@@ -40,13 +42,6 @@ struct StaticSection_t
 	IntVector3 dimensions;
 };
 
-enum eTransitionEdge
-{
-	EDGE_NORTH,
-	EDGE_SOUTH,
-	EDGE_EAST,
-	EDGE_WEST
-};
 
 class World
 {
@@ -132,7 +127,7 @@ private:
 	//-----Private Data-----
 
 	const IntVector3 m_dimensions = IntVector3(256, 64, 256);
-	eTransitionEdge m_enterDirection = EDGE_WEST;
+	eTransitionEdge m_enterEdge = EDGE_WEST;
 
 	// Terrain
 	HeatMap m_heightMap;

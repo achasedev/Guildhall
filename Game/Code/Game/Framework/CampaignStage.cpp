@@ -10,6 +10,22 @@
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
 
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Converts the string representation of the enter edge into the enum
+//
+eTransitionEdge GetEdgeForString(const std::string& text)
+{
+	if		(text == "north")	{ return EDGE_NORTH; }
+	else if (text == "south")	{ return EDGE_SOUTH; }
+	else if (text == "east")	{ return EDGE_EAST; }
+	else if (text == "west")	{ return EDGE_WEST; }
+	else
+	{
+		return EDGE_EAST;
+	}
+}
+
+
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
@@ -45,6 +61,9 @@ CampaignStage::CampaignStage(const XMLElement& element)
 
 	// We don't support anything over 64
 	m_maxTerrainHeight = MinInt(m_maxTerrainHeight, 64);
+
+	std::string edgeText = ParseXmlAttribute(element, "enter", "");
+	m_edgeToEnter = GetEdgeForString(edgeText);
 }
 
 

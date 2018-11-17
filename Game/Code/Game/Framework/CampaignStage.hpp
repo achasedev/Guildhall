@@ -22,6 +22,14 @@ struct EntitySpawnEvent_t
 	int		spawnPointID = 0;			// Which spawn point to spawn at
 };
 
+enum eTransitionEdge
+{
+	EDGE_NORTH,
+	EDGE_SOUTH,
+	EDGE_EAST,
+	EDGE_WEST
+};
+
 class CampaignStage
 {
 public:
@@ -38,6 +46,7 @@ private:
 	//-----Private Data-----
 	
 	Image							m_heightMapImage;
+	eTransitionEdge					m_edgeToEnter;
 	int								m_maxTerrainHeight = 0;
 
 	std::vector<EntitySpawnEvent_t> m_events;

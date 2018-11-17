@@ -110,7 +110,7 @@ bool IsPositionInEdge(const Vector3& position, eTransitionEdge edge)
 //- C FUNCTION ----------------------------------------------------------------------------------
 // Returns whether all the players are over the threshold of the trigger, given the edge to exit over
 //
-bool AreAllPlayersInEdge(eTransitionEdge edge)
+bool AreAllPlayersInExitEdge(eTransitionEdge edge)
 {
 	Player** players = Game::GetPlayers();
 
@@ -231,6 +231,39 @@ void UpdatePlayerHeightForTransition(Player* player, World* transitionWorld, eTr
 }
 
 
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Returns the offsets used to render each map's terrain within the single grid
+//
+void GetTerrainOffsets(IntVector3& out_currOffset, IntVector3& out_transitionOffset, float normalizedTime, eTransitionEdge enterEdge)
+{
+	IntVector3 worldDimensions = Game::GetWorld()->GetDimensions();
+
+	int offset = (int)(normalizedTime * (float)worldDimensions.x); // World is square, so can just use x
+
+	switch (enterEdge)
+	{
+	case EDGE_NORTH:
+		out_currOffset = IntVector3(0, 0, offset);
+		out_transitionOffset = IntVector3(0, 0, offset - worldDimensions.z);
+		break;
+	case EDGE_SOUTH:
+		out_currOffset = IntVector3(0, 0, -offset);
+		out_transitionOffset = IntVector3(0, 0, worldDimensions.z - offset);
+		break;
+	case EDGE_EAST:
+		out_currOffset = IntVector3(offset, 0, 0);
+		out_transitionOffset = IntVector3(offset - worldDimensions.x, 0, 0);
+		break;
+	case EDGE_WEST:
+		out_currOffset = IntVector3(-offset, 0, 0);
+		out_transitionOffset = IntVector3(worldDimensions.x - offset, 0, 0);
+		break;
+	default:
+		break;
+	}
+}
+
+
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
@@ -291,8 +324,8 @@ bool PlayState_Rest::Enter()
 		CampaignStage* nextStage = Game::GetCampaignManager()->GetNextStage();
 		m_worldToTransitionTo = new World();
 		m_worldToTransitionTo->InititalizeForStage(nextStage);
-		//m_edgeToEnter = m_worldToTransitionTo->GetDirectionToEnter();
-		//m_edgeToExit = GetEdgeToExit(m_edgeToEnter);
+		m_edgeToEnter = m_worldToTransitionTo->GetDirectionToEnter();
+		m_edgeToExit = GetEdgeToExit(m_edgeToEnter);
 
 		return true;
 	}
@@ -307,7 +340,7 @@ bool PlayState_Rest::Enter()
 void PlayState_Rest::Update()
 {
 	// Check if the players are near the move location
-	bool playersReady = AreAllPlayersInEdge(EDGE_WEST);
+	bool playersReady = AreAllPlayersInExitEdge(m_edgeToExit);
 
 	if (playersReady)
 	{
@@ -336,9 +369,9 @@ bool PlayState_Rest::Leave()
 			Vector3 oldPos = players[i]->GetPosition();
 			Vector3 newPos = oldPos + Vector3(256.f, 0.f, 0.f);
 
-			if (ShouldPlayerKeepMoving(players[i], EDGE_EAST))
+			if (ShouldPlayerKeepMoving(players[i], m_edgeToEnter))
 			{
-				players[i]->Move(GetTransitionDirectionForEnterEdge(EDGE_EAST));
+				players[i]->Move(GetTransitionDirectionForEnterEdge(m_edgeToEnter));
 			}
 		}
 	}
@@ -349,23 +382,21 @@ bool PlayState_Rest::Leave()
 	{
 		if (players[i] != nullptr)
 		{
-			UpdatePlayerHeightForTransition(players[i], m_worldToTransitionTo, EDGE_EAST);
+			UpdatePlayerHeightForTransition(players[i], m_worldToTransitionTo, m_edgeToEnter);
 		}
 	}
 
 	if (m_transitionTimer.HasIntervalElapsed())
 	{
 		Game::SetWorld(m_worldToTransitionTo);
+		Vector3 worldDimensions = Vector3(Game::GetWorld()->GetDimensions());
 
 		// Set the player's positions to be correct on the next map
 		for (int i = 0; i < MAX_PLAYERS; ++i)
 		{
 			if (players[i] != nullptr)
 			{
-				Vector3 oldPos = players[i]->GetPosition();
-				Vector3 newPos = oldPos + Vector3(256.f, 0.f, 0.f);
-
-				players[i]->SetPosition(newPos);
+				players[i]->SetPosition(GetTransitionPosition(players[i], m_edgeToEnter));
 			}
 		}
 
@@ -401,11 +432,13 @@ void PlayState_Rest::Render() const
 //
 void PlayState_Rest::Render_Leave() const
 {
-	// For testing, always enter from the west
-	int xOffset = (int)(m_transitionTimer.GetElapsedTimeNormalized() * 256.f);
+	IntVector3 currOffset;
+	IntVector3 transitionOffset;
 
-	Game::GetWorld()->DrawToGridWithOffset(IntVector3(xOffset, 0, 0));
-	m_worldToTransitionTo->DrawToGridWithOffset(IntVector3(xOffset - 256, 0, 0));
+	GetTerrainOffsets(currOffset, transitionOffset, m_transitionTimer.GetElapsedTimeNormalized(), m_edgeToEnter);
+
+	Game::GetWorld()->DrawToGridWithOffset(currOffset);
+	m_worldToTransitionTo->DrawToGridWithOffset(transitionOffset);
 
 	DebugRenderSystem::Draw2DText(Stringf("Rest Leave: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
