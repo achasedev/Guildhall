@@ -18,7 +18,37 @@
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
-#define TRANSITION_MOVE_OFFSET (10)
+#define TRANSITION_EDGE_SIZE (10)
+
+
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Returns the player's position in the transition map before the transition is finished
+//
+Vector3 GetTransitionPosition(Player* player, eTransitionEdge enterEdge)
+{
+	Vector3 position = player->GetPosition();
+	Vector3 worldDimensions = Vector3(Game::GetWorld()->GetDimensions());
+
+	switch (enterEdge)
+	{
+	case EDGE_NORTH:
+		position += Vector3(0.f, 0.f, worldDimensions.z);
+		break;
+	case EDGE_SOUTH:
+		position -= Vector3(0.f, 0.f, worldDimensions.z);
+		break;
+	case EDGE_EAST:
+		position += Vector3(worldDimensions.x, 0.f, 0.f);
+		break;
+	case EDGE_WEST:
+		position -= Vector3(worldDimensions.x, 0.f, 0.f);
+		break;
+	default:
+		break;
+	}
+
+	return position;
+}
 
 
 //- C FUNCTION ----------------------------------------------------------------------------------
@@ -48,12 +78,41 @@ eTransitionEdge GetEdgeToExit(eTransitionEdge edgeToEnter)
 
 
 //- C FUNCTION ----------------------------------------------------------------------------------
+// Returns whether the given position is over the edge
+//
+bool IsPositionInEdge(const Vector3& position, eTransitionEdge edge)
+{
+	Vector3 worldDimensions = Vector3(Game::GetWorld()->GetDimensions());
+
+	float diff = 0.f;
+	switch (edge)
+	{
+	case EDGE_NORTH:
+		diff = worldDimensions.z - position.z;
+		break;
+	case EDGE_SOUTH:
+		diff = position.z;
+		break;
+	case EDGE_EAST:
+		diff = worldDimensions.x - position.x;
+		break;
+	case EDGE_WEST:
+		diff = position.x;
+		break;
+	default:
+		break;
+	}
+
+	return (diff < TRANSITION_EDGE_SIZE);
+}
+
+
+//- C FUNCTION ----------------------------------------------------------------------------------
 // Returns whether all the players are over the threshold of the trigger, given the edge to exit over
 //
-bool AreAllPlayersOverTransitionEdge(eTransitionEdge edge)
+bool AreAllPlayersInEdge(eTransitionEdge edge)
 {
 	Player** players = Game::GetPlayers();
-	Vector3 dimensions = Vector3(Game::GetWorld()->GetDimensions());
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
@@ -61,26 +120,7 @@ bool AreAllPlayersOverTransitionEdge(eTransitionEdge edge)
 		{
 			Vector3 position = players[i]->GetPosition();
 			
-			float diff = 0.f;
-			switch (edge)
-			{
-			case EDGE_NORTH:
-				diff = dimensions.z - position.z;
-				break;
-			case EDGE_SOUTH:
-				diff = position.z;
-				break;
-			case EDGE_EAST:
-				diff = dimensions.x - position.x;
-				break;
-			case EDGE_WEST:
-				diff = position.x;
-				break;
-			default:
-				break;
-			}
-
-			if (diff > TRANSITION_MOVE_OFFSET)
+			if (!IsPositionInEdge(position, edge))
 			{
 				return false;
 			}
@@ -88,6 +128,106 @@ bool AreAllPlayersOverTransitionEdge(eTransitionEdge edge)
 	}
 
 	return true;
+}
+
+
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Returns whether the given player should keep moving over the edge during a transition
+//
+bool ShouldPlayerKeepMoving(Player* player, eTransitionEdge enterEdge)
+{
+	Vector3 transitionPosition = GetTransitionPosition(player, enterEdge);
+	Vector3 worldDimensions = Vector3(Game::GetWorld()->GetDimensions());
+
+	float diff = 0.f;
+
+	switch (enterEdge)
+	{
+	case EDGE_NORTH:
+		diff = worldDimensions.z - transitionPosition.z;
+		break;
+	case EDGE_SOUTH:
+		diff = transitionPosition.z;
+		break;
+	case EDGE_EAST:
+		diff = worldDimensions.x - transitionPosition.x;
+		break;
+	case EDGE_WEST:
+		diff = transitionPosition.x;
+		break;
+	default:
+		break;
+	}
+
+	return (diff < TRANSITION_EDGE_SIZE);
+}
+
+
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Returns the movement direction for a player when transitioning into the given edge
+//
+Vector2 GetTransitionDirectionForEnterEdge(eTransitionEdge enterEdge)
+{
+	Vector2 direction = Vector2::ZERO;
+
+	switch (enterEdge)
+	{
+	case EDGE_NORTH:
+		direction = Vector2::DIRECTION_DOWN;
+		break;
+	case EDGE_SOUTH:
+		direction = Vector2::DIRECTION_UP;
+		break;
+	case EDGE_EAST:
+		direction = Vector2::DIRECTION_LEFT;
+		break;
+	case EDGE_WEST:
+		direction = Vector2::DIRECTION_RIGHT;
+		break;
+	default:
+		break;
+	}
+
+	return direction;
+}
+
+
+void UpdatePlayerHeightForTransition(Player* player, World* transitionWorld, eTransitionEdge enterEdge)
+{
+	World* currWorld = Game::GetWorld();
+	IntVector3 worldDimensions = currWorld->GetDimensions();
+
+	float currMaxHeight = currWorld->GetMapHeightForEntity(player);
+
+	IntVector3 transitionCoord = player->GetCoordinatePosition();
+	
+	switch (enterEdge)
+	{
+	case EDGE_NORTH:
+		transitionCoord.z += worldDimensions.z;
+		break;
+	case EDGE_SOUTH:
+		transitionCoord.z -= worldDimensions.z;
+		break;
+	case EDGE_EAST:
+		transitionCoord.x += worldDimensions.x;
+		break;
+	case EDGE_WEST:
+		transitionCoord.x -= worldDimensions.x;
+		break;
+	default:
+		break;
+	}
+
+	IntVector3 bounds = player->GetDimensions();
+	float transitionMaxHeight = transitionWorld->GetMapHeightForBounds(transitionCoord, bounds.xz());
+
+	float finalHeight = MaxFloat(currMaxHeight, transitionMaxHeight);
+
+	Vector3 oldPosition = player->GetPosition();
+	Vector3 newPosition = Vector3(oldPosition.x, finalHeight, oldPosition.z);
+
+	player->SetPosition(newPosition);
 }
 
 
@@ -167,7 +307,7 @@ bool PlayState_Rest::Enter()
 void PlayState_Rest::Update()
 {
 	// Check if the players are near the move location
-	bool playersReady = AreAllPlayersOverTransitionEdge(EDGE_WEST);
+	bool playersReady = AreAllPlayersInEdge(EDGE_WEST);
 
 	if (playersReady)
 	{
@@ -196,9 +336,9 @@ bool PlayState_Rest::Leave()
 			Vector3 oldPos = players[i]->GetPosition();
 			Vector3 newPos = oldPos + Vector3(256.f, 0.f, 0.f);
 
-			if (((float) m_worldToTransitionTo->GetDimensions().x - newPos.x) < TRANSITION_MOVE_OFFSET)
+			if (ShouldPlayerKeepMoving(players[i], EDGE_EAST))
 			{
-				players[i]->Move(Vector2::DIRECTION_LEFT);
+				players[i]->Move(GetTransitionDirectionForEnterEdge(EDGE_EAST));
 			}
 		}
 	}
@@ -209,21 +349,7 @@ bool PlayState_Rest::Leave()
 	{
 		if (players[i] != nullptr)
 		{
-			if (!Game::GetWorld()->IsEntityOnMap(players[i]))
-			{
-				float currMaxHeight = Game::GetWorld()->GetMapHeightForEntity(players[i]);
-
-				IntVector3 transitionCoord = players[i]->GetCoordinatePosition() + IntVector3(256, 0, 0);
-				IntVector3 bounds = players[i]->GetDimensions();
-				float transitionMaxHeight = Game::GetWorld()->GetMapHeightForBounds(transitionCoord, bounds.xz());
-
-				float finalHeight = MaxFloat(currMaxHeight, transitionMaxHeight);
-
-				Vector3 oldPosition = players[i]->GetPosition();
-				Vector3 newPosition = Vector3(oldPosition.x, finalHeight, oldPosition.z);
-
-				players[i]->SetPosition(newPosition);
-			}
+			UpdatePlayerHeightForTransition(players[i], m_worldToTransitionTo, EDGE_EAST);
 		}
 	}
 
