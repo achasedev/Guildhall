@@ -167,6 +167,15 @@ void Entity::TakeDamage(int damageAmount)
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the current health of the entity
+//
+int Entity::GetHealth() const
+{
+	return m_health;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Called when the entity takes damage, for custom behavior
 //
 void Entity::OnDamageTaken(int damageAmount)

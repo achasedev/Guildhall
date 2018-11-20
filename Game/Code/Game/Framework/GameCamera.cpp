@@ -128,7 +128,7 @@ void GameCamera::UpdatePositionOnInput()
 void GameCamera::LookAtGridCenter()
 {
 	Vector3 target = Vector3(128.f, 5.f, 128.f);
-	Vector3 newPos = target + m_offsetDirection * m_offsetDistance;
+	Vector3 newPos = Vector3(128.f, 212.f, -104.f);
 	LookAt(newPos, target);
 }
 

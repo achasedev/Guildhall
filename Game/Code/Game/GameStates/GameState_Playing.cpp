@@ -8,6 +8,8 @@
 #include "Game/Entity/AIEntity.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
+#include "Game/Framework/VoxelGrid.hpp"
+#include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/CampaignManager.hpp"
@@ -244,6 +246,9 @@ void GameState_Playing::Render() const
 	{
 		m_currentState->Render();
 	}
+
+	// Render the HUD
+	Game::DrawInGameUI();
 }
 
 

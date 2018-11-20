@@ -281,7 +281,7 @@ void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referen
 	textDimensions.z *= options.scale.z;
 
 	// Add in the border
-	textDimensions.x += 2 * options.borderThickness;
+ 	textDimensions.x += 2 * options.borderThickness;
 	textDimensions.y += 2 * options.borderThickness;
 
 	IntVector3 forward = IntVector3(CrossProduct(Vector3(options.right), Vector3(options.up)));
@@ -302,7 +302,7 @@ void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referen
 			{
 				int charIndex = ((xOff - options.borderThickness) / options.scale.x) / glyphDimensions.x;
 				int xOffset = ((xOff - options.borderThickness) / options.scale.x) % glyphDimensions.x;
-				int yOffset = yOff / options.scale.y;
+				int yOffset = (yOff - options.borderThickness) / options.scale.y;
 
 				IntVector3 worldOffset = options.right * xOff + options.up * yOff + forward * zOff;
 				int index = GetIndexForCoords(startWorldCoord + worldOffset);
@@ -315,19 +315,89 @@ void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referen
 				// Border check
 				if ((xOff < options.borderThickness || xOff > textDimensions.x - options.borderThickness - 1) || (yOff < options.borderThickness || yOff > textDimensions.y - options.borderThickness - 1))
 				{
-					m_gridColors[index] = options.optionColor;
+					m_gridColors[index] = options.fillColor;
 					continue;
 				}
 
+				// Get the color, compensating for the border
 				Rgba baseColor = options.font->GetColorForGlyphPixel(text[charIndex], IntVector2(xOffset, yOffset));
 
 				if (baseColor.a > 0)
 				{
-					m_gridColors[index] = options.color;
+					m_gridColors[index] = options.textColor;
 				}
-				else if (options.mode == FILL_MODE_TOTAL)
+				else if (options.mode == VOXEL_FONT_FILL_FULL)
 				{
-					m_gridColors[index] = options.optionColor;
+					m_gridColors[index] = options.fillColor;
+				}
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Draws a wire box starting at the given coords and going until dimensions
+// Used for drawing borders around text
+//
+void VoxelGrid::DrawWireBox(const IntVector3& startCoords, const IntVector3& dimensions, const Rgba& color, bool shadeX /*= false*/, bool shadeY /*= false*/, bool shadeZ /*= false*/)
+{
+	IntVector3 endCoords = startCoords + dimensions;
+	for (int y = startCoords.y; y < endCoords.y; ++y)
+	{
+		for (int z = startCoords.z; z < endCoords.z; ++z)
+		{
+			for (int x = startCoords.x; x < endCoords.x; ++x)
+			{
+				bool xOnEdge = (x == startCoords.x || x == endCoords.x - 1);
+				bool yOnEdge = (y == startCoords.y || y == endCoords.y - 1);
+				bool zOnEdge = (z == startCoords.z || z == endCoords.z - 1);
+
+				bool twoOnEdge = ((xOnEdge && yOnEdge) || (xOnEdge && zOnEdge) || (yOnEdge && zOnEdge));
+
+				bool passXCheck = xOnEdge && shadeX;
+				bool passYCheck = yOnEdge && shadeY;
+				bool passZCheck = zOnEdge && shadeZ;
+
+				bool passesAShadeCheck = (passXCheck || passYCheck || passZCheck);
+
+				if (twoOnEdge || passesAShadeCheck)
+				{
+					int index = GetIndexForCoords(IntVector3(x, y, z));
+
+					if (index != -1)
+					{
+						m_gridColors[index] = color;
+					}
+				}
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Draws a solid box to the grid of the given color
+//
+void VoxelGrid::DrawSolidBox(const IntVector3& startCoords, const IntVector3& dimensions, const Rgba& color, bool overwrite /*= true*/)
+{
+	IntVector3 endCoords = startCoords + dimensions;
+	for (int y = startCoords.y; y < endCoords.y; ++y)
+	{
+		for (int z = startCoords.z; z < endCoords.z; ++z)
+		{
+			for (int x = startCoords.x; x < endCoords.x; ++x)
+			{
+				int index = GetIndexForCoords(IntVector3(x, y, z));
+
+				if (index != -1)
+				{
+					bool shouldWrite = (overwrite || m_gridColors[index].a == 0);
+
+					if (shouldWrite)
+					{
+						m_gridColors[index] = color;
+					}
 				}
 			}
 		}

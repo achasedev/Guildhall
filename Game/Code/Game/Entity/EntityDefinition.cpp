@@ -233,6 +233,15 @@ bool EntityDefinition::HasGravity() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the default (max) health of this entity type
+//
+int EntityDefinition::GetDefaultHealth() const
+{
+	return m_defaultHealth;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Loads the entity definitions specified in the file filename
 //
 void EntityDefinition::LoadDefinitions(const std::string& filename)

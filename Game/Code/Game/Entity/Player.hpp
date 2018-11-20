@@ -6,8 +6,8 @@
 /************************************************************************/
 #pragma once
 #include "Game/Entity/AnimatedEntity.hpp"
+#include "Engine/Core/Rgba.hpp"
 
-#define INVALID_PLAYER_ID (4)
 
 class Player : public AnimatedEntity
 {
@@ -15,7 +15,7 @@ public:
 	//-----Public Methods-----
 
 	// Initialization
-	Player(unsigned int playerID);
+	Player(int playerID);
 	~Player();
 
 	// Core Loop
@@ -34,8 +34,16 @@ public:
 	// Mutators
 	void Respawn();
 
+	// Accessors
+	Rgba GetPlayerColor() const;
+	int GetPlayerID() const;
+
+
 	// Items
 	void AddItemSet(const ItemSet_t& itemsToAdd);
+
+	// Utility
+	static Rgba GetColorForPlayerID(int id);
 
 
 private:
@@ -47,8 +55,11 @@ private:
 private:
 	//-----Private Data-----
 
-	int		m_playerID = INVALID_PLAYER_ID;
+	int m_playerID = -1;
 
 	ItemSet_t m_items;
+	Rgba m_color;
+
+	static Rgba s_playerColors[4];
 
 };

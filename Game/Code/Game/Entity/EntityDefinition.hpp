@@ -117,7 +117,8 @@ public:
 	IntVector3 GetDimensions() const;
 	BehaviorComponent* CloneBehaviorPrototype(unsigned int index) const;
 
-	bool HasGravity() const;
+	bool	HasGravity() const;
+	int		GetDefaultHealth() const;
 
 	static void						LoadDefinitions(const std::string& filename);
 	static const EntityDefinition*	GetDefinition(const std::string& defName);

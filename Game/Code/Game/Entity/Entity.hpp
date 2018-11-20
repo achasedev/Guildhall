@@ -42,6 +42,7 @@ public:
 	void							TakeDamage(int damageAmount);
 
 	// Accessors
+	int								GetHealth() const;
 	Vector3							GetPosition() const;
 	Vector3							GetCenterPosition() const;
 	Vector3							GetBottomCenterPosition() const;

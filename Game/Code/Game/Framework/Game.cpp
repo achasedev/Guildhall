@@ -8,11 +8,13 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
+#include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/CampaignManager.hpp"
 #include "Game/GameStates/GameState_Loading.hpp"
 
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
@@ -58,6 +60,9 @@ Game::Game()
 	m_voxelGrid = new VoxelGrid();
 	m_voxelGrid->Initialize(IntVector3(256, 64, 256));
 
+	// VoxelFont
+	m_hudFont = new VoxelFont("HUD", "Data/Images/Fonts/VoxelFont.png");
+
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
 		m_players[i] = nullptr;
@@ -81,6 +86,9 @@ Game::~Game()
 		delete m_voxelGrid;
 		m_voxelGrid = nullptr;
 	}
+
+	delete m_hudFont;
+	m_hudFont = nullptr;
 }
 
 
@@ -306,6 +314,188 @@ bool Game::IsPlayerAlive(unsigned int index)
 
 	Player* player = s_instance->m_players[index];
 	return (player != nullptr && !player->IsMarkedForDelete());
+}
+
+
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Returns the alignment used to render the given player's HUD
+//
+Vector3 GetHUDAlignmentForPlayerID(int id)
+{
+	Vector3 alignment = Vector3::ZERO;
+
+	// HUD is on the right
+	if (id % 2 == 1)
+	{
+		alignment.x = 1.0f;
+	}
+
+	return alignment;
+}
+
+
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Returns the start coords for the given player's HUD in world coordinates
+//
+IntVector3 GetHUDStartForPlayerID(int id)
+{
+	IntVector3 hudStart = IntVector3(1, 45, 252);
+
+	// HUD is on the top (players 1 and 2)
+	if (id <= 1)
+	{
+		hudStart.y += 10;
+	}
+
+	// HUD is on the right (players 2 and 4)
+	if (id % 2 == 1)
+	{
+		hudStart.x = 254;
+	}
+
+	return hudStart;
+}
+
+
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Returns the on-screen text for the player with the given id
+//
+std::string GetHUDTextForPlayerID(int id)
+{
+	switch (id)
+	{
+	case 0:
+		return "P1";
+		break;
+	case 1:
+		return "P2";
+		break;
+	case 2:
+		return "P3";
+		break;
+	case 3:
+		return "P4";
+		break;
+	default:
+		return "ERROR";
+		break;
+	}
+}
+
+
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Draws the given player's state to the grid
+//
+void DrawHUDForPlayer(int playerID, Player* player, VoxelGrid* grid, VoxelFont* font)
+{
+	VoxelFontDraw_t options;
+	options.mode = VOXEL_FONT_FILL_NONE;
+	options.textColor = Rgba::WHITE;
+	options.fillColor = Player::GetColorForPlayerID(playerID);
+	options.font = font;
+	options.scale = IntVector3(1, 1, 4);
+	options.borderThickness = 0;
+
+	// Parameters that depend on player ID
+
+	options.alignment = GetHUDAlignmentForPlayerID(playerID);
+	IntVector3 startCoords = GetHUDStartForPlayerID(playerID);
+	IntVector3 currDrawCoords = startCoords;
+
+	// Draw the player text
+	std::string hudText = GetHUDTextForPlayerID(playerID);
+
+	IntVector3 textCoords = currDrawCoords - IntVector3(0, 0, 2);
+	grid->DrawVoxelText(hudText, textCoords, options);
+
+	int totalHeight = 10;
+	int textWidth = font->GetTextDimensions(hudText).x;
+
+	currDrawCoords.x += (playerID % 2 == 1 ? -textWidth : textWidth);
+	IntVector3 textBackgroundCoords = ((playerID % 2) == 1 ? currDrawCoords : startCoords);
+	grid->DrawSolidBox(textBackgroundCoords - IntVector3(1, 1, 0), IntVector3(textWidth + 2, 10, 4), options.fillColor);
+
+
+	// If the player exists, draw the rest
+	if (player != nullptr)
+	{
+		// Skip pass where the icon will go
+		IntVector3 iconStart = currDrawCoords;
+		currDrawCoords += IntVector3(playerID % 2 == 1 ? -8 : 8, 0, 0);
+
+		int maxHealth = player->GetEntityDefinition()->GetDefaultHealth();
+		int currHealth = player->GetHealth();
+
+		grid->DrawSolidBox(currDrawCoords, IntVector3(1, 8, 4), options.fillColor);
+		currDrawCoords.x += (playerID % 2 == 1 ? -1 : 1);
+
+		IntVector3 healthBoxStart = currDrawCoords;
+
+		for (int i = 0; i < maxHealth; ++i)
+		{
+			Rgba color = Rgba::GRAY;
+
+			IntVector3 currBoxStart = currDrawCoords;
+			IntVector3 healthBoxDimensions = IntVector3(8, 8, 4);
+
+			if (i < currHealth)
+			{
+				color = Rgba::RED;
+
+				currBoxStart.z -= 2;
+				healthBoxDimensions.z += 2;
+			}
+			else
+			{
+				currBoxStart.z += 2;
+				healthBoxDimensions.z -= 2;
+			}
+
+			grid->DrawSolidBox(currBoxStart, healthBoxDimensions, color);
+			
+			currDrawCoords.x += (playerID % 2 == 1 ? -8 : 8);
+
+			grid->DrawSolidBox(currDrawCoords, IntVector3(1, 8, 4), options.fillColor);
+			currDrawCoords.x += (playerID % 2 == 1 ? -1 : 1);
+		}
+
+
+		IntVector3 borderDimensions = IntVector3(AbsoluteValue(currDrawCoords.x - iconStart.x) + 2, 10, 4);
+
+		IntVector3 borderStart = IntVector3((playerID % 2 == 1) ? currDrawCoords.x : iconStart.x, startCoords.y, startCoords.z);
+		grid->DrawWireBox(borderStart - IntVector3(1, 1, 0), borderDimensions, options.fillColor, true, true, false);
+	}
+	else
+	{
+		grid->DrawVoxelText("Press Start", currDrawCoords + IntVector3(0, 0, -2), options);
+
+		IntVector3 textStart = currDrawCoords;
+		currDrawCoords.x += ((playerID % 2 == 1) ? -1 : 1) * font->GetTextDimensions("Press Start").x;
+	
+		IntVector3 borderStart = IntVector3((playerID % 2 == 1) ? currDrawCoords.x : textStart.x, textStart.y, textStart.z);
+		IntVector3 borderDimensions = IntVector3(AbsoluteValue(textStart.x - currDrawCoords.x), 10, 4);
+		grid->DrawSolidBox(borderStart - IntVector3(1, 1, 0), borderDimensions, options.fillColor);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Draws the in-game HUD that represents current player state
+// Multiple game states render this, hence it being placed on Game
+//
+void Game::DrawInGameUI()
+{
+	VoxelGrid* grid = s_instance->m_voxelGrid;
+	Player** players = s_instance->m_players;
+
+	// Draw the player's health/shield bars and weapon indicators
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		DrawHUDForPlayer(i, players[i], grid, s_instance->m_hudFont);
+	}
+
+	// Draw the score
+
 }
 
 

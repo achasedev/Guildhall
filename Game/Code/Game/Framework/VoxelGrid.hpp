@@ -20,20 +20,20 @@ class Entity;
 class HeatMap;
 class VoxelFont;
 
-enum eFillMode
+enum eVoxelFontFill
 {
-	FILL_MODE_NONE,
-	FILL_MODE_TOTAL,
-	FILL_MODE_EDGE
+	VOXEL_FONT_FILL_NONE,
+	VOXEL_FONT_FILL_FULL,
+	VOXEL_FONT_FILL_EDGE
 };
 
 struct VoxelFontDraw_t
 {
 	const VoxelFont* font;
 
-	Rgba color;
-	eFillMode mode = FILL_MODE_NONE;
-	Rgba optionColor;
+	Rgba textColor;
+	eVoxelFontFill mode = VOXEL_FONT_FILL_NONE;
+	Rgba fillColor;
 
 	int borderThickness = 0;
 
@@ -67,6 +67,9 @@ public:
 	void				DebugDrawEntityCollision(const Entity* entity, const IntVector3& offset);
 
 	void				DrawVoxelText(const std::string& text, const IntVector3& startCoord, const VoxelFontDraw_t& options);
+	void				DrawWireBox(const IntVector3& startCoords, const IntVector3& dimensions, const Rgba& color,
+										bool shadeX = false, bool shadeY = false, bool shadeZ = false);
+	void				DrawSolidBox(const IntVector3& startCoords, const IntVector3& dimensions, const Rgba& color, bool overwrite = true);
 
 	// Accessors
 	int					GetVoxelCount() const;

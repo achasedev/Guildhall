@@ -9,8 +9,6 @@
 #include <vector>
 #include "Engine/Math/Vector2.hpp"
 
-#define MAX_PLAYERS (4)
-
 class Clock;
 class World;
 class CampaignManager;
@@ -18,6 +16,9 @@ class GameCamera;
 class Player;
 class GameState;
 class VoxelGrid;
+class VoxelFont;
+
+#define MAX_PLAYERS (4)
 
 enum eGameStateState
 {
@@ -57,6 +58,7 @@ public:
 	static CampaignManager*		GetCampaignManager();
 
 	static bool					IsPlayerAlive(unsigned int index);
+	static void					DrawInGameUI();
 
 
 private:
@@ -81,7 +83,10 @@ private:
 	Player*				m_players[MAX_PLAYERS];
 
 	// Camera
-	GameCamera*		m_gameCamera = nullptr;
+	GameCamera*			m_gameCamera = nullptr;
+
+	// In-game hud
+	VoxelFont* m_hudFont = nullptr;
 
 	static Game* s_instance;			// The singleton Game instance
 

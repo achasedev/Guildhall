@@ -5,6 +5,7 @@
 /* Description: Implementation of the player class
 /************************************************************************/
 #include "Game/Entity/Player.hpp"
+#include "Game/Framework/Game.hpp"
 #include "Game/Entity/AIEntity.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
@@ -23,15 +24,28 @@
 
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 
+// Player colors
+Rgba Player::s_playerColors[MAX_PLAYERS] = 
+{
+	Rgba(0, 0, 255, 255), 
+	Rgba(0, 255, 0, 255),
+	Rgba(128, 0, 255, 255),
+	Rgba(255, 0, 128, 255)
+};
+
+
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
-Player::Player(unsigned int playerID)
+Player::Player(int playerID)
 	: AnimatedEntity(EntityDefinition::GetDefinition("Player"))
 	, m_playerID(playerID)
 {
+	// Assign color based on its ID
+	m_color = GetColorForPlayerID(m_playerID);
+
 	m_isPlayer = true;
-	m_health = 10;
+	m_health = m_definition->GetDefaultHealth();
 	m_entityTeam = ENTITY_TEAM_PLAYER;
 }
 
@@ -97,6 +111,11 @@ void Player::ProcessGameplayInput()
 	if (controller.WasButtonJustPressed(XBOX_BUTTON_A))
 	{
 		Jump();
+	}
+
+	if (controller.WasButtonJustPressed(XBOX_BUTTON_Y))
+	{
+		TakeDamage(1);
 	}
 }
 
@@ -184,11 +203,43 @@ void Player::Respawn()
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the color of this player
+//
+Rgba Player::GetPlayerColor() const
+{
+	return m_color;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the ID of this player
+//
+int Player::GetPlayerID() const
+{
+	return m_playerID;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Adds the given items to the player's inventory
 //
 void Player::AddItemSet(const ItemSet_t& itemsToAdd)
 {
 	m_items += itemsToAdd;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the color of the player with the given id
+//
+Rgba Player::GetColorForPlayerID(int id)
+{
+	if (id == -1)
+	{
+		return Rgba::WHITE;
+	}
+
+	return s_playerColors[id];
 }
 
 

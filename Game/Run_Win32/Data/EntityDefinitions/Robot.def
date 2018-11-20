@@ -1,6 +1,6 @@
 <EntityDefinitions>
 
-	<EntityDefinition name="Player">
+	<EntityDefinition name="Player" defaultHealth="5">
 
 		<!--Movement Parameters-->
 		<Movement maxAcceleration="300.0" maxSpeed="40.0" maxDeceleration="100.0" jumpImpulse="80.0"/>

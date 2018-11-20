@@ -22,8 +22,9 @@ enum ePlayState
 
 
 class World;
-class CampaignManager;
 class PlayState;
+class VoxelFont;
+class CampaignManager;
 
 class GameState_Playing : public GameState
 {
