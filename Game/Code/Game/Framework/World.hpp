@@ -81,6 +81,7 @@ public:
 	bool		IsPositionInStatic(const Vector3& position) const;
 	bool		HasLineOfSight(const Vector3& startPosition, const Vector3& endPosition) const;
 	bool		IsEntityOnGround(const Entity* entity) const;
+	Rgba		GetTerrainColorAtElevation(int elevation) const;
 
 	// Utility
 	void						ParticalizeEntity(Entity* entity);

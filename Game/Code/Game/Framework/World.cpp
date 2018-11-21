@@ -322,7 +322,8 @@ void World::DestroyTerrain(const IntVector3& coord, const IntRange& radius /*= I
 	// For the ground I hit, blow it away! (anything within radius)
 	Vector3 velocity = 40.f * Vector3(GetRandomFloatInRange(-1.f, 1.f), 1.f, GetRandomFloatInRange(-1.f, 1.f));
 	
-	Particle* looseParticle = new Particle(Rgba::DARK_GREEN, 2.0f, Vector3(coord), velocity);
+	Rgba looseColor = GetTerrainColorAtElevation(coord.y);
+	Particle* looseParticle = new Particle(looseColor, 2.0f, Vector3(coord), velocity);
 	AddParticle(looseParticle);
 
 	// For all particles above the hit, have them fall straight down
@@ -330,7 +331,9 @@ void World::DestroyTerrain(const IntVector3& coord, const IntRange& radius /*= I
 	{
 		Vector3 position = Vector3(IntVector3(coord.x, y, coord.z));
 
-		Particle* groundParticle = new Particle(Rgba::DARK_GREEN, 2.0f, position, Vector3::ZERO, true);
+		Rgba color = GetTerrainColorAtElevation(y);
+
+		Particle* groundParticle = new Particle(color, 2.0f, position, Vector3::ZERO, true);
 		AddParticle(groundParticle);	
 	}
 
@@ -577,6 +580,35 @@ bool World::IsEntityOnGround(const Entity* entity) const
 	}
 
 	return (entity->GetPosition().y <= GetMapHeightForEntity(entity));
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the color for the given voxel at this elevation
+//
+Rgba World::GetTerrainColorAtElevation(int elevation) const
+{
+	// Hard coded for now
+	Rgba color;
+
+	if (elevation <= 4)
+	{
+		color = Rgba::BROWN;
+	}
+	else if (elevation <= 20)
+	{
+		color = Rgba::GREEN;
+	}
+	else if (elevation <= 30)
+	{
+		color = Rgba::DARK_GREEN;
+	}
+	else if (elevation <= 55)
+	{
+		color = Rgba::GRAY;
+	}
+
+	return color;
 }
 
 

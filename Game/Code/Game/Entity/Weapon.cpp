@@ -45,7 +45,7 @@ void Weapon::Shoot()
 	}
 
 	// Check the shoot timer
-	if (!m_shootTimer.DecrementByIntervalOnce())
+	if (m_shootTimer.DecrementByIntervalAll() == 0)
 	{
 		return;
 	}

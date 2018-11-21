@@ -6,6 +6,7 @@
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
 #include "Game/Entity/Entity.hpp"
+#include "Game/Framework/World.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameCamera.hpp"
@@ -174,7 +175,7 @@ void VoxelGrid::DrawTerrain(HeatMap* heightMap, const IntVector3& offset)
 
 				for (int y = height - 1; y >= height - maxFill; --y)
 				{
-					Rgba color = Rgba::DARK_GREEN;
+					Rgba color = Game::GetWorld()->GetTerrainColorAtElevation(height);
 
 					int gridIndex = GetIndexForCoords(IntVector3(gridCoords.x, y, gridCoords.z));
 
@@ -186,7 +187,7 @@ void VoxelGrid::DrawTerrain(HeatMap* heightMap, const IntVector3& offset)
 			}
 			else
 			{
-				Rgba color = Rgba::DARK_GREEN;
+				Rgba color = Game::GetWorld()->GetTerrainColorAtElevation(height);
 
 				int gridIndex = GetIndexForCoords(gridCoords);
 

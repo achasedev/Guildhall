@@ -93,6 +93,8 @@ void AnimatedEntity::OnDeath()
 void AnimatedEntity::OnSpawn()
 {
 	Entity::OnSpawn();
+
+	m_animator->Play("idle");
 }
 
 
@@ -118,6 +120,8 @@ void AnimatedEntity::Move(const Vector2& direction)
 
 	// Reorient the entity
 	m_orientation = direction.GetOrientationDegrees();
+
+	m_animator->Play("move");
 }
 
 
@@ -155,5 +159,10 @@ void AnimatedEntity::Decelerate()
 		Vector3 finalForce = Vector3(direction.x, 0.f, direction.y);
 
 		m_physicsComponent->AddForce(finalForce);
+
+		if (m_physicsComponent->GetVelocity().GetLengthSquared() <= 0.1f)
+		{
+			m_animator->Play("idle");
+		}
 	}
 }

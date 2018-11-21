@@ -92,7 +92,7 @@
 			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
 		</Physics>
 
-		<Weapon fire_rate="2.0" fire_spread="0.2" projectile="Shell" count_per_shot="8"/>
+		<Weapon fire_rate="2.0" fire_spread="0.4" projectile="Shell" count_per_shot="8"/>
 
 	</EntityDefinition>
 

@@ -75,11 +75,6 @@ void Player::ProcessGameplayInput()
 	if (leftStick != Vector2::ZERO)
 	{
 		Move(leftStick);
-		m_animator->Play("walk");
-	}
-	else
-	{
-		m_animator->Play("idle");
 	}
 
 	// Orientation
@@ -126,7 +121,7 @@ void Player::ProcessGameplayInput()
 //
 void Player::Update()
 {
-	Entity::Update();
+	AnimatedEntity::Update();
 }
 
 
@@ -135,7 +130,7 @@ void Player::Update()
 //
 void Player::OnEntityCollision(Entity* other)
 {
-	Entity::OnEntityCollision(other);
+	AnimatedEntity::OnEntityCollision(other);
 }
 
 
@@ -144,7 +139,7 @@ void Player::OnEntityCollision(Entity* other)
 //
 void Player::OnDamageTaken(int damageAmount)
 {
-	Entity::OnDamageTaken(damageAmount);
+	AnimatedEntity::OnDamageTaken(damageAmount);
 }
 
 
@@ -153,7 +148,7 @@ void Player::OnDamageTaken(int damageAmount)
 //
 void Player::OnDeath()
 {
-	Entity::OnDeath();
+	AnimatedEntity::OnDeath();
 
 	Game::GetWorld()->ParticalizeEntity(this);
 }
@@ -164,9 +159,7 @@ void Player::OnDeath()
 //
 void Player::OnSpawn()
 {
-	Entity::OnSpawn();
-
-	m_animator->Play("idle", PLAYMODE_LOOP);
+	AnimatedEntity::OnSpawn();
 
 	if (m_currWeapon == nullptr)
 	{

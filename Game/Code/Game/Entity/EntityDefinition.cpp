@@ -92,7 +92,7 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 	const XMLElement* visualElement = entityElement.FirstChildElement("Visuals");
 	if (visualElement != nullptr)
 	{
-		std::string animSetName = ParseXmlAttribute(*visualElement, "set", "");
+		std::string animSetName = ParseXmlAttribute(*visualElement, "animation_set", "");
 		m_animationSet = VoxelAnimationSet::GetAnimationSet(animSetName);
 
 		if (m_animationSet != nullptr)

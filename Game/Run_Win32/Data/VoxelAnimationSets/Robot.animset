@@ -4,7 +4,7 @@
 		<VoxelAnimation name="Robot_idle"/>
 	</Alias>
 
-	<Alias alias="walk">
+	<Alias alias="move">
 		<VoxelAnimation name="Robot_walk"/>
 	</Alias>
 
