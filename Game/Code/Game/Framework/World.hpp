@@ -61,6 +61,7 @@ public:
 
 	// Mutators
 	void AddEntity(Entity* entity);
+	void RemoveEntity(Entity* entity);
 	void AddParticle(Particle* particle);
 	void DestroyTerrain(const IntVector3& coord, const IntRange& radius = IntRange(0, 0));
 	void SetTerrainHeightAtCoord(const IntVector3& coord, int height);

@@ -32,12 +32,12 @@ Entity::Entity(const EntityDefinition* definition)
 	m_position = Vector3(GetRandomFloatInRange(10.f, 50.f), 4.f, GetRandomFloatInRange(10.f, 200.f));
 
 	// Only create a default texture if the definition has one specified
-	if (definition->m_defaultSprite != nullptr)
+	if (definition->m_defaultSprite != nullptr && !definition->m_isAnimated)
 	{
 		m_defaultTexture = definition->m_defaultSprite->GetTextureForOrientation(90.f)->Clone();
 	}
 
-	m_health = definition->m_defaultHealth;
+	m_health = definition->m_initialHealth;
 }
 
 
@@ -90,7 +90,7 @@ void Entity::OnGroundCollision()
 //
 void Entity::OnVoxelCollision(std::vector<IntVector3> voxelCoords)
 {
-	if (!m_definition->m_destructible)
+	if (!m_definition->m_isDestructible)
 	{
 		return;
 	}
@@ -417,6 +417,16 @@ Vector3 Entity::GetPositionForLocalIndex(unsigned int index) const
 	int x = leftOver % (dimensions.x);
 
 	return GetPositionForLocalCoords(IntVector3(x, y, z));
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the vector representing the direction this entity is currently facing
+//
+Vector3 Entity::GetForwardVector() const
+{
+	Vector2 direction = Vector2::MakeDirectionAtDegrees(m_orientation);
+	return Vector3(direction.x, 0.f, direction.y);
 }
 
 

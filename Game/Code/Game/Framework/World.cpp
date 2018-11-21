@@ -279,6 +279,24 @@ void World::AddEntity(Entity* entity)
 
 
 //-----------------------------------------------------------------------------------------------
+// Removes the entity from the world, without destroying it
+//
+void World::RemoveEntity(Entity* entity)
+{
+	int numEntities = (int)m_entities.size();
+
+	for (int i = 0; i < numEntities; ++i)
+	{
+		if (m_entities[i] == entity)
+		{
+			m_entities.erase(m_entities.begin() + i);
+			break;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Adds the given particle to the world
 //
 void World::AddParticle(Particle* particle)

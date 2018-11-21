@@ -41,7 +41,7 @@ void Projectile::OnEntityCollision(Entity* other)
 	if (other->GetTeam() != m_entityTeam)
 	{
 		Entity::OnEntityCollision(other);
-		other->TakeDamage(m_damage);
+		other->TakeDamage(m_definition->m_projectileDamage);
 
 		// Projectiles are only good for one collision
 		m_isMarkedForDelete = true;
@@ -84,5 +84,5 @@ void Projectile::OnSpawn()
 {
 	Entity::OnSpawn();
 
-	m_stopwatch->SetInterval(m_lifetime);
+	m_stopwatch->SetInterval(m_definition->m_projectileLifetime);
 }

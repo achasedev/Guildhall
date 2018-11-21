@@ -8,6 +8,8 @@
 #include "Game/Entity/AnimatedEntity.hpp"
 #include "Engine/Core/Rgba.hpp"
 
+class Weapon;
+class Ability;
 
 class Player : public AnimatedEntity
 {
@@ -33,32 +35,25 @@ public:
 
 	// Mutators
 	void Respawn();
+	void EquipWeapon(Weapon* weapon);
+	void EquipAbility(Ability* ability);
 
 	// Accessors
 	Rgba GetPlayerColor() const;
 	int GetPlayerID() const;
-
-
-	// Items
-	void AddItemSet(const ItemSet_t& itemsToAdd);
+	Weapon* GetCurrentWeapon() const;
 
 	// Utility
 	static Rgba GetColorForPlayerID(int id);
 
 
 private:
-	//-----Private Methods-----
-
-	void DebugDrawState() const;
-
-
-private:
 	//-----Private Data-----
 
 	int m_playerID = -1;
-
-	ItemSet_t m_items;
 	Rgba m_color;
+
+	Weapon* m_currWeapon = nullptr;
 
 	static Rgba s_playerColors[4];
 

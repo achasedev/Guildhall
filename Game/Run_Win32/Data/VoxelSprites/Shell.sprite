@@ -1,0 +1,5 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Shell" file="Data/VoxelModels/Projectiles/Shell.qef"/>
+
+</VoxelSprites>

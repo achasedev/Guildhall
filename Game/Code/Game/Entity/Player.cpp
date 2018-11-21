@@ -4,6 +4,7 @@
 /* Date: September 22nd, 2017
 /* Description: Implementation of the player class
 /************************************************************************/
+#include "Game/Entity/Weapon.hpp"
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Entity/AIEntity.hpp"
@@ -12,8 +13,8 @@
 #include "Game/Entity/Projectile.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Animation/VoxelAnimator.hpp"
-#include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
+#include "Game/Entity/Components/PhysicsComponent.hpp"
 
 #include "Engine/Core/Window.hpp"
 #include "Engine/Math/Vector3.hpp"
@@ -45,7 +46,7 @@ Player::Player(int playerID)
 	m_color = GetColorForPlayerID(m_playerID);
 
 	m_isPlayer = true;
-	m_health = m_definition->GetDefaultHealth();
+	m_health = m_definition->GetInitialHealth();
 	m_entityTeam = ENTITY_TEAM_PLAYER;
 }
 
@@ -126,7 +127,6 @@ void Player::ProcessGameplayInput()
 void Player::Update()
 {
 	Entity::Update();
-	DebugDrawState();
 }
 
 
@@ -167,6 +167,11 @@ void Player::OnSpawn()
 	Entity::OnSpawn();
 
 	m_animator->Play("idle", PLAYMODE_LOOP);
+
+	if (m_currWeapon == nullptr)
+	{
+		EquipWeapon(new Weapon(EntityDefinition::GetDefinition("Pistol")));
+	}
 }
 
 
@@ -175,18 +180,7 @@ void Player::OnSpawn()
 //
 void Player::Shoot()
 {
-	Projectile* proj = new Projectile(EntityDefinition::GetDefinition("Bullet"));
-	proj->SetPosition(m_position + Vector3(0.f, 4.f, 0.f));
-	proj->SetOrientation(m_orientation);
-	proj->SetTeam(m_entityTeam);
-
-	Vector2 direction = Vector2::MakeDirectionAtDegrees(m_orientation);	
-	Vector3 finalDirection = Vector3(GetRandomFloatInRange(-0.1f, 0.1f) + direction.x, GetRandomFloatInRange(-0.1f, 0.1f), GetRandomFloatInRange(-0.1f, 0.1f) + direction.y);
-
-	proj->GetPhysicsComponent()->SetVelocity(finalDirection * 100.f);
-	
-	World* world = Game::GetWorld();
-	world->AddEntity(proj);
+	m_currWeapon->Shoot();
 }
 
 
@@ -199,6 +193,21 @@ void Player::Respawn()
 	m_health = 10;
 	
 	m_physicsComponent->StopAllMovement();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the weapon data to the player so they can shoot
+//
+void Player::EquipWeapon(Weapon* weapon)
+{
+	if (m_currWeapon != nullptr)
+	{
+		delete m_currWeapon;
+	}
+
+	m_currWeapon = weapon;
+	m_currWeapon->OnEquip(this);
 }
 
 
@@ -221,11 +230,11 @@ int Player::GetPlayerID() const
 
 
 //-----------------------------------------------------------------------------------------------
-// Adds the given items to the player's inventory
+// Returns the weapon currently equipped by the player
 //
-void Player::AddItemSet(const ItemSet_t& itemsToAdd)
+Weapon* Player::GetCurrentWeapon() const
 {
-	m_items += itemsToAdd;
+	return m_currWeapon;
 }
 
 
@@ -240,35 +249,4 @@ Rgba Player::GetColorForPlayerID(int id)
 	}
 
 	return s_playerColors[id];
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Debug draws text to the screen to represent this player's state
-//
-void Player::DebugDrawState() const
-{
-	Vector2 alignment = Vector2::ZERO;
-
-	switch (m_playerID)
-	{
-	case 1:
-		alignment = Vector2(1.f, 0.f);
-		break;
-	case 2:
-		alignment = Vector2(0.f, 1.f);
-		break;
-	case 3: 
-		alignment = Vector2(1.f, 1.f);
-		break;
-	default:
-		break;
-	}
-
-	AABB2 bounds = Window::GetInstance()->GetWindowBounds();
-
-	std::string text = Stringf("Player: %i\nBullets: %i\nShells: %i\nEnergy: %i\nExplosives: %i\nMoney: %i",
-		m_playerID + 1, m_items.bullets, m_items.shells, m_items.energy, m_items.explosives, m_items.money);
-
-	DebugRenderSystem::Draw2DText(text, bounds, 0.f, Rgba::GRAY, 20.f, alignment);
 }

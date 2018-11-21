@@ -118,7 +118,7 @@ void GameState_Loading::LoadResources() const
 {
 	LoadVoxelResources();
 
-	EntityDefinition::LoadDefinitions("Data/EntityDefinitions/Robot.def");
+	EntityDefinition::LoadDefinitions("Data/EntityDefinitions/EntityDefinitions.xml");
 }
 
 

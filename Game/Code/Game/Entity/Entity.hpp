@@ -66,6 +66,7 @@ public:
 	bool							IsDynamic() const;
 	Vector3							GetPositionForLocalCoords(const IntVector3& localCoords) const;
 	Vector3							GetPositionForLocalIndex(unsigned int index) const;
+	Vector3							GetForwardVector() const;
 
 	IntVector3						GetCoordinatePosition() const;
 

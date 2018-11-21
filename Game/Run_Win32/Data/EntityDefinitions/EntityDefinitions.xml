@@ -1,0 +1,125 @@
+<EntityDefinitions>
+
+	<!-- Players -->
+
+	<EntityDefinition name="Player" initial_health="5">
+
+		<!--Movement Parameters-->
+		<Movement max_acceleration="300.0" max_speed="40.0" max_deceleration="100.0" jump_impulse="80.0"/>
+
+		<!--Visuals-->
+		<Visuals animation_set="Robot" default_sprite="Robot_idle_0"/>
+
+		<!--Physics-->
+		<Physics physics_type="dynamic" has_gravity="true">
+			<CollisionDefinition response="share_correction" layer="player"/>
+		</Physics>
+
+		<!--AI-->
+
+	</EntityDefinition>
+
+
+
+
+
+	<!-- Enemies -->
+
+	<EntityDefinition name="Robot" initial_health="1">
+
+		<Movement max_acceleration="3000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="120.0"/>
+
+		<Visuals animation_set="Robot" default_sprite="Robot_idle_0"/>
+
+		<Physics physics_type="dynamic" has_gravity="true">
+			<CollisionDefinition response="share_correction" layer="enemy"/>
+		</Physics>
+
+		<AI>
+			<PursueDirect/>
+		</AI>
+
+	</EntityDefinition>
+
+
+
+
+	<!-- Projectiles -->
+
+	<EntityDefinition name="Bullet">
+
+		<Visuals default_sprite="Bullet"/>
+
+		<Physics physics_type="dynamic" has_gravity="false">
+			<CollisionDefinition response="ignore_correction"/>
+		</Physics>
+
+		<Projectile speed="200.0" hit_radius="0.0" hit_damage="2" lifetime="0.7"/>
+
+	</EntityDefinition>
+
+	<EntityDefinition name="Shell">
+
+		<Visuals default_sprite="Shell"/>
+
+		<Physics physics_type="dynamic" has_gravity="false">
+			<CollisionDefinition response="ignore_correction"/>
+		</Physics>
+
+		<Projectile speed="150.0" hit_radius="0.0" hit_damage="1" lifetime="0.3"/>
+
+	</EntityDefinition>
+
+
+	<!-- Weapons (LOAD AFTER PROJECTILES) -->
+	<EntityDefinition name="Pistol">
+
+		<Visuals default_sprite="Pistol"/>
+
+		<Physics physics_type="dynamic">
+			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
+		</Physics>
+
+		<Weapon fire_rate="4.0" fire_spread="0.0" projectile="Bullet" count_per_shot="1"/>
+
+	</EntityDefinition>
+
+	<EntityDefinition name="Shotgun">
+
+		<Visuals default_sprite="Shotgun"/>
+
+		<Physics physics_type="dynamic">
+			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
+		</Physics>
+
+		<Weapon fire_rate="2.0" fire_spread="0.2" projectile="Shell" count_per_shot="8"/>
+
+	</EntityDefinition>
+
+	<!-- Abilities -->
+
+
+
+	<!-- Statics -->
+
+	<EntityDefinition name="Wall">
+
+		<Visuals default_sprite="Wall" destructible="true"/>
+
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>
+
+	</EntityDefinition>
+
+
+ 	<!-- Needed for it to work in the system -->
+	<EntityDefinition name="Particle">
+
+		<Physics physics_type="dynamic" has_gravity="true">
+			<CollisionDefinition response="full_correction" layer="world"/>
+		</Physics>
+
+	</EntityDefinition>
+
+</EntityDefinitions>

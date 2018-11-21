@@ -222,7 +222,7 @@ void VoxelGrid::Draw3DTexture(const VoxelTexture* texture, const IntVector3& sta
 				if (index != -1)
 				{
 					Rgba colorToRender = texture->GetColorAtCoords(localCoords);
-					if (colorToRender.a > 0)
+					if (colorToRender.a != 0)
 					{
 						m_gridColors[index] = colorToRender;
 					}

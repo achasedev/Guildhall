@@ -43,6 +43,7 @@ eCollisionLayer ConvertCollisionLayerFromString(const std::string& layerName)
 	else if (layerName == "enemy")			{ return COLLISION_LAYER_ENEMY; }
 	else if (layerName == "player_bullet")	{ return COLLISION_LAYER_PLAYER_BULLET; }
 	else if (layerName == "enemy_bullet")	{ return COLLISION_LAYER_ENEMY_BULLET; }
+	else if (layerName == "item")			{ return COLLISION_LAYER_ITEM; }
 	else
 	{
 		return COLLISION_LAYER_WORLD; // Default to layer that collides with everything
@@ -75,49 +76,53 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 	m_name = ParseXmlAttribute(entityElement, "name");
 	ASSERT_OR_DIE(m_name.size() > 0, "Error: EntityDefinition lacks a name");
 
-	m_defaultHealth = ParseXmlAttribute(entityElement, "defaultHealth", m_defaultHealth);
+	m_initialHealth = ParseXmlAttribute(entityElement, "initial_health", m_initialHealth);
 
 	// Movement
 	const XMLElement* moveElement = entityElement.FirstChildElement("Movement");
 	if (moveElement != nullptr)
 	{
-		m_maxMoveAcceleration	= ParseXmlAttribute(*moveElement, "maxAcceleration",	m_maxMoveAcceleration);
-		m_maxMoveSpeed			= ParseXmlAttribute(*moveElement, "maxSpeed",			m_maxMoveSpeed);
-		m_maxMoveDeceleration	= ParseXmlAttribute(*moveElement, "maxDeceleration",	m_maxMoveDeceleration);
-		m_jumpImpulse			= ParseXmlAttribute(*moveElement, "jumpImpulse",		m_jumpImpulse);
+		m_maxMoveAcceleration	= ParseXmlAttribute(*moveElement, "max_acceleration",	m_maxMoveAcceleration);
+		m_maxMoveSpeed			= ParseXmlAttribute(*moveElement, "max_speed",			m_maxMoveSpeed);
+		m_maxMoveDeceleration	= ParseXmlAttribute(*moveElement, "max_deceleration",	m_maxMoveDeceleration);
+		m_jumpImpulse			= ParseXmlAttribute(*moveElement, "jump_impulse",		m_jumpImpulse);
 	}
 
-	// Animation
-	const XMLElement* animElement = entityElement.FirstChildElement("Animation");
-	if (animElement != nullptr)
+	// Visuals
+	const XMLElement* visualElement = entityElement.FirstChildElement("Visuals");
+	if (visualElement != nullptr)
 	{
-		std::string animSetName = ParseXmlAttribute(*animElement, "set", "");
+		std::string animSetName = ParseXmlAttribute(*visualElement, "set", "");
 		m_animationSet = VoxelAnimationSet::GetAnimationSet(animSetName);
 
-		std::string defaultSpriteName = ParseXmlAttribute(*animElement, "defaultSprite", "default");
+		if (m_animationSet != nullptr)
+		{
+			m_isAnimated = true;
+		}
+
+		std::string defaultSpriteName = ParseXmlAttribute(*visualElement, "default_sprite", "default");
 		m_defaultSprite = VoxelSprite::CreateVoxelSpriteClone(defaultSpriteName);
 
-		m_destructible = ParseXmlAttribute(*animElement, "destructible", false);
+		m_isDestructible = ParseXmlAttribute(*visualElement, "destructible", false);
 
-		ASSERT_OR_DIE(m_defaultSprite != nullptr, "Error: Default sprite not found");
+		GUARANTEE_OR_DIE(!(m_isAnimated == true && m_isDestructible == true), Stringf("Error: Entity \"%s\" is destructible and animated, not allowed!", m_name.c_str()));
+		GUARANTEE_OR_DIE(m_defaultSprite != nullptr, Stringf("Error: Default sprite not found for entity \"%s\"", m_name.c_str()));
 	}
 
 	// Physics
 	const XMLElement* physicsElement = entityElement.FirstChildElement("Physics");
 	if (physicsElement != nullptr)
 	{
-		std::string physicsTypeName = ParseXmlAttribute(*physicsElement, "physicsType", "dynamic");
+		std::string physicsTypeName = ParseXmlAttribute(*physicsElement, "physics_type", "dynamic");
 		m_physicsType = ConvertPhysicsTypeFromString(physicsTypeName);
 
-		m_affectedByGravity = ParseXmlAttribute(*physicsElement, "hasGravity", false);
+		m_affectedByGravity = ParseXmlAttribute(*physicsElement, "has_gravity", m_affectedByGravity);
 
 		// Collision Definition
 		const XMLElement* collisionElement = physicsElement->FirstChildElement("CollisionDefinition");
 
 		if (collisionElement != nullptr)
 		{
-			std::string shapeText = ParseXmlAttribute(*collisionElement, "shape", "disc");
-
 			std::string responseText = ParseXmlAttribute(*collisionElement, "response", "full_correction");
 			eCorrectionResponse response = ConvertCollisionResponseFromString(responseText);
 
@@ -142,15 +147,26 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 		}	
 	}
 
-	// Item
-	const XMLElement* itemElement = entityElement.FirstChildElement("Item");
-	if (itemElement != nullptr)
+	// Projectiles
+	const XMLElement* projElement = entityElement.FirstChildElement("Projectile");
+	if (projElement != nullptr)
 	{
-		m_initialItems.bullets = ParseXmlAttribute(*itemElement, "bullets", 0);
-		m_initialItems.shells = ParseXmlAttribute(*itemElement, "shells", 0);
-		m_initialItems.energy = ParseXmlAttribute(*itemElement, "energy", 0);
-		m_initialItems.explosives = ParseXmlAttribute(*itemElement, "explosives", 0);
-		m_initialItems.money = ParseXmlAttribute(*itemElement, "money", 0);
+		m_projectileSpeed		= ParseXmlAttribute(*projElement, "speed",		m_projectileSpeed);
+		m_projectileLifetime	= ParseXmlAttribute(*projElement, "lifetime",	m_projectileLifetime);
+		m_projectileDamage		= ParseXmlAttribute(*projElement, "damage",		m_projectileDamage);
+		m_projectileHitRadius	= ParseXmlAttribute(*projElement, "hit_radius", m_projectileHitRadius);
+	}
+
+	// Weapons
+	const XMLElement* weaponElement = entityElement.FirstChildElement("Weapon");
+	if (weaponElement != nullptr)
+	{
+		std::string projectileName = ParseXmlAttribute(*weaponElement, "projectile", "bullet");
+		m_projectileDefinition = EntityDefinition::GetDefinition(projectileName);
+
+		m_fireRate = ParseXmlAttribute(*weaponElement, "fire_rate", m_fireRate);
+		m_fireSpread = ParseXmlAttribute(*weaponElement, "fire_spread", m_fireSpread);
+		m_projectilesFiredPerShot = ParseXmlAttribute(*weaponElement, "count_per_shot", m_projectilesFiredPerShot);
 	}
 }
 
@@ -235,9 +251,9 @@ bool EntityDefinition::HasGravity() const
 //-----------------------------------------------------------------------------------------------
 // Returns the default (max) health of this entity type
 //
-int EntityDefinition::GetDefaultHealth() const
+int EntityDefinition::GetInitialHealth() const
 {
-	return m_defaultHealth;
+	return m_initialHealth;
 }
 
 

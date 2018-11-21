@@ -8,8 +8,8 @@
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
-#include "Engine/Math/MathUtils.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -17,7 +17,6 @@
 Item::Item(const EntityDefinition* definition)
 	: Entity(definition)
 {
-	m_entityTeam = ENTITY_TEAM_PLAYER;
 }
 
 void Item::Update()
@@ -45,13 +44,7 @@ void Item::Update()
 
 void Item::OnEntityCollision(Entity* other)
 {
-	if (other->IsPlayer())
-	{
-		Player* player = dynamic_cast<Player*>(other);
-		player->AddItemSet(m_definition->m_initialItems);
-
-		OnDeath();
-	}
+	Entity::OnEntityCollision(other);
 }
 
 void Item::OnDeath()

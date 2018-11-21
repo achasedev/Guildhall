@@ -18,24 +18,15 @@ public:
 
 	virtual void					Update();
 
-	virtual void					OnEntityCollision(Entity* other);
-	virtual void					OnDeath();
-	virtual void					OnSpawn();
+	virtual void					OnEntityCollision(Entity* other) override;
+	virtual void					OnDeath() override;
+	virtual void					OnSpawn() override;
 
-
-public:
-	//-----Public Data-----
-	
-
-private:
-	//-----Private Methods-----
-	
 	
 private:
 	//-----Private Data-----
 
 	Stopwatch m_bobTimer;
-
 	Vector3 m_basePosition = Vector3::ZERO;
 
 	static constexpr float ITEM_BOB_RATE = 180.f;

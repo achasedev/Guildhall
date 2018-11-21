@@ -29,14 +29,7 @@ public:
 private:
 	//-----Private Data-----
 
-	int			m_damage	= DEFAULT_DAMAGE;
-	float		m_speed		= 10.f;
-	float		m_lifetime	= DEFAULT_LIFETIME;
 	bool		m_applyPhysics = true;
 	Stopwatch*	m_stopwatch = nullptr;
-
-	static constexpr int	DEFAULT_DAMAGE = 1;
-	static constexpr float	DEFAULT_LIFETIME = 1.0f;
-	static constexpr float	DEFAULT_SPEED = 100.f;
 
 };

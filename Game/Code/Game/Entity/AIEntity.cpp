@@ -5,6 +5,7 @@
 /* Description: Implementation of the AIEntity class
 /************************************************************************/
 #include "Game/Entity/Item.hpp"
+#include "Game/Entity/Weapon.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Entity/AIEntity.hpp"
 #include "Game/Framework/World.hpp"
@@ -44,7 +45,7 @@ void AIEntity::OnDeath()
 	m_spawnPoint->StopTrackingEntity(this);
 	Game::GetWorld()->ParticalizeEntity(this);
 
-	Item* drop = new Item(EntityDefinition::GetDefinition("Item_test"));
+	Weapon* drop = new Weapon(EntityDefinition::GetDefinition("Shotgun"));
 	drop->SetPosition(GetCenterPosition());
 
 	Game::GetWorld()->AddEntity(drop);

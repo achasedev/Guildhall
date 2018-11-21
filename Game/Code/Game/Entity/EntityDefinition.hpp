@@ -40,7 +40,8 @@ enum eCollisionLayerBit : uint8_t
 	COLLISION_LAYER_BIT_PLAYER = (1 << 1),
 	COLLISION_LAYER_BIT_ENEMY = (1 << 2),
 	COLLISION_LAYER_BIT_PLAYER_BULLET = (1 << 3),
-	COLLISION_LAYER_BIT_ENEMY_BULLET = (1 << 4)
+	COLLISION_LAYER_BIT_ENEMY_BULLET = (1 << 4),
+	COLLISION_LAYER_BIT_ITEM = (1 << 5)
 };
 
 
@@ -51,7 +52,8 @@ enum eCollisionLayer : uint8_t
 	COLLISION_LAYER_PLAYER = (COLLISION_LAYER_BIT_WORLD | COLLISION_LAYER_BIT_PLAYER | COLLISION_LAYER_BIT_ENEMY | COLLISION_LAYER_BIT_ENEMY_BULLET),
 	COLLISION_LAYER_ENEMY = (COLLISION_LAYER_BIT_WORLD | COLLISION_LAYER_BIT_PLAYER | COLLISION_LAYER_BIT_ENEMY | COLLISION_LAYER_BIT_PLAYER_BULLET),
 	COLLISION_LAYER_PLAYER_BULLET = (COLLISION_LAYER_BIT_WORLD | COLLISION_LAYER_BIT_ENEMY),
-	COLLISION_LAYER_ENEMY_BULLET = (COLLISION_LAYER_BIT_WORLD | COLLISION_LAYER_BIT_PLAYER)
+	COLLISION_LAYER_ENEMY_BULLET = (COLLISION_LAYER_BIT_WORLD | COLLISION_LAYER_BIT_PLAYER),
+	COLLISION_LAYER_ITEM = (COLLISION_LAYER_BIT_WORLD | COLLISION_LAYER_BIT_PLAYER)
 };
 
 
@@ -66,37 +68,6 @@ struct CollisionDefinition_t
 	eCorrectionResponse			m_response = COLLISION_RESPONSE_SHARE_CORRECTION;
 };
 
-// For items
-struct ItemSet_t
-{
-	void operator+=(const ItemSet_t& toAdd)
-	{
-		bullets += toAdd.bullets;
-		shells += toAdd.shells;
-		energy += toAdd.energy;
-		explosives += toAdd.explosives;
-		money += toAdd.money;
-	}
-
-	const ItemSet_t& operator+(const ItemSet_t& toAdd) const
-	{
-		ItemSet_t toReturn;
-
-		toReturn.bullets += toAdd.bullets;
-		toReturn.shells += toAdd.shells;
-		toReturn.energy += toAdd.energy;
-		toReturn.explosives += toAdd.explosives;
-		toReturn.money += toAdd.money;
-
-		return toReturn;
-	}
-
-	int bullets = 0;
-	int shells = 0;
-	int energy = 0;
-	int explosives = 0;
-	int money = 0;
-};
 
 class VoxelSprite;
 class VoxelAnimationSet;
@@ -108,6 +79,9 @@ class EntityDefinition
 	friend class AnimatedEntity;
 	friend class Player;
 	friend class Item;
+	friend class Weapon;
+	friend class Projectile;
+	//friend class Ability;
 
 public:
 	//-----Public Methods-----
@@ -118,7 +92,7 @@ public:
 	BehaviorComponent* CloneBehaviorPrototype(unsigned int index) const;
 
 	bool	HasGravity() const;
-	int		GetDefaultHealth() const;
+	int		GetInitialHealth() const;
 
 	static void						LoadDefinitions(const std::string& filename);
 	static const EntityDefinition*	GetDefinition(const std::string& defName);
@@ -137,9 +111,9 @@ private:
 	
 	// Entity Base class
 	std::string								m_name;
-	int										m_defaultHealth = 99999;
+	int										m_initialHealth = 99999;
 	ePhysicsType							m_physicsType = PHYSICS_TYPE_UNASSIGNED;
-	bool									m_affectedByGravity = false;
+	bool									m_affectedByGravity = true;
 	CollisionDefinition_t					m_collisionDef;
 
 	// AnimatedEntity
@@ -150,13 +124,23 @@ private:
 
 	const VoxelAnimationSet*				m_animationSet = nullptr;
 	const VoxelSprite*						m_defaultSprite = nullptr;
-	bool									m_destructible = false;
+	bool									m_isDestructible = false;
+	bool									m_isAnimated = false;
 
 	// AIEntity
 	std::vector<const BehaviorComponent*>	m_behaviorPrototypes;
 
-	// Item
-	ItemSet_t								m_initialItems;
+	// Weapons
+	const EntityDefinition*					m_projectileDefinition = nullptr;
+	float									m_fireRate = 1.0f;
+	float									m_fireSpread = 0.f;
+	int										m_projectilesFiredPerShot = 1;
+
+	// Projectiles
+	float									m_projectileSpeed = 100.f;
+	float									m_projectileLifetime = 2.f;
+	float									m_projectileHitRadius = 0.f;
+	int										m_projectileDamage = 1;
 
 	// Static registry
 	static std::map<std::string, const EntityDefinition*> s_definitions;

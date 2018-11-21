@@ -4,10 +4,9 @@
 		<VoxelSprite file="Data/VoxelSprites/Robot.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Wall.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Bullet.sprite"/>
-		<VoxelSprite file="Data/VoxelSprites/TestCube.sprite"/>
-		<VoxelSprite file="Data/VoxelSprites/Window.sprite"/>
-		<VoxelSprite file="Data/VoxelSprites/Stand.sprite"/>
-		<VoxelSprite file="Data/VoxelSprites/Test_Item.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Shell.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Pistol.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Shotgun.sprite"/>
 	</VoxelSprites>
 
 

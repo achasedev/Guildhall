@@ -4,6 +4,7 @@
 /* Date: March 24th, 2018
 /* Description: Game class for general gameplay management
 /************************************************************************/
+#include "Game/Entity/Weapon.hpp"
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
@@ -420,10 +421,20 @@ void DrawHUDForPlayer(int playerID, Player* player, VoxelGrid* grid, VoxelFont* 
 	if (player != nullptr)
 	{
 		// Skip pass where the icon will go
-		IntVector3 iconStart = currDrawCoords;
+		IntVector3 weaponIconStart = currDrawCoords + IntVector3(1, 0, -1);
+		
+		const VoxelTexture* weaponIcon = player->GetCurrentWeapon()->GetTextureForRender(); 
+		grid->Draw3DTexture(weaponIcon, weaponIconStart);
+
+		currDrawCoords += IntVector3(playerID % 2 == 1 ? -9 : 9, 0, 0);
+
+		grid->DrawSolidBox(currDrawCoords, IntVector3(1, 8, 4), options.fillColor);
+		currDrawCoords.x += (playerID % 2 == 1 ? -1 : 1);
+
+		IntVector3 abilityIconStart = currDrawCoords;
 		currDrawCoords += IntVector3(playerID % 2 == 1 ? -8 : 8, 0, 0);
 
-		int maxHealth = player->GetEntityDefinition()->GetDefaultHealth();
+		int maxHealth = player->GetEntityDefinition()->GetInitialHealth();
 		int currHealth = player->GetHealth();
 
 		grid->DrawSolidBox(currDrawCoords, IntVector3(1, 8, 4), options.fillColor);
@@ -460,9 +471,9 @@ void DrawHUDForPlayer(int playerID, Player* player, VoxelGrid* grid, VoxelFont* 
 		}
 
 
-		IntVector3 borderDimensions = IntVector3(AbsoluteValue(currDrawCoords.x - iconStart.x) + 2, 10, 4);
+		IntVector3 borderDimensions = IntVector3(AbsoluteValue(currDrawCoords.x - weaponIconStart.x) + 2, 10, 4);
 
-		IntVector3 borderStart = IntVector3((playerID % 2 == 1) ? currDrawCoords.x : iconStart.x, startCoords.y, startCoords.z);
+		IntVector3 borderStart = IntVector3((playerID % 2 == 1) ? currDrawCoords.x : weaponIconStart.x, startCoords.y, startCoords.z);
 		grid->DrawWireBox(borderStart - IntVector3(1, 1, 0), borderDimensions, options.fillColor, true, true, false);
 	}
 	else
