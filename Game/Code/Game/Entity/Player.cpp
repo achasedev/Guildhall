@@ -174,6 +174,11 @@ void Player::OnSpawn()
 void Player::Shoot()
 {
 	m_currWeapon->Shoot();
+
+	if (m_currWeapon->IsOutOfAmmo())
+	{
+		UnequipCurrentWeapon();
+	}
 }
 
 
@@ -196,11 +201,22 @@ void Player::EquipWeapon(Weapon* weapon)
 {
 	if (m_currWeapon != nullptr)
 	{
+		m_currWeapon->OnUnequip();
 		delete m_currWeapon;
 	}
 
 	m_currWeapon = weapon;
 	m_currWeapon->OnEquip(this);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Removes the current weapon from the player and deletes it
+//
+void Player::UnequipCurrentWeapon()
+{
+	// Auto equip a pistol
+	EquipWeapon(new Weapon(EntityDefinition::GetDefinition("Pistol")));
 }
 
 

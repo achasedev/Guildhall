@@ -167,6 +167,7 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 		m_fireRate = ParseXmlAttribute(*weaponElement, "fire_rate", m_fireRate);
 		m_fireSpread = ParseXmlAttribute(*weaponElement, "fire_spread", m_fireSpread);
 		m_projectilesFiredPerShot = ParseXmlAttribute(*weaponElement, "count_per_shot", m_projectilesFiredPerShot);
+		m_initialAmmoCount = ParseXmlAttribute(*weaponElement, "initial_ammo", m_initialAmmoCount);
 	}
 }
 

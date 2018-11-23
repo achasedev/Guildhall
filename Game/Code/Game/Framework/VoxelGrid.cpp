@@ -4,8 +4,10 @@
 /* Date: September 15th, 2018
 /* Description: Implementation of the VoxelGrid class
 /************************************************************************/
-#include "Game/Framework/Game.hpp"
 #include "Game/Entity/Entity.hpp"
+#include "Game/Entity/Player.hpp"
+#include "Game/Entity/Weapon.hpp"
+#include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/VoxelFont.hpp"
@@ -130,12 +132,27 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset)
 
 	const VoxelTexture* texture = entity->GetTextureForRender();
 	IntVector3 position = entity->GetCoordinatePosition() + offset;
-	
-	DebugRenderOptions options;
-	options.m_isWireFrame = true;
-	options.m_lifetime = 0.f;
 
 	Draw3DTexture(texture, position);
+
+	// Hack to render the player's weapon
+	if (entity->IsPlayer())
+	{
+		const Player* player = dynamic_cast<const Player*>(entity);
+
+		Weapon* weapon = player->GetCurrentWeapon();
+		
+		if (weapon->GetEntityDefinition()->GetName() != "Pistol")
+		{
+			const VoxelTexture* weaponTexture = weapon->GetTextureForUIRender();
+
+			if (weaponTexture != nullptr)
+			{
+				IntVector3 weaponPosition = position + IntVector3(0, 12, 0);
+				Draw3DTexture(weaponTexture, weaponPosition);
+			}
+		}
+	}
 }
 
 

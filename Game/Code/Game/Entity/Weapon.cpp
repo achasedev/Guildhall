@@ -12,7 +12,9 @@
 Weapon::Weapon(const EntityDefinition* definition)
 	: Item(definition)
 	, m_shootTimer(Stopwatch(Game::GetGameClock()))
+	, m_flashTimer(Stopwatch(Game::GetGameClock()))
 {
+	m_flashTimer.SetInterval(WEAPON_LOW_AMMO_FLASH_INTERVAL);
 }
 
 void Weapon::OnEntityCollision(Entity* other)
@@ -35,6 +37,11 @@ void Weapon::OnEquip(Player* playerEquipping)
 	m_playerEquippedTo = playerEquipping;
 
 	m_shootTimer.SetInterval(1.f / m_definition->m_fireRate);
+	m_currAmmoCount = m_definition->m_initialAmmoCount;
+}
+
+void Weapon::OnUnequip()
+{
 }
 
 void Weapon::Shoot()
@@ -78,6 +85,45 @@ void Weapon::Shoot()
 		proj->GetPhysicsComponent()->SetVelocity(finalDirection * projectileSpeed);
 
 		world->AddEntity(proj);
+		m_currAmmoCount--;
+
+		if (m_currAmmoCount <= 0)
+		{
+			return;
+		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether this weapon is out of ammo
+//
+bool Weapon::IsOutOfAmmo() const
+{
+	return (m_currAmmoCount <= 0);
+}
+
+
+const VoxelTexture* Weapon::GetTextureForUIRender()
+{
+	float ammoPercentage = ((float)m_currAmmoCount / (float)m_definition->m_initialAmmoCount);
+
+	if (ammoPercentage > WEAPON_LOW_AMMO_PERCENTAGE)
+	{
+		return GetTextureForRender();
+	}
+
+	// Check if we should return the texture, for flashing effect
+	if (m_flashTimer.DecrementByIntervalAll() > 0)
+	{
+		m_showTexture = !m_showTexture;
+	}
+
+	if (m_showTexture)
+	{
+		return GetTextureForRender();
+	}
+
+	return nullptr;
 }
 

@@ -135,6 +135,7 @@ private:
 	float									m_fireRate = 1.0f;
 	float									m_fireSpread = 0.f;
 	int										m_projectilesFiredPerShot = 1;
+	int										m_initialAmmoCount = 1;
 
 	// Projectiles
 	float									m_projectileSpeed = 100.f;
