@@ -50,7 +50,7 @@ Game::Game()
 	m_gameCamera->SetColorTarget(renderer->GetDefaultColorTarget());
 	m_gameCamera->SetDepthTarget(renderer->GetDefaultDepthTarget());
 	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 1000.f);
-	m_gameCamera->LookAt(Vector3(128.f, 200.f, -50.0f), Vector3(0.f, 200.f, 0.f));
+	m_gameCamera->LookAt(Vector3(128.f, 185.f, -90.0f), Vector3(0.f, 200.f, 0.f));
 
 	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 
@@ -340,7 +340,7 @@ Vector3 GetHUDAlignmentForPlayerID(int id)
 //
 IntVector3 GetHUDStartForPlayerID(int id)
 {
-	IntVector3 hudStart = IntVector3(1, 45, 252);
+	IntVector3 hudStart = IntVector3(1, 35, 252);
 
 	// HUD is on the top (players 1 and 2)
 	if (id <= 1)
@@ -420,25 +420,13 @@ void DrawHUDForPlayer(int playerID, Player* player, VoxelGrid* grid, VoxelFont* 
 	// If the player exists, draw the rest
 	if (player != nullptr)
 	{
-		// Skip pass where the icon will go
-		IntVector3 weaponIconStart = currDrawCoords + IntVector3(1, 0, -1);
-		
-		const VoxelTexture* weaponIcon = player->GetCurrentWeapon()->GetTextureForRender(); 
-		grid->Draw3DTexture(weaponIcon, weaponIconStart);
-
-		currDrawCoords += IntVector3(playerID % 2 == 1 ? -9 : 9, 0, 0);
-
-		grid->DrawSolidBox(currDrawCoords, IntVector3(1, 8, 4), options.fillColor);
-		currDrawCoords.x += (playerID % 2 == 1 ? -1 : 1);
-
-		IntVector3 abilityIconStart = currDrawCoords;
-		currDrawCoords += IntVector3(playerID % 2 == 1 ? -8 : 8, 0, 0);
+		currDrawCoords += IntVector3(playerID % 2 == 1 ? -2 : 0, 0, 0);
 
 		int maxHealth = player->GetEntityDefinition()->GetInitialHealth();
 		int currHealth = player->GetHealth();
 
 		grid->DrawSolidBox(currDrawCoords, IntVector3(1, 8, 4), options.fillColor);
-		currDrawCoords.x += (playerID % 2 == 1 ? -1 : 1);
+		currDrawCoords.x += (playerID % 2 == 1 ? -8 : 1);
 
 		IntVector3 healthBoxStart = currDrawCoords;
 
@@ -464,16 +452,16 @@ void DrawHUDForPlayer(int playerID, Player* player, VoxelGrid* grid, VoxelFont* 
 
 			grid->DrawSolidBox(currBoxStart, healthBoxDimensions, color);
 			
-			currDrawCoords.x += (playerID % 2 == 1 ? -8 : 8);
+			currDrawCoords.x += (playerID % 2 == 1 ? -1 : 8);
 
 			grid->DrawSolidBox(currDrawCoords, IntVector3(1, 8, 4), options.fillColor);
-			currDrawCoords.x += (playerID % 2 == 1 ? -1 : 1);
+			currDrawCoords.x += (playerID % 2 == 1 ? -8 : 1);
 		}
 
 
-		IntVector3 borderDimensions = IntVector3(AbsoluteValue(currDrawCoords.x - weaponIconStart.x) + 2, 10, 4);
+		IntVector3 borderDimensions = IntVector3(AbsoluteValue(currDrawCoords.x - healthBoxStart.x) + 1, 10, 4);
 
-		IntVector3 borderStart = IntVector3((playerID % 2 == 1) ? currDrawCoords.x : weaponIconStart.x, startCoords.y, startCoords.z);
+		IntVector3 borderStart = IntVector3((playerID % 2 == 1) ? currDrawCoords.x + 9 : healthBoxStart.x, startCoords.y, startCoords.z);
 		grid->DrawWireBox(borderStart - IntVector3(1, 1, 0), borderDimensions, options.fillColor, true, true, false);
 	}
 	else
@@ -506,7 +494,15 @@ void Game::DrawInGameUI()
 	}
 
 	// Draw the score
+	VoxelFontDraw_t options;
+	options.mode = VOXEL_FONT_FILL_NONE;
+	options.textColor = Rgba::WHITE;
+	options.font = s_instance->m_hudFont;
+	options.scale = IntVector3(1, 1, 4);
+	options.borderThickness = 0;
+	options.alignment = Vector3(0.5f, 0.f, 0.f);
 
+	grid->DrawVoxelText("Score: 99999999", IntVector3(128, 56, 252), options);
 }
 
 

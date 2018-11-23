@@ -142,7 +142,7 @@ void PlayState_Stage::Render_Enter() const
 void PlayState_Stage::Render() const
 {
 	Game::GetWorld()->DrawToGrid();
-	DebugRenderSystem::Draw2DText(Stringf("Stage %i of %i", Game::GetCampaignManager()->GetCurrentStageNumber() + 1, Game::GetCampaignManager()->GetStageCount()), Window::GetInstance()->GetWindowBounds(), 0.f);
+	//DebugRenderSystem::Draw2DText(Stringf("Stage %i of %i", Game::GetCampaignManager()->GetCurrentStageNumber() + 1, Game::GetCampaignManager()->GetStageCount()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
 

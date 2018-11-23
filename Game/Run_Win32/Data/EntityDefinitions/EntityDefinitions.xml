@@ -2,7 +2,7 @@
 
 	<!-- Players -->
 
-	<EntityDefinition name="Player" initial_health="5">
+	<EntityDefinition name="Player" initial_health="8">
 
 		<!--Movement Parameters-->
 		<Movement max_acceleration="300.0" max_speed="40.0" max_deceleration="100.0" jump_impulse="80.0"/>
