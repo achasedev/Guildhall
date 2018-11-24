@@ -10,6 +10,8 @@
 #include "Game/GameStates/GameState.hpp"
 #include "Engine/Math/AABB2.hpp"
 
+class Player;
+
 class GameState_Ready : public GameState
 {
 public:
@@ -27,9 +29,17 @@ public:
 	virtual void Render() const override;
 	virtual void Render_Leave() const override;
 
+
+private:
+	//-----Private Methods-----
+
+	void CheckToAddPlayers();
+	bool AreAllActivePlayersReady();
+
+
 private:
 	//-----Private Data-----
 
-	AABB2 m_textBoxBounds;
+	Player* m_players[MAX_PLAYERS];
 
 };

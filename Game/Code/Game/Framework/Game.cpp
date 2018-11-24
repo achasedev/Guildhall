@@ -63,10 +63,31 @@ Game::Game()
 
 	// VoxelFont
 	m_hudFont = new VoxelFont("HUD", "Data/Images/Fonts/VoxelFont.png");
+	m_menuFont = new VoxelFont("Menu", "Data/Images/Fonts/Default.png");
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
 		m_players[i] = nullptr;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks for connected controllers and instantiates players
+//
+void Game::CheckForPlayers()
+{
+	// Create the players if they're added
+	Player** players = Game::GetPlayers();
+
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		// Make the player if they don't exist yet
+		if (InputSystem::GetInstance()->GetController(i).IsConnected() && players[i] == nullptr)
+		{
+			players[i] = new Player(i);
+			players[i]->SetPosition(Vector3(128.f, 0.f, 128.f));
+		}
 	}
 }
 
@@ -90,6 +111,9 @@ Game::~Game()
 
 	delete m_hudFont;
 	m_hudFont = nullptr;
+
+	delete m_menuFont;
+	m_menuFont = nullptr;
 }
 
 
@@ -139,6 +163,11 @@ void Game::ProcessInput()
 //
 void Game::Update()
 {
+	if (m_doneLoading)
+	{
+		CheckForPlayers();
+	}
+
 	if (m_gameStateState == GAME_STATE_TRANSITIONING_OUT)
 	{
 		// Update on leave of the current state
@@ -223,6 +252,15 @@ void Game::TransitionToGameState(GameState* newState)
 	{
 		s_instance->m_currentState->StartLeaveTimer();
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the VoxelFont used for the menu screens
+//
+VoxelFont* Game::GetMenuFont()
+{
+	return s_instance->m_menuFont;
 }
 
 
@@ -422,6 +460,8 @@ void DrawHUDForPlayer(int playerID, Player* player, VoxelGrid* grid, VoxelFont* 
 	{
 		currDrawCoords += IntVector3(playerID % 2 == 1 ? -2 : 0, 0, 0);
 
+		const EntityDefinition* definition = player->GetEntityDefinition();
+
 		int maxHealth = player->GetEntityDefinition()->GetInitialHealth();
 		int currHealth = player->GetHealth();
 
@@ -482,7 +522,7 @@ void DrawHUDForPlayer(int playerID, Player* player, VoxelGrid* grid, VoxelFont* 
 // Draws the in-game HUD that represents current player state
 // Multiple game states render this, hence it being placed on Game
 //
-void Game::DrawInGameUI()
+void Game::DrawPlayerHUD()
 {
 	VoxelGrid* grid = s_instance->m_voxelGrid;
 	Player** players = s_instance->m_players;
@@ -492,8 +532,24 @@ void Game::DrawInGameUI()
 	{
 		DrawHUDForPlayer(i, players[i], grid, s_instance->m_hudFont);
 	}
+}
 
-	// Draw the score
+
+//-----------------------------------------------------------------------------------------------
+// Draw the score at the top of the grid
+//
+void Game::DrawScore()
+{
+	DrawHeading(Stringf("Score: %i", s_instance->m_score));
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Draws a heading at the top of the screen
+// Used for drawing the score and character select title
+//
+void Game::DrawHeading(const std::string& headingText)
+{
 	VoxelFontDraw_t options;
 	options.mode = VOXEL_FONT_FILL_NONE;
 	options.textColor = Rgba::WHITE;
@@ -502,7 +558,8 @@ void Game::DrawInGameUI()
 	options.borderThickness = 0;
 	options.alignment = Vector3(0.5f, 0.f, 0.f);
 
-	grid->DrawVoxelText("Score: 99999999", IntVector3(128, 56, 252), options);
+	VoxelGrid* grid = s_instance->m_voxelGrid;
+	grid->DrawVoxelText(headingText, IntVector3(128, 56, 252), options);
 }
 
 

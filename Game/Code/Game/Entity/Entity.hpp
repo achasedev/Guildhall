@@ -93,7 +93,7 @@ protected:
 	Vector3					m_position = Vector3::ZERO;
 	float					m_orientation = 0.f;
 	bool					m_isMarkedForDelete = false;
-	int						m_health = 9999999;
+	int						m_health = 0;
 	eEntityTeam				m_entityTeam = ENTITY_TEAM_UNASSIGNED;
 
 	// Physics

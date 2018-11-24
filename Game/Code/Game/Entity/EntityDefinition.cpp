@@ -169,6 +169,14 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 		m_projectilesFiredPerShot = ParseXmlAttribute(*weaponElement, "count_per_shot", m_projectilesFiredPerShot);
 		m_initialAmmoCount = ParseXmlAttribute(*weaponElement, "initial_ammo", m_initialAmmoCount);
 	}
+
+	// Character Select Hack
+	const XMLElement* characterElement = entityElement.FirstChildElement("CharacterSelect");
+	if (characterElement != nullptr)
+	{
+		std::string playerDefName = ParseXmlAttribute(*characterElement, "player_definition", "");
+		m_playerCharacterDefinition = EntityDefinition::GetDefinition(playerDefName);
+	}
 }
 
 

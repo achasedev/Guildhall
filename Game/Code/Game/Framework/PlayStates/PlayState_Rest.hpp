@@ -5,7 +5,7 @@
 /* Description: Class representing the state of play between stages
 /************************************************************************/
 #pragma once
-#include "Game/Framework/PlayStates/PlayState_Stage.hpp"
+#include "Game/Framework/PlayStates/PlayState.hpp"
 
 class World;
 
@@ -26,8 +26,8 @@ public:
 	virtual void Render_Enter() const override;
 	virtual void Render() const override;
 	virtual void Render_Leave() const override;
-	
-	
+
+
 private:
 	//-----Private Data-----
 	

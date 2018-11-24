@@ -6,6 +6,7 @@
 /************************************************************************/
 #pragma once
 #include "Engine/Core/Image.hpp"
+#include "Engine/Math/Vector3.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 #include <vector>
 
@@ -21,6 +22,14 @@ struct EntitySpawnEvent_t
 	float	spawnTimeDelay = 0.f;		// How long to wait in time before this event should start
 	int		spawnPointID = 0;			// Which spawn point to spawn at
 };
+
+struct InitialStaticSpawn_t
+{
+	const EntityDefinition* definition = nullptr;
+	Vector3 position;
+	float orientation;
+};
+
 
 enum eTransitionEdge
 {
@@ -40,6 +49,8 @@ public:
 	
 	CampaignStage(const XMLElement& element);
 	~CampaignStage();
+
+	void AddStaticSpawn(const EntityDefinition* definition, const Vector3& position, float orientation);
 	
 	
 private:
@@ -49,6 +60,7 @@ private:
 	eTransitionEdge					m_edgeToEnter;
 	int								m_maxTerrainHeight = 0;
 
+	std::vector<InitialStaticSpawn_t> m_initialStatics;
 	std::vector<EntitySpawnEvent_t> m_events;
 	
 };

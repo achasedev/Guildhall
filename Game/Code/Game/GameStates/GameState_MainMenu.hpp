@@ -47,7 +47,6 @@ private:
 	int							m_cursorPosition;
 
 	IntVector3					m_menuStartCoord = IntVector3(128, 8, 160);
-	VoxelFont*					m_menuFont;
 	Vector3						m_defaultCameraPosition = Vector3(128.f, 100.f, 35.f);
 
 	VoxelEmitter* m_emitters[2];

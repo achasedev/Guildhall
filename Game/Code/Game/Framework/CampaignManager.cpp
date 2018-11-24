@@ -6,8 +6,9 @@
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
-#include "Game/Framework/CampaignStage.hpp"
 #include "Game/Framework/SpawnPoint.hpp"
+#include "Game/Entity/EntityDefinition.hpp"
+#include "Game/Framework/CampaignStage.hpp"
 #include "Game/Framework/CampaignManager.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
@@ -31,6 +32,9 @@ CampaignManager::CampaignManager()
 CampaignManager::~CampaignManager()
 {
 	CleanUp();
+
+	delete m_characterSelectStage;
+	m_characterSelectStage = nullptr;
 }
 
 
@@ -39,6 +43,8 @@ CampaignManager::~CampaignManager()
 //
 void CampaignManager::Initialize(const char* filename)
 {
+	CleanUp();
+
 	// Load the file
 	XMLDocument document;
 	XMLError error = document.LoadFile(filename);
@@ -75,8 +81,8 @@ void CampaignManager::CleanUp()
 	m_maxSpawnedEntities = 100000;
 	m_totalSpawnedThisStage = 0;
 
-	// Clean up stages
-	for (int i = 0; i < (int)m_stages.size(); ++i)
+	// Clean up stages, skipping the character select stage
+	for (int i = 1; i < (int)m_stages.size(); ++i)
 	{
 		delete m_stages[i];
 	}
@@ -222,12 +228,26 @@ void CampaignManager::InitializeSpawnPoints(const XMLElement& rootElement)
 //
 void CampaignManager::InitializeStages(const XMLElement& rootElement)
 {
-	const XMLElement* stagesElement = rootElement.FirstChildElement("Stages");
+	// Push in the character select stage
+	if (m_characterSelectStage == nullptr)
+	{
+		XMLDocument document;
+		document.LoadFile("Data/CharacterSelect.xml");
 
+		const XMLElement* root = document.RootElement();
+		const XMLElement* stageElement = root->FirstChildElement();
+
+		m_characterSelectStage = new CampaignStage(*stageElement);
+		m_characterSelectStage->AddStaticSpawn(EntityDefinition::GetDefinition("CharacterSelect"), Vector3(10.f, 5.f, 10.f), 0.f);
+	}
+	
+	m_stages.push_back(m_characterSelectStage);
+
+	// Initialize all the stages in the campaign
+	const XMLElement* stagesElement = rootElement.FirstChildElement("Stages");
 	GUARANTEE_OR_DIE(stagesElement != nullptr, "Error: SpawnManager file has no stages element");
 
 	const XMLElement* currStageElement = stagesElement->FirstChildElement();
-
 	GUARANTEE_OR_DIE(currStageElement != nullptr, "Error: SpawnManager file has no stages specified");
 
 	while (currStageElement != nullptr)

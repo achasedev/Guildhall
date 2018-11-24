@@ -33,6 +33,7 @@ class Game
 	
 public:
 	friend class GameState_Playing;
+	friend class GameState_Loading;
 
 	//-----Public Methods-----
 
@@ -48,6 +49,7 @@ public:
 	static Game*	GetInstance();
 	static void		TransitionToGameState(GameState* newState);
 
+	static VoxelFont*			GetMenuFont();
 	static VoxelGrid*			GetVoxelGrid();
 	static Clock*				GetGameClock();
 	static GameCamera*			GetGameCamera();
@@ -58,7 +60,10 @@ public:
 	static CampaignManager*		GetCampaignManager();
 
 	static bool					IsPlayerAlive(unsigned int index);
-	static void					DrawInGameUI();
+
+	static void					DrawPlayerHUD();
+	static void					DrawScore();
+	static void					DrawHeading(const std::string& headingText);
 
 
 private:
@@ -68,10 +73,13 @@ private:
 	~Game();
 	Game(const Game& copy) = delete;
 
+	void CheckForPlayers();
+
 
 private:
 	//-----Private Data-----
 
+	bool			m_doneLoading = false;
 	GameState*		m_currentState = nullptr;
 	GameState*		m_transitionState = nullptr;
 	eGameStateState m_gameStateState = GAME_STATE_TRANSITIONING_IN;
@@ -87,6 +95,10 @@ private:
 
 	// In-game hud
 	VoxelFont* m_hudFont = nullptr;
+	VoxelFont* m_menuFont = nullptr;
+
+	// Gameplay
+	int					m_score = 0;
 
 	static Game* s_instance;			// The singleton Game instance
 

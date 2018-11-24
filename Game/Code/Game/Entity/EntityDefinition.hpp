@@ -81,7 +81,7 @@ class EntityDefinition
 	friend class Item;
 	friend class Weapon;
 	friend class Projectile;
-	//friend class Ability;
+	friend class CharacterSelectVolume;
 
 public:
 	//-----Public Methods-----
@@ -143,6 +143,9 @@ private:
 	float									m_projectileHitRadius = 0.f;
 	int										m_projectileDamage = 1;
 
+	// Character Select Volume
+	const EntityDefinition*					m_playerCharacterDefinition = nullptr;
+	
 	// Static registry
 	static std::map<std::string, const EntityDefinition*> s_definitions;
 

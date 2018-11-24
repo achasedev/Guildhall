@@ -12,6 +12,7 @@
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/CampaignStage.hpp"
+#include "Game/Entity/CharacterSelectVolume.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Core/Image.hpp"
@@ -146,9 +147,31 @@ void World::InititalizeForStage(CampaignStage* stage)
 
 	m_particles.clear();
 
+	// Add the new statics
+	int numStatics = (int) stage->m_initialStatics.size();
+
+	for (int staticIndex = 0; staticIndex < numStatics; ++staticIndex)
+	{
+		InitialStaticSpawn_t& spawn = stage->m_initialStatics[staticIndex];
+
+		Entity* entity = nullptr;
+		if (spawn.definition->GetName() == "CharacterSelect")
+		{
+			entity = new CharacterSelectVolume();
+		}
+		else
+		{
+			Entity* entity = new Entity(spawn.definition);
+		}
+
+		entity->SetPosition(spawn.position);
+		entity->SetOrientation(spawn.orientation);
+
+		AddEntity(entity);
+	}
+
 	// Add in the players
 	Player** players = Game::GetPlayers();
-
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
 		if (players[i] != nullptr)

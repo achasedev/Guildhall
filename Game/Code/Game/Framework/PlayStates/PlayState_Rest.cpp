@@ -11,6 +11,7 @@
 #include "Game/Framework/CampaignManager.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 #include "Game/Framework/PlayStates/PlayState_Rest.hpp"
+#include "Game/Framework/PlayStates/PlayState_Stage.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
 // For debug rendering
@@ -264,6 +265,28 @@ void GetTerrainOffsets(IntVector3& out_currOffset, IntVector3& out_transitionOff
 }
 
 
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Returns true if all players have a valid playable definition, used for character select
+//
+bool DoAllPlayersHaveDefinition()
+{
+	Player** players = Game::GetPlayers();
+
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		if (players[i] != nullptr)
+		{
+			if (players[i]->GetEntityDefinition()->GetName() == "PlayerUninitialized")
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
@@ -278,7 +301,6 @@ PlayState_Rest::PlayState_Rest()
 //
 PlayState_Rest::~PlayState_Rest()
 {
-
 }
 
 
@@ -309,7 +331,7 @@ void PlayState_Rest::ProcessInput()
 bool PlayState_Rest::Enter()
 {
 	// Respawn the dead players
-	Player** players = Game::GetPlayers();
+ 	Player** players = Game::GetPlayers();
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
@@ -342,8 +364,11 @@ bool PlayState_Rest::Enter()
 //
 void PlayState_Rest::Update()
 {
+	// Check for players just joining the campaign
+
+
 	// Check if the players are near the move location
-	bool playersReady = AreAllPlayersInExitEdge(m_edgeToExit);
+	bool playersReady = AreAllPlayersInExitEdge(m_edgeToExit) && DoAllPlayersHaveDefinition();
 
 	if (playersReady)
 	{

@@ -101,6 +101,7 @@ bool GameState_Loading::Enter()
 //
 bool GameState_Loading::Leave()
 {
+	Game::GetInstance()->m_doneLoading = true;
 	return true;
 }
 

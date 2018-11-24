@@ -18,7 +18,10 @@ public:
 
 	// Initialization
 	Player(int playerID);
+	Player(const EntityDefinition* definition, int playerID);
 	~Player();
+
+	void ReinitializeWithDefinition(const EntityDefinition* definition);
 
 	// Core Loop
 	void			ProcessGameplayInput();

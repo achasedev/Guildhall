@@ -39,7 +39,13 @@ Rgba Player::s_playerColors[MAX_PLAYERS] =
 // Constructor
 //
 Player::Player(int playerID)
-	: AnimatedEntity(EntityDefinition::GetDefinition("Player"))
+	: Player(EntityDefinition::GetDefinition("PlayerUninitialized"), playerID)
+{
+}
+
+
+Player::Player(const EntityDefinition* definition, int playerID)
+	: AnimatedEntity(definition)
 	, m_playerID(playerID)
 {
 	// Assign color based on its ID
@@ -48,14 +54,52 @@ Player::Player(int playerID)
 	m_isPlayer = true;
 	m_health = m_definition->GetInitialHealth();
 	m_entityTeam = ENTITY_TEAM_PLAYER;
-}
 
+	m_position = Vector3(128.f, 32.f, 128.f);
+}
 
 //-----------------------------------------------------------------------------------------------
 // Destructor
 //
 Player::~Player()
 {
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Reconstructs the player with the given definition; used for when the player selects a
+// character
+//
+void Player::ReinitializeWithDefinition(const EntityDefinition* definition)
+{
+	m_definition = definition;
+
+	// Remake the physics component
+	if (m_physicsComponent != nullptr)
+	{
+		delete m_physicsComponent;
+		m_physicsComponent = nullptr;
+	}
+
+	if (m_definition->m_physicsType == PHYSICS_TYPE_DYNAMIC)
+	{
+		m_physicsComponent = new PhysicsComponent(this);
+	}
+
+	// Only create a default texture if the definition has one specified
+	if (m_defaultTexture != nullptr)
+	{
+		delete m_defaultTexture;
+		m_defaultTexture = nullptr;
+	}
+
+	// Set our health
+	m_health = definition->m_initialHealth;
+
+	// Remake the animator
+	delete m_animator;
+	m_animator = new VoxelAnimator(m_definition->m_animationSet, m_definition->m_defaultSprite);
+	m_animator->Play("idle");
 }
 
 

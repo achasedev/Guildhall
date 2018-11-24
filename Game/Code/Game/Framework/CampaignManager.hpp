@@ -65,8 +65,9 @@ private:
 	int							m_totalSpawnedThisStage = 0;
 
 	// Data
+	CampaignStage*						m_characterSelectStage = nullptr;
 	std::vector<CampaignStage*>			m_stages;
-	std::vector<SpawnPoint*>	m_spawnPoints;
-	int							m_maxSpawnedEntities = 100000;
+	std::vector<SpawnPoint*>			m_spawnPoints;
+	int									m_maxSpawnedEntities = 100000;
 
 };

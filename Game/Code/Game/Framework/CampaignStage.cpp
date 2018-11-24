@@ -73,3 +73,17 @@ CampaignStage::CampaignStage(const XMLElement& element)
 CampaignStage::~CampaignStage()
 {
 }
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the static spawn to the stage
+//
+void CampaignStage::AddStaticSpawn(const EntityDefinition* definition, const Vector3& position, float orientation)
+{
+	InitialStaticSpawn_t spawn;
+	spawn.definition = definition;
+	spawn.position = position;
+	spawn.orientation = orientation;
+
+	m_initialStatics.push_back(spawn);
+}

@@ -29,8 +29,6 @@ Entity::Entity(const EntityDefinition* definition)
 		m_physicsComponent = new PhysicsComponent(this);
 	}
 
-	m_position = Vector3(GetRandomFloatInRange(10.f, 50.f), 4.f, GetRandomFloatInRange(10.f, 200.f));
-
 	// Only create a default texture if the definition has one specified
 	if (definition->m_defaultSprite != nullptr && !definition->m_isAnimated)
 	{
