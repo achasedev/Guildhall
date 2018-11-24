@@ -142,6 +142,9 @@
     <ClCompile Include="Entity\CharacterSelectVolume.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\Menu.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -205,5 +208,6 @@
     <ClInclude Include="Framework\CampaignManager.hpp" />
     <ClInclude Include="Entity\Weapon.hpp" />
     <ClInclude Include="Entity\CharacterSelectVolume.hpp" />
+    <ClInclude Include="Framework\Menu.hpp" />
   </ItemGroup>
 </Project>

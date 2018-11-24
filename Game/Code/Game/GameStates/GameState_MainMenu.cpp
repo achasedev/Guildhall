@@ -7,6 +7,7 @@
 #include "Game/Framework/App.hpp"
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/Menu.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
@@ -27,10 +28,8 @@
 //
 GameState_MainMenu::GameState_MainMenu()
 	: GameState(0.f, 0.f)
-	, m_cursorPosition(0)
 {
-	m_menuOptions.push_back("Play");
-	m_menuOptions.push_back("Quit");
+	MoveToSubMenu(SUB_MENU_MAIN);
 
 	m_emitters[0] = new VoxelEmitter(50.f, 2.0f, Vector3(64.f, 8.f, 160.f), Vector3(0.f, 100.f, 0.f), 20.f);
 	m_emitters[1] = new VoxelEmitter(50.f, 2.0f, Vector3(192.f, 8.f, 160.f), Vector3(0.f, 100.f, 0.f), 20.f);
@@ -47,6 +46,12 @@ GameState_MainMenu::~GameState_MainMenu()
 
 	delete m_emitters[1];
 	m_emitters[1] = nullptr;
+
+	if (m_currentMenu != nullptr)
+	{
+		delete m_currentMenu;
+		m_currentMenu = nullptr;
+	}
 }
 
 
@@ -55,35 +60,9 @@ GameState_MainMenu::~GameState_MainMenu()
 //
 void GameState_MainMenu::ProcessInput()
 {
+	m_currentMenu->ProcessInput();
+
 	InputSystem* input = InputSystem::GetInstance();
-
-	// Moving down
-	bool keyPressedDown = input->WasKeyJustPressed(InputSystem::KEYBOARD_DOWN_ARROW);
-	if (keyPressedDown)
-	{
-		m_cursorPosition++;
-		if (m_cursorPosition > (int) (m_menuOptions.size()) - 1)
-		{
-			m_cursorPosition = 0;
-		}
-	}
-
-	// Moving up
-	bool keyPressedUp = input->WasKeyJustPressed(InputSystem::KEYBOARD_UP_ARROW);
-	if (keyPressedUp)
-	{
-		m_cursorPosition--;
-		if (m_cursorPosition < 0)
-		{
-			m_cursorPosition = (int) (m_menuOptions.size()) - 1;
-		}
-	}
-
-	// Selection
-	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_SPACEBAR))
-	{
-		ProcessMenuSelection();
-	}
 
 	// Quit
 	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_ESCAPE))
@@ -134,11 +113,13 @@ void GameState_MainMenu::Render() const
 
 	IntVector3 drawPosition = m_menuStartCoord;
 	VoxelFont* menuFont = Game::GetMenuFont();
+	int cursorPosition = m_currentMenu->GetCursorPosition();
 
-	for (int menuIndex = 0; menuIndex < static_cast<int>(m_menuOptions.size()); ++menuIndex)
+	std::vector<std::string> texts = m_currentMenu->GetTextsForRender();
+	for (int textIndex = 0; textIndex < (int)texts.size(); ++textIndex)
 	{
 		Rgba color = Rgba::WHITE;
-		if (menuIndex == m_cursorPosition)
+		if (textIndex == cursorPosition)
 		{
 			color = Rgba::YELLOW;
 		}
@@ -153,7 +134,7 @@ void GameState_MainMenu::Render() const
 		options.alignment = Vector3(0.5f, 0.5f, 0.5f);
 		options.borderThickness = 0;
 
-		Game::GetVoxelGrid()->DrawVoxelText(m_menuOptions[menuIndex].c_str(), drawPosition, options);
+		Game::GetVoxelGrid()->DrawVoxelText(texts[textIndex], drawPosition, options);
 
 		drawPosition -= IntVector3(0,0,1) * (menuFont->GetGlyphDimensions().y + 5);
 	}
@@ -209,19 +190,71 @@ void GameState_MainMenu::Render_Enter() const
 }
 
 
-//-----------------------------------------------------------------------------------------------
-// Processes the enter command on a menu selection
-//
-void GameState_MainMenu::ProcessMenuSelection() const
+void LoadSubMenu(GameState_MainMenu* mainMenu, const std::string& args)
 {
-	std::string selectedOption = m_menuOptions[m_cursorPosition];
-
-	if (selectedOption == "Play")
+	if (args == "Main")
 	{
-		Game::TransitionToGameState(new GameState_Playing());
+		mainMenu->MoveToSubMenu(SUB_MENU_MAIN);
 	}
-	else if (selectedOption == "Quit")
+	else if (args == "Leaderboard")
 	{
-		App::GetInstance()->Quit();
+		mainMenu->MoveToSubMenu(SUB_MENU_LEADERBOARD);
+	}
+	else if (args == "Episodes")
+	{
+		mainMenu->MoveToSubMenu(SUB_MENU_EPISODES);
+	}
+}
+
+
+void StartEpisode(GameState_MainMenu* mainMenu, const std::string& args)
+{
+	Game::TransitionToGameState(new GameState_Playing());
+}
+
+void QuitSelection(GameState_MainMenu* mainMenu, const std::string& args)
+{
+	App::GetInstance()->Quit();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Updates the menu to list the options given by the subMenu
+//
+void GameState_MainMenu::MoveToSubMenu(eSubMenu subMenu)
+{
+	if (m_currentMenu != nullptr)
+	{
+		delete m_currentMenu;
+	}
+
+	m_currentMenu = new Menu(this);
+
+	switch (subMenu)
+	{
+	case SUB_MENU_MAIN:
+		m_currentMenu->AddOption("Play", true, LoadSubMenu, "Episodes");
+		m_currentMenu->AddOption("Leaderboard", true, LoadSubMenu, "Leaderboard");
+		m_currentMenu->AddOption("Quit", true, QuitSelection, "");
+		break;
+	case SUB_MENU_EPISODES:
+		m_currentMenu->AddOption("Episode 1", true, StartEpisode, "Episode 1");
+		m_currentMenu->AddOption("Episode 2", true, StartEpisode, "Episode 2");
+		m_currentMenu->AddOption("Episode 3", true, StartEpisode, "Episode 3");
+		m_currentMenu->AddOption("Episode 4", true, StartEpisode, "Episode 4");
+		m_currentMenu->AddOption("Episode 5", true, StartEpisode, "Episode 5");
+		m_currentMenu->AddOption("Back", true, LoadSubMenu, "Main");
+		break;
+	case SUB_MENU_LEADERBOARD:
+		m_currentMenu->AddOption("AAA 999999", false, nullptr, "");
+		m_currentMenu->AddOption("BBB 888888", false, nullptr, "");
+		m_currentMenu->AddOption("CCC 777777", false, nullptr, "");
+		m_currentMenu->AddOption("DDD 666666", false, nullptr, "");
+		m_currentMenu->AddOption("EEE 555555", false, nullptr, "");
+		m_currentMenu->AddOption("Back", true, LoadSubMenu, "Main");
+		m_currentMenu->SetCursorPosition(5);
+		break;
+	default:
+		break;
 	}
 }

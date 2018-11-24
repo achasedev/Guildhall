@@ -14,6 +14,14 @@
 class VoxelFont;
 class World;
 class VoxelEmitter;
+class Menu;
+
+enum eSubMenu
+{
+	SUB_MENU_MAIN,
+	SUB_MENU_EPISODES,
+	SUB_MENU_LEADERBOARD,
+};
 
 class GameState_MainMenu : public GameState
 {
@@ -33,18 +41,13 @@ public:
 	virtual void Render() const override;
 	virtual void Render_Leave() const override;
 
-
-private:
-	//-----Private Methods-----
-
-	void ProcessMenuSelection() const;
+	void MoveToSubMenu(eSubMenu subMenu);
 
 
 private:
 	//-----Private Data-----
 
-	std::vector<std::string>	m_menuOptions;
-	int							m_cursorPosition;
+	Menu*						m_currentMenu = nullptr;
 
 	IntVector3					m_menuStartCoord = IntVector3(128, 8, 160);
 	Vector3						m_defaultCameraPosition = Vector3(128.f, 100.f, 35.f);

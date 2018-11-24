@@ -310,6 +310,7 @@
     <ClCompile Include="Framework\App.cpp" />
     <ClCompile Include="Framework\GameCamera.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
+    <ClCompile Include="Framework\Menu.cpp" />
     <ClCompile Include="Framework\PlayStates\PlayState.cpp" />
     <ClCompile Include="Framework\PlayStates\PlayState_Defeat.cpp" />
     <ClCompile Include="Framework\PlayStates\PlayState_Rest.cpp" />
@@ -357,6 +358,7 @@
     <ClInclude Include="Framework\Game.hpp" />
     <ClInclude Include="Framework\GameCamera.hpp" />
     <ClInclude Include="Framework\GameCommon.hpp" />
+    <ClInclude Include="Framework\Menu.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Defeat.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Rest.hpp" />
