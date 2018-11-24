@@ -40,20 +40,17 @@ public:
 	std::vector<std::string> GetTextsForRender() const;
 
 
-public:
-	//-----Public Data-----
-	
-	void ProcessCurrentMenuSelection();
-
-
 private:
 	//-----Private Methods-----
+	
+	void ProcessCurrentMenuSelection();
 	
 	
 private:
 	//-----Private Data-----
 	
-	GameState_MainMenu* m_mainMenu;
+	GameState_MainMenu* m_mainMenu = nullptr;
+
 	int m_cursorPosition = 0;
 	std::vector<MenuOption_t> m_options;
 

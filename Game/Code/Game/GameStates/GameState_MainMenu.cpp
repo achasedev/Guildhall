@@ -111,33 +111,9 @@ void GameState_MainMenu::Render() const
 {
 	Game::GetWorld()->DrawToGrid();
 
-	IntVector3 drawPosition = m_menuStartCoord;
+	DrawCurrentMenu();
+
 	VoxelFont* menuFont = Game::GetMenuFont();
-	int cursorPosition = m_currentMenu->GetCursorPosition();
-
-	std::vector<std::string> texts = m_currentMenu->GetTextsForRender();
-	for (int textIndex = 0; textIndex < (int)texts.size(); ++textIndex)
-	{
-		Rgba color = Rgba::WHITE;
-		if (textIndex == cursorPosition)
-		{
-			color = Rgba::YELLOW;
-		}
-
-		VoxelFontDraw_t options;
-		options.mode = VOXEL_FONT_FILL_NONE;
-		options.textColor = color;
-		options.fillColor = Rgba::BLUE;
-		options.font = menuFont;
-		options.scale = IntVector3(1, 1, 1);
-		options.up = IntVector3(0, 0, 1);
-		options.alignment = Vector3(0.5f, 0.5f, 0.5f);
-		options.borderThickness = 0;
-
-		Game::GetVoxelGrid()->DrawVoxelText(texts[textIndex], drawPosition, options);
-
-		drawPosition -= IntVector3(0,0,1) * (menuFont->GetGlyphDimensions().y + 5);
-	}
 
 	VoxelFontDraw_t options;
 	options.mode = VOXEL_FONT_FILL_NONE;
@@ -225,6 +201,7 @@ void GameState_MainMenu::MoveToSubMenu(eSubMenu subMenu)
 {
 	if (m_currentMenu != nullptr)
 	{
+		ParticalizeCurrentMenu();
 		delete m_currentMenu;
 	}
 
@@ -256,5 +233,67 @@ void GameState_MainMenu::MoveToSubMenu(eSubMenu subMenu)
 		break;
 	default:
 		break;
+	}
+}
+
+void GameState_MainMenu::DrawCurrentMenu() const
+{
+	IntVector3 drawPosition = m_menuStartCoord;
+	VoxelFont* menuFont = Game::GetMenuFont();
+	int cursorPosition = m_currentMenu->GetCursorPosition();
+
+	std::vector<std::string> texts = m_currentMenu->GetTextsForRender();
+	for (int textIndex = 0; textIndex < (int)texts.size(); ++textIndex)
+	{
+		Rgba color = Rgba::WHITE;
+		if (textIndex == cursorPosition)
+		{
+			color = Rgba::YELLOW;
+		}
+
+		VoxelFontDraw_t options;
+		options.mode = VOXEL_FONT_FILL_NONE;
+		options.textColor = color;
+		options.fillColor = Rgba::BLUE;
+		options.font = menuFont;
+		options.scale = IntVector3(1, 1, 1);
+		options.up = IntVector3(0, 0, 1);
+		options.alignment = Vector3(0.5f, 0.5f, 0.5f);
+		options.borderThickness = 0;
+
+		Game::GetVoxelGrid()->DrawVoxelText(texts[textIndex], drawPosition, options);
+
+		drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
+	}
+}
+
+void GameState_MainMenu::ParticalizeCurrentMenu() const
+{
+	IntVector3 drawPosition = m_menuStartCoord;
+	VoxelFont* menuFont = Game::GetMenuFont();
+	int cursorPosition = m_currentMenu->GetCursorPosition();
+
+	std::vector<std::string> texts = m_currentMenu->GetTextsForRender();
+	for (int textIndex = 0; textIndex < (int)texts.size(); ++textIndex)
+	{
+		Rgba color = Rgba::WHITE;
+		if (textIndex == cursorPosition)
+		{
+			color = Rgba::YELLOW;
+		}
+
+		VoxelFontDraw_t options;
+		options.mode = VOXEL_FONT_FILL_NONE;
+		options.textColor = color;
+		options.fillColor = Rgba::BLUE;
+		options.font = menuFont;
+		options.scale = IntVector3(1, 1, 1);
+		options.up = IntVector3(0, 0, 1);
+		options.alignment = Vector3(0.5f, 0.5f, 0.5f);
+		options.borderThickness = 0;
+
+		Game::GetWorld()->ParticalizeVoxelText(texts[textIndex], drawPosition, options);
+
+		drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
 	}
 }

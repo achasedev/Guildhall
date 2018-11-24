@@ -238,7 +238,15 @@ void GameState_Playing::Render() const
 
 	// Render the HUD
 	Game::DrawPlayerHUD();
-	Game::DrawScore();
+
+	if (Game::AreAllPlayersInitialized())
+	{
+		Game::DrawScore();
+	}
+	else
+	{
+		Game::DrawHeading("CHOOSE YOUR CHARACTER");
+	}
 }
 
 

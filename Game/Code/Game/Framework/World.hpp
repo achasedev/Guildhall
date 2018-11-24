@@ -8,6 +8,7 @@
 #include <vector>
 #include <thread>
 #include <shared_mutex>
+#include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/CampaignStage.hpp"
 
 #include "Engine/Core/Rgba.hpp"
@@ -19,7 +20,6 @@
 #define NAV_STATIC_COST (9999.f)
 
 class Player;
-class VoxelGrid;
 class Entity;
 class VoxelTexture;
 class Particle;
@@ -84,6 +84,8 @@ public:
 	Rgba		GetTerrainColorAtElevation(int elevation) const;
 
 	// Utility
+	void						ParticalizeVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options);
+	void						ParticalizeTexture(const VoxelTexture* texture, const IntVector3& coordinates);
 	void						ParticalizeEntity(Entity* entity);
 	void						ParticalizeAllEntities();
 	bool						IsEntityOnMap(const Entity* entity) const;

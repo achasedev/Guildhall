@@ -161,7 +161,7 @@ void World::InititalizeForStage(CampaignStage* stage)
 		}
 		else
 		{
-			Entity* entity = new Entity(spawn.definition);
+			entity = new Entity(spawn.definition);
 		}
 
 		entity->SetPosition(spawn.position);
@@ -335,6 +335,8 @@ void World::AddParticle(Particle* particle)
 //
 void World::DestroyTerrain(const IntVector3& coord, const IntRange& radius /*= IntRange(0, 0)*/)
 {
+	UNUSED(radius);
+
 	if (!m_heightMap.AreCoordsValid(coord.xz()))
 	{
 		return;
@@ -386,7 +388,7 @@ bool World::DecrementTerrainHeight(int decrementAmount)
 	bool completelyFlat = true;
 	float floatAmount = (float)decrementAmount;
 
-	for (int i = 0; i < m_heightMap.GetCellCount(); ++i)
+	for (int i = 0; i < (int) m_heightMap.GetCellCount(); ++i)
 	{
 		float newValue = m_heightMap.GetHeat(i);
 		newValue = ClampFloat(newValue - floatAmount, 0.f, newValue);
@@ -632,6 +634,53 @@ Rgba World::GetTerrainColorAtElevation(int elevation) const
 	}
 
 	return color;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Draws the given text particalized to the grid, for effects
+//
+void World::ParticalizeVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options)
+{
+	IntVector3 textDimensions = options.font->GetTextDimensions(text);
+	textDimensions.x *= options.scale.x;
+	textDimensions.y *= options.scale.y;
+	textDimensions.z *= options.scale.z;
+
+	// Add in the border
+	textDimensions.x += 2 * options.borderThickness;
+	textDimensions.y += 2 * options.borderThickness;
+
+	IntVector3 forward = IntVector3(CrossProduct(Vector3(options.right), Vector3(options.up)));
+	IntVector3 startWorldCoord = referenceStart;
+	startWorldCoord -= options.right * (int)((float)textDimensions.x * options.alignment.x);
+	startWorldCoord -= options.up * (int)((float)textDimensions.y * options.alignment.y);
+	startWorldCoord -= forward * (int)((float)textDimensions.z * options.alignment.z);
+
+	IntVector3 glyphDimensions = options.font->GetGlyphDimensions();
+
+	for (int zOff = 0; zOff < textDimensions.z; ++zOff)
+	{
+		for (int yOff = 0; yOff < textDimensions.y; ++yOff)
+		{
+			for (int xOff = 0; xOff < textDimensions.x; ++xOff)
+			{
+				int charIndex = ((xOff - options.borderThickness) / options.scale.x) / glyphDimensions.x;
+				int xOffset = ((xOff - options.borderThickness) / options.scale.x) % glyphDimensions.x;
+				int yOffset = (yOff - options.borderThickness) / options.scale.y;
+
+				IntVector3 worldOffset = options.right * xOff + options.up * yOff + forward * zOff;
+
+				IntVector3 finalCoords = startWorldCoord + worldOffset;
+				Vector3 finalPosition = Vector3(finalCoords) + Vector3(0.5f, 0.5f, 0.5f);
+				Vector3 velocity = Vector3(GetRandomFloatInRange(-1.f, 1.f), 1.f, GetRandomFloatInRange(-1.f, 1.f)) * 50.f;
+				Rgba baseColor = options.font->GetColorForGlyphPixel(text[charIndex], IntVector2(xOffset, yOffset));
+
+				Particle* particle = new Particle(baseColor, 1.0f, finalPosition, velocity, false);
+				AddParticle(particle);
+			}
+		}
+	}
 }
 
 

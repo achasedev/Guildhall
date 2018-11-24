@@ -193,6 +193,9 @@ Vector2 GetTransitionDirectionForEnterEdge(eTransitionEdge enterEdge)
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Gets the player's correct height duration a transition and sets it
+//
 void UpdatePlayerHeightForTransition(Player* player, World* transitionWorld, eTransitionEdge enterEdge)
 {
 	World* currWorld = Game::GetWorld();
@@ -262,28 +265,6 @@ void GetTerrainOffsets(IntVector3& out_currOffset, IntVector3& out_transitionOff
 	default:
 		break;
 	}
-}
-
-
-//- C FUNCTION ----------------------------------------------------------------------------------
-// Returns true if all players have a valid playable definition, used for character select
-//
-bool DoAllPlayersHaveDefinition()
-{
-	Player** players = Game::GetPlayers();
-
-	for (int i = 0; i < MAX_PLAYERS; ++i)
-	{
-		if (players[i] != nullptr)
-		{
-			if (players[i]->GetEntityDefinition()->GetName() == "PlayerUninitialized")
-			{
-				return false;
-			}
-		}
-	}
-
-	return true;
 }
 
 
@@ -368,7 +349,7 @@ void PlayState_Rest::Update()
 
 
 	// Check if the players are near the move location
-	bool playersReady = AreAllPlayersInExitEdge(m_edgeToExit) && DoAllPlayersHaveDefinition();
+	bool playersReady = AreAllPlayersInExitEdge(m_edgeToExit) && Game::AreAllPlayersInitialized();
 
 	if (playersReady)
 	{
@@ -454,7 +435,6 @@ void PlayState_Rest::Render_Enter() const
 void PlayState_Rest::Render() const
 {
 	Game::GetWorld()->DrawToGrid();
-	DebugRenderSystem::Draw2DText(Stringf("Rest - GOGOGO"), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
 

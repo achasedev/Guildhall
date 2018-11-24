@@ -1,7 +1,17 @@
+/************************************************************************/
+/* File: Menu.cpp
+/* Author: Andrew Chase
+/* Date: November 24th 2018
+/* Description: Implementation of the Menu class
+/************************************************************************/
 #include "Game/Framework/Menu.hpp"
 #include "Game/GameStates/GameState_MainMenu.hpp"
 #include "Engine/Input/InputSystem.hpp"
 
+
+//-----------------------------------------------------------------------------------------------
+// Constructor
+//
 Menu::Menu(GameState_MainMenu* mainMenu)
 	: m_mainMenu(mainMenu)
 {
@@ -23,6 +33,9 @@ void Menu::AddOption(const std::string text, bool isSelectable, MenuOption_cb ca
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Checks for menu input
+//
 void Menu::ProcessInput()
 {
 	InputSystem* input = InputSystem::GetInstance();
@@ -79,16 +92,33 @@ void Menu::ProcessInput()
 }
 
 
+bool Menu::Leave()
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the cursor position to the index given
+//
 void Menu::SetCursorPosition(int cursorPosition)
 {
 	m_cursorPosition = cursorPosition;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Returns the current cursor index
+//
 int Menu::GetCursorPosition() const
 {
 	return m_cursorPosition;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Returns a list of options texts used for rendering
+//
 std::vector<std::string> Menu::GetTextsForRender() const
 {
 	std::vector<std::string> texts;
@@ -101,8 +131,11 @@ std::vector<std::string> Menu::GetTextsForRender() const
 	return texts;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Calls the callback on the currently selected menu option
+//
 void Menu::ProcessCurrentMenuSelection()
 {
 	m_options[m_cursorPosition].callback(m_mainMenu, m_options[m_cursorPosition].args);
 }
-

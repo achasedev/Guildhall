@@ -564,6 +564,28 @@ void Game::DrawHeading(const std::string& headingText)
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns true if all active players have chosen a character and are initialized as such
+//
+bool Game::AreAllPlayersInitialized()
+{
+	Player** players = s_instance->m_players;
+
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		if (players[i] != nullptr)
+		{
+			if (players[i]->GetEntityDefinition()->GetName() == "PlayerUninitialized")
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the singleton Game instance
 //
 Game* Game::GetInstance()

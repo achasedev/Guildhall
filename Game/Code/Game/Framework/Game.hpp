@@ -65,6 +65,8 @@ public:
 	static void					DrawScore();
 	static void					DrawHeading(const std::string& headingText);
 
+	static bool					AreAllPlayersInitialized();
+
 
 private:
 	//-----Private Methods-----
