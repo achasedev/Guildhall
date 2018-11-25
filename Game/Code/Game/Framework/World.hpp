@@ -24,7 +24,7 @@ class Player;
 class Entity;
 class VoxelTexture;
 class Particle;
-class HeatMap;
+class VoxelTerrain;
 class VoxelFont;
 class CampaignStage;
 
@@ -65,28 +65,26 @@ public:
 	void RemoveEntity(Entity* entity);
 	void AddParticle(Particle* particle);
 	void ApplyExplosion(const IntVector3& coord, eEntityTeam team, float damage = 0.f, float radius = 0.f, float impulseMagnitude = 0.f);
-	void SetTerrainHeightAtCoord(const IntVector3& coord, int height);
-	bool DecrementTerrainHeight(int decrementAmount);
+	void AddVoxelToTerrain(const IntVector3& coord, const Rgba& color);
 
 	// Accessors
 	IntVector3			GetDimensions() const;
-	unsigned int		GetGroundElevationAtCoord(const IntVector2& coord) const;
-	const HeatMap*		GetHeightMap() const;
+	int					GetGroundElevationAtCoord(const IntVector2& coord) const;
 	int					GetCurrentMaxHeightOfTerrain() const;
 	eTransitionEdge		GetDirectionToEnter() const;
 
 	// Producers
 	IntVector3	GetCoordsForPosition(const Vector3& position) const;
 	bool		IsEntityOnGround(const Entity* entity) const;
-	Rgba		GetTerrainColorAtElevation(int elevation) const;
-
+	
 	// Utility
 	void					ParticalizeVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options);
 	void					ParticalizeEntity(Entity* entity);
 	void					ParticalizeAllEntities();
 	bool					IsEntityOnMap(const Entity* entity) const;
-	float					GetMapHeightForEntity(const Entity* entity) const;
-	float					GetMapHeightForBounds(const IntVector3& coordPosition, const IntVector2& dimensions) const;
+	bool					AreCoordsOnMap(const IntVector3& coords) const;
+	int						GetMapHeightForEntity(const Entity* entity) const;
+	int						GetMapHeightForBounds(const IntVector3& coordPosition, const IntVector2& dimensions) const;
 	std::vector<Entity*>	GetEntitiesThatOverlapSphere(const Vector3& position, float radius) const;
 
 
@@ -124,7 +122,7 @@ private:
 	eTransitionEdge m_enterEdge = EDGE_WEST;
 
 	// Terrain
-	HeatMap m_heightMap;
+	VoxelTerrain* m_terrain = nullptr;
 
 	std::vector<Entity*> m_entities;
 	std::vector<Particle*> m_particles;

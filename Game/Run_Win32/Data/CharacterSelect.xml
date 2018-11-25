@@ -1,5 +1,5 @@
 <CharacterSelect>
 
-	<Stage height_map="Data/Images/HeightMaps/CharacterSelect.png" max_terrain_height="5"/>
+	<Stage map="Map1"/>
 
 </CharacterSelect>

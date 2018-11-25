@@ -11,6 +11,7 @@
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/GameCamera.hpp"
+#include "Game/Framework/VoxelTerrain.hpp"
 #include "Game/Framework/CampaignStage.hpp"
 #include "Game/Entity/CharacterSelectVolume.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
@@ -89,7 +90,6 @@ void					CalculateMassScalars(Entity* first, Entity* second, float& out_firstSca
 // Constructor
 //
 World::World()
-	: m_heightMap(HeatMap(m_dimensions.xz(), 0.f))
 {
 }
 
@@ -108,7 +108,11 @@ World::~World()
 //
 void World::InitializeForMenu()
 {
-	m_heightMap.Clear(0.f);
+	if (m_terrain != nullptr)
+	{
+		delete m_terrain;
+		m_terrain = nullptr;
+	}
 }
 
 
@@ -117,16 +121,12 @@ void World::InitializeForMenu()
 //
 void World::InititalizeForStage(CampaignStage* stage)
 {
-	for (int y = 0; y < m_dimensions.z; ++y)
+	if (m_terrain != nullptr)
 	{
-		for (int x = 0; x < m_dimensions.x; ++x)
-		{
-			float greyscale = stage->m_heightMapImage.GetTexelGrayScale(x, y);
-			int height = (int)RangeMapFloat(greyscale, 0.f, 1.0f, 0.f, (float)stage->m_maxTerrainHeight);
-
-			m_heightMap.SetHeat(IntVector2(x, y), (float)height);
-		}
+		delete m_terrain;
 	}
+
+	m_terrain = VoxelTerrain::GetTerrainClone(stage->m_mapName);
 
 	// Clean up entities
 	for (int i = 0; i < (int)m_entities.size(); ++i)
@@ -207,7 +207,11 @@ void World::CleanUp()
 
 	m_particles.clear();
 
-	m_heightMap.Clear(0.f);
+	if (m_terrain != nullptr)
+	{
+		delete m_terrain;
+		m_terrain = nullptr;
+	}
 }
 
 #include "Engine/Input/InputSystem.hpp"
@@ -272,8 +276,11 @@ void World::DrawToGridWithOffset(const IntVector3& offset)
 {
 	VoxelGrid* grid = Game::GetVoxelGrid();
 
-	// Color in the ground
-	grid->DrawTerrain(&m_heightMap, offset);
+	// Color in the ground, if there is one
+	if (m_terrain != nullptr)
+	{
+		grid->DrawTerrain(m_terrain, offset);
+	}
 
 	// Color in static geometry
 	DrawStaticEntitiesToGrid(offset);
@@ -379,40 +386,11 @@ void World::ApplyExplosion(const IntVector3& coord, eEntityTeam team, float dama
 
 
 //-----------------------------------------------------------------------------------------------
-// Sets the height of the terrain at the given coordinate to the height specified
+// Sets the voxel at the given coord to the given color in the terrain
 //
-void World::SetTerrainHeightAtCoord(const IntVector3& coord, int height)
+void World::AddVoxelToTerrain(const IntVector3& coord, const Rgba& color)
 {
-	if (m_heightMap.AreCoordsValid(coord.xz()))
-	{
-		m_heightMap.SetHeat(coord.xz(), (float)height);
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Lowers the world height by the amount, for cool effects
-// Returns true if the world is completely flat at 0.f
-//
-bool World::DecrementTerrainHeight(int decrementAmount)
-{
-	bool completelyFlat = true;
-	float floatAmount = (float)decrementAmount;
-
-	for (int i = 0; i < (int) m_heightMap.GetCellCount(); ++i)
-	{
-		float newValue = m_heightMap.GetHeat(i);
-		newValue = ClampFloat(newValue - floatAmount, 0.f, newValue);
-
-		if (newValue > 0.f)
-		{
-			completelyFlat = false;
-		}
-
-		m_heightMap.SetHeat(i, newValue);
-	}
-
-	return completelyFlat;
+	m_terrain->AddVoxel(coord, color);
 }
 
 
@@ -458,6 +436,19 @@ bool World::IsEntityOnMap(const Entity* entity) const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns whether the given 2D coordinates are on the map
+//
+bool World::AreCoordsOnMap(const IntVector3& coords) const
+{
+	bool onX = coords.x >= 0 && coords.x < m_dimensions.x;
+	bool onY = coords.y >= 0 && coords.y < m_dimensions.y;
+	bool onZ = coords.z >= 0 && coords.z < m_dimensions.z;
+
+	return (onX && onY && onZ);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns all entities that are within the given radius from the position
 //
 std::vector<Entity*> World::GetEntitiesThatOverlapSphere(const Vector3& position, float radius) const
@@ -494,18 +485,9 @@ IntVector3 World::GetDimensions() const
 //-----------------------------------------------------------------------------------------------
 // Returns the height of the map at the given coordinate location
 //
-unsigned int World::GetGroundElevationAtCoord(const IntVector2& coord) const
+int World::GetGroundElevationAtCoord(const IntVector2& coord) const
 {
-	return (unsigned int)m_heightMap.GetHeat(coord);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns the height map for the world
-//
-const HeatMap* World::GetHeightMap() const
-{
-	return &m_heightMap;
+	return m_terrain->GetHeightAtCoords(coord);
 }
 
 
@@ -557,35 +539,6 @@ bool World::IsEntityOnGround(const Entity* entity) const
 	}
 
 	return (entity->GetPosition().y <= GetMapHeightForEntity(entity));
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns the color for the given voxel at this elevation
-//
-Rgba World::GetTerrainColorAtElevation(int elevation) const
-{
-	// Hard coded for now
-	Rgba color;
-
-	if (elevation <= 4)
-	{
-		color = Rgba::BROWN;
-	}
-	else if (elevation <= 20)
-	{
-		color = Rgba::GREEN;
-	}
-	else if (elevation <= 30)
-	{
-		color = Rgba::DARK_GREEN;
-	}
-	else if (elevation <= 55)
-	{
-		color = Rgba::GRAY;
-	}
-
-	return color;
 }
 
 
@@ -707,7 +660,7 @@ void World::ApplyPhysicsStep()
 //-----------------------------------------------------------------------------------------------
 // Returns the height of the map under the given entity
 //
-float World::GetMapHeightForEntity(const Entity* entity) const
+int World::GetMapHeightForEntity(const Entity* entity) const
 {
 	IntVector3 coordPosition = entity->GetCoordinatePosition();
 	IntVector2 dimensions = entity->GetDimensions().xz();
@@ -719,10 +672,14 @@ float World::GetMapHeightForEntity(const Entity* entity) const
 //-----------------------------------------------------------------------------------------------
 // Returns the max terrain height at the given position and dimensions
 //
-float World::GetMapHeightForBounds(const IntVector3& coordPosition, const IntVector2& dimensions) const
+int World::GetMapHeightForBounds(const IntVector3& coordPosition, const IntVector2& dimensions) const
 {
+	if (m_terrain == nullptr)
+	{
+		return 0;
+	}
 
-	float maxHeight = 0.f;
+	int maxHeight = 0;
 
 	// Check all voxels on the entity's bottom, ensuring that it's not clipping into the ground
 	for (int z = 0; z < dimensions.y; ++z)
@@ -730,12 +687,12 @@ float World::GetMapHeightForBounds(const IntVector3& coordPosition, const IntVec
 		for (int x = 0; x < dimensions.x; ++x)
 		{
 			IntVector3 currPos = coordPosition + IntVector3(x, 0, z);
-			if (m_heightMap.AreCoordsValid(currPos.xz()))
+			if (AreCoordsOnMap(currPos))
 			{
-				float currHeight = m_heightMap.GetHeat(currPos.xz());
+				int currHeight = m_terrain->GetHeightAtCoords(currPos.xz());
 
 				// Update the max height over this area
-				maxHeight = MaxFloat(maxHeight, currHeight);
+				maxHeight = MaxInt(maxHeight, currHeight);
 			}
 		}
 	}
@@ -779,7 +736,7 @@ void World::CheckEntityForGroundCollision(Entity* entity)
 //
 void World::DestroyTerrain(const IntVector3& hitCoordinate, float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/)
 {
-	if (!m_heightMap.AreCoordsValid(hitCoordinate.xz()))
+	if (!AreCoordsOnMap(hitCoordinate))
 	{
 		return;
 	}
@@ -802,21 +759,20 @@ void World::DestroyTerrain(const IntVector3& hitCoordinate, float radius /*= 0.f
 			for (int x = xStart; x < xEnd; ++x)
 			{
 				IntVector3 currCoord = IntVector3(x, y, z);
-				if (!m_heightMap.AreCoordsValid(currCoord.xz()))
+				if (!AreCoordsOnMap(currCoord))
 				{
 					continue;
 				}
 
 				float distanceSquared = (Vector3(hitCoordinate) - Vector3(currCoord)).GetLengthSquared();
-				int heightAtCurrCoord = (int)m_heightMap.GetHeat(currCoord.xz());
+				int heightAtCurrCoord = m_terrain->GetHeightAtCoords(currCoord.xz());
 
 				if (distanceSquared <= radiusSquared)
 				{
-					m_heightMap.SetHeat(currCoord.xz(), (float)MinInt(y, heightAtCurrCoord));
+					Rgba color = m_terrain->RemoveVoxel(currCoord);
 
 					if (CheckRandomChance(0.1f))
 					{
-						Rgba color = GetTerrainColorAtElevation(currCoord.y);
 						Vector3 velocity = impulseMagnitude * Vector3(GetRandomFloatInRange(-1.f, 1.f), 1.f, GetRandomFloatInRange(-1.f, 1.f));
 
 						Particle* particle = new Particle(color, 2.0f, Vector3(currCoord), velocity, false);
@@ -825,7 +781,7 @@ void World::DestroyTerrain(const IntVector3& hitCoordinate, float radius /*= 0.f
 				}
 				else if (y > hitCoordinate.y && y < heightAtCurrCoord)
 				{
-					Rgba color = GetTerrainColorAtElevation(y);
+					Rgba color = m_terrain->GetColorAtCoords(IntVector3(currCoord.x, y, currCoord.z));
 
 					Particle* particle = new Particle(color, 2.0f, Vector3(currCoord), Vector3::ZERO, false);
 					AddParticle(particle);

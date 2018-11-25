@@ -12,6 +12,7 @@
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameCamera.hpp"
+#include "Game/Framework/VoxelTerrain.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/IntVector3.hpp"
@@ -155,11 +156,11 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset)
 	}
 }
 
-
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 //-----------------------------------------------------------------------------------------------
 // Draws the terrain to the grid with the given heightmap
 //
-void VoxelGrid::DrawTerrain(HeatMap* heightMap, const IntVector3& offset)
+void VoxelGrid::DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset)
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
@@ -167,7 +168,7 @@ void VoxelGrid::DrawTerrain(HeatMap* heightMap, const IntVector3& offset)
 	{
 		for (int heightMapX = 0; heightMapX < m_dimensions.x; ++heightMapX)
 		{
-			int height = (int)heightMap->GetHeat(IntVector2(heightMapX, heightMapZ));
+			int height = terrain->GetHeightAtCoords(IntVector2(heightMapX, heightMapZ));
 
 			height = ClampInt(height + offset.y, 0, m_dimensions.y);
 
@@ -176,9 +177,9 @@ void VoxelGrid::DrawTerrain(HeatMap* heightMap, const IntVector3& offset)
 				continue;
 			}
 
-			int westDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(heightMapX - 1, heightMapZ)) + offset.y - height);
-			int eastDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(heightMapX + 1, heightMapZ)) + offset.y - height);
-			int southDiff = AbsoluteValue((int)heightMap->GetHeat(IntVector2(heightMapX, heightMapZ - 1)) + offset.y - height);
+			int westDiff = AbsoluteValue(terrain->GetHeightAtCoords(IntVector2(heightMapX - 1, heightMapZ)) + offset.y - height);
+			int eastDiff = AbsoluteValue(terrain->GetHeightAtCoords(IntVector2(heightMapX + 1, heightMapZ)) + offset.y - height);
+			int southDiff = AbsoluteValue(terrain->GetHeightAtCoords(IntVector2(heightMapX, heightMapZ - 1)) + offset.y - height);
 
 			bool hasSharpDiff = (westDiff > 1 || eastDiff > 1 || southDiff > 1);
 
@@ -192,7 +193,7 @@ void VoxelGrid::DrawTerrain(HeatMap* heightMap, const IntVector3& offset)
 
 				for (int y = height - 1; y >= height - maxFill; --y)
 				{
-					Rgba color = Game::GetWorld()->GetTerrainColorAtElevation(height);
+					Rgba color = terrain->GetColorAtCoords(IntVector3(heightMapX, y, heightMapZ));
 
 					int gridIndex = GetIndexForCoords(IntVector3(gridCoords.x, y, gridCoords.z));
 
@@ -204,7 +205,7 @@ void VoxelGrid::DrawTerrain(HeatMap* heightMap, const IntVector3& offset)
 			}
 			else
 			{
-				Rgba color = Game::GetWorld()->GetTerrainColorAtElevation(height);
+				Rgba color = terrain->GetColorAtCoords(IntVector3(heightMapX, height - 1, heightMapZ));
 
 				int gridIndex = GetIndexForCoords(gridCoords);
 

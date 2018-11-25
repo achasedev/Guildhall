@@ -321,6 +321,7 @@
     <ClCompile Include="Framework\SpawnPoint.cpp" />
     <ClCompile Include="Framework\VoxelGrid.cpp" />
     <ClCompile Include="Framework\CampaignStage.cpp" />
+    <ClCompile Include="Framework\VoxelTerrain.cpp" />
     <ClCompile Include="Framework\World.cpp" />
     <ClCompile Include="GameStates\GameState.cpp" />
     <ClCompile Include="GameStates\GameState_Loading.cpp" />
@@ -368,6 +369,7 @@
     <ClInclude Include="Framework\SpawnPoint.hpp" />
     <ClInclude Include="Framework\VoxelGrid.hpp" />
     <ClInclude Include="Framework\CampaignStage.hpp" />
+    <ClInclude Include="Framework\VoxelTerrain.hpp" />
     <ClInclude Include="Framework\World.hpp" />
     <ClInclude Include="GameStates\GameState.hpp" />
     <ClInclude Include="GameStates\GameState_Loading.hpp" />

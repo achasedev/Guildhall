@@ -19,4 +19,8 @@
 		<VoxelAnimation file="Data/VoxelAnimations/Robot.animation"/>
 	</VoxelAnimations>
 
+	<VoxelTerrains>
+		<VoxelTerrain name="Map1" file="Data/VoxelModels/Maps/Map1.qef"/>
+	</VoxelTerrains>
+
 </VoxelAssets>

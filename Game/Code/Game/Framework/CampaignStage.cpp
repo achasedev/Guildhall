@@ -53,14 +53,7 @@ CampaignStage::CampaignStage(const XMLElement& element)
 		spawnElement = spawnElement->NextSiblingElement();
 	}
 
-	// Height map
-	std::string heightMapPath = ParseXmlAttribute(element, "height_map", heightMapPath);
-	m_heightMapImage.LoadFromFile(heightMapPath);
-
-	m_maxTerrainHeight = ParseXmlAttribute(element, "max_terrain_height", m_maxTerrainHeight);
-
-	// We don't support anything over 64
-	m_maxTerrainHeight = MinInt(m_maxTerrainHeight, 64);
+	m_mapName = ParseXmlAttribute(element, "map", m_mapName);
 
 	std::string edgeText = ParseXmlAttribute(element, "enter", "");
 	m_edgeToEnter = GetEdgeForString(edgeText);

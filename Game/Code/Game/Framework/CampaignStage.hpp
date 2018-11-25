@@ -56,9 +56,8 @@ public:
 private:
 	//-----Private Data-----
 	
-	Image							m_heightMapImage;
+	std::string						m_mapName;
 	eTransitionEdge					m_edgeToEnter;
-	int								m_maxTerrainHeight = 0;
 
 	std::vector<InitialStaticSpawn_t> m_initialStatics;
 	std::vector<EntitySpawnEvent_t> m_events;

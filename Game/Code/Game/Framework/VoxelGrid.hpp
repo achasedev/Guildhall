@@ -12,13 +12,12 @@
 #include "Engine/Rendering/Buffers/RenderBuffer.hpp"
 #include <string>
 
-
-class Renderable;
 class ComputeShader;
 class VoxelTexture;
 class Entity;
 class HeatMap;
 class VoxelFont;
+class VoxelTerrain;
 
 enum eVoxelFontFill
 {
@@ -61,7 +60,7 @@ public:
 	// Mutators
 	void				Clear();
 	void				DrawEntity(const Entity* entity, const IntVector3& offset);
-	void				DrawTerrain(HeatMap* heightMap, const IntVector3& offset);
+	void				DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset);
 	void				Draw3DTexture(const VoxelTexture* texture, const IntVector3& startCoord);
 
 	void				DebugDrawEntityCollision(const Entity* entity, const IntVector3& offset);

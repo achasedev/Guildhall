@@ -8,6 +8,7 @@
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
+#include "Game/Framework/VoxelTerrain.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Animation/VoxelAnimation.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
@@ -188,6 +189,20 @@ void GameState_Loading::LoadVoxelResources() const
 			VoxelAnimation::LoadVoxelAnimations(filename);
 
 			currAnimElement = currAnimElement->NextSiblingElement();
+		}
+	}
+
+	// Voxel Terrains
+	{
+		const XMLElement* terrainsElement = rootElement->FirstChildElement("VoxelTerrains");
+		ASSERT_OR_DIE(terrainsElement != nullptr, "Error: VoxelAssets.xml has no VoxelTerrains");
+
+		const XMLElement* terrainElement = terrainsElement->FirstChildElement();
+
+		while (terrainElement != nullptr)
+		{
+			VoxelTerrain::LoadTerrain(*terrainElement);
+			terrainElement = terrainElement->NextSiblingElement();
 		}
 	}
 }
