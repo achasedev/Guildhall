@@ -34,52 +34,7 @@ void BehaviorComponent_PursueJump::Initialize(AnimatedEntity* owningEntity)
 //
 void BehaviorComponent_PursueJump::Update()
 {
-	Vector2 jumpSensorOffset = Vector2::MakeDirectionAtDegrees(m_owningEntity->GetOrientation()) * m_jumpSensorDistance;
-	Vector3 jumpSensorPosition = m_owningEntity->GetPosition() + Vector3(jumpSensorOffset.x, 0.f, jumpSensorOffset.y);
-
-	// Move the entity
-	BehaviorComponent::Update();
-
-	Player** players = Game::GetPlayers();
-
-	Vector3 closestPlayerPosition;
-	float minDistance = 9999.f;
-	bool playerFound = false;
-
-	Vector3 currentPosition = m_owningEntity->GetPosition();
-
-	for (int i = 0; i < MAX_PLAYERS; ++i)
-	{
-		if (Game::IsPlayerAlive(i))
-		{
-			Vector3 playerPosition = players[i]->GetPosition();
-			float currDistance = (playerPosition - currentPosition).GetLengthSquared();
-
-			if (!playerFound || currDistance < minDistance)
-			{
-				minDistance = currDistance;
-				closestPlayerPosition = playerPosition;
-				playerFound = true;
-			}
-		}
-	}
-
-	// Shouldn't happen, but to avoid unidentifiable behavior
-	if (!playerFound)
-	{
-		return;
-	}
-
-	Vector3 directionToMove = (closestPlayerPosition - currentPosition).GetNormalized();
-	m_owningEntity->Move(directionToMove.xz());
-
-	// Check for jumping
-	bool shouldJump = (Game::GetWorld()->IsPositionInStatic(jumpSensorPosition));
-
-	if (shouldJump)
-	{
-		m_owningEntity->Jump();
-	}
+	UNIMPLEMENTED();
 }
 
 

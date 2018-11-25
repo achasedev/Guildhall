@@ -69,7 +69,6 @@ public:
 
 	// Accessors
 	IntVector3			GetDimensions() const;
-	HeatMap*			GetNavMap() const;
 	unsigned int		GetGroundElevationAtCoord(const IntVector2& coord) const;
 	const HeatMap*		GetHeightMap() const;
 	int					GetCurrentMaxHeightOfTerrain() const;
@@ -77,15 +76,11 @@ public:
 
 	// Producers
 	IntVector3	GetCoordsForPosition(const Vector3& position) const;
-	Vector3		GetNextPositionTowardsPlayer(const Vector3& currPosition) const;
-	bool		IsPositionInStatic(const Vector3& position) const;
-	bool		HasLineOfSight(const Vector3& startPosition, const Vector3& endPosition) const;
 	bool		IsEntityOnGround(const Entity* entity) const;
 	Rgba		GetTerrainColorAtElevation(int elevation) const;
 
 	// Utility
 	void						ParticalizeVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options);
-	void						ParticalizeTexture(const VoxelTexture* texture, const IntVector3& coordinates);
 	void						ParticalizeEntity(Entity* entity);
 	void						ParticalizeAllEntities();
 	bool						IsEntityOnMap(const Entity* entity) const;
@@ -96,9 +91,6 @@ public:
 
 private:
 	//-----Private Methods-----
-
-	// -- Update Loop -- 
-	void UpdateCostMap();
 
 	void UpdateEntities();
 	void UpdateParticles();
@@ -116,12 +108,6 @@ private:
 	void DrawStaticEntitiesToGrid(const IntVector3& offset);
 	void DrawDynamicEntitiesToGrid(const IntVector3& offset);
 	void DrawParticlesToGrid(const IntVector3& offset);
-
-	// Thread
-	void InitializeHeatMaps();
-	void HeatMapUpdate_Main();
-	void HeatMapUpdate_Thread();
-	void CleanUpHeatMaps();
 
 	// Terrain
 	void CheckEntityForGroundCollision(Entity* entity);
@@ -142,17 +128,4 @@ private:
 	bool			m_drawCollision = false;
 	bool			m_drawHeatmap = false;
 
-	// For AI
-	bool				m_isQuitting = false;
-	HeatMapSet_t		m_navMapInUse;
-	HeatMapSet_t		m_intermediateMap;
-	HeatMapSet_t		m_backBufferMap;
-
-	std::thread						m_heatMapThread;
-	bool							m_swapReady = false;
-	std::vector<StaticSection_t>	m_staticSectionsMain;
-	std::vector<StaticSection_t>	m_staticSectionsThread;
-	std::vector<IntVector3>			m_playerSeeds;
-
-	std::shared_mutex				m_mapSwapLock;
 };

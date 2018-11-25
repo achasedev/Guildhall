@@ -92,12 +92,6 @@ void Menu::ProcessInput()
 }
 
 
-bool Menu::Leave()
-{
-
-}
-
-
 //-----------------------------------------------------------------------------------------------
 // Sets the cursor position to the index given
 //

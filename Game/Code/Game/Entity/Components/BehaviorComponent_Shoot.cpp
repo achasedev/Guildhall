@@ -16,68 +16,7 @@ BehaviorComponent_Shoot::BehaviorComponent_Shoot(const EntityDefinition* project
 
 void BehaviorComponent_Shoot::Update()
 {
-	BehaviorComponent::Update();
-
-	Player** players = Game::GetPlayers();
-	World* world = Game::GetWorld();
-
-	Vector3 closestPlayerPosition;
-	float minDistance = 9999.f;
-	bool playerFound = false;
-	bool haveFoundPlayerInLineOfSight = false;
-	Vector3 currentPosition = m_owningEntity->GetPosition();
-
-	for (int i = 0; i < MAX_PLAYERS; ++i)
-	{
-		if (Game::IsPlayerAlive(i))
-		{
-			Vector3 playerPosition = players[i]->GetPosition();
-			float currDistance = (playerPosition - currentPosition).GetLengthSquared();
-
-			// Update our target if...
-			// 1. Haven't found a player yet
-			// 2. We have found a player already, but this player is closer and...
-			//  a. We don't have line of sight to our best yet, so this one is strictly better (and could have line of sight)
-			//  b. We have line of sight on our best, but we also have line of sight on this one
-			if (!playerFound || ((currDistance < minDistance) && (!haveFoundPlayerInLineOfSight || world->HasLineOfSight(currentPosition, playerPosition))))
-			{
-				minDistance = currDistance;
-				closestPlayerPosition = playerPosition;
-				playerFound = true;
-
-				if (world->HasLineOfSight(currentPosition, playerPosition))
-				{
-					haveFoundPlayerInLineOfSight = true;
-				}
-			}
-		}
-	}
-
-	// Shouldn't happen, but to avoid unidentifiable behavior
-	if (!playerFound)
-	{
-		return;
-	}
-
-	// If we can't see a player, then path find to get to the closest one
-	if (!haveFoundPlayerInLineOfSight)
-	{
-		Vector3 nextPosition = world->GetNextPositionTowardsPlayer(m_owningEntity->GetPosition());
-		Vector2 toNext = (nextPosition - m_owningEntity->GetPosition()).GetNormalized().xz();
-
-		m_owningEntity->Move(toNext);
-	}
-	else
-	{
-		// We can see a player, so move directly to them and shoot at them
-		Vector3 directionToMove = (closestPlayerPosition - currentPosition).GetNormalized();
-		m_owningEntity->Move(directionToMove.xz());
-
-		if (m_shootTimer.HasIntervalElapsed())
-		{
-			Shoot();
-		}
-	}
+	UNIMPLEMENTED();
 }
 
 BehaviorComponent* BehaviorComponent_Shoot::Clone() const

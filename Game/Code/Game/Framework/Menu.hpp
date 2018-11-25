@@ -11,6 +11,7 @@
 class GameState_MainMenu;
 typedef void(*MenuOption_cb)(GameState_MainMenu* mainMenu, const std::string& args);
 
+// A single option on a menu
 struct MenuOption_t
 {
 	std::string text;
@@ -30,10 +31,6 @@ public:
 	void AddOption(const std::string text, bool isSelectable, MenuOption_cb callback, const std::string& args);
 
 	void ProcessInput();
-
-	bool Enter();
-	void Update();
-	bool Leave();
 
 	void SetCursorPosition(int cursorPosition);
 	int GetCursorPosition() const;

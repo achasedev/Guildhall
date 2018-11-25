@@ -326,7 +326,6 @@
     <ClCompile Include="GameStates\GameState_Loading.cpp" />
     <ClCompile Include="GameStates\GameState_MainMenu.cpp" />
     <ClCompile Include="GameStates\GameState_Playing.cpp" />
-    <ClCompile Include="GameStates\GameState_Ready.cpp" />
     <ClCompile Include="Framework\Main_Win32.cpp" />
     <ClCompile Include="Framework\Game.cpp" />
     <ClCompile Include="Utility\GameUtilities.cpp" />
@@ -374,7 +373,6 @@
     <ClInclude Include="GameStates\GameState_Loading.hpp" />
     <ClInclude Include="GameStates\GameState_MainMenu.hpp" />
     <ClInclude Include="GameStates\GameState_Playing.hpp" />
-    <ClInclude Include="GameStates\GameState_Ready.hpp" />
     <ClInclude Include="Utility\GameUtilities.hpp" />
   </ItemGroup>
   <ItemGroup>

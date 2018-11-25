@@ -37,9 +37,6 @@
     <ClCompile Include="GameStates\GameState_Playing.cpp">
       <Filter>State Management\Game States</Filter>
     </ClCompile>
-    <ClCompile Include="GameStates\GameState_Ready.cpp">
-      <Filter>State Management\Game States</Filter>
-    </ClCompile>
     <ClCompile Include="Utility\GameUtilities.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
@@ -169,9 +166,6 @@
       <Filter>State Management\Game States</Filter>
     </ClInclude>
     <ClInclude Include="GameStates\GameState_Playing.hpp">
-      <Filter>State Management\Game States</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStates\GameState_Ready.hpp">
       <Filter>State Management\Game States</Filter>
     </ClInclude>
     <ClInclude Include="Utility\GameUtilities.hpp" />

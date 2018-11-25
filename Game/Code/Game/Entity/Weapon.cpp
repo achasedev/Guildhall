@@ -1,3 +1,9 @@
+/************************************************************************/
+/* File: Weapon.cpp
+/* Author: Andrew Chase
+/* Date: November 24th 2018
+/* Description: Implementation of the Weapon class
+/************************************************************************/
 #include "Game/Entity/Weapon.hpp"
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
@@ -9,6 +15,9 @@
 #include "Engine/Core/Time/Stopwatch.hpp"
 
 
+//-----------------------------------------------------------------------------------------------
+// Constructor
+//
 Weapon::Weapon(const EntityDefinition* definition)
 	: Item(definition)
 	, m_shootTimer(Stopwatch(Game::GetGameClock()))
@@ -17,6 +26,10 @@ Weapon::Weapon(const EntityDefinition* definition)
 	m_flashTimer.SetInterval(WEAPON_LOW_AMMO_FLASH_INTERVAL);
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Collision Event - for getting picked up
+//
 void Weapon::OnEntityCollision(Entity* other)
 {
 	Item::OnEntityCollision(other);
@@ -30,6 +43,10 @@ void Weapon::OnEntityCollision(Entity* other)
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Equips the weapon to the player
+//
 void Weapon::OnEquip(Player* playerEquipping)
 {
 	UNUSED(playerEquipping);
@@ -40,10 +57,18 @@ void Weapon::OnEquip(Player* playerEquipping)
 	m_currAmmoCount = m_definition->m_initialAmmoCount;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Callback for when the weapon is unequipped
+//
 void Weapon::OnUnequip()
 {
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Fires the weapon, given the weapon's fire parameters
+//
 void Weapon::Shoot()
 {
 	if (m_playerEquippedTo == nullptr)
@@ -104,6 +129,9 @@ bool Weapon::IsOutOfAmmo() const
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Returns the texture of the weapon based on its current state; for UI rendering
+//
 const VoxelTexture* Weapon::GetTextureForUIRender()
 {
 	float ammoPercentage = ((float)m_currAmmoCount / (float)m_definition->m_initialAmmoCount);
@@ -126,4 +154,3 @@ const VoxelTexture* Weapon::GetTextureForUIRender()
 
 	return nullptr;
 }
-

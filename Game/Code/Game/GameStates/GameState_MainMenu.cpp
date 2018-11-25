@@ -14,14 +14,10 @@
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Animation/VoxelEmitter.hpp"
-#include "Game/GameStates/GameState_Ready.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 #include "Game/GameStates/GameState_MainMenu.hpp"
-
-#include "Engine/Core/Window.hpp"
-#include "Engine/Assets/AssetDB.hpp"
-#include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Input/InputSystem.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Default constructor
@@ -166,6 +162,9 @@ void GameState_MainMenu::Render_Enter() const
 }
 
 
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Callback for changing the sub menu of the main menu
+//
 void LoadSubMenu(GameState_MainMenu* mainMenu, const std::string& args)
 {
 	if (args == "Main")
@@ -183,11 +182,18 @@ void LoadSubMenu(GameState_MainMenu* mainMenu, const std::string& args)
 }
 
 
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Callback for starting an episode campaign from the main menu
+//
 void StartEpisode(GameState_MainMenu* mainMenu, const std::string& args)
 {
 	Game::TransitionToGameState(new GameState_Playing());
 }
 
+
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Callback for quitting the game with UI option
+//
 void QuitSelection(GameState_MainMenu* mainMenu, const std::string& args)
 {
 	App::GetInstance()->Quit();
@@ -210,32 +216,36 @@ void GameState_MainMenu::MoveToSubMenu(eSubMenu subMenu)
 	switch (subMenu)
 	{
 	case SUB_MENU_MAIN:
-		m_currentMenu->AddOption("Play", true, LoadSubMenu, "Episodes");
+		m_currentMenu->AddOption("Play",		true, LoadSubMenu, "Episodes");
 		m_currentMenu->AddOption("Leaderboard", true, LoadSubMenu, "Leaderboard");
-		m_currentMenu->AddOption("Quit", true, QuitSelection, "");
+		m_currentMenu->AddOption("Quit",		true, QuitSelection, "");
 		break;
 	case SUB_MENU_EPISODES:
-		m_currentMenu->AddOption("Episode 1", true, StartEpisode, "Episode 1");
-		m_currentMenu->AddOption("Episode 2", true, StartEpisode, "Episode 2");
-		m_currentMenu->AddOption("Episode 3", true, StartEpisode, "Episode 3");
-		m_currentMenu->AddOption("Episode 4", true, StartEpisode, "Episode 4");
-		m_currentMenu->AddOption("Episode 5", true, StartEpisode, "Episode 5");
-		m_currentMenu->AddOption("Back", true, LoadSubMenu, "Main");
+		m_currentMenu->AddOption("Episode 1",	true, StartEpisode, "Episode 1");
+		m_currentMenu->AddOption("Episode 2",	true, StartEpisode, "Episode 2");
+		m_currentMenu->AddOption("Episode 3",	true, StartEpisode, "Episode 3");
+		m_currentMenu->AddOption("Episode 4",	true, StartEpisode, "Episode 4");
+		m_currentMenu->AddOption("Episode 5",	true, StartEpisode, "Episode 5");
+		m_currentMenu->AddOption("Back",		true, LoadSubMenu, "Main");
 		break;
 	case SUB_MENU_LEADERBOARD:
-		m_currentMenu->AddOption("AAA 999999", false, nullptr, "");
-		m_currentMenu->AddOption("BBB 888888", false, nullptr, "");
-		m_currentMenu->AddOption("CCC 777777", false, nullptr, "");
-		m_currentMenu->AddOption("DDD 666666", false, nullptr, "");
-		m_currentMenu->AddOption("EEE 555555", false, nullptr, "");
-		m_currentMenu->AddOption("Back", true, LoadSubMenu, "Main");
-		m_currentMenu->SetCursorPosition(5);
+		m_currentMenu->AddOption("AAA 999999",	false, nullptr, "");
+		m_currentMenu->AddOption("BBB 888888",	false, nullptr, "");
+		m_currentMenu->AddOption("CCC 777777",	false, nullptr, "");
+		m_currentMenu->AddOption("DDD 666666",	false, nullptr, "");
+		m_currentMenu->AddOption("EEE 555555",	false, nullptr, "");
+		m_currentMenu->AddOption("Back",		true, LoadSubMenu, "Main");
+		m_currentMenu->SetCursorPosition(5); // Set the cursor on the only selectable option
 		break;
 	default:
 		break;
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Draws the current menu to the grid
+//
 void GameState_MainMenu::DrawCurrentMenu() const
 {
 	IntVector3 drawPosition = m_menuStartCoord;
@@ -267,6 +277,10 @@ void GameState_MainMenu::DrawCurrentMenu() const
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Particalizes the current menu into the world
+//
 void GameState_MainMenu::ParticalizeCurrentMenu() const
 {
 	IntVector3 drawPosition = m_menuStartCoord;
