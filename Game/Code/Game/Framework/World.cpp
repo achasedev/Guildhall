@@ -126,8 +126,6 @@ void World::InititalizeForStage(CampaignStage* stage)
 		delete m_terrain;
 	}
 
-	m_terrain = VoxelTerrain::GetTerrainClone(stage->m_mapName);
-
 	// Clean up entities
 	for (int i = 0; i < (int)m_entities.size(); ++i)
 	{
@@ -147,12 +145,15 @@ void World::InititalizeForStage(CampaignStage* stage)
 
 	m_particles.clear();
 
-	// Add the new statics
-	int numStatics = (int) stage->m_initialStatics.size();
+	// Initialize terrain and static entities on terrain
+	InitializeTerrain(stage->m_mapName);
+	
+	// Add in the entities from the stage
+	int numEntities = (int) stage->m_initialStatics.size();
 
-	for (int staticIndex = 0; staticIndex < numStatics; ++staticIndex)
+	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
 	{
-		InitialStaticSpawn_t& spawn = stage->m_initialStatics[staticIndex];
+		InitialStaticSpawn_t& spawn = stage->m_initialStatics[entityIndex];
 
 		Entity* entity = nullptr;
 		if (spawn.definition->GetName() == "CharacterSelect")
@@ -585,6 +586,26 @@ void World::ParticalizeVoxelText(const std::string& text, const IntVector3& refe
 				AddParticle(particle);
 			}
 		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the terrain and initial entities given the name of the map
+//
+void World::InitializeTerrain(const std::string mapName)
+{
+	m_terrain = VoxelTerrain::GetTerrainClone(mapName);
+
+	const std::vector<EntitySpawn_t> spawns = m_terrain->GetInitialEntities();
+
+	for (int i = 0; i < (int)spawns.size(); ++i)
+	{
+		Entity* entity = new Entity(spawns[i].definition);
+		entity->SetPosition(spawns[i].position);
+		entity->SetOrientation(spawns[i].orientation);
+
+		AddEntity(entity);
 	}
 }
 

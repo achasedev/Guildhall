@@ -91,6 +91,8 @@ public:
 private:
 	//-----Private Methods-----
 
+	void InitializeTerrain(const std::string mapName);
+
 	void UpdateEntities();
 	void UpdateParticles();
 

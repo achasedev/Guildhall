@@ -76,6 +76,9 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 	m_name = ParseXmlAttribute(entityElement, "name");
 	ASSERT_OR_DIE(m_name.size() > 0, "Error: EntityDefinition lacks a name");
 
+	m_id = ParseXmlAttribute(entityElement, "id", m_id);
+	ASSERT_OR_DIE(m_id >= 0, "Error: EntityDefinition lacks an ID");
+
 	m_initialHealth = ParseXmlAttribute(entityElement, "initial_health", m_initialHealth);
 
 	// Movement
@@ -303,6 +306,25 @@ const EntityDefinition* EntityDefinition::GetDefinition(const std::string& defNa
 	if (exists)
 	{
 		return s_definitions.at(defName);
+	}
+
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the entity definition with the given ID, nullptr if it doesn't exist
+//
+const EntityDefinition* EntityDefinition::GetDefinition(int id)
+{
+	std::map<std::string, const EntityDefinition*>::const_iterator itr = s_definitions.begin();
+
+	for (itr; itr != s_definitions.end(); ++itr)
+	{
+		if (itr->second->m_id == id)
+		{
+			return itr->second;
+		}
 	}
 
 	return nullptr;

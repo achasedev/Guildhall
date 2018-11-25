@@ -347,6 +347,7 @@
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\EntityDefinition.hpp" />
     <ClInclude Include="Entity\AnimatedEntity.hpp" />
+    <ClInclude Include="Entity\EntitySpawn.hpp" />
     <ClInclude Include="Entity\Item.hpp" />
     <ClInclude Include="Entity\Particle.hpp" />
     <ClInclude Include="Entity\Components\PhysicsComponent.hpp" />

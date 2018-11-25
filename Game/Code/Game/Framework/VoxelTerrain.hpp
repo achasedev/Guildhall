@@ -6,10 +6,11 @@
 /************************************************************************/
 #pragma once
 #include <map>
+#include "Game/Entity/EntitySpawn.hpp"
 #include "Engine/Math/IntVector3.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 class VoxelTexture;
-
+ 
 class VoxelTerrain
 {
 public:
@@ -26,6 +27,7 @@ public:
 	// Accessors
 	int GetHeightAtCoords(const IntVector2& coords);
 	Rgba GetColorAtCoords(const IntVector3& coords);
+	const std::vector<EntitySpawn_t>& GetInitialEntities() const;
 
 
 public:
@@ -44,6 +46,7 @@ private:
 	
 	std::string m_name;
 	VoxelTexture* m_texture = nullptr;
+	std::vector<EntitySpawn_t> m_initialEntities;
 
 	static const IntVector3 TERRAIN_DIMENSIONS;
 	static std::map<std::string, VoxelTerrain*> s_terrains;

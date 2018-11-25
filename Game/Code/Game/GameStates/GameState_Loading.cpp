@@ -119,8 +119,6 @@ void GameState_Loading::Render_Enter() const
 void GameState_Loading::LoadResources() const
 {
 	LoadVoxelResources();
-
-	EntityDefinition::LoadDefinitions("Data/EntityDefinitions/EntityDefinitions.xml");
 }
 
 
@@ -189,6 +187,16 @@ void GameState_Loading::LoadVoxelResources() const
 			VoxelAnimation::LoadVoxelAnimations(filename);
 
 			currAnimElement = currAnimElement->NextSiblingElement();
+		}
+	}
+
+	// Entity Definitions
+	{
+		const XMLElement* defElement = rootElement->FirstChildElement("EntityDefinitions");
+		if (defElement != nullptr)
+		{
+			std::string defFilename = ParseXmlAttribute(*defElement, "file", "");
+			EntityDefinition::LoadDefinitions(defFilename);
 		}
 	}
 

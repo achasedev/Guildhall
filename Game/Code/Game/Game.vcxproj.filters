@@ -207,5 +207,6 @@
     <ClInclude Include="Entity\CharacterSelectVolume.hpp" />
     <ClInclude Include="Framework\Menu.hpp" />
     <ClInclude Include="Framework\VoxelTerrain.hpp" />
+    <ClInclude Include="Entity\EntitySpawn.hpp" />
   </ItemGroup>
 </Project>

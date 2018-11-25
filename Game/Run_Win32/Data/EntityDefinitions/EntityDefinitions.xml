@@ -2,7 +2,7 @@
 
 	<!-- Players -->
 
-	<EntityDefinition name="PlayerUninitialized" initial_health="0">
+	<EntityDefinition name="PlayerUninitialized" initial_health="0" id="0">
 
 		<!--Movement Parameters-->
 		<Movement max_acceleration="300.0" max_speed="40.0" max_deceleration="100.0" jump_impulse="80.0"/>
@@ -18,7 +18,7 @@
 	</EntityDefinition>
 
 
-	<EntityDefinition name="Player" initial_health="5">
+	<EntityDefinition name="Player" initial_health="5" id="1">
 
 		<!--Movement Parameters-->
 		<Movement max_acceleration="300.0" max_speed="40.0" max_deceleration="100.0" jump_impulse="80.0"/>
@@ -35,7 +35,7 @@
 
 
 	<!-- Character Select -->
-	<EntityDefinition name="CharacterSelect">
+	<EntityDefinition name="CharacterSelect" id="2">
 
 		<!--Visuals-->
 		<Visuals default_sprite="Wall"/>
@@ -53,7 +53,7 @@
 
 	<!-- Enemies -->
 
-	<EntityDefinition name="Robot" initial_health="100000">
+	<EntityDefinition name="Robot" initial_health="10" id="3">
 
 		<Movement max_acceleration="3000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="120.0"/>
 
@@ -74,7 +74,7 @@
 
 	<!-- Projectiles -->
 
-	<EntityDefinition name="Bullet">
+	<EntityDefinition name="Bullet" id="4">
 
 		<Visuals default_sprite="Bullet"/>
 
@@ -86,7 +86,7 @@
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Shell">
+	<EntityDefinition name="Shell" id="5">
 
 		<Visuals default_sprite="Shell"/>
 
@@ -100,7 +100,7 @@
 
 
 	<!-- Weapons (LOAD AFTER PROJECTILES) -->
-	<EntityDefinition name="Pistol">
+	<EntityDefinition name="Pistol" id="6">
 
 		<Visuals default_sprite="Pistol"/>
 
@@ -112,7 +112,7 @@
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Shotgun">
+	<EntityDefinition name="Shotgun" id="7">
 
 		<Visuals default_sprite="Shotgun"/>
 
@@ -130,7 +130,7 @@
 
 	<!-- Statics -->
 
-	<EntityDefinition name="Wall">
+	<EntityDefinition name="Wall" id="8">
 
 		<Visuals default_sprite="Wall" destructible="true"/>
 
@@ -142,12 +142,21 @@
 
 
  	<!-- Needed for it to work in the system -->
-	<EntityDefinition name="Particle">
+	<EntityDefinition name="Particle" id="9">
 
 		<Physics physics_type="dynamic" has_gravity="true">
 			<CollisionDefinition response="full_correction" layer="world"/>
 		</Physics>
 
+	</EntityDefinition>
+
+	<EntityDefinition name="Tree1" id="10">
+		<Visuals default_sprite="Tree1" destructible="true"/>
+
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>
+		
 	</EntityDefinition>
 
 </EntityDefinitions>

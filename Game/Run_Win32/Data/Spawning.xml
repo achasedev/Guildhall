@@ -12,7 +12,7 @@
 
 	<Stages>
 
-		<Stage map="Map1" enter="west">
+		<Stage map="Map2" enter="west">
 			<SpawnEvent entity="Robot" spawn_point="0" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="1"/>
 		</Stage> 
 

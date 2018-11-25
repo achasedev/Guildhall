@@ -1,6 +1,7 @@
 #include "Engine/Core/Rgba.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Framework/VoxelTerrain.hpp"
+#include "Game/Entity/EntityDefinition.hpp"
 #include "Engine/Rendering/Resources/VoxelTexture.hpp"
 
 std::map<std::string, VoxelTerrain*> VoxelTerrain::s_terrains;
@@ -12,6 +13,7 @@ VoxelTerrain* VoxelTerrain::Clone() const
 	VoxelTerrain* clone = new VoxelTerrain();
 	clone->m_name = m_name;
 	clone->m_texture = m_texture->Clone();
+	clone->m_initialEntities = m_initialEntities;
 
 	return clone;
 }
@@ -39,13 +41,40 @@ void VoxelTerrain::LoadTerrain(const XMLElement& terrainElement)
 
 	VoxelTexture* texture = new VoxelTexture();
 	bool success = texture->CreateFromFile(filepath.c_str(), false);
-
 	ASSERT_OR_DIE(success, Stringf("Error: Couldn't load terrain \"%s\"", name.c_str()));
 
 	VoxelTerrain* terrain = new VoxelTerrain();
 	terrain->m_texture = texture;
 	terrain->m_name = name;
 
+	// Post process - remove chroma keys
+	for (int y = 0; y < TERRAIN_DIMENSIONS.y; ++y)
+	{
+		for (int z = 0; z < TERRAIN_DIMENSIONS.z; ++z)
+		{
+			for (int x = 0; x < TERRAIN_DIMENSIONS.x; ++x)
+			{
+				IntVector3 coord = IntVector3(x, y, z);
+				Rgba color = texture->GetColorAtCoords(coord);
+
+				if (color.r == 255)
+				{
+					// Remove the key
+					texture->SetColorAtCoords(coord, Rgba(0, 0, 0, 0));
+
+					// Add the entity by ID
+					EntitySpawn_t spawn;
+					spawn.position = Vector3(coord);
+					spawn.definition = EntityDefinition::GetDefinition((int)color.g);
+					spawn.orientation = (float)color.b * 2.f;
+
+					terrain->m_initialEntities.push_back(spawn);
+				}
+			}
+		}
+	}
+
+	// Add it to the registry of prototypes
 	s_terrains[name] = terrain;
 }
 
@@ -80,5 +109,14 @@ int VoxelTerrain::GetHeightAtCoords(const IntVector2& coords)
 Rgba VoxelTerrain::GetColorAtCoords(const IntVector3& coords)
 {
 	return m_texture->GetColorAtCoords(coords);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the list of entities that are initially spawned on this terrain
+//
+const std::vector<EntitySpawn_t>& VoxelTerrain::GetInitialEntities() const
+{
+	return m_initialEntities;
 }
 

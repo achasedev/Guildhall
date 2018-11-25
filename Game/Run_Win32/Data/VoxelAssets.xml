@@ -7,6 +7,7 @@
 		<VoxelSprite file="Data/VoxelSprites/Shell.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Pistol.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Shotgun.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Environment/Tree1.sprite"/>
 	</VoxelSprites>
 
 
@@ -19,8 +20,11 @@
 		<VoxelAnimation file="Data/VoxelAnimations/Robot.animation"/>
 	</VoxelAnimations>
 
+	<EntityDefinitions file="Data/EntityDefinitions/EntityDefinitions.xml"/>
+
 	<VoxelTerrains>
 		<VoxelTerrain name="Map1" file="Data/VoxelModels/Maps/Map1.qef"/>
+		<VoxelTerrain name="Map2" file="Data/VoxelModels/Maps/Map2.qef"/>
 	</VoxelTerrains>
 
 </VoxelAssets>
