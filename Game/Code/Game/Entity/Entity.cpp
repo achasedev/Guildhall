@@ -86,9 +86,9 @@ void Entity::OnGroundCollision()
 //-----------------------------------------------------------------------------------------------
 // Callback for individual voxels hit during collision
 //
-void Entity::OnVoxelCollision(std::vector<IntVector3> voxelCoords)
+void Entity::OnVoxelCollision(Entity* other, std::vector<IntVector3> voxelCoords)
 {
-	if (!m_definition->m_isDestructible)
+	if (!m_definition->m_isDestructible || (other != nullptr && !other->GetCollisionDefinition().m_canDestroyVoxels))
 	{
 		return;
 	}
@@ -105,7 +105,7 @@ void Entity::OnVoxelCollision(std::vector<IntVector3> voxelCoords)
 		{
 			Vector3 position = GetPositionForLocalCoords(currCoords);
 
-			Vector3 velocity = Vector3(GetRandomFloatZeroToOne(), 1.0f, GetRandomFloatZeroToOne());
+			Vector3 velocity = Vector3(GetRandomFloatInRange(-1.f, 1.f), 1.0f, GetRandomFloatInRange(-1.f, 1.f));
 			velocity = 50.f * velocity.GetNormalized();
 
 			Particle* particle = new Particle(currColor, 10.0f, position, velocity);
@@ -156,11 +156,17 @@ void Entity::SetTeam(eEntityTeam team)
 //-----------------------------------------------------------------------------------------------
 // Subtracts the amount to the entity's health
 //
-void Entity::TakeDamage(int damageAmount)
+void Entity::TakeDamage(int damageAmount, const Vector3& knockback /*=Vector3::ZERO*/)
 {
+	// Apply damage
 	m_health -= damageAmount;
-
 	OnDamageTaken(damageAmount);
+
+	// Apply knockback if the entity is dynamic
+	if (m_physicsComponent != nullptr)
+	{
+		m_physicsComponent->AddImpulse(knockback);
+	}
 }
 
 
@@ -341,6 +347,40 @@ IntVector3 Entity::GetDimensions() const
 bool Entity::IsPhysicsEnabled() const
 {
 	return m_physicsEnabled;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether this entity can have voxels broken off of it
+//
+bool Entity::IsDestructible() const
+{
+	return m_definition->m_isDestructible;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the world bounds for the entity
+//
+AABB3 Entity::GetWorldBounds() const
+{
+	Vector3 bottomLeft = m_position;
+	Vector3 topRight = m_position + Vector3(GetDimensions());
+	return AABB3(bottomLeft, topRight);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the layer that this entity currently is on for collisions
+//
+eCollisionLayer Entity::GetCollisionLayer() const
+{
+	if (m_useCollisionLayerOverride)
+	{
+		return m_collisionLayerOverride;
+	}
+
+	return m_definition->m_collisionDef.layer;
 }
 
 

@@ -61,11 +61,13 @@ enum eCollisionLayer : uint8_t
 struct CollisionDefinition_t
 {
 	CollisionDefinition_t() {}
-	CollisionDefinition_t(eCorrectionResponse response, eCollisionLayer collisionLayer)
-		: m_response(response), layer(collisionLayer) {}
+	CollisionDefinition_t(eCorrectionResponse response, eCollisionLayer collisionLayer, bool canDestroyVoxels, float collisionKnockback)
+		: m_response(response), layer(collisionLayer), m_canDestroyVoxels(canDestroyVoxels), m_collisionKnockback(collisionKnockback) {}
 
 	eCollisionLayer				layer = COLLISION_LAYER_WORLD;
 	eCorrectionResponse			m_response = COLLISION_RESPONSE_SHARE_CORRECTION;
+	bool						m_canDestroyVoxels = false;
+	float						m_collisionKnockback = 0.f;
 };
 
 

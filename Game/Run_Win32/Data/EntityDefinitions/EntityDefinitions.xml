@@ -53,7 +53,7 @@
 
 	<!-- Enemies -->
 
-	<EntityDefinition name="Robot" initial_health="1">
+	<EntityDefinition name="Robot" initial_health="100000">
 
 		<Movement max_acceleration="3000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="120.0"/>
 
@@ -79,10 +79,10 @@
 		<Visuals default_sprite="Bullet"/>
 
 		<Physics physics_type="dynamic" has_gravity="false">
-			<CollisionDefinition response="ignore_correction"/>
+			<CollisionDefinition response="ignore_correction" can_destroy_voxels="true" knockback="50.f"/>
 		</Physics>
 
-		<Projectile speed="200.0" hit_radius="30.0" hit_damage="2" lifetime="0.7"/>
+		<Projectile speed="200.0" hit_radius="20.0" hit_damage="2" lifetime="0.7"/>
 
 	</EntityDefinition>
 
@@ -91,7 +91,7 @@
 		<Visuals default_sprite="Shell"/>
 
 		<Physics physics_type="dynamic" has_gravity="false">
-			<CollisionDefinition response="ignore_correction"/>
+			<CollisionDefinition response="ignore_correction" can_destroy_voxels="true"/>
 		</Physics>
 
 		<Projectile speed="150.0" hit_radius="0.0" hit_damage="1" lifetime="0.3"/>

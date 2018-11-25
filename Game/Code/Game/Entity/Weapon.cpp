@@ -93,7 +93,7 @@ void Weapon::Shoot()
 	// Shoot as many as we are supposed to this fire
 	for (int i = 0; i < projectileCount; ++i)
 	{
-		Projectile* proj = new Projectile(m_definition->m_projectileDefinition);
+		Projectile* proj = new Projectile(m_definition->m_projectileDefinition, m_playerEquippedTo->GetTeam());
 
 		Vector3 spread;
 		spread.x = GetRandomFloatInRange(-m_definition->m_fireSpread, m_definition->m_fireSpread);

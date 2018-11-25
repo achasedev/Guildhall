@@ -6,6 +6,7 @@
 /************************************************************************/
 #pragma once
 #include "Game/Entity/EntityDefinition.hpp"
+#include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Rendering/Resources/VoxelTexture.hpp"
 
@@ -39,7 +40,7 @@ public:
 	void							SetOrientation(float orientation);
 	void							SetTeam(eEntityTeam team);
 
-	void							TakeDamage(int damageAmount);
+	void							TakeDamage(int damageAmount, const Vector3& knockback = Vector3::ZERO);
 
 	// Accessors
 	int								GetHealth() const;
@@ -55,6 +56,9 @@ public:
 	PhysicsComponent*				GetPhysicsComponent() const;
 	virtual IntVector3				GetDimensions() const;
 	bool							IsPhysicsEnabled() const;
+	bool							IsDestructible() const;
+	AABB3							GetWorldBounds() const;
+	eCollisionLayer					GetCollisionLayer() const;
 
 	float							GetMass() const;
 	float							GetInverseMass() const;
@@ -73,7 +77,7 @@ public:
 	// Events
 	virtual void					OnEntityCollision(Entity* other);
 	virtual void					OnGroundCollision();
-	virtual void					OnVoxelCollision(std::vector<IntVector3> voxelCoords);
+	virtual void					OnVoxelCollision(Entity* other, std::vector<IntVector3> voxelCoords);
 	virtual void					OnDamageTaken(int damageAmount);
 	virtual void					OnDeath();
 	virtual void					OnSpawn();
@@ -103,6 +107,9 @@ protected:
 	const EntityDefinition* m_definition = nullptr;
 	Vector3					m_collisionCorrection = Vector3::ZERO;
 	bool					m_physicsEnabled = true;
+
+	bool					m_useCollisionLayerOverride = false;
+	eCollisionLayer			m_collisionLayerOverride = COLLISION_LAYER_WORLD;
 
 	bool					m_isPlayer = false;
 

@@ -30,7 +30,7 @@ void BehaviorComponent_Shoot::Shoot()
 	Vector3 entityPosition = m_owningEntity->GetPosition();
 	float entityOrientation = m_owningEntity->GetOrientation();
 
-	Projectile* proj = new Projectile(EntityDefinition::GetDefinition("Bullet"));
+	Projectile* proj = new Projectile(EntityDefinition::GetDefinition("Bullet"), m_owningEntity->GetTeam());
 	proj->SetPosition(entityPosition + Vector3(0.f, 4.f, 0.f));
 	proj->SetOrientation(entityOrientation);
 	proj->SetTeam(m_owningEntity->GetTeam());

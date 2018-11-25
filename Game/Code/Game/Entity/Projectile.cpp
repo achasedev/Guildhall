@@ -12,9 +12,22 @@
 //-----------------------------------------------------------------------------------------------
 // Constructor from a definition
 //
-Projectile::Projectile(const EntityDefinition* definition)
+Projectile::Projectile(const EntityDefinition* definition, eEntityTeam team)
 	: Entity(definition)
 {
+	m_entityTeam = team;
+
+	if (team == ENTITY_TEAM_PLAYER)
+	{
+		m_collisionLayerOverride = COLLISION_LAYER_PLAYER_BULLET;
+	}
+	else
+	{
+		m_collisionLayerOverride = COLLISION_LAYER_ENEMY_BULLET;
+	}
+
+	m_useCollisionLayerOverride = true;
+
 	m_stopwatch = new Stopwatch(Game::GetGameClock());
 }
 
@@ -41,9 +54,11 @@ void Projectile::OnEntityCollision(Entity* other)
 	if (other->GetTeam() != m_entityTeam)
 	{
 		Entity::OnEntityCollision(other);
-		other->TakeDamage(m_definition->m_projectileDamage);
+		Vector3 direction = (other->GetCenterPosition() - GetCenterPosition()).GetNormalized();
+		other->TakeDamage(m_definition->m_projectileDamage, m_definition->m_collisionDef.m_collisionKnockback * direction);
 
 		// Projectiles are only good for one collision
+		Game::GetWorld()->ApplyExplosion(GetCoordinatePosition(), m_entityTeam, m_definition->m_projectileDamage, m_definition->m_projectileHitRadius, m_definition->m_collisionDef.m_collisionKnockback);
 		m_isMarkedForDelete = true;
 	}
 }
@@ -54,7 +69,7 @@ void Projectile::OnEntityCollision(Entity* other)
 //
 void Projectile::OnGroundCollision()
 {
-	Game::GetWorld()->ApplyExplosion(GetCoordinatePosition(), m_definition->m_projectileHitRadius, 100.f);
+	Game::GetWorld()->ApplyExplosion(GetCoordinatePosition(), m_entityTeam, m_definition->m_projectileDamage, m_definition->m_projectileHitRadius, m_definition->m_collisionDef.m_collisionKnockback);
 	m_isMarkedForDelete = true;
 }
 

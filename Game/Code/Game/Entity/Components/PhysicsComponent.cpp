@@ -112,6 +112,7 @@ void PhysicsComponent::StopAllMovement()
 	m_impulse = Vector3::ZERO;
 }
 
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Applies the forward Euler computation to the velocity and position of the owning entity
@@ -120,6 +121,13 @@ void PhysicsComponent::ApplyPhysicsStep()
 {
 	// Apply impulse, no delta time applied
 	Vector3 deltaVelocityFromImpulse = (m_impulse * m_owningEntity->GetInverseMass());
+	bool doStuff = false;
+	if (deltaVelocityFromImpulse != Vector3::ZERO)
+	{
+		ConsolePrintf("Name: %s - Impulse: (%.2f,%.2f,%.2f)", m_owningEntity->GetEntityDefinition()->GetName().c_str(), deltaVelocityFromImpulse.x, deltaVelocityFromImpulse.y, deltaVelocityFromImpulse.z);
+		doStuff = true;
+	}
+
 	m_velocity += deltaVelocityFromImpulse;
 
 	// Apply force
@@ -139,6 +147,10 @@ void PhysicsComponent::ApplyPhysicsStep()
 	// Clamp velocity - component wise
 	m_velocity = ClampVector3(m_velocity, -m_maxSpeed, m_maxSpeed);
 
+	if (doStuff)
+	{
+		ConsolePrintf("Final Velocity: (%.2f, %.2f, %.2f)", m_velocity.x, m_velocity.y, m_velocity.z);
+	}
 	// Apply velocity
 	m_owningEntity->AddPositionOffset(m_velocity * deltaTime);
 

@@ -8,6 +8,7 @@
 #include <vector>
 #include <thread>
 #include <shared_mutex>
+#include "Game/Entity/Entity.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/CampaignStage.hpp"
 
@@ -63,7 +64,7 @@ public:
 	void AddEntity(Entity* entity);
 	void RemoveEntity(Entity* entity);
 	void AddParticle(Particle* particle);
-	void ApplyExplosion(const IntVector3& coord, float radius = 0.f, float impulseMagnitude = 0.f);
+	void ApplyExplosion(const IntVector3& coord, eEntityTeam team, float damage = 0.f, float radius = 0.f, float impulseMagnitude = 0.f);
 	void SetTerrainHeightAtCoord(const IntVector3& coord, int height);
 	bool DecrementTerrainHeight(int decrementAmount);
 
@@ -80,13 +81,13 @@ public:
 	Rgba		GetTerrainColorAtElevation(int elevation) const;
 
 	// Utility
-	void						ParticalizeVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options);
-	void						ParticalizeEntity(Entity* entity);
-	void						ParticalizeAllEntities();
-	bool						IsEntityOnMap(const Entity* entity) const;
-	float						GetMapHeightForEntity(const Entity* entity) const;
-	float						GetMapHeightForBounds(const IntVector3& coordPosition, const IntVector2& dimensions) const;
-	std::vector<const Entity*>	GetEnemiesWithinDistance(const Vector3& position, float radius) const;
+	void					ParticalizeVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options);
+	void					ParticalizeEntity(Entity* entity);
+	void					ParticalizeAllEntities();
+	bool					IsEntityOnMap(const Entity* entity) const;
+	float					GetMapHeightForEntity(const Entity* entity) const;
+	float					GetMapHeightForBounds(const IntVector3& coordPosition, const IntVector2& dimensions) const;
+	std::vector<Entity*>	GetEntitiesThatOverlapSphere(const Vector3& position, float radius) const;
 
 
 private:

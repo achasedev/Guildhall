@@ -327,9 +327,54 @@ void World::AddParticle(Particle* particle)
 //-----------------------------------------------------------------------------------------------
 // Creates an explosion at the given coord and radius, destroying terrain and hitting entities 
 //
-void World::ApplyExplosion(const IntVector3& coord, float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/)
+void World::ApplyExplosion(const IntVector3& coord, eEntityTeam team, float damage /*= 0.f*/, float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/)
 {
 	DestroyTerrain(coord, radius, impulseMagnitude);
+
+	// Apply damage and knockback to entities within the radius
+	std::vector<Entity*> entities = GetEntitiesThatOverlapSphere(Vector3(coord), radius);
+
+	for (int entityIndex = 0; entityIndex < (int)entities.size(); ++entityIndex)
+	{
+		Entity* currEntity = entities[entityIndex];
+
+		if (currEntity->GetTeam() == team) { continue; }
+
+		if (currEntity->IsDynamic())
+		{
+			Vector3 direction = (currEntity->GetCenterPosition() - Vector3(coord)).GetNormalized();
+			Vector3 impulse = direction * impulseMagnitude;
+			currEntity->TakeDamage(damage, impulse);
+		}
+		else if (currEntity->IsDestructible())
+		{
+			// Find all voxels in the entity that were affected
+			std::vector<IntVector3> hitCoords;
+			IntVector3 entityDimensions = currEntity->GetDimensions();
+			float radiusSquared = radius * radius;
+
+			for (int y = 0; y < entityDimensions.y; ++y)
+			{
+				for (int z = 0; z < entityDimensions.z; ++z)
+				{
+					for (int x = 0; x < entityDimensions.x; ++x)
+					{
+						IntVector3 currCoord = IntVector3(x, y, z);
+						Vector3 currPos = currEntity->GetPositionForLocalCoords(currCoord);
+						float distanceSquared = (currPos - Vector3(coord)).GetLengthSquared();
+
+						if (distanceSquared < radiusSquared)
+						{
+							hitCoords.push_back(currCoord);
+						}
+					}
+				}
+			}
+
+			// Call the callback
+			currEntity->OnVoxelCollision(nullptr, hitCoords);
+		}
+	}
 }
 
 
@@ -415,24 +460,19 @@ bool World::IsEntityOnMap(const Entity* entity) const
 //-----------------------------------------------------------------------------------------------
 // Returns all entities that are within the given radius from the position
 //
-std::vector<const Entity*> World::GetEnemiesWithinDistance(const Vector3& position, float radius) const
+std::vector<Entity*> World::GetEntitiesThatOverlapSphere(const Vector3& position, float radius) const
 {
-	std::vector<const Entity*> entitiesInRange;
+	std::vector<Entity*> entitiesInRange;
 
 	int numEntities = (int)m_entities.size();
-	float radiusSquared = (radius * radius);
 
 	for (int index = 0; index < numEntities; ++index)
 	{
 		Entity* currEntity = m_entities[index];
 
-		if (currEntity->GetTeam() != ENTITY_TEAM_ENEMY) { continue; }
+		AABB3 entityBounds = currEntity->GetWorldBounds();
 
-		Vector3 entityPosition = currEntity->GetPosition();
-
-		float distanceSquared = (position - entityPosition).GetLengthSquared();
-
-		if (distanceSquared <= radiusSquared)
+		if (DoesBoxSphereOverlap(entityBounds, position, radius))
 		{
 			entitiesInRange.push_back(currEntity);
 		}
@@ -770,7 +810,7 @@ void World::DestroyTerrain(const IntVector3& hitCoordinate, float radius /*= 0.f
 				float distanceSquared = (Vector3(hitCoordinate) - Vector3(currCoord)).GetLengthSquared();
 				int heightAtCurrCoord = (int)m_heightMap.GetHeat(currCoord.xz());
 
-				if (distanceSquared < radiusSquared)
+				if (distanceSquared <= radiusSquared)
 				{
 					m_heightMap.SetHeat(currCoord.xz(), (float)MinInt(y, heightAtCurrCoord));
 
@@ -1099,8 +1139,8 @@ void World::DrawParticlesToGrid(const IntVector3& offset)
 //
 bool DoEntitiesCollide(Entity* firstEntity, Entity* secondEntity)
 {
-	eCollisionLayer firstLayer = firstEntity->GetCollisionDefinition().layer;
-	eCollisionLayer secondLayer = secondEntity->GetCollisionDefinition().layer;
+	eCollisionLayer firstLayer = firstEntity->GetCollisionLayer();
+	eCollisionLayer secondLayer = secondEntity->GetCollisionLayer();
 
 	return (firstLayer & secondLayer) != 0;
 }
@@ -1132,8 +1172,8 @@ bool CheckEntityCollision(Entity* first, Entity* second)
 		first->OnEntityCollision(second);
 		second->OnEntityCollision(first);
 
-		first->OnVoxelCollision(voxelResult.firstHitCoords);
-		second->OnVoxelCollision(voxelResult.secondHitCoords);
+		first->OnVoxelCollision(second, voxelResult.firstHitCoords);
+		second->OnVoxelCollision(first, voxelResult.secondHitCoords);
 	}
 
 	return voxelResult.overlapOccurred;

@@ -44,6 +44,9 @@ Player::Player(int playerID)
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Constructor with a given definition
+//
 Player::Player(const EntityDefinition* definition, int playerID)
 	: AnimatedEntity(definition)
 	, m_playerID(playerID)
@@ -57,6 +60,7 @@ Player::Player(const EntityDefinition* definition, int playerID)
 
 	m_position = Vector3(128.f, 32.f, 128.f);
 }
+
 
 //-----------------------------------------------------------------------------------------------
 // Destructor
@@ -155,7 +159,7 @@ void Player::ProcessGameplayInput()
 
 	if (controller.WasButtonJustPressed(XBOX_BUTTON_Y))
 	{
-		TakeDamage(1);
+		TakeDamage(1, Vector3(100.f, 0.f, 0.f));
 	}
 }
 

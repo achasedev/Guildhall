@@ -72,6 +72,7 @@ void BehaviorComponent_PursueDirect::Update()
 	Vector3 finalDirection = (directionToPlayer).GetNormalized();
 
 	m_owningEntity->Move(finalDirection.xz());
+	//m_owningEntity->Decelerate();
 }
 
 

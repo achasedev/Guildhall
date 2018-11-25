@@ -14,7 +14,7 @@ class Projectile : public Entity
 public:
 	//-----Public Methods-----
 
-	Projectile(const EntityDefinition* definition);
+	Projectile(const EntityDefinition* definition, eEntityTeam team);
 
 	virtual void Update() override;
 

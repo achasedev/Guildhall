@@ -128,7 +128,10 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 
 			std::string layerName = ParseXmlAttribute(*collisionElement, "layer", "");
 			eCollisionLayer layer = ConvertCollisionLayerFromString(layerName);
-			m_collisionDef = CollisionDefinition_t(response, layer);
+			bool canDestroyVoxels = ParseXmlAttribute(*collisionElement, "can_destroy_voxels", m_collisionDef.m_canDestroyVoxels);
+			float collisionKnockback = ParseXmlAttribute(*collisionElement, "knockback", m_collisionDef.m_collisionKnockback);
+
+			m_collisionDef = CollisionDefinition_t(response, layer, canDestroyVoxels, collisionKnockback);
 		}
 	}
 
