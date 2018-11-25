@@ -720,24 +720,36 @@ void World::CheckEntityForGroundCollision(Entity* entity)
 {
 	Vector3 position = entity->GetPosition();
 	IntVector3 coordPosition = entity->GetCoordinatePosition();
-	IntVector2 dimensions = entity->GetDimensions().xz();
 
-	float mapHeight = GetMapHeightForEntity(entity);
+	int mapHeight = GetMapHeightForEntity(entity);
 	bool clippingIntoGround = mapHeight > position.y;
 
 	if (clippingIntoGround)
 	{
-		// Call the event *before* we correct, to get the exact hit location
-		entity->OnGroundCollision();
-
-		// Then snap to map height
-		position.y = mapHeight;
-		entity->SetPosition(position);
-
-		PhysicsComponent* comp = entity->GetPhysicsComponent();
-		if (comp != nullptr)
+		// If we are through some ground, snap to it
+		if (mapHeight > 0)
 		{
-			comp->ZeroYVelocity();
+			// Call the event *before* we correct, to get the exact hit location
+			entity->OnGroundCollision();
+
+			// Then snap to map height
+			position.y = mapHeight;
+			entity->SetPosition(position);
+
+			PhysicsComponent* comp = entity->GetPhysicsComponent();
+			if (comp != nullptr)
+			{
+				comp->ZeroYVelocity();
+			}
+		}
+		else
+		{
+			// Fell in a pit - let them fall until they're hidden, then kill them
+			IntVector3 dimensions = entity->GetDimensions();
+			if (position.y <= -(float)dimensions.y + 4)
+			{
+				entity->TakeDamage(9999999999);
+			}
 		}
 	}
 }

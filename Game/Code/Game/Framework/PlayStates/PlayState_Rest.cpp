@@ -345,9 +345,6 @@ bool PlayState_Rest::Enter()
 //
 void PlayState_Rest::Update()
 {
-	// Check for players just joining the campaign
-
-
 	// Check if the players are near the move location
 	bool playersReady = AreAllPlayersInExitEdge(m_edgeToExit) && Game::AreAllPlayersInitialized();
 

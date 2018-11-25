@@ -46,9 +46,13 @@ Particle::~Particle()
 //
 void Particle::Update()
 {
-	if (Game::GetWorld()->IsEntityOnGround(this))
+	if (Game::GetWorld()->IsEntityOnGround(this) && GetCoordinatePosition().y > 0)
 	{
 		m_physicsEnabled = false;
+	}
+	else
+	{
+		m_physicsEnabled = true;
 	}
 
 	if (m_stopwatch.HasIntervalElapsed())
@@ -78,7 +82,11 @@ void Particle::OnGroundCollision()
 		World* world = Game::GetWorld();
 		float yVelocity = m_physicsComponent->GetVelocity().y;
 
-		if (world->IsEntityOnMap(this) && yVelocity < 0.f)
+		// Ensure:
+		// Particle is within XZ bounds
+		// Particle is falling down
+		// Particle didn't fall into a hole
+		if (world->IsEntityOnMap(this) && yVelocity < 0.f && coordPosition.y > 0)
 		{
 			world->AddVoxelToTerrain(coordPosition, m_defaultTexture->GetColorAtIndex(0));
 			m_isMarkedForDelete = true;
