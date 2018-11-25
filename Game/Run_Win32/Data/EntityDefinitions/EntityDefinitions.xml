@@ -82,7 +82,7 @@
 			<CollisionDefinition response="ignore_correction"/>
 		</Physics>
 
-		<Projectile speed="200.0" hit_radius="0.0" hit_damage="2" lifetime="0.7"/>
+		<Projectile speed="200.0" hit_radius="30.0" hit_damage="2" lifetime="0.7"/>
 
 	</EntityDefinition>
 

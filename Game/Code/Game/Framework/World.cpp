@@ -325,40 +325,11 @@ void World::AddParticle(Particle* particle)
 
 
 //-----------------------------------------------------------------------------------------------
-// Destroys the terrain at the given location within the radius
-// Always removes voxels above the hit location in the 
+// Creates an explosion at the given coord and radius, destroying terrain and hitting entities 
 //
-void World::DestroyTerrain(const IntVector3& coord, const IntRange& radius /*= IntRange(0, 0)*/)
+void World::ApplyExplosion(const IntVector3& coord, float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/)
 {
-	UNUSED(radius);
-
-	if (!m_heightMap.AreCoordsValid(coord.xz()))
-	{
-		return;
-	}
-
-	int heightAtCoord = (int) m_heightMap.GetHeat(coord.xz());
-	
-	// For the ground I hit, blow it away! (anything within radius)
-	Vector3 velocity = 40.f * Vector3(GetRandomFloatInRange(-1.f, 1.f), 1.f, GetRandomFloatInRange(-1.f, 1.f));
-	
-	Rgba looseColor = GetTerrainColorAtElevation(coord.y);
-	Particle* looseParticle = new Particle(looseColor, 2.0f, Vector3(coord), velocity);
-	AddParticle(looseParticle);
-
-	// For all particles above the hit, have them fall straight down
-	for (int y = coord.y + 1; y < heightAtCoord; ++y)
-	{
-		Vector3 position = Vector3(IntVector3(coord.x, y, coord.z));
-
-		Rgba color = GetTerrainColorAtElevation(y);
-
-		Particle* groundParticle = new Particle(color, 2.0f, position, Vector3::ZERO, true);
-		AddParticle(groundParticle);	
-	}
-
-
-	m_heightMap.SetHeat(coord.xz(), (float) MinInt(coord.y - 1, heightAtCoord));
+	DestroyTerrain(coord, radius, impulseMagnitude);
 }
 
 
@@ -758,6 +729,68 @@ void World::CheckEntityForGroundCollision(Entity* entity)
 		if (comp != nullptr)
 		{
 			comp->ZeroYVelocity();
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Destroys the terrain at coord and within a given radius
+//
+void World::DestroyTerrain(const IntVector3& hitCoordinate, float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/)
+{
+	if (!m_heightMap.AreCoordsValid(hitCoordinate.xz()))
+	{
+		return;
+	}
+
+	// For the ground I hit, blow it away! (anything within radius)
+	int xStart = hitCoordinate.x - RoundToNearestInt(radius);
+	int yStart = hitCoordinate.y - RoundToNearestInt(radius);
+	int zStart = hitCoordinate.z - RoundToNearestInt(radius);
+
+	int xEnd = hitCoordinate.x + RoundToNearestInt(radius);
+	int yEnd = hitCoordinate.y + RoundToNearestInt(radius);
+	int zEnd = hitCoordinate.z + RoundToNearestInt(radius);
+
+	float radiusSquared = radius * radius;
+
+	for (int y = yStart; y < yEnd; ++y)
+	{
+		for (int z = zStart; z < zEnd; ++z)
+		{
+			for (int x = xStart; x < xEnd; ++x)
+			{
+				IntVector3 currCoord = IntVector3(x, y, z);
+				if (!m_heightMap.AreCoordsValid(currCoord.xz()))
+				{
+					continue;
+				}
+
+				float distanceSquared = (Vector3(hitCoordinate) - Vector3(currCoord)).GetLengthSquared();
+				int heightAtCurrCoord = (int)m_heightMap.GetHeat(currCoord.xz());
+
+				if (distanceSquared < radiusSquared)
+				{
+					m_heightMap.SetHeat(currCoord.xz(), (float)MinInt(y, heightAtCurrCoord));
+
+					if (CheckRandomChance(0.1f))
+					{
+						Rgba color = GetTerrainColorAtElevation(currCoord.y);
+						Vector3 velocity = impulseMagnitude * Vector3(GetRandomFloatInRange(-1.f, 1.f), 1.f, GetRandomFloatInRange(-1.f, 1.f));
+
+						Particle* particle = new Particle(color, 2.0f, Vector3(currCoord), velocity, false);
+						AddParticle(particle);
+					}
+				}
+				else if (y > hitCoordinate.y && y < heightAtCurrCoord)
+				{
+					Rgba color = GetTerrainColorAtElevation(y);
+
+					Particle* particle = new Particle(color, 2.0f, Vector3(currCoord), Vector3::ZERO, false);
+					AddParticle(particle);
+				}
+			}
 		}
 	}
 }

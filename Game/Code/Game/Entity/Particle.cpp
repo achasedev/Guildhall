@@ -77,8 +77,9 @@ void Particle::OnGroundCollision()
 		IntVector3 coordPosition = GetCoordinatePosition();
 		World* world = Game::GetWorld();
 		const HeatMap* heightMap = world->GetHeightMap();
+		float yVelocity = m_physicsComponent->GetVelocity().y;
 
-		if (heightMap->AreCoordsValid(coordPosition.xz()))
+		if (heightMap->AreCoordsValid(coordPosition.xz()) && yVelocity < 0.f)
 		{
 			int mapHeight = (int) heightMap->GetHeat(coordPosition.xz());
 

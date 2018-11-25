@@ -54,7 +54,7 @@ void Projectile::OnEntityCollision(Entity* other)
 //
 void Projectile::OnGroundCollision()
 {
-	Game::GetWorld()->DestroyTerrain(GetCoordinatePosition());
+	Game::GetWorld()->ApplyExplosion(GetCoordinatePosition(), m_definition->m_projectileHitRadius, 100.f);
 	m_isMarkedForDelete = true;
 }
 

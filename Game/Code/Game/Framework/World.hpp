@@ -63,7 +63,7 @@ public:
 	void AddEntity(Entity* entity);
 	void RemoveEntity(Entity* entity);
 	void AddParticle(Particle* particle);
-	void DestroyTerrain(const IntVector3& coord, const IntRange& radius = IntRange(0, 0));
+	void ApplyExplosion(const IntVector3& coord, float radius = 0.f, float impulseMagnitude = 0.f);
 	void SetTerrainHeightAtCoord(const IntVector3& coord, int height);
 	bool DecrementTerrainHeight(int decrementAmount);
 
@@ -111,6 +111,9 @@ private:
 
 	// Terrain
 	void CheckEntityForGroundCollision(Entity* entity);
+
+	// Explosions
+	void DestroyTerrain(const IntVector3& coord, float radius = 0.f, float impulseMagnitude = 0.f);
 
 
 private:
