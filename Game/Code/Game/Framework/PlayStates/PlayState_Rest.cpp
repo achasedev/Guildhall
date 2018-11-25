@@ -332,7 +332,7 @@ bool PlayState_Rest::Enter()
 		m_worldToTransitionTo->InititalizeForStage(nextStage);
 		m_edgeToEnter = m_worldToTransitionTo->GetDirectionToEnter();
 		m_edgeToExit = GetEdgeToExit(m_edgeToEnter);
-
+		
 		return true;
 	}
 
@@ -353,6 +353,7 @@ void PlayState_Rest::Update()
 
 	if (playersReady)
 	{
+		Game::GetWorld()->SetBlockEdgeCollision(false);
 		m_gameState->TransitionToPlayState(new PlayState_Stage());
 	}
 	else
@@ -400,6 +401,7 @@ bool PlayState_Rest::Leave()
 
 	if (m_transitionTimer.HasIntervalElapsed())
 	{
+		Game::GetWorld()->SetBlockEdgeCollision(true); // World gets deleted anyways...
 		Game::SetWorld(m_worldToTransitionTo);
 		Vector3 worldDimensions = Vector3(Game::GetWorld()->GetDimensions());
 

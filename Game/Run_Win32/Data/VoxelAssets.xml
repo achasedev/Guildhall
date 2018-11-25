@@ -15,7 +15,6 @@
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Robot.animset"/>
 	</VoxelAnimationSets>
 
-
 	<VoxelAnimations>
 		<VoxelAnimation file="Data/VoxelAnimations/Robot.animation"/>
 	</VoxelAnimations>

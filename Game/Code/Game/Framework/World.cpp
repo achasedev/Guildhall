@@ -215,44 +215,25 @@ void World::CleanUp()
 	}
 }
 
-#include "Engine/Input/InputSystem.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // Update
 //
 void World::Update()
 {
-	if (InputSystem::GetInstance()->WasKeyJustPressed('F'))
-	{
-		m_drawCollision = !m_drawCollision;
-	}
-
-	if (InputSystem::GetInstance()->WasKeyJustPressed('G'))
-	{
-		m_drawHeatmap = !m_drawHeatmap;
-	}
-
 	PROFILE_LOG_SCOPE_FUNCTION();
 
 	// "Thinking" and other general updating (animation)
-	static bool updateEntities = false;
-
-	if (InputSystem::GetInstance()->WasKeyJustPressed('K'))
-	{
-		updateEntities = !updateEntities;
-	}
-
-
 	UpdateEntities();
-	ApplyPhysicsStep();
 	UpdateParticles();
 
 	// Moving the entities (Forward Euler)
+	ApplyPhysicsStep();
 
 	// Collision
-
 	CheckDynamicEntityCollisions();
 	CheckStaticEntityCollisions();
-	
+	CheckMapCollisions();
 
 	// Clean Up
 	DeleteMarkedEntities();
@@ -392,6 +373,16 @@ void World::ApplyExplosion(const IntVector3& coord, eEntityTeam team, float dama
 void World::AddVoxelToTerrain(const IntVector3& coord, const Rgba& color)
 {
 	m_terrain->AddVoxel(coord, color);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets whether the world should block edge collisions; used to turn off edge collisions during
+// transitions, then to re-enable for normal play
+//
+void World::SetBlockEdgeCollision(bool shouldBlock)
+{
+	m_blockEdgeCollisions = shouldBlock;
 }
 
 
@@ -845,10 +836,31 @@ void World::CheckStaticEntityCollisions()
 
 	// Apply the cached off corrections
 	ApplyCollisionCorrections();
+}
 
+
+//-----------------------------------------------------------------------------------------------
+// Checks to ensure dynamic entities stay on the map during normal play, and fixes ground clipping
+//
+void World::CheckMapCollisions()
+{
+	CheckGroundCollisions();
+	
+	if (m_blockEdgeCollisions)
+	{
+		CheckEdgeCollisions();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks if any entities are clipping through the ground, and if so snaps them to the correct height
+//
+void World::CheckGroundCollisions()
+{
 	// Ensure the entities are above ground
 	for (int i = 0; i < (int)m_entities.size(); ++i)
-	{ 
+	{
 		Entity* dynamicEntity = m_entities[i];
 
 		// Find an entity that is dynamic and not marked for delete
@@ -869,6 +881,72 @@ void World::CheckStaticEntityCollisions()
 		if (currParticle->IsMarkedForDelete()) { continue; }
 
 		CheckEntityForGroundCollision(currParticle);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks if any dynamic entities are clipping off the map, and if so corrects them
+//
+void World::CheckEdgeCollisions()
+{
+	for (int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex)
+	{
+		Entity* entity = m_entities[entityIndex];
+
+		Vector3 bottomLeft = entity->GetPosition();
+		Vector3 entityDimensions = Vector3(entity->GetDimensions());
+		Vector3 topRight = bottomLeft + Vector3(entityDimensions.x, 0.f, entityDimensions.z);
+
+		Vector3 correction = Vector3::ZERO;
+
+		// Check x
+		float leftCorrection = -bottomLeft.x;
+		if (leftCorrection < 0.f)
+		{
+			leftCorrection = 0.f;
+		}
+
+		float rightCorrection = (float)m_dimensions.x - topRight.x;
+		if (rightCorrection > 0.f)
+		{
+			rightCorrection = 0.f;
+		}
+
+		correction.x = (AbsoluteValue(leftCorrection) > AbsoluteValue(rightCorrection) ? leftCorrection : rightCorrection);
+
+		// Check z
+		float bottomCorrection = -bottomLeft.z;
+		if (bottomCorrection < 0.f)
+		{
+			bottomCorrection = 0.f;
+		}
+
+		float topCorrection = (float)m_dimensions.z - topRight.z;
+		if (topCorrection > 0.f)
+		{
+			topCorrection = 0.f;
+		}
+
+		correction.z = (AbsoluteValue(bottomCorrection) > AbsoluteValue(topCorrection) ? bottomCorrection : topCorrection);
+
+		// Directly apply correction
+		entity->AddPositionOffset(correction);
+
+		PhysicsComponent* component = entity->GetPhysicsComponent();
+
+		if (component != nullptr)
+		{
+			if (correction.x != 0.f)
+			{
+				component->ZeroXVelocity();
+			}
+
+			if (correction.z != 0.f)
+			{
+				component->ZeroZVelocity();
+			}
+		}
 	}
 }
 
@@ -1051,14 +1129,7 @@ void World::DrawStaticEntitiesToGrid(const IntVector3& offset)
 	{
 		if (m_entities[entityIndex]->GetPhysicsType() == PHYSICS_TYPE_STATIC && !m_entities[entityIndex]->IsMarkedForDelete())
 		{
-			if (m_drawCollision)
-			{
-				grid->DebugDrawEntityCollision(m_entities[entityIndex], offset);
-			}
-			else
-			{
-				grid->DrawEntity(m_entities[entityIndex], offset);
-			}
+			grid->DrawEntity(m_entities[entityIndex], offset);
 		}
 	}
 }
@@ -1079,14 +1150,7 @@ void World::DrawDynamicEntitiesToGrid(const IntVector3& offset)
 	{
 		if (m_entities[entityIndex]->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC && !m_entities[entityIndex]->IsMarkedForDelete())
 		{
-			if (m_drawCollision)
-			{
-				grid->DebugDrawEntityCollision(m_entities[entityIndex], offset);
-			}
-			else
-			{
-				grid->DrawEntity(m_entities[entityIndex], offset);
-			}
+			grid->DrawEntity(m_entities[entityIndex], offset);
 		}
 	}
 }

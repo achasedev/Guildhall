@@ -66,6 +66,7 @@ public:
 	void AddParticle(Particle* particle);
 	void ApplyExplosion(const IntVector3& coord, eEntityTeam team, float damage = 0.f, float radius = 0.f, float impulseMagnitude = 0.f);
 	void AddVoxelToTerrain(const IntVector3& coord, const Rgba& color);
+	void SetBlockEdgeCollision(bool shouldBlock);
 
 	// Accessors
 	IntVector3			GetDimensions() const;
@@ -98,8 +99,11 @@ private:
 
 	void ApplyPhysicsStep();
 
-	void CheckStaticEntityCollisions();
 	void CheckDynamicEntityCollisions();
+	void CheckStaticEntityCollisions();
+	void CheckMapCollisions();
+		void CheckGroundCollisions();
+		void CheckEdgeCollisions();
 
 	void ApplyCollisionCorrections();
 
@@ -129,7 +133,6 @@ private:
 	std::vector<Entity*> m_entities;
 	std::vector<Particle*> m_particles;
 
-	bool			m_drawCollision = false;
-	bool			m_drawHeatmap = false;
+	bool					m_blockEdgeCollisions = true;
 
 };
