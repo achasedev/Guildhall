@@ -433,10 +433,9 @@ bool World::IsEntityOnMap(const Entity* entity) const
 bool World::AreCoordsOnMap(const IntVector3& coords) const
 {
 	bool onX = coords.x >= 0 && coords.x < m_dimensions.x;
-	bool onY = coords.y >= 0 && coords.y < m_dimensions.y;
 	bool onZ = coords.z >= 0 && coords.z < m_dimensions.z;
 
-	return (onX && onY && onZ);
+	return (onX && onZ);
 }
 
 
