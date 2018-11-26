@@ -83,7 +83,8 @@ public:
 	void					ParticalizeEntity(Entity* entity);
 	void					ParticalizeAllEntities();
 	bool					IsEntityOnMap(const Entity* entity) const;
-	bool					AreCoordsOnMap(const IntVector3& coords) const;
+	bool					AreCoordsOnMap(const IntVector2& coords) const;
+	bool					AreCoordsInWorld(const IntVector3& coords) const;
 	int						GetMapHeightForEntity(const Entity* entity) const;
 	int						GetMapHeightForBounds(const IntVector3& coordPosition, const IntVector2& dimensions) const;
 	std::vector<Entity*>	GetEntitiesThatOverlapSphere(const Vector3& position, float radius) const;

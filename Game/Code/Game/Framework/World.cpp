@@ -430,12 +430,25 @@ bool World::IsEntityOnMap(const Entity* entity) const
 //-----------------------------------------------------------------------------------------------
 // Returns whether the given 2D coordinates are on the map
 //
-bool World::AreCoordsOnMap(const IntVector3& coords) const
+bool World::AreCoordsOnMap(const IntVector2& coords) const
 {
 	bool onX = coords.x >= 0 && coords.x < m_dimensions.x;
-	bool onZ = coords.z >= 0 && coords.z < m_dimensions.z;
+	bool onZ = coords.y >= 0 && coords.y < m_dimensions.z;
 
 	return (onX && onZ);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether the given coords are inside the voxel world (3D)
+//
+bool World::AreCoordsInWorld(const IntVector3& coords) const
+{
+	bool onX = coords.x >= 0 && coords.x < m_dimensions.x;
+	bool onY = coords.y >= 0 && coords.y < m_dimensions.y;
+	bool onZ = coords.z >= 0 && coords.z < m_dimensions.z;
+
+	return (onX && onY && onZ);
 }
 
 
@@ -698,7 +711,7 @@ int World::GetMapHeightForBounds(const IntVector3& coordPosition, const IntVecto
 		for (int x = 0; x < dimensions.x; ++x)
 		{
 			IntVector3 currPos = coordPosition + IntVector3(x, 0, z);
-			if (AreCoordsOnMap(currPos))
+			if (AreCoordsOnMap(currPos.xz()))
 			{
 				int currHeight = m_terrain->GetHeightAtCoords(currPos.xz());
 
@@ -759,7 +772,7 @@ void World::CheckEntityForGroundCollision(Entity* entity)
 //
 void World::DestroyTerrain(const IntVector3& hitCoordinate, float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/)
 {
-	if (!AreCoordsOnMap(hitCoordinate))
+	if (!AreCoordsInWorld(hitCoordinate))
 	{
 		return;
 	}
@@ -782,7 +795,7 @@ void World::DestroyTerrain(const IntVector3& hitCoordinate, float radius /*= 0.f
 			for (int x = xStart; x < xEnd; ++x)
 			{
 				IntVector3 currCoord = IntVector3(x, y, z);
-				if (!AreCoordsOnMap(currCoord))
+				if (!AreCoordsInWorld(currCoord))
 				{
 					continue;
 				}
