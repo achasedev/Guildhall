@@ -26,8 +26,11 @@ void BehaviorComponent_PursueJump::Update()
 {
 	BehaviorComponent::Update();
 
-	MoveToClosestPlayer();
-	m_owningEntity->Jump(); // Jump constantly
+	if (m_closestPlayer != nullptr)
+	{
+		MoveToClosestPlayer();
+		m_owningEntity->Jump(); // Jump constantly
+	}
 }
 
 

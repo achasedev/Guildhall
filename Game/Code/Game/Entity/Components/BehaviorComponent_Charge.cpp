@@ -25,24 +25,21 @@ BehaviorComponent_Charge::BehaviorComponent_Charge()
 //
 void BehaviorComponent_Charge::Update()
 {
-	Player* playerInSight = GetClosestPlayerInSight();
+	BehaviorComponent::Update();
+
+	if (m_closestPlayer == nullptr)
+	{
+		return;
+	}
 
 	switch (m_state)
 	{
 	case STATE_SEARCH:
-
-		if (playerInSight == nullptr)
-		{
-			MoveToClosestPlayer();
-		}
-		else
-		{
-			m_owningEntity->GetPhysicsComponent()->StopAllMovement();
-			m_chargeDirection = (playerInSight->GetPosition() - m_owningEntity->GetPosition()).xz().GetNormalized();
-			m_owningEntity->SetOrientation(m_chargeDirection.GetOrientationDegrees());
-			m_owningEntity->Jump();
-			m_state = STATE_JUMP;
-		}
+		m_owningEntity->GetPhysicsComponent()->StopAllMovement();
+		m_chargeDirection = (m_closestPlayer->GetPosition() - m_owningEntity->GetPosition()).xz().GetNormalized();
+		m_owningEntity->SetOrientation(m_chargeDirection.GetOrientationDegrees());
+		m_owningEntity->Jump();
+		m_state = STATE_JUMP;
 		break;
 	case STATE_JUMP:
 		// Check for landing

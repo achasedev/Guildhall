@@ -12,11 +12,11 @@
 
 	<Stages>
 
-		<Stage map="Map2" enter="north">
-			<SpawnEvent entity="Soldier" spawn_point="0" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="5"/>
+		<Stage map="Map1" enter="west">
+			<SpawnEvent entity="Soldier" spawn_point="0" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="1"/>
 		</Stage>
 
-		<Stage map="Map2" enter="west">
+		<Stage map="Map2" enter="south">
 			<SpawnEvent entity="Walker" spawn_point="0" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="25"/>
 			<SpawnEvent entity="Tank" spawn_point="2" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="5"/>
 			<SpawnEvent entity="Charger" spawn_point="3" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="10"/>

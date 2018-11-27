@@ -35,11 +35,16 @@ void BehaviorComponent_ShootDirect::Initialize(AnimatedEntity* owningEntity)
 //
 void BehaviorComponent_ShootDirect::Update()
 {
-	MoveToClosestPlayer();
+	BehaviorComponent::Update();
 
-	if (GetDistanceToClosestPlayer() <= m_shootRange)
+	if (m_closestPlayer != nullptr)
 	{
-		m_weapon->Shoot();
+		MoveToClosestPlayer();
+
+		if (GetDistanceToClosestPlayer() <= m_shootRange)
+		{
+			m_weapon->Shoot();
+		}
 	}
 }
 

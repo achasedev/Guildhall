@@ -17,7 +17,11 @@
 void BehaviorComponent_PursueDirect::Update()
 {
 	BehaviorComponent::Update();
-	MoveToClosestPlayer();
+
+	if (m_closestPlayer != nullptr)
+	{
+		MoveToClosestPlayer();
+	}
 }
 
 

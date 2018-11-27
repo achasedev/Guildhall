@@ -20,6 +20,7 @@
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Soldier.sprite"/>
 
 		<!-- Players -->
+		<VoxelSprite file="Data/VoxelSprites/Players/Default.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/OldMan.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Nerd.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Cat.sprite"/>
@@ -65,6 +66,7 @@
 	<VoxelTerrains>
 		<VoxelTerrain name="Map1" file="Data/VoxelModels/Maps/Map1.qef"/>
 		<VoxelTerrain name="Map2" file="Data/VoxelModels/Maps/Map2.qef"/>
+		<VoxelTerrain name="CharacterSelect" file="Data/VoxelModels/Maps/CharacterSelect.qef"/>
 	</VoxelTerrains>
 
 </VoxelAssets>

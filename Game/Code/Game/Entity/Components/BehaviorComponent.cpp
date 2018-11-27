@@ -84,7 +84,6 @@ Player* BehaviorComponent::GetClosestPlayer() const
 		}
 	}
 
-	ASSERT_OR_DIE(closestPlayer != nullptr, "");
 	return closestPlayer;
 }
 

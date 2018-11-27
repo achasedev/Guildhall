@@ -42,6 +42,13 @@ void BehaviorComponent_ShootCircle::Initialize(AnimatedEntity* owningEntity)
 //
 void BehaviorComponent_ShootCircle::Update()
 {
+	BehaviorComponent::Update();
+
+	if (m_closestPlayer == nullptr)
+	{
+		return;
+	}
+
 	float distance = GetDistanceToClosestPlayer();
 
 	if (distance > m_shootRange)
