@@ -1,0 +1,15 @@
+<VoxelAnimations>
+
+	<VoxelAnimation name="Cat_idle" playmode="loop">
+		<Frame voxelsprite="Cat_idle_0" duration="0.5"/>
+		<Frame voxelsprite="Cat_idle_1" duration="0.5"/>
+	</VoxelAnimation>
+
+	<VoxelAnimation name="Cat_walk" playmode="loop">
+		<Frame voxelsprite="Cat_walk_0" duration="0.25"/>
+		<Frame voxelsprite="Cat_idle_0" duration="0.25"/>
+		<Frame voxelsprite="Cat_walk_1" duration="0.25"/>
+		<Frame voxelsprite="Cat_idle_0" duration="0.25"/>
+	</VoxelAnimation>
+
+</VoxelAnimations>

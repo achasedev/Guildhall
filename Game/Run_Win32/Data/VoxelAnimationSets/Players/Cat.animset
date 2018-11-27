@@ -1,0 +1,11 @@
+<VoxelAnimationSet name="Cat">
+
+	<Alias alias="idle">
+		<VoxelAnimation name="Cat_idle"/>
+	</Alias>
+
+	<Alias alias="move">
+		<VoxelAnimation name="Cat_walk"/>
+	</Alias>
+
+</VoxelAnimationSet>

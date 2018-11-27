@@ -1,0 +1,8 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Cat_idle_0" file="Data/VoxelModels/Players/Cat/Cat_idle_0.qef"/>
+	<VoxelSprite name="Cat_idle_1" file="Data/VoxelModels/Players/Cat/Cat_idle_1.qef"/>
+	<VoxelSprite name="Cat_walk_0" file="Data/VoxelModels/Players/Cat/Cat_walk_0.qef"/>
+	<VoxelSprite name="Cat_walk_1" file="Data/VoxelModels/Players/Cat/Cat_walk_1.qef"/>
+
+</VoxelSprites>

@@ -1,0 +1,15 @@
+<VoxelAnimations>
+
+	<VoxelAnimation name="Nerd_idle" playmode="loop">
+		<Frame voxelsprite="Nerd_idle_0" duration="0.5"/>
+		<Frame voxelsprite="Nerd_idle_1" duration="0.5"/>
+	</VoxelAnimation>
+
+	<VoxelAnimation name="Nerd_walk" playmode="loop">
+		<Frame voxelsprite="Nerd_walk_0" duration="0.25"/>
+		<Frame voxelsprite="Nerd_idle_0" duration="0.25"/>
+		<Frame voxelsprite="Nerd_walk_1" duration="0.25"/>
+		<Frame voxelsprite="Nerd_idle_0" duration="0.25"/>
+	</VoxelAnimation>
+
+</VoxelAnimations>
