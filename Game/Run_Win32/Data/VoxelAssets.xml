@@ -15,6 +15,9 @@
 
 		<!-- Zombies -->
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Walker.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Zombies/Tank.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Zombies/Charger.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Zombies/Soldier.sprite"/>
 
 		<!-- Players -->
 		<VoxelSprite file="Data/VoxelSprites/Players/OldMan.sprite"/>
@@ -29,6 +32,9 @@
 
 		<!-- Zombies -->
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Walker.animset"/>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Tank.animset"/>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Charger.animset"/>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Soldier.animset"/>
 
 		<!-- Players -->
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/OldMan.animset"/>
@@ -42,6 +48,9 @@
 
 		<!-- Zombies -->
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Walker.animation"/>
+		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Tank.animation"/>
+		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Charger.animation"/>
+		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Soldier.animation"/>
 
 		<!-- Players -->
 		<VoxelAnimation file="Data/VoxelAnimations/Players/OldMan.animation"/>

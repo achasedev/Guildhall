@@ -1,0 +1,8 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Charger_idle_0" file="Data/VoxelModels/Zombies/Charger/Charger_idle_0.qef"/>
+	<VoxelSprite name="Charger_idle_1" file="Data/VoxelModels/Zombies/Charger/Charger_idle_1.qef"/>
+	<VoxelSprite name="Charger_walk_0" file="Data/VoxelModels/Zombies/Charger/Charger_walk_0.qef"/>
+	<VoxelSprite name="Charger_walk_1" file="Data/VoxelModels/Zombies/Charger/Charger_walk_1.qef"/>
+
+</VoxelSprites>

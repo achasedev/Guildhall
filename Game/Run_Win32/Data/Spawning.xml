@@ -2,7 +2,7 @@
 
 	<SpawnPoints>
 
-		<SpawnPoint position="128, 20, 128" radius="5"/>
+		<SpawnPoint position="128, 20, 128" radius="5.0"/>
 		<SpawnPoint position="10, 5, 10" radius="10.0"/>
 		<SpawnPoint position="10, 5, 240" radius="10.0"/>
 		<SpawnPoint position="240, 5, 10" radius="10.0"/>
@@ -12,8 +12,14 @@
 
 	<Stages>
 
+		<Stage map="Map2" enter="north">
+			<SpawnEvent entity="Soldier" spawn_point="0" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="5"/>
+		</Stage>
+
 		<Stage map="Map2" enter="west">
-			<SpawnEvent entity="Walker" spawn_point="0" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="25"/>
+			<SpawnEvent entity="Walker" spawn_point="0" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="25"/>
+			<SpawnEvent entity="Tank" spawn_point="2" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="5"/>
+			<SpawnEvent entity="Charger" spawn_point="3" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="10"/>
 		</Stage> 
 
 	</Stages>

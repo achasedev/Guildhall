@@ -1,0 +1,8 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Tank_idle_0" file="Data/VoxelModels/Zombies/Tank/Tank_idle_0.qef"/>
+	<VoxelSprite name="Tank_idle_1" file="Data/VoxelModels/Zombies/Tank/Tank_idle_1.qef"/>
+	<VoxelSprite name="Tank_walk_0" file="Data/VoxelModels/Zombies/Tank/Tank_walk_0.qef"/>
+	<VoxelSprite name="Tank_walk_1" file="Data/VoxelModels/Zombies/Tank/Tank_walk_1.qef"/>
+
+</VoxelSprites>

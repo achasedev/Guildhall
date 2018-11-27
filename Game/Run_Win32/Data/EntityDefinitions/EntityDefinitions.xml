@@ -195,7 +195,7 @@
 
 	<!-- Enemies (LOAD AFTER WEAPONS)-->
 
-	<EntityDefinition name="Walker" initial_health="3" id="13">
+	<EntityDefinition name="Walker" initial_health="5" id="13">
 
 		<Movement max_acceleration="3000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="30.0"/>
 
@@ -211,12 +211,56 @@
 
 	</EntityDefinition>
 
+	<EntityDefinition name="Tank" initial_health="20" id="14">
 
+		<Movement max_acceleration="2000.0" max_speed="5.0" max_deceleration="100.0" jump_impulse="10.0"/>
+
+		<Visuals animation_set="Tank" default_sprite="Tank_idle_0"/>
+
+		<Physics physics_type="dynamic" has_gravity="true">
+			<CollisionDefinition response="share_correction" layer="enemy"/>
+		</Physics>
+
+
+		<AI behavior="pursue_direct"/>
+
+	</EntityDefinition>
+
+
+	<EntityDefinition name="Charger" initial_health="3" id="15">
+
+		<Movement max_acceleration="3000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="50.0"/>
+
+		<Visuals animation_set="Charger" default_sprite="Charger_idle_0"/>
+
+		<Physics physics_type="dynamic" has_gravity="true">
+			<CollisionDefinition response="share_correction" layer="enemy"/>
+		</Physics>
+
+
+		<AI behavior="charge" damage_on_touch="1" damage_on_charge="2" charge_speed="50.0" knockback="30.0" charge_duration="1.0" rest_duration="1.0"/>
+
+	</EntityDefinition>
+
+	<EntityDefinition name="Soldier" initial_health="7" id="16">
+
+		<Movement max_acceleration="2000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="10.0"/>
+
+		<Visuals animation_set="Soldier" default_sprite="Soldier_idle_0"/>
+
+		<Physics physics_type="dynamic" has_gravity="true">
+			<CollisionDefinition response="share_correction" layer="enemy"/>
+		</Physics>
+
+
+		<AI behavior="shoot_circle" weapon="Pistol" shoot_range="100.0"/>
+
+	</EntityDefinition>
 
 	<!-- Statics -->
 
  	<!-- Needed for it to work in the system -->
-	<EntityDefinition name="Particle" id="14">
+	<EntityDefinition name="Particle" id="17">
 
 		<Physics physics_type="dynamic" has_gravity="true">
 			<CollisionDefinition response="full_correction" layer="world"/>
@@ -224,7 +268,7 @@
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Tree1" id="15">
+	<EntityDefinition name="Tree1" id="18">
 		<Visuals default_sprite="Tree1" destructible="true"/>
 
 		<Physics physics_type="static">
