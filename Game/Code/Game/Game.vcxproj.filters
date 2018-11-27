@@ -145,6 +145,9 @@
     <ClCompile Include="Framework\VoxelTerrain.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\Components\BehaviorComponent_Charge.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -208,5 +211,6 @@
     <ClInclude Include="Framework\Menu.hpp" />
     <ClInclude Include="Framework\VoxelTerrain.hpp" />
     <ClInclude Include="Entity\EntitySpawn.hpp" />
+    <ClInclude Include="Entity\Components\BehaviorComponent_Charge.hpp" />
   </ItemGroup>
 </Project>

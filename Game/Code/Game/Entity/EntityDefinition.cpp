@@ -8,6 +8,7 @@
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Shoot.hpp"
+#include "Game/Entity/Components/BehaviorComponent_Charge.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursuePath.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursueJump.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursueDirect.hpp"
@@ -142,15 +143,7 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 	const XMLElement* aiElement = entityElement.FirstChildElement("AI");
 	if (aiElement != nullptr)
 	{
-		const XMLElement* behaviorElement = aiElement->FirstChildElement();
-
-		while (behaviorElement != nullptr)
-		{
-			BehaviorComponent* prototype = ConstructBehaviorPrototype(*behaviorElement);
-			m_behaviorPrototypes.push_back(prototype);
-
-			behaviorElement = behaviorElement->NextSiblingElement();
-		}	
+		m_behaviorPrototype = ConstructBehaviorPrototype(*aiElement);
 	}
 
 	// Projectiles
@@ -194,7 +187,7 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 {
 	BehaviorComponent* toReturn;
 
-	std::string behaviorName = behaviorElement.Name();
+	std::string behaviorName = ParseXmlAttribute(behaviorElement, "behavior", "");
 
 	if (behaviorName == "PursuePath")
 	{
@@ -207,6 +200,18 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 	else if (behaviorName == "PursueJump")
 	{
 		toReturn = new BehaviorComponent_PursueJump();
+	}
+	else if (behaviorName == "Charge")
+	{
+		BehaviorComponent_Charge* chargeBehavior = new BehaviorComponent_Charge();
+		chargeBehavior->m_chargeDuration = ParseXmlAttribute(behaviorElement, "charge_duration", chargeBehavior->m_chargeDuration);
+		chargeBehavior->m_restDuration = ParseXmlAttribute(behaviorElement, "rest_duration", chargeBehavior->m_restDuration);
+		chargeBehavior->m_chargeSpeed = ParseXmlAttribute(behaviorElement, "charge_speed", chargeBehavior->m_chargeSpeed);
+		chargeBehavior->m_damageOnTouch = ParseXmlAttribute(behaviorElement, "damage_on_touch", chargeBehavior->m_damageOnTouch);
+		chargeBehavior->m_damageOnCharge = ParseXmlAttribute(behaviorElement, "damage_on_charge", chargeBehavior->m_damageOnCharge);
+		chargeBehavior->m_knockbackMagnitude = ParseXmlAttribute(behaviorElement, "knockback", chargeBehavior->m_knockbackMagnitude);
+
+		toReturn = chargeBehavior;
 	}
 	else if (behaviorName == "Shoot")
 	{
@@ -248,9 +253,9 @@ IntVector3 EntityDefinition::GetDimensions() const
 //-----------------------------------------------------------------------------------------------
 // Returns a behavior component clone of the prototype at the given index
 //
-BehaviorComponent* EntityDefinition::CloneBehaviorPrototype(unsigned int index) const
+BehaviorComponent* EntityDefinition::CloneBehaviorPrototype() const
 {
-	return m_behaviorPrototypes[index]->Clone();
+	return m_behaviorPrototype->Clone();
 }
 
 

@@ -10,8 +10,10 @@
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/CampaignManager.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
+#include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Framework/PlayStates/PlayState_Rest.hpp"
 #include "Game/Framework/PlayStates/PlayState_Stage.hpp"
+
 #include "Engine/Math/MathUtils.hpp"
 
 // For debug rendering
@@ -201,8 +203,6 @@ void UpdatePlayerHeightForTransition(Player* player, World* transitionWorld, eTr
 	World* currWorld = Game::GetWorld();
 	IntVector3 worldDimensions = currWorld->GetDimensions();
 
-	float currMaxHeight = currWorld->GetMapHeightForEntity(player);
-
 	IntVector3 transitionCoord = player->GetCoordinatePosition();
 	
 	switch (enterEdge)
@@ -224,12 +224,13 @@ void UpdatePlayerHeightForTransition(Player* player, World* transitionWorld, eTr
 	}
 
 	IntVector3 bounds = player->GetDimensions();
-	float transitionMaxHeight = transitionWorld->GetMapHeightForBounds(transitionCoord, bounds.xz());
 
-	float finalHeight = MaxFloat(currMaxHeight, transitionMaxHeight);
+	int currMaxHeight = currWorld->GetMapHeightForEntity(player);
+	int transitionMaxHeight = transitionWorld->GetMapHeightForBounds(transitionCoord, bounds.xz());
+	int finalHeight = MaxInt(currMaxHeight, transitionMaxHeight);
 
 	Vector3 oldPosition = player->GetPosition();
-	Vector3 newPosition = Vector3(oldPosition.x, finalHeight, oldPosition.z);
+	Vector3 newPosition = Vector3(oldPosition.x, (float)finalHeight, oldPosition.z);
 
 	player->SetPosition(newPosition);
 }
@@ -372,6 +373,8 @@ bool PlayState_Rest::Leave()
 	{
 		if (players[i] != nullptr)
 		{
+			players[i]->GetPhysicsComponent()->SetGravity(false);
+
 			// Check if the player is far enough into the new map space
 			bool shouldMove = ShouldPlayerKeepMoving(players[i], m_edgeToEnter);
 
@@ -408,6 +411,7 @@ bool PlayState_Rest::Leave()
 			if (players[i] != nullptr)
 			{
 				players[i]->SetPosition(GetTransitionPosition(players[i], m_edgeToEnter));
+				players[i]->GetPhysicsComponent()->SetGravity(true);
 			}
 		}
 

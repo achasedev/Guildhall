@@ -28,6 +28,7 @@ public:
 	void			ZeroYVelocity();
 	void			ZeroZVelocity();
 
+	void			SetGravity(bool hasGravity);
 	void			StopAllMovement();
 
 	void			ApplyPhysicsStep();

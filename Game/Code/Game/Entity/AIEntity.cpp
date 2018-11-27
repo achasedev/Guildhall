@@ -20,7 +20,7 @@ AIEntity::AIEntity(const EntityDefinition* definition)
 	: AnimatedEntity(definition)
 {
 	// Initialize the Behavior Component
-	m_behaviorComponent = definition->CloneBehaviorPrototype(0);
+	m_behaviorComponent = definition->CloneBehaviorPrototype();
 	m_behaviorComponent->Initialize(this);
 }
 
@@ -49,6 +49,16 @@ void AIEntity::OnDeath()
 	drop->SetPosition(GetCenterPosition());
 
 	Game::GetWorld()->AddEntity(drop);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// OnCollision override for allowing behaviors to have custom collision behavior
+//
+void AIEntity::OnEntityCollision(Entity* other)
+{
+	AnimatedEntity::OnEntityCollision(other);
+	m_behaviorComponent->OnEntityCollision(other);
 }
 
 

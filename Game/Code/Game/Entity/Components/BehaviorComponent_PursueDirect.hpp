@@ -7,6 +7,8 @@
 #pragma once
 #include "Game/Entity/Components/BehaviorComponent.hpp"
 
+class Player;
+
 class BehaviorComponent_PursueDirect : public BehaviorComponent
 {
 public:
@@ -17,5 +19,5 @@ public:
 
 	virtual void				Update() override;
 	virtual BehaviorComponent*	Clone() const override;
-	
+
 };

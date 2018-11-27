@@ -64,7 +64,7 @@ public:
 	void AddEntity(Entity* entity);
 	void RemoveEntity(Entity* entity);
 	void AddParticle(Particle* particle);
-	void ApplyExplosion(const IntVector3& coord, eEntityTeam team, float damage = 0.f, float radius = 0.f, float impulseMagnitude = 0.f);
+	void ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage = 0, float radius = 0.f, float impulseMagnitude = 0.f);
 	void AddVoxelToTerrain(const IntVector3& coord, const Rgba& color);
 	void SetBlockEdgeCollision(bool shouldBlock);
 

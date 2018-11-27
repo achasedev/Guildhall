@@ -447,7 +447,6 @@ void DrawHUDForPlayer(int playerID, Player* player, VoxelGrid* grid, VoxelFont* 
 	IntVector3 textCoords = currDrawCoords - IntVector3(0, 0, 2);
 	grid->DrawVoxelText(hudText, textCoords, options);
 
-	int totalHeight = 10;
 	int textWidth = font->GetTextDimensions(hudText).x;
 
 	currDrawCoords.x += (playerID % 2 == 1 ? -textWidth : textWidth);
@@ -459,8 +458,6 @@ void DrawHUDForPlayer(int playerID, Player* player, VoxelGrid* grid, VoxelFont* 
 	if (player != nullptr)
 	{
 		currDrawCoords += IntVector3(playerID % 2 == 1 ? -2 : 0, 0, 0);
-
-		const EntityDefinition* definition = player->GetEntityDefinition();
 
 		int maxHealth = player->GetEntityDefinition()->GetInitialHealth();
 		int currHealth = player->GetHealth();

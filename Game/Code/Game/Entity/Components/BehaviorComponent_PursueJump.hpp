@@ -14,18 +14,7 @@ public:
 	
 	BehaviorComponent_PursueJump();
 
-	virtual void				Initialize(AnimatedEntity* owningEntity) override;
 	virtual void				Update() override;
 	virtual BehaviorComponent*	Clone() const override;
-
-
-private:
-	//-----Private Data-----
 	
-	// Offset of the sensor from the base entity
-	float m_jumpSensorDistance;
-
-	// Distance outside the xExtent of the entity's collision boundary
-	static constexpr float SENSOR_OFFSET_DISTANCE = 2.f;
-
 };

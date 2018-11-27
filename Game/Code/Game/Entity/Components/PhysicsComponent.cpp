@@ -90,6 +90,7 @@ void PhysicsComponent::ZeroXVelocity()
 void PhysicsComponent::ZeroYVelocity()
 {
 	m_velocity.y = 0.f;
+	m_owningEntity->SetIsGrounded(true);
 }
 
 
@@ -99,6 +100,15 @@ void PhysicsComponent::ZeroYVelocity()
 void PhysicsComponent::ZeroZVelocity()
 {
 	m_velocity.z = 0.f;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets whether this component should apply gravity
+//
+void PhysicsComponent::SetGravity(bool hasGravity)
+{
+	m_affectedByGravity = hasGravity;
 }
 
 
@@ -126,6 +136,7 @@ void PhysicsComponent::ApplyPhysicsStep()
 	if (m_affectedByGravity)
 	{
 		m_force += Vector3::DIRECTION_DOWN * m_owningEntity->GetMass() * GRAVITY_MAGNITUDE;
+		m_owningEntity->SetIsGrounded(false); // Collision detection will set this to true if we're falling through something
 	}
 
 	Vector3 acceleration = (m_force * m_owningEntity->GetInverseMass());

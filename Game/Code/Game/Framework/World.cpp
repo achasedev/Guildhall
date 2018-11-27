@@ -316,7 +316,7 @@ void World::AddParticle(Particle* particle)
 //-----------------------------------------------------------------------------------------------
 // Creates an explosion at the given coord and radius, destroying terrain and hitting entities 
 //
-void World::ApplyExplosion(const IntVector3& coord, eEntityTeam team, float damage /*= 0.f*/, float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/)
+void World::ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage /*= 0*/, float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/)
 {
 	DestroyTerrain(coord, radius, impulseMagnitude);
 
@@ -734,9 +734,9 @@ void World::CheckEntityForGroundCollision(Entity* entity)
 	IntVector3 coordPosition = entity->GetCoordinatePosition();
 
 	int mapHeight = GetMapHeightForEntity(entity);
-	bool clippingIntoGround = mapHeight > position.y;
+	bool touchingGround = (mapHeight >= position.y);
 
-	if (clippingIntoGround)
+	if (touchingGround)
 	{
 		// If we are through some ground, snap to it
 		if (mapHeight > 0)

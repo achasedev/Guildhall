@@ -28,7 +28,7 @@ public:
 public:
 	//-----Public Methods-----
 
-	void Move(const Vector2& direction);
+	void Move(const Vector2& direction, float speedLimit = 0.f);
 	void Jump();
 	void Decelerate();
 

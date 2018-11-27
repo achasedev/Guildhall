@@ -91,7 +91,7 @@ public:
 	
 	std::string	GetName() const;
 	IntVector3 GetDimensions() const;
-	BehaviorComponent* CloneBehaviorPrototype(unsigned int index) const;
+	BehaviorComponent* CloneBehaviorPrototype() const;
 
 	bool	HasGravity() const;
 	int		GetInitialHealth() const;
@@ -132,7 +132,7 @@ private:
 	bool									m_isAnimated = false;
 
 	// AIEntity
-	std::vector<const BehaviorComponent*>	m_behaviorPrototypes;
+	const BehaviorComponent*				m_behaviorPrototype;
 
 	// Weapons
 	const EntityDefinition*					m_projectileDefinition = nullptr;

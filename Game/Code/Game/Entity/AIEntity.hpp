@@ -19,6 +19,7 @@ public:
 
 	virtual void Update() override;
 	virtual void OnDeath() override;
+	virtual void OnEntityCollision(Entity* other) override;
 
 	void SetSpawnPoint(SpawnPoint* spawnPoint);
 

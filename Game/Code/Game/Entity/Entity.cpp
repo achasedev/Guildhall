@@ -80,6 +80,7 @@ void Entity::OnEntityCollision(Entity* other)
 //
 void Entity::OnGroundCollision()
 {
+	m_isGrounded = true;
 }
 
 
@@ -150,6 +151,15 @@ void Entity::SetOrientation(float orientation)
 void Entity::SetTeam(eEntityTeam team)
 {
 	m_entityTeam = team;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the flag indicating whether this entity is grounded or not
+//
+void Entity::SetIsGrounded(bool isGrounded)
+{
+	m_isGrounded = isGrounded;
 }
 
 
@@ -408,6 +418,15 @@ float Entity::GetInverseMass() const
 bool Entity::IsPlayer() const
 {
 	return m_isPlayer;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether the entity is currently standing on something (0 Y velocity with gravity)
+//
+bool Entity::IsGrounded() const
+{
+	return m_isGrounded;
 }
 
 

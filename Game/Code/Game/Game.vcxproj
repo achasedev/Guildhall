@@ -294,6 +294,7 @@
     <ClCompile Include="Entity\AIEntity.cpp" />
     <ClCompile Include="Entity\CharacterSelectVolume.cpp" />
     <ClCompile Include="Entity\Components\BehaviorComponent.cpp" />
+    <ClCompile Include="Entity\Components\BehaviorComponent_Charge.cpp" />
     <ClCompile Include="Entity\Components\BehaviorComponent_PursueDirect.cpp" />
     <ClCompile Include="Entity\Components\BehaviorComponent_PursueJump.cpp" />
     <ClCompile Include="Entity\Components\BehaviorComponent_PursuePath.cpp" />
@@ -340,6 +341,7 @@
     <ClInclude Include="Entity\AIEntity.hpp" />
     <ClInclude Include="Entity\CharacterSelectVolume.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent.hpp" />
+    <ClInclude Include="Entity\Components\BehaviorComponent_Charge.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_PursueDirect.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_PursueJump.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_PursuePath.hpp" />

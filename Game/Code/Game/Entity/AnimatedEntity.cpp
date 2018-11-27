@@ -101,16 +101,21 @@ void AnimatedEntity::OnSpawn()
 //-----------------------------------------------------------------------------------------------
 // Moves the entity in the given direction, clamping to the entity's max move speed
 //
-void AnimatedEntity::Move(const Vector2& direction)
+void AnimatedEntity::Move(const Vector2& direction, float speedLimit /*=0.f*/)
 {
+	if (speedLimit == 0.f)
+	{
+		speedLimit = m_definition->m_maxMoveSpeed;
+	}
+
 	float currLateralSpeed = m_physicsComponent->GetVelocity().xz().GetLength();
 	float deltaTime = Game::GetDeltaTime();
 
 	Vector2 maxLateralVelocity = (m_physicsComponent->GetVelocity().xz() + (m_definition->m_maxMoveAcceleration * deltaTime) * direction);
-	float maxLateralSpeed = maxLateralVelocity.NormalizeAndGetLength();
+	float maxAttainableSpeedFromAcceleration = maxLateralVelocity.NormalizeAndGetLength();
 
-	maxLateralSpeed = (currLateralSpeed > m_definition->m_maxMoveSpeed ? ClampFloat(maxLateralSpeed, 0.f, currLateralSpeed) : ClampFloat(maxLateralSpeed, 0.f, m_definition->m_maxMoveSpeed));
-	maxLateralVelocity *= maxLateralSpeed;
+	maxAttainableSpeedFromAcceleration = (currLateralSpeed > speedLimit ? ClampFloat(maxAttainableSpeedFromAcceleration, 0.f, currLateralSpeed) : ClampFloat(maxAttainableSpeedFromAcceleration, 0.f, speedLimit));
+	maxLateralVelocity *= maxAttainableSpeedFromAcceleration;
 
 	Vector3 inputVelocityResult = Vector3(maxLateralVelocity.x, m_physicsComponent->GetVelocity().y, maxLateralVelocity.y) - m_physicsComponent->GetVelocity();
 	Vector3 acceleration = inputVelocityResult / deltaTime;

@@ -157,9 +157,10 @@ void Player::ProcessGameplayInput()
 		Jump();
 	}
 
+	// Test damage
 	if (controller.WasButtonJustPressed(XBOX_BUTTON_Y))
 	{
-		TakeDamage(1, Vector3(100.f, 0.f, 0.f));
+		TakeDamage(1);
 	}
 }
 
