@@ -1,5 +1,6 @@
 #include "Engine/Core/Rgba.hpp"
 #include "Game/Framework/GameCommon.hpp"
+#include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Framework/VoxelTerrain.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Engine/Rendering/Resources/VoxelTexture.hpp"
@@ -64,8 +65,13 @@ void VoxelTerrain::LoadTerrain(const XMLElement& terrainElement)
 
 					// Add the entity by ID
 					EntitySpawn_t spawn;
-					spawn.position = Vector3(coord);
+
+					// Center the spawn
 					spawn.definition = EntityDefinition::GetDefinition((int)color.g);
+
+					IntVector3 halfDimensions = spawn.definition->GetDefaultSprite()->GetDimensions() / 2;
+
+					spawn.position = Vector3(IntVector3(coord.x - halfDimensions.x, coord.y, coord.z - halfDimensions.z));
 					spawn.orientation = (float)color.b * 2.f;
 
 					terrain->m_initialEntities.push_back(spawn);

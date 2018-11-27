@@ -2,10 +2,9 @@
 #include "Game/Entity/CharacterSelectVolume.hpp"
 
 
-CharacterSelectVolume::CharacterSelectVolume()
-	: Entity(EntityDefinition::GetDefinition("CharacterSelect"))
+CharacterSelectVolume::CharacterSelectVolume(const EntityDefinition* definition)
+	: Entity(definition)
 {
-	m_position = Vector3(10.f, 5.f, 10.f);
 }
 
 void CharacterSelectVolume::OnEntityCollision(Entity* other)

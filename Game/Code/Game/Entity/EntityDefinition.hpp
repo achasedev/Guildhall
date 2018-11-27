@@ -93,8 +93,9 @@ public:
 	IntVector3 GetDimensions() const;
 	BehaviorComponent* CloneBehaviorPrototype() const;
 
-	bool	HasGravity() const;
-	int		GetInitialHealth() const;
+	bool				HasGravity() const;
+	int					GetInitialHealth() const;
+	const VoxelSprite*	GetDefaultSprite() const;
 
 	static void						LoadDefinitions(const std::string& filename);
 	static const EntityDefinition*	GetDefinition(const std::string& defName);

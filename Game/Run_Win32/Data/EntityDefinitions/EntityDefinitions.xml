@@ -33,7 +33,7 @@
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Nerd" initial_health="5" id="1">
+	<EntityDefinition name="Nerd" initial_health="5" id="2">
 
 		<!--Movement Parameters-->
 		<Movement max_acceleration="300.0" max_speed="40.0" max_deceleration="100.0" jump_impulse="80.0"/>
@@ -48,7 +48,7 @@
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Cat" initial_health="5" id="1">
+	<EntityDefinition name="Cat" initial_health="5" id="3">
 
 		<!--Movement Parameters-->
 		<Movement max_acceleration="300.0" max_speed="40.0" max_deceleration="100.0" jump_impulse="80.0"/>
@@ -63,12 +63,27 @@
 
 	</EntityDefinition>
 
+	<EntityDefinition name="Mouse" initial_health="8" id="4">
 
-	<!-- Character Select -->
-	<EntityDefinition name="CharacterSelect" id="2">
+		<!--Movement Parameters-->
+		<Movement max_acceleration="300.0" max_speed="40.0" max_deceleration="100.0" jump_impulse="80.0"/>
 
 		<!--Visuals-->
-		<Visuals default_sprite="Cat_idle_0"/>
+		<Visuals animation_set="Mouse" default_sprite="Mouse_idle_0"/>
+
+		<!--Physics-->
+		<Physics physics_type="dynamic" has_gravity="true">
+			<CollisionDefinition response="share_correction" layer="player"/>
+		</Physics>
+
+	</EntityDefinition>
+
+
+	<!-- Character Select -->
+	<EntityDefinition name="CharacterSelect_cat" id="5">
+
+		<!--Visuals-->
+		<Visuals default_sprite="Cat_character_select"/>
 
 		<!--Physics-->
 		<Physics physics_type="static">
@@ -80,10 +95,55 @@
 
 	</EntityDefinition>
 
+	<EntityDefinition name="CharacterSelect_mouse" id="6">
+
+		<!--Visuals-->
+		<Visuals default_sprite="Mouse_character_select"/>
+
+		<!--Physics-->
+		<Physics physics_type="static">
+			<CollisionDefinition response="ignore_correction" layer="world"/>
+		</Physics>
+
+		<!-- Character Select Only -->
+		<CharacterSelect player_definition="Mouse"/>
+
+	</EntityDefinition>
+
+	<EntityDefinition name="CharacterSelect_nerd" id="7">
+
+		<!--Visuals-->
+		<Visuals default_sprite="Nerd_character_select"/>
+
+		<!--Physics-->
+		<Physics physics_type="static">
+			<CollisionDefinition response="ignore_correction" layer="world"/>
+		</Physics>
+
+		<!-- Character Select Only -->
+		<CharacterSelect player_definition="Nerd"/>
+
+	</EntityDefinition>
+
+	<EntityDefinition name="CharacterSelect_oldman" id="8">
+
+		<!--Visuals-->
+		<Visuals default_sprite="OldMan_character_select"/>
+
+		<!--Physics-->
+		<Physics physics_type="static">
+			<CollisionDefinition response="ignore_correction" layer="world"/>
+		</Physics>
+
+		<!-- Character Select Only -->
+		<CharacterSelect player_definition="OldMan"/>
+
+	</EntityDefinition>
+
 
 	<!-- Projectiles -->
 
-	<EntityDefinition name="Bullet" id="4">
+	<EntityDefinition name="Bullet" id="9">
 
 		<Visuals default_sprite="Bullet"/>
 
@@ -95,7 +155,7 @@
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Shell" id="5">
+	<EntityDefinition name="Shell" id="10">
 
 		<Visuals default_sprite="Shell"/>
 
@@ -109,7 +169,7 @@
 
 
 	<!-- Weapons (LOAD AFTER PROJECTILES) -->
-	<EntityDefinition name="Pistol" id="6">
+	<EntityDefinition name="Pistol" id="11">
 
 		<Visuals default_sprite="Pistol"/>
 
@@ -121,7 +181,7 @@
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Shotgun" id="7">
+	<EntityDefinition name="Shotgun" id="12">
 
 		<Visuals default_sprite="Shotgun"/>
 
@@ -135,7 +195,7 @@
 
 	<!-- Enemies (LOAD AFTER WEAPONS)-->
 
-	<EntityDefinition name="Walker" initial_health="3" id="3">
+	<EntityDefinition name="Walker" initial_health="3" id="13">
 
 		<Movement max_acceleration="3000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="30.0"/>
 
@@ -156,7 +216,7 @@
 	<!-- Statics -->
 
  	<!-- Needed for it to work in the system -->
-	<EntityDefinition name="Particle" id="9">
+	<EntityDefinition name="Particle" id="14">
 
 		<Physics physics_type="dynamic" has_gravity="true">
 			<CollisionDefinition response="full_correction" layer="world"/>
@@ -164,7 +224,7 @@
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Tree1" id="10">
+	<EntityDefinition name="Tree1" id="15">
 		<Visuals default_sprite="Tree1" destructible="true"/>
 
 		<Physics physics_type="static">

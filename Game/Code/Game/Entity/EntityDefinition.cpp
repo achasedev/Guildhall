@@ -286,6 +286,15 @@ int EntityDefinition::GetInitialHealth() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the default sprite for this definition
+//
+const VoxelSprite* EntityDefinition::GetDefaultSprite() const
+{
+	return m_defaultSprite;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Loads the entity definitions specified in the file filename
 //
 void EntityDefinition::LoadDefinitions(const std::string& filename)

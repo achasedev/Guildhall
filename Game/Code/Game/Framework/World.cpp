@@ -155,15 +155,7 @@ void World::InititalizeForStage(CampaignStage* stage)
 	{
 		InitialStaticSpawn_t& spawn = stage->m_initialStatics[entityIndex];
 
-		Entity* entity = nullptr;
-		if (spawn.definition->GetName() == "CharacterSelect")
-		{
-			entity = new CharacterSelectVolume();
-		}
-		else
-		{
-			entity = new Entity(spawn.definition);
-		}
+		Entity* entity = new CharacterSelectVolume(spawn.definition);
 
 		entity->SetPosition(spawn.position);
 		entity->SetOrientation(spawn.orientation);
@@ -1175,7 +1167,14 @@ void World::DrawDynamicEntitiesToGrid(const IntVector3& offset)
 	{
 		if (m_entities[entityIndex]->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC && !m_entities[entityIndex]->IsMarkedForDelete())
 		{
-			grid->DrawEntity(m_entities[entityIndex], offset);
+			Rgba whiteReplacement = Rgba::WHITE;
+			if (m_entities[entityIndex]->IsPlayer())
+			{
+				Player* player = dynamic_cast<Player*>(m_entities[entityIndex]);
+				whiteReplacement = player->GetPlayerColor();
+			}
+
+			grid->DrawEntity(m_entities[entityIndex], offset, whiteReplacement);
 		}
 	}
 }

@@ -238,7 +238,10 @@ void CampaignManager::InitializeStages(const XMLElement& rootElement)
 		const XMLElement* stageElement = root->FirstChildElement();
 
 		m_characterSelectStage = new CampaignStage(*stageElement);
-		m_characterSelectStage->AddStaticSpawn(EntityDefinition::GetDefinition("CharacterSelect"), Vector3(10.f, 5.f, 10.f), 0.f);
+		m_characterSelectStage->AddStaticSpawn(EntityDefinition::GetDefinition("CharacterSelect_cat"), Vector3(20.f, 5.f, 20.f), 180.f);
+		m_characterSelectStage->AddStaticSpawn(EntityDefinition::GetDefinition("CharacterSelect_mouse"), Vector3(20.f, 5.f, 220.f), 180.f);
+		m_characterSelectStage->AddStaticSpawn(EntityDefinition::GetDefinition("CharacterSelect_nerd"), Vector3(220.f, 5.f, 20.f), 180.f);
+		m_characterSelectStage->AddStaticSpawn(EntityDefinition::GetDefinition("CharacterSelect_oldman"), Vector3(220.f, 5.f, 220.f), 180.f);
 	}
 	
 	m_stages.push_back(m_characterSelectStage);

@@ -127,14 +127,14 @@ void VoxelGrid::Clear()
 //-----------------------------------------------------------------------------------------------
 // Draws the 3D texture to the grid
 //
-void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset)
+void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, const Rgba& whiteReplacement /*= Rgba::WHITE*/)
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
 	const VoxelTexture* texture = entity->GetTextureForRender();
 	IntVector3 position = entity->GetCoordinatePosition() + offset;
 
-	Draw3DTexture(texture, position);
+	Draw3DTexture(texture, position, whiteReplacement);
 
 	// Hack to render the player's weapon
 	if (entity->IsPlayer())
@@ -156,7 +156,7 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset)
 	}
 }
 
-#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // Draws the terrain to the grid with the given heightmap
 //
@@ -222,7 +222,7 @@ void VoxelGrid::DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset)
 //-----------------------------------------------------------------------------------------------
 // Draws the 3D texture to the grid
 //
-void VoxelGrid::Draw3DTexture(const VoxelTexture* texture, const IntVector3& startCoord)
+void VoxelGrid::Draw3DTexture(const VoxelTexture* texture, const IntVector3& startCoord, const Rgba& whiteReplacement /*= Rgba::WHITE*/)
 {
 	IntVector3 dimensions = texture->GetDimensions();
 
@@ -241,8 +241,15 @@ void VoxelGrid::Draw3DTexture(const VoxelTexture* texture, const IntVector3& sta
 				if (index != -1)
 				{
 					Rgba colorToRender = texture->GetColorAtCoords(localCoords);
+
 					if (colorToRender.a != 0)
 					{
+						// Allow white to be replaced, for player shirt colors
+						if (colorToRender == Rgba::WHITE)
+						{
+							colorToRender = whiteReplacement;
+						}
+
 						m_gridColors[index] = colorToRender;
 					}
 				}

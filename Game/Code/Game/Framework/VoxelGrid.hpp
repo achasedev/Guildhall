@@ -59,9 +59,9 @@ public:
 
 	// Mutators
 	void				Clear();
-	void				DrawEntity(const Entity* entity, const IntVector3& offset);
+	void				DrawEntity(const Entity* entity, const IntVector3& offset, const Rgba& whiteReplacement = Rgba::WHITE);
 	void				DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset);
-	void				Draw3DTexture(const VoxelTexture* texture, const IntVector3& startCoord);
+	void				Draw3DTexture(const VoxelTexture* texture, const IntVector3& startCoord, const Rgba& whiteReplacement = Rgba::WHITE);
 
 	void				DebugDrawEntityCollision(const Entity* entity, const IntVector3& offset);
 

@@ -12,7 +12,7 @@ class CharacterSelectVolume : public Entity
 public:
 	//-----Public Methods-----
 	
-	CharacterSelectVolume();
+	CharacterSelectVolume(const EntityDefinition* definition);
 	virtual void OnEntityCollision(Entity* other) override;
 
 	

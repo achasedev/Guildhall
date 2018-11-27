@@ -20,6 +20,7 @@
 		<VoxelSprite file="Data/VoxelSprites/Players/OldMan.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Nerd.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Cat.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Players/Mouse.sprite"/>
 
 	</VoxelSprites>
 
@@ -33,6 +34,7 @@
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/OldMan.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Nerd.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Cat.animset"/>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Mouse.animset"/>
 
 	</VoxelAnimationSets>
 
@@ -45,6 +47,7 @@
 		<VoxelAnimation file="Data/VoxelAnimations/Players/OldMan.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Nerd.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Cat.animation"/>
+		<VoxelAnimation file="Data/VoxelAnimations/Players/Mouse.animation"/>
 
 	</VoxelAnimations>
 
