@@ -11,6 +11,7 @@
 #include "Game/Entity/Components/BehaviorComponent_PursuePath.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursueJump.hpp"
 #include "Game/Entity/Components/BehaviorComponent_ShootDirect.hpp"
+#include "Game/Entity/Components/BehaviorComponent_ShootCircle.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursueDirect.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
@@ -216,6 +217,17 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 		ASSERT_OR_DIE(weaponDefinition != nullptr, Stringf("Error: Bad weapon name in behavior element, \"%s\"", weaponDefName.c_str()));
 		
 		BehaviorComponent_ShootDirect* shootBehavior = new BehaviorComponent_ShootDirect(weaponDefinition);
+		shootBehavior->m_shootRange = ParseXmlAttribute(behaviorElement, "shoot_range", shootBehavior->m_shootRange);
+
+		toReturn = shootBehavior;
+	}
+	else if (behaviorName == "shoot_circle")
+	{
+		std::string weaponDefName = ParseXmlAttribute(behaviorElement, "weapon", "Pistol");
+		const EntityDefinition* weaponDefinition = EntityDefinition::GetDefinition(weaponDefName);
+		ASSERT_OR_DIE(weaponDefinition != nullptr, Stringf("Error: Bad weapon name in behavior element, \"%s\"", weaponDefName.c_str()));
+
+		BehaviorComponent_ShootCircle* shootBehavior = new BehaviorComponent_ShootCircle(weaponDefinition);
 		shootBehavior->m_shootRange = ParseXmlAttribute(behaviorElement, "shoot_range", shootBehavior->m_shootRange);
 
 		toReturn = shootBehavior;

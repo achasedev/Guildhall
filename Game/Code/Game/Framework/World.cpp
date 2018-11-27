@@ -316,7 +316,8 @@ void World::AddParticle(Particle* particle)
 //-----------------------------------------------------------------------------------------------
 // Creates an explosion at the given coord and radius, destroying terrain and hitting entities 
 //
-void World::ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage /*= 0*/, float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/)
+void World::ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage /*= 0*/, 
+	float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/, Entity* hitEntity /*=nullptr*/)
 {
 	DestroyTerrain(coord, radius, impulseMagnitude);
 
@@ -327,7 +328,7 @@ void World::ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage
 	{
 		Entity* currEntity = entities[entityIndex];
 
-		if (currEntity->GetTeam() == team) { continue; }
+		if (currEntity->GetTeam() == team || currEntity == hitEntity) { continue; }
 
 		if (currEntity->IsDynamic())
 		{

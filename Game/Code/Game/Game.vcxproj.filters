@@ -148,6 +148,9 @@
     <ClCompile Include="Entity\Components\BehaviorComponent_ShootDirect.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\Components\BehaviorComponent_ShootCircle.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -212,5 +215,6 @@
     <ClInclude Include="Entity\EntitySpawn.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_Charge.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_ShootDirect.hpp" />
+    <ClInclude Include="Entity\Components\BehaviorComponent_ShootCircle.hpp" />
   </ItemGroup>
 </Project>

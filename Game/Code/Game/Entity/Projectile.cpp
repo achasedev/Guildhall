@@ -57,8 +57,12 @@ void Projectile::OnEntityCollision(Entity* other)
 		Vector3 direction = (other->GetCenterPosition() - GetCenterPosition()).GetNormalized();
 		other->TakeDamage(m_definition->m_projectileDamage, m_definition->m_collisionDef.m_collisionKnockback * direction);
 
+		if (m_definition->m_projectileHitRadius > 0.f)
+		{
+			Game::GetWorld()->ApplyExplosion(GetCoordinatePosition(), m_entityTeam, m_definition->m_projectileDamage, m_definition->m_projectileHitRadius, m_definition->m_collisionDef.m_collisionKnockback, other);
+		}
+		
 		// Projectiles are only good for one collision
-		Game::GetWorld()->ApplyExplosion(GetCoordinatePosition(), m_entityTeam, m_definition->m_projectileDamage, m_definition->m_projectileHitRadius, m_definition->m_collisionDef.m_collisionKnockback);
 		m_isMarkedForDelete = true;
 	}
 }

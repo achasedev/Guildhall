@@ -99,7 +99,7 @@
 			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
 		</Physics>
 
-		<Weapon fire_rate="2.0" fire_spread="0.4" projectile="Shell" count_per_shot="8" initial_ammo="40"/>
+		<Weapon fire_rate="2.0" fire_spread="0.6" projectile="Shell" count_per_shot="8" initial_ammo="40"/>
 
 	</EntityDefinition>
 
@@ -117,7 +117,7 @@
 
 
 		<!--AI behavior="charge" damage_on_touch="1" damage_on_charge="2" charge_speed="100.0" knockback="30.0" charge_duration="1.0" rest_duration="1.0"/>-->
-		<AI behavior="shoot_direct" weapon="Shotgun" shoot_range="50.0"/>
+		<AI behavior="shoot_circle" weapon="Shotgun" shoot_range="50.0"/>
 
 	</EntityDefinition>
 
