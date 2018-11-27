@@ -298,7 +298,7 @@
     <ClCompile Include="Entity\Components\BehaviorComponent_PursueDirect.cpp" />
     <ClCompile Include="Entity\Components\BehaviorComponent_PursueJump.cpp" />
     <ClCompile Include="Entity\Components\BehaviorComponent_PursuePath.cpp" />
-    <ClCompile Include="Entity\Components\BehaviorComponent_Shoot.cpp" />
+    <ClCompile Include="Entity\Components\BehaviorComponent_ShootDirect.cpp" />
     <ClCompile Include="Entity\Entity.cpp" />
     <ClCompile Include="Entity\EntityDefinition.cpp" />
     <ClCompile Include="Entity\AnimatedEntity.cpp" />
@@ -345,7 +345,7 @@
     <ClInclude Include="Entity\Components\BehaviorComponent_PursueDirect.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_PursueJump.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_PursuePath.hpp" />
-    <ClInclude Include="Entity\Components\BehaviorComponent_Shoot.hpp" />
+    <ClInclude Include="Entity\Components\BehaviorComponent_ShootDirect.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\EntityDefinition.hpp" />
     <ClInclude Include="Entity\AnimatedEntity.hpp" />

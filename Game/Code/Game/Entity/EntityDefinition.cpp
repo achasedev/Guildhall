@@ -7,10 +7,10 @@
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
-#include "Game/Entity/Components/BehaviorComponent_Shoot.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Charge.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursuePath.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursueJump.hpp"
+#include "Game/Entity/Components/BehaviorComponent_ShootDirect.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursueDirect.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
@@ -189,11 +189,7 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 
 	std::string behaviorName = ParseXmlAttribute(behaviorElement, "behavior", "");
 
-	if (behaviorName == "PursuePath")
-	{
-		toReturn = new BehaviorComponent_PursuePath();
-	}
-	else if (behaviorName == "PursueDirect")
+	if (behaviorName == "PursueDirect")
 	{
 		toReturn = new BehaviorComponent_PursueDirect();
 	}
@@ -201,7 +197,7 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 	{
 		toReturn = new BehaviorComponent_PursueJump();
 	}
-	else if (behaviorName == "Charge")
+	else if (behaviorName == "charge")
 	{
 		BehaviorComponent_Charge* chargeBehavior = new BehaviorComponent_Charge();
 		chargeBehavior->m_chargeDuration = ParseXmlAttribute(behaviorElement, "charge_duration", chargeBehavior->m_chargeDuration);
@@ -213,15 +209,16 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 
 		toReturn = chargeBehavior;
 	}
-	else if (behaviorName == "Shoot")
+	else if (behaviorName == "shoot_direct")
 	{
-		std::string projectileDefName = ParseXmlAttribute(behaviorElement, "projectile", "Bullet");
-		const EntityDefinition* projDef = EntityDefinition::GetDefinition(projectileDefName);
-		ASSERT_OR_DIE(projDef != nullptr, Stringf("Error: Bad projectile name in behavior element, \"%s\"", projectileDefName.c_str()));
+		std::string weaponDefName = ParseXmlAttribute(behaviorElement, "weapon", "Pistol");
+		const EntityDefinition* weaponDefinition = EntityDefinition::GetDefinition(weaponDefName);
+		ASSERT_OR_DIE(weaponDefinition != nullptr, Stringf("Error: Bad weapon name in behavior element, \"%s\"", weaponDefName.c_str()));
 		
-		float fireRate = ParseXmlAttribute(behaviorElement, "fireRate", 1.0f);
+		BehaviorComponent_ShootDirect* shootBehavior = new BehaviorComponent_ShootDirect(weaponDefinition);
+		shootBehavior->m_shootRange = ParseXmlAttribute(behaviorElement, "shoot_range", shootBehavior->m_shootRange);
 
-		toReturn = new BehaviorComponent_Shoot(projDef, fireRate);
+		toReturn = shootBehavior;
 	}
 	else
 	{

@@ -91,9 +91,6 @@
     <ClCompile Include="Entity\Components\BehaviorComponent_PursueJump.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Entity\Components\BehaviorComponent_Shoot.cpp">
-      <Filter>Architecture</Filter>
-    </ClCompile>
     <ClCompile Include="Framework\SpawnPoint.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
@@ -148,6 +145,9 @@
     <ClCompile Include="Entity\Components\BehaviorComponent_Charge.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\Components\BehaviorComponent_ShootDirect.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -192,7 +192,6 @@
     <ClInclude Include="Entity\Components\BehaviorComponent_PursuePath.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_PursueDirect.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_PursueJump.hpp" />
-    <ClInclude Include="Entity\Components\BehaviorComponent_Shoot.hpp" />
     <ClInclude Include="Framework\SpawnPoint.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Rest.hpp" />
@@ -212,5 +211,6 @@
     <ClInclude Include="Framework\VoxelTerrain.hpp" />
     <ClInclude Include="Entity\EntitySpawn.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_Charge.hpp" />
+    <ClInclude Include="Entity\Components\BehaviorComponent_ShootDirect.hpp" />
   </ItemGroup>
 </Project>

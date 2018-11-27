@@ -51,25 +51,6 @@
 	</EntityDefinition>
 
 
-	<!-- Enemies -->
-
-	<EntityDefinition name="Robot" initial_health="10" id="3">
-
-		<Movement max_acceleration="3000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="30.0"/>
-
-		<Visuals animation_set="Robot" default_sprite="Robot_idle_0"/>
-
-		<Physics physics_type="dynamic" has_gravity="true">
-			<CollisionDefinition response="share_correction" layer="enemy"/>
-		</Physics>
-
-		<AI behavior="Charge" damage_on_touch="1" damage_on_charge="2" charge_speed="100.0" knockback="30.0" charge_duration="1.0" rest_duration="1.0"/>
-
-	</EntityDefinition>
-
-
-
-
 	<!-- Projectiles -->
 
 	<EntityDefinition name="Bullet" id="4">
@@ -122,7 +103,23 @@
 
 	</EntityDefinition>
 
-	<!-- Abilities -->
+	<!-- Enemies (LOAD AFTER WEAPONS)-->
+
+	<EntityDefinition name="Robot" initial_health="10" id="3">
+
+		<Movement max_acceleration="3000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="30.0"/>
+
+		<Visuals animation_set="Robot" default_sprite="Robot_idle_0"/>
+
+		<Physics physics_type="dynamic" has_gravity="true">
+			<CollisionDefinition response="share_correction" layer="enemy"/>
+		</Physics>
+
+
+		<!--AI behavior="charge" damage_on_touch="1" damage_on_charge="2" charge_speed="100.0" knockback="30.0" charge_duration="1.0" rest_duration="1.0"/>-->
+		<AI behavior="shoot_direct" weapon="Shotgun" shoot_range="50.0"/>
+
+	</EntityDefinition>
 
 
 

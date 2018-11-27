@@ -2,41 +2,35 @@
 /* File: BehaviorComponent_Shoot.hpp
 /* Author: Andrew Chase
 /* Date: October 16th 2018
-/* Description: Behavior where the entity shoots at a player
+/* Description: Behavior where the entity shoots at a player while moving
+/*				Directly at them
 /************************************************************************/
 #pragma once
 #include "Game/Entity/Components/BehaviorComponent.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
 
+class Weapon;
 class EntityDefinition;
 
-class BehaviorComponent_Shoot : public BehaviorComponent
+class BehaviorComponent_ShootDirect : public BehaviorComponent
 {
+	friend class EntityDefinition;
+
 public:
 	//-----Public Methods-----
 	
-	BehaviorComponent_Shoot(const EntityDefinition* projectileDef, float fireRate);
+	BehaviorComponent_ShootDirect(const EntityDefinition* weaponDef);
 
+	virtual void Initialize(AnimatedEntity* owningEntity) override;
 	virtual void Update() override;
 	virtual BehaviorComponent* Clone() const override;
 
 
-public:
-	//-----Public Data-----
-	
-
-private:
-	//-----Private Methods-----
-	
-	void Shoot();
-
-	
 private:
 	//-----Private Data-----
 	
-	Stopwatch m_shootTimer;
-	float m_shootInterval;
-	float m_fireRate;
-	const EntityDefinition* m_projectileDefinition = nullptr;
+	Weapon* m_weapon = nullptr;
+	float m_shootRange = 50.f;
+	const EntityDefinition* m_weaponDefinition = nullptr;
 	
 };

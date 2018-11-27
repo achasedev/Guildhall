@@ -18,10 +18,12 @@ public:
 
 	// Events
 	virtual void OnEntityCollision(Entity* other) override;
-	void OnEquip(Player* playerEquipping);
+	void OnEquip(Entity* playerEquipping);
 	void OnUnequip();
 
 	void Shoot();
+	void SetHasInfiniteAmmo(bool hasInfiniteAmmo);
+
 	bool IsOutOfAmmo() const;
 
 	const VoxelTexture* GetTextureForUIRender();
@@ -30,9 +32,10 @@ public:
 private:
 	//-----Private Data-----
 
-	Player* m_playerEquippedTo = nullptr;
+	Entity* m_entityEquippedTo = nullptr;
 	Stopwatch m_shootTimer;
 	int m_currAmmoCount = 0;
+	bool m_hasInfiniteAmmo = false;
 
 	// For rendering above players
 	Stopwatch m_flashTimer;

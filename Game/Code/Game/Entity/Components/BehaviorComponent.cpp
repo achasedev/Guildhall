@@ -99,6 +99,23 @@ Player* BehaviorComponent::GetClosestPlayerInSight() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the distance this component's entity is from the closest player
+//
+float BehaviorComponent::GetDistanceToClosestPlayer() const
+{
+	if (m_closestPlayer == nullptr)
+	{
+		return 999999999.f;
+	}
+
+	Vector2 playerPos = m_closestPlayer->GetPosition().xz();
+	Vector2 currPos = m_owningEntity->GetPosition().xz();
+
+	return (currPos - playerPos).GetLength();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Moves the entity towards the closest player
 //
 void BehaviorComponent::MoveToClosestPlayer()

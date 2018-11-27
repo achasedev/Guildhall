@@ -47,11 +47,9 @@ void Weapon::OnEntityCollision(Entity* other)
 //-----------------------------------------------------------------------------------------------
 // Equips the weapon to the player
 //
-void Weapon::OnEquip(Player* playerEquipping)
+void Weapon::OnEquip(Entity* entityEquipping)
 {
-	UNUSED(playerEquipping);
-
-	m_playerEquippedTo = playerEquipping;
+	m_entityEquippedTo = entityEquipping;
 
 	m_shootTimer.SetInterval(1.f / m_definition->m_fireRate);
 	m_currAmmoCount = m_definition->m_initialAmmoCount;
@@ -71,7 +69,7 @@ void Weapon::OnUnequip()
 //
 void Weapon::Shoot()
 {
-	if (m_playerEquippedTo == nullptr)
+	if (m_entityEquippedTo == nullptr)
 	{
 		return;
 	}
@@ -82,9 +80,9 @@ void Weapon::Shoot()
 		return;
 	}
 
-	Vector3 baseDirection = m_playerEquippedTo->GetForwardVector();
-	Vector3 position = m_playerEquippedTo->GetCenterPosition() + (baseDirection * WEAPON_FIRE_OFFSET);
-	eEntityTeam team = m_playerEquippedTo->GetTeam();
+	Vector3 baseDirection = m_entityEquippedTo->GetForwardVector();
+	Vector3 position = m_entityEquippedTo->GetCenterPosition() + (baseDirection * WEAPON_FIRE_OFFSET);
+	eEntityTeam team = m_entityEquippedTo->GetTeam();
 	float projectileSpeed = m_definition->m_projectileDefinition->m_projectileSpeed;
 	World* world = Game::GetWorld();
 
@@ -93,7 +91,7 @@ void Weapon::Shoot()
 	// Shoot as many as we are supposed to this fire
 	for (int i = 0; i < projectileCount; ++i)
 	{
-		Projectile* proj = new Projectile(m_definition->m_projectileDefinition, m_playerEquippedTo->GetTeam());
+		Projectile* proj = new Projectile(m_definition->m_projectileDefinition, m_entityEquippedTo->GetTeam());
 
 		Vector3 spread;
 		spread.x = GetRandomFloatInRange(-m_definition->m_fireSpread, m_definition->m_fireSpread);
@@ -112,7 +110,7 @@ void Weapon::Shoot()
 		world->AddEntity(proj);
 		m_currAmmoCount--;
 
-		if (m_currAmmoCount <= 0)
+		if (IsOutOfAmmo())
 		{
 			return;
 		}
@@ -121,11 +119,27 @@ void Weapon::Shoot()
 
 
 //-----------------------------------------------------------------------------------------------
+// Sets this weapon to have infinite ammo or not
+//
+void Weapon::SetHasInfiniteAmmo(bool hasInfiniteAmmo)
+{
+	m_hasInfiniteAmmo = hasInfiniteAmmo;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns whether this weapon is out of ammo
 //
 bool Weapon::IsOutOfAmmo() const
 {
-	return (m_currAmmoCount <= 0);
+	bool hasAmmoLeft = (m_currAmmoCount > 0);
+
+	if (m_hasInfiniteAmmo || hasAmmoLeft)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 

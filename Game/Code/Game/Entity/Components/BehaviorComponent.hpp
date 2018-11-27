@@ -30,6 +30,7 @@ protected:
 
 	Player*	GetClosestPlayer() const;
 	Player* GetClosestPlayerInSight() const;
+	float	GetDistanceToClosestPlayer() const;
 
 	void	MoveToClosestPlayer();
 
