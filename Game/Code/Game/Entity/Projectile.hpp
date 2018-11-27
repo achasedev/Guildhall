@@ -17,6 +17,7 @@ public:
 	Projectile(const EntityDefinition* definition, eEntityTeam team);
 
 	virtual void Update() override;
+	virtual const VoxelTexture* GetTextureForRender() const override;
 
 	// Events
 	virtual void OnEntityCollision(Entity* other) override;

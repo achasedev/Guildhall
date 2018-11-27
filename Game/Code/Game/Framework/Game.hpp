@@ -61,6 +61,9 @@ public:
 
 	static bool					IsPlayerAlive(unsigned int index);
 
+	static void					ResetScore();
+	static void					AddPointsToScore(int pointsToAdd);
+
 	static void					DrawPlayerHUD();
 	static void					DrawScore();
 	static void					DrawHeading(const std::string& headingText);

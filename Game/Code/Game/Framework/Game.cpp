@@ -356,6 +356,24 @@ bool Game::IsPlayerAlive(unsigned int index)
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Resets the score back to 0
+//
+void Game::ResetScore()
+{
+	s_instance->m_score = 0;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the given points to the score
+//
+void Game::AddPointsToScore(int pointsToAdd)
+{
+	s_instance->m_score += pointsToAdd;
+}
+
+
 //- C FUNCTION ----------------------------------------------------------------------------------
 // Returns the alignment used to render the given player's HUD
 //

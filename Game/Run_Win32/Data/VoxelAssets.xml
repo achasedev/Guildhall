@@ -5,13 +5,18 @@
 		<!-- Projectiles -->
 		<VoxelSprite file="Data/VoxelSprites/Bullet.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Shell.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Flame.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Missile.sprite"/>
 
 		<!-- Weapons -->
 		<VoxelSprite file="Data/VoxelSprites/Pistol.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Shotgun.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Flamethrower.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/MissileLauncher.sprite"/>
 
 		<!-- Environment -->
 		<VoxelSprite file="Data/VoxelSprites/Environment/Tree1.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Environment/House.sprite"/>
 
 		<!-- Zombies -->
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Walker.sprite"/>
@@ -64,8 +69,10 @@
 	<EntityDefinitions file="Data/EntityDefinitions/EntityDefinitions.xml"/>
 
 	<VoxelTerrains>
-		<VoxelTerrain name="Map1" file="Data/VoxelModels/Maps/Map1.qef"/>
-		<VoxelTerrain name="Map2" file="Data/VoxelModels/Maps/Map2.qef"/>
+		<VoxelTerrain name="Flat" file="Data/VoxelModels/Maps/Flat.qef"/>
+		<VoxelTerrain name="Trees" file="Data/VoxelModels/Maps/Trees.qef"/>
+		<VoxelTerrain name="Houses" file="Data/VoxelModels/Maps/Houses.qef"/>
+		<VoxelTerrain name="HousesAndTrees" file="Data/VoxelModels/Maps/HousesAndTrees.qef"/>
 		<VoxelTerrain name="CharacterSelect" file="Data/VoxelModels/Maps/CharacterSelect.qef"/>
 	</VoxelTerrains>
 

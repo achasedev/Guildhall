@@ -11,6 +11,8 @@
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/SpawnPoint.hpp"
 #include "Game/Entity/Components/BehaviorComponent.hpp"
+#include "Engine/Math/MathUtils.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -44,10 +46,34 @@ void AIEntity::OnDeath()
 	m_spawnPoint->StopTrackingEntity(this);
 	Game::GetWorld()->ParticalizeEntity(this);
 
-	Weapon* drop = new Weapon(EntityDefinition::GetDefinition("Shotgun"));
-	drop->SetPosition(GetCenterPosition());
+	if (CheckRandomChance(0.25f))
+	{
+		Weapon* drop = nullptr;
 
-	Game::GetWorld()->AddEntity(drop);
+		float roll = GetRandomFloatZeroToOne();
+
+		if (roll > 90.f)
+		{
+			drop = new Weapon(EntityDefinition::GetDefinition("MissileLauncher"));
+		}
+		else if (roll > 60.f)
+		{
+			drop = new Weapon(EntityDefinition::GetDefinition("Flamethrower"));
+		}
+		else
+		{
+			drop = new Weapon(EntityDefinition::GetDefinition("Shotgun"));
+		}
+
+		drop->SetPosition(GetCenterPosition());
+		Game::GetWorld()->AddEntity(drop);
+	}
+
+
+	if (GetTeam() == ENTITY_TEAM_ENEMY)
+	{
+		Game::AddPointsToScore(m_definition->m_pointValue);
+	}
 }
 
 

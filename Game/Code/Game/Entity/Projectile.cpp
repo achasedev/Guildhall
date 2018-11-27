@@ -7,7 +7,10 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Entity/Projectile.hpp"
+#include "Game/Animation/VoxelSprite.hpp"
+#include "Game/Entity/EntityDefinition.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Constructor from a definition
@@ -47,6 +50,15 @@ void Projectile::Update()
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the texture to use based on the orientation of the projectile
+//
+const VoxelTexture* Projectile::GetTextureForRender() const
+{
+	return m_definition->m_defaultSprite->GetTextureForOrientation(m_orientation);
+}
+
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+//-----------------------------------------------------------------------------------------------
 // On Collision event
 //
 void Projectile::OnEntityCollision(Entity* other)
@@ -57,6 +69,7 @@ void Projectile::OnEntityCollision(Entity* other)
 		Vector3 direction = (other->GetCenterPosition() - GetCenterPosition()).GetNormalized();
 		other->TakeDamage(m_definition->m_projectileDamage, m_definition->m_collisionDef.m_collisionKnockback * direction);
 
+		ConsolePrintf("Damage was %i", m_definition->m_projectileDamage);
 		if (m_definition->m_projectileHitRadius > 0.f)
 		{
 			Game::GetWorld()->ApplyExplosion(GetCoordinatePosition(), m_entityTeam, m_definition->m_projectileDamage, m_definition->m_projectileHitRadius, m_definition->m_collisionDef.m_collisionKnockback, other);

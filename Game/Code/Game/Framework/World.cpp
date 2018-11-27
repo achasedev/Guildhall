@@ -320,7 +320,7 @@ void World::ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage
 	{
 		Entity* currEntity = entities[entityIndex];
 
-		if (currEntity->GetTeam() == team || currEntity == hitEntity) { continue; }
+		if (currEntity->GetTeam() == team) { continue; }
 
 		if (currEntity->IsDynamic())
 		{
@@ -585,7 +585,7 @@ void World::ParticalizeVoxelText(const std::string& text, const IntVector3& refe
 	}
 }
 
-
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 //-----------------------------------------------------------------------------------------------
 // Sets the terrain and initial entities given the name of the map
 //
@@ -599,7 +599,9 @@ void World::InitializeTerrain(const std::string mapName)
 	{
 		Entity* entity = new Entity(spawns[i].definition);
 		entity->SetPosition(spawns[i].position);
+
 		entity->SetOrientation(spawns[i].orientation);
+		ConsolePrintf("Orientation: %.2f", spawns[i].orientation);
 
 		AddEntity(entity);
 	}

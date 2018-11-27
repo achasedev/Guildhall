@@ -77,6 +77,7 @@ class BehaviorComponent;
 
 class EntityDefinition
 {
+	friend class AIEntity;
 	friend class Entity;
 	friend class AnimatedEntity;
 	friend class Player;
@@ -120,6 +121,7 @@ private:
 	ePhysicsType							m_physicsType = PHYSICS_TYPE_UNASSIGNED;
 	bool									m_affectedByGravity = true;
 	CollisionDefinition_t					m_collisionDef;
+	int										m_pointValue = 100;
 
 	// AnimatedEntity
 	float									m_maxMoveAcceleration = 300.f;

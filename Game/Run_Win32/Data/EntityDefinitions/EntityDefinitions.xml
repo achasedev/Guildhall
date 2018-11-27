@@ -151,7 +151,7 @@
 			<CollisionDefinition response="ignore_correction" can_destroy_voxels="true" knockback="10.0"/>
 		</Physics>
 
-		<Projectile speed="200.0" hit_damage="2" lifetime="0.7"/>
+		<Projectile speed="200.0" damage="2" lifetime="0.7"/>
 
 	</EntityDefinition>
 
@@ -163,7 +163,31 @@
 			<CollisionDefinition response="ignore_correction" can_destroy_voxels="true"/>
 		</Physics>
 
-		<Projectile speed="150.0" hit_radius="0.0" hit_damage="1" lifetime="0.3"/>
+		<Projectile speed="150.0" hit_radius="0.0" damage="1" lifetime="0.3"/>
+
+	</EntityDefinition>
+
+	<EntityDefinition name="Flame" id="20">
+
+		<Visuals default_sprite="Flame"/>
+
+		<Physics physics_type="dynamic" has_gravity="false">
+			<CollisionDefinition response="ignore_correction" can_destroy_voxels="true"/>
+		</Physics>
+
+		<Projectile speed="30.0" hit_radius="0.0" damage="1" lifetime="0.5"/>
+
+	</EntityDefinition>
+
+	<EntityDefinition name="Missile" id="22">
+
+		<Visuals default_sprite="Missile"/>
+
+		<Physics physics_type="dynamic" has_gravity="false">
+			<CollisionDefinition response="ignore_correction" can_destroy_voxels="true"/>
+		</Physics>
+
+		<Projectile speed="100.0" hit_radius="15.0" damage="10" lifetime="2.0"/>
 
 	</EntityDefinition>
 
@@ -190,6 +214,30 @@
 		</Physics>
 
 		<Weapon fire_rate="2.0" fire_spread="0.4" projectile="Shell" count_per_shot="6" initial_ammo="60"/>
+
+	</EntityDefinition>
+
+	<EntityDefinition name="Flamethrower" id="19">
+
+		<Visuals default_sprite="Flamethrower"/>
+
+		<Physics physics_type="dynamic">
+			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
+		</Physics>
+
+		<Weapon fire_rate="15.0" fire_spread="0.2" projectile="Flame" count_per_shot="15" initial_ammo="600"/>
+
+	</EntityDefinition>
+
+	<EntityDefinition name="MissileLauncher" id="21">
+
+		<Visuals default_sprite="MissileLauncher"/>
+
+		<Physics physics_type="dynamic">
+			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
+		</Physics>
+
+		<Weapon fire_rate="2.0" fire_spread="0.0" projectile="Missile" count_per_shot="1" initial_ammo="5"/>
 
 	</EntityDefinition>
 
@@ -242,7 +290,7 @@
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Soldier" initial_health="7" id="16">
+	<EntityDefinition name="Soldier" initial_health="2" id="16">
 
 		<Movement max_acceleration="2000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="10.0"/>
 
@@ -270,6 +318,16 @@
 
 	<EntityDefinition name="Tree1" id="18">
 		<Visuals default_sprite="Tree1" destructible="true"/>
+
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>
+		
+	</EntityDefinition>
+
+	<EntityDefinition name="House" id="23">
+		
+		<Visuals default_sprite="House" destructible="true"/>
 
 		<Physics physics_type="static">
 			<CollisionDefinition response="no_correction" layer="world"/>

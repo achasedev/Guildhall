@@ -66,6 +66,8 @@ void CampaignManager::Initialize(const char* filename)
 	m_currStageFinished = false;
 	m_currStageIndex = -1;
 	m_totalSpawnedThisStage = 0;
+
+	Game::ResetScore();
 }
 
 
