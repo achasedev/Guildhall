@@ -8,7 +8,6 @@
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Charge.hpp"
-#include "Game/Entity/Components/BehaviorComponent_PursuePath.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursueJump.hpp"
 #include "Game/Entity/Components/BehaviorComponent_ShootDirect.hpp"
 #include "Game/Entity/Components/BehaviorComponent_ShootCircle.hpp"
@@ -190,11 +189,11 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 
 	std::string behaviorName = ParseXmlAttribute(behaviorElement, "behavior", "");
 
-	if (behaviorName == "PursueDirect")
+	if (behaviorName == "pursue_direct")
 	{
 		toReturn = new BehaviorComponent_PursueDirect();
 	}
-	else if (behaviorName == "PursueJump")
+	else if (behaviorName == "pursue_jump")
 	{
 		toReturn = new BehaviorComponent_PursueJump();
 	}

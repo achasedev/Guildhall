@@ -10,8 +10,7 @@
 #include "Game/Entity/AIEntity.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/SpawnPoint.hpp"
-#include "Game/Entity/Components/BehaviorComponent_PursuePath.hpp"
-
+#include "Game/Entity/Components/BehaviorComponent.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Constructor

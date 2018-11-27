@@ -1,22 +1,45 @@
 <VoxelAssets>
 
 	<VoxelSprites>
-		<VoxelSprite file="Data/VoxelSprites/Robot.sprite"/>
-		<VoxelSprite file="Data/VoxelSprites/Wall.sprite"/>
+
+		<!-- Projectiles -->
 		<VoxelSprite file="Data/VoxelSprites/Bullet.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Shell.sprite"/>
+
+		<!-- Weapons -->
 		<VoxelSprite file="Data/VoxelSprites/Pistol.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Shotgun.sprite"/>
+
+		<!-- Environment -->
 		<VoxelSprite file="Data/VoxelSprites/Environment/Tree1.sprite"/>
+
+		<!-- Zombies -->
+		<VoxelSprite file="Data/VoxelSprites/Zombies/Walker.sprite"/>
+
+		<!-- Players -->
+		<VoxelSprite file="Data/VoxelSprites/Players/OldMan.sprite"/>
+
 	</VoxelSprites>
 
 
 	<VoxelAnimationSets>
-		<VoxelAnimationSet file="Data/VoxelAnimationSets/Robot.animset"/>
+
+		<!-- Zombies -->
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Walker.animset"/>
+
+		<!-- Players -->
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/OldMan.animset"/>
+
 	</VoxelAnimationSets>
 
 	<VoxelAnimations>
-		<VoxelAnimation file="Data/VoxelAnimations/Robot.animation"/>
+
+		<!-- Zombies -->
+		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Walker.animation"/>
+
+		<!-- Players -->
+		<VoxelAnimation file="Data/VoxelAnimations/Players/OldMan.animation"/>
+
 	</VoxelAnimations>
 
 	<EntityDefinitions file="Data/EntityDefinitions/EntityDefinitions.xml"/>

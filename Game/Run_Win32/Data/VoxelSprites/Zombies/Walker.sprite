@@ -1,0 +1,8 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Walker_idle_0" file="Data/VoxelModels/Zombies/Walker/Walker_idle_0.qef"/>
+	<VoxelSprite name="Walker_idle_1" file="Data/VoxelModels/Zombies/Walker/Walker_idle_1.qef"/>
+	<VoxelSprite name="Walker_walk_0" file="Data/VoxelModels/Zombies/Walker/Walker_walk_0.qef"/>
+	<VoxelSprite name="Walker_walk_1" file="Data/VoxelModels/Zombies/Walker/Walker_walk_1.qef"/>
+
+</VoxelSprites>

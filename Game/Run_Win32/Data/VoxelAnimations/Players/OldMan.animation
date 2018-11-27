@@ -1,0 +1,15 @@
+<VoxelAnimations>
+
+	<VoxelAnimation name="OldMan_idle" playmode="loop">
+		<Frame voxelsprite="OldMan_idle_0" duration="0.5"/>
+		<Frame voxelsprite="OldMan_idle_1" duration="0.5"/>
+	</VoxelAnimation>
+
+	<VoxelAnimation name="OldMan_walk" playmode="loop">
+		<Frame voxelsprite="OldMan_walk_0" duration="0.25"/>
+		<Frame voxelsprite="OldMan_idle_0" duration="0.25"/>
+		<Frame voxelsprite="OldMan_walk_1" duration="0.25"/>
+		<Frame voxelsprite="OldMan_idle_0" duration="0.25"/>
+	</VoxelAnimation>
+
+</VoxelAnimations>

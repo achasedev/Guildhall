@@ -239,7 +239,6 @@ void CampaignManager::InitializeStages(const XMLElement& rootElement)
 
 		m_characterSelectStage = new CampaignStage(*stageElement);
 		m_characterSelectStage->AddStaticSpawn(EntityDefinition::GetDefinition("CharacterSelect"), Vector3(10.f, 5.f, 10.f), 0.f);
-		m_characterSelectStage->AddStaticSpawn(EntityDefinition::GetDefinition("Wall"), Vector3(100.f, 5.f, 20.f), 0.f);
 	}
 	
 	m_stages.push_back(m_characterSelectStage);

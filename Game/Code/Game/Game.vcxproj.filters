@@ -82,9 +82,6 @@
     <ClCompile Include="Entity\Components\PhysicsComponent.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Entity\Components\BehaviorComponent_PursuePath.cpp">
-      <Filter>Architecture</Filter>
-    </ClCompile>
     <ClCompile Include="Entity\Components\BehaviorComponent_PursueDirect.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
@@ -192,7 +189,6 @@
     <ClInclude Include="Entity\AIEntity.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent.hpp" />
     <ClInclude Include="Entity\Components\PhysicsComponent.hpp" />
-    <ClInclude Include="Entity\Components\BehaviorComponent_PursuePath.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_PursueDirect.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_PursueJump.hpp" />
     <ClInclude Include="Framework\SpawnPoint.hpp" />
