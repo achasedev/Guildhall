@@ -12,8 +12,8 @@
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -109,6 +109,9 @@ void Weapon::Shoot()
 
 		world->AddEntity(proj);
 		m_currAmmoCount--;
+
+		SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound("Data/SFX/Shoot.wav");
+		AudioSystem::GetInstance()->PlaySound(sound, false, 0.5f);
 
 		if (IsOutOfAmmo())
 		{

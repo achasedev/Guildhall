@@ -13,14 +13,27 @@
 	<Stages>
 
 		<Stage map="Flat" enter="west">
-			<SpawnEvent entity="Soldier" spawn_point="0" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="1"/>
+			<SpawnEvent entity="Walker" spawn_point="3" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="5"/>
+			<SpawnEvent entity="Walker" spawn_point="4" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="5"/>
+
+			<SpawnEvent entity="Walker" spawn_point="1" spawn_rate="2" spawn_count_delay="10" spawn_time_delay="1.0" total_to_spawn="5"/>
+			<SpawnEvent entity="Walker" spawn_point="2" spawn_rate="2" spawn_count_delay="10" spawn_time_delay="1.0" total_to_spawn="5"/>
 		</Stage>
 
 		<Stage map="Houses" enter="south">
-			<SpawnEvent entity="Walker" spawn_point="0" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="25"/>
-			<SpawnEvent entity="Tank" spawn_point="2" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="5"/>
-			<SpawnEvent entity="Charger" spawn_point="3" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="10"/>
+			<SpawnEvent entity="Walker" spawn_point="2" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="10"/>
+			<SpawnEvent entity="Walker" spawn_point="4" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="10"/>
+
+			<SpawnEvent entity="Charger" spawn_point="3" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="2"/>
 		</Stage> 
+
+<!--
+		<Stage map="Trees" enter="east">
+			<SpawnEvent entity="Tank" spawn_point="2" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+			<SpawnEvent entity="Tank" spawn_point="1" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+
+			<SpawnEvent entity="Soldier" spawn_point="0" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="5"/>
+		</Stage> -->
 
 	</Stages>
 

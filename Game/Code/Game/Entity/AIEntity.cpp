@@ -12,7 +12,7 @@
 #include "Game/Framework/SpawnPoint.hpp"
 #include "Game/Entity/Components/BehaviorComponent.hpp"
 #include "Engine/Math/MathUtils.hpp"
-
+#include "Engine/Audio/AudioSystem.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -52,11 +52,11 @@ void AIEntity::OnDeath()
 
 		float roll = GetRandomFloatZeroToOne();
 
-		if (roll > 90.f)
+		if (roll > 0.9f)
 		{
 			drop = new Weapon(EntityDefinition::GetDefinition("MissileLauncher"));
 		}
-		else if (roll > 60.f)
+		else if (roll > 0.6f)
 		{
 			drop = new Weapon(EntityDefinition::GetDefinition("Flamethrower"));
 		}
@@ -74,6 +74,9 @@ void AIEntity::OnDeath()
 	{
 		Game::AddPointsToScore(m_definition->m_pointValue);
 	}
+
+	SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound("Data/SFX/Death.wav");
+	AudioSystem::GetInstance()->PlaySound(sound);
 }
 
 

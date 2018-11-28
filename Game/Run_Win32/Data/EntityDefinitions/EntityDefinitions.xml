@@ -243,7 +243,7 @@
 
 	<!-- Enemies (LOAD AFTER WEAPONS)-->
 
-	<EntityDefinition name="Walker" initial_health="5" id="13">
+	<EntityDefinition name="Walker" initial_health="1" id="13">
 
 		<Movement max_acceleration="3000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="30.0"/>
 
@@ -259,7 +259,7 @@
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Tank" initial_health="20" id="14">
+	<EntityDefinition name="Tank" initial_health="10" id="14">
 
 		<Movement max_acceleration="2000.0" max_speed="5.0" max_deceleration="100.0" jump_impulse="10.0"/>
 
@@ -275,7 +275,7 @@
 	</EntityDefinition>
 
 
-	<EntityDefinition name="Charger" initial_health="3" id="15">
+	<EntityDefinition name="Charger" initial_health="1" id="15">
 
 		<Movement max_acceleration="3000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="50.0"/>
 
@@ -290,7 +290,7 @@
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Soldier" initial_health="2" id="16">
+	<EntityDefinition name="Soldier" initial_health="1" id="16">
 
 		<Movement max_acceleration="2000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="10.0"/>
 
@@ -326,7 +326,7 @@
 	</EntityDefinition>
 
 	<EntityDefinition name="House" id="23">
-		
+
 		<Visuals default_sprite="House" destructible="true"/>
 
 		<Physics physics_type="static">

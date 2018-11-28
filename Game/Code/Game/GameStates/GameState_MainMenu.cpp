@@ -139,6 +139,8 @@ void GameState_MainMenu::Render_Leave() const
 //
 bool GameState_MainMenu::Enter()
 {
+	Game::PlayBGM("Data/Music/Song.wav");
+
 	return true;
 }
 

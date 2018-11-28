@@ -13,13 +13,7 @@
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Framework/PlayStates/PlayState_Rest.hpp"
 #include "Game/Framework/PlayStates/PlayState_Stage.hpp"
-
 #include "Engine/Math/MathUtils.hpp"
-
-// For debug rendering
-#include "Engine/Core/Window.hpp"
-#include "Engine/Core/Utility/StringUtils.hpp"
-#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 #define TRANSITION_EDGE_SIZE (10)
 
@@ -428,7 +422,6 @@ bool PlayState_Rest::Leave()
 void PlayState_Rest::Render_Enter() const
 {
 	Game::GetWorld()->DrawToGrid();
-	DebugRenderSystem::Draw2DText(Stringf("Rest Enter: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
 
@@ -453,6 +446,4 @@ void PlayState_Rest::Render_Leave() const
 
 	Game::GetWorld()->DrawToGridWithOffset(currOffset);
 	m_worldToTransitionTo->DrawToGridWithOffset(transitionOffset);
-
-	DebugRenderSystem::Draw2DText(Stringf("Rest Leave: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }

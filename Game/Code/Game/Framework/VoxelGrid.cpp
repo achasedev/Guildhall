@@ -22,7 +22,6 @@
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
 #include "Engine/Rendering/Shaders/ComputeShader.hpp"
 #include "Engine/Rendering/Resources/VoxelTexture.hpp"
-#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 // Constants for any size grid
 #define VERTICES_PER_VOXEL 24
@@ -87,15 +86,6 @@ void VoxelGrid::Initialize(const IntVector3& voxelDimensions)
 	m_computeShader->Initialize("Data/ComputeShaders/VoxelMeshRebuild.cs");
 
 	InitializeBuffers();
-
-	DebugRenderOptions options;
-	options.m_isWireFrame = true;
-	options.m_startColor = Rgba::RED;
-	options.m_endColor = Rgba::RED;
-	options.m_lifetime = 1000.f;
-	options.m_renderMode = DEBUG_RENDER_IGNORE_DEPTH;
-
-	DebugRenderSystem::DrawCube(Vector3(m_dimensions / 2), options, Vector3(m_dimensions));
 }
 
 

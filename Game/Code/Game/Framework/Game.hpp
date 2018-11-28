@@ -8,6 +8,7 @@
 #pragma once
 #include <vector>
 #include "Engine/Math/Vector2.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 
 class Clock;
 class World;
@@ -70,6 +71,7 @@ public:
 
 	static bool					AreAllPlayersInitialized();
 
+	static void					PlayBGM(const std::string filename);
 
 private:
 	//-----Private Methods-----
@@ -104,6 +106,9 @@ private:
 
 	// Gameplay
 	int					m_score = 0;
+
+	// Audio
+	SoundPlaybackID		m_bgm;
 
 	static Game* s_instance;			// The singleton Game instance
 

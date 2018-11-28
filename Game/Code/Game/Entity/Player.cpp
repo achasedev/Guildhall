@@ -21,7 +21,6 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
-#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 

@@ -10,11 +10,6 @@
 #include "Game/GameStates/GameState_MainMenu.hpp"
 #include "Game/Framework/World.hpp"
 
-// For debug rendering the state
-#include "Engine/Core/Window.hpp"
-#include "Engine/Core/Utility/StringUtils.hpp"
-#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -94,7 +89,6 @@ bool PlayState_Defeat::Leave()
 void PlayState_Defeat::Render_Enter() const
 {
 	Game::GetWorld()->DrawToGrid();
-	DebugRenderSystem::Draw2DText(Stringf("Defeat Enter: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
 
@@ -104,7 +98,6 @@ void PlayState_Defeat::Render_Enter() const
 void PlayState_Defeat::Render() const
 {
 	Game::GetWorld()->DrawToGrid();
-	DebugRenderSystem::Draw2DText(Stringf("Defeat!: Press Start/Space/A to return"), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
 
@@ -115,5 +108,4 @@ void PlayState_Defeat::Render_Leave() const
 {
 	Game::GetWorld()->DrawToGrid();
 
-	DebugRenderSystem::Draw2DText(Stringf("Defeat Leave: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }

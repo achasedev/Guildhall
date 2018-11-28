@@ -15,11 +15,6 @@
 #include "Game/Framework/PlayStates/PlayState_Defeat.hpp"
 #include "Game/Entity/Player.hpp"
 
-// For debug rendering the state
-#include "Engine/Core/Window.hpp"
-#include "Engine/Core/Utility/StringUtils.hpp"
-#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -130,7 +125,6 @@ bool PlayState_Stage::Leave()
 void PlayState_Stage::Render_Enter() const
 {
 	Game::GetWorld()->DrawToGrid();
-	DebugRenderSystem::Draw2DText(Stringf("Stage Enter: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
 
@@ -140,7 +134,6 @@ void PlayState_Stage::Render_Enter() const
 void PlayState_Stage::Render() const
 {
 	Game::GetWorld()->DrawToGrid();
-	//DebugRenderSystem::Draw2DText(Stringf("Stage %i of %i", Game::GetCampaignManager()->GetCurrentStageNumber() + 1, Game::GetCampaignManager()->GetStageCount()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
 
@@ -150,5 +143,4 @@ void PlayState_Stage::Render() const
 void PlayState_Stage::Render_Leave() const
 {
 	Game::GetWorld()->DrawToGrid();
-	DebugRenderSystem::Draw2DText(Stringf("Stage Leave: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }

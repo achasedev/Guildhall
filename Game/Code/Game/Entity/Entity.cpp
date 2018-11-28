@@ -14,7 +14,6 @@
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
-#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 #include <stdlib.h>
 
 

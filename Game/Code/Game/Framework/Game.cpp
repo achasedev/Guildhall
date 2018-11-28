@@ -601,6 +601,18 @@ bool Game::AreAllPlayersInitialized()
 
 
 //-----------------------------------------------------------------------------------------------
+// Plays the given background music
+//
+void Game::PlayBGM(const std::string filename)
+{
+	AudioSystem::GetInstance()->StopSound(s_instance->m_bgm);
+
+	SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound(filename);
+	s_instance->m_bgm = AudioSystem::GetInstance()->PlaySound(sound, true);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the singleton Game instance
 //
 Game* Game::GetInstance()

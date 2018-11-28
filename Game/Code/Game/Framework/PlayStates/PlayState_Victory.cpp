@@ -10,11 +10,6 @@
 #include "Game/GameStates/GameState_MainMenu.hpp"
 #include "Game/Framework/World.hpp"
 
-// For debug printing the state
-#include "Engine/Core/Window.hpp"
-#include "Engine/Core/Utility/StringUtils.hpp"
-#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -68,6 +63,11 @@ void PlayState_Victory::ProcessInput()
 //
 bool PlayState_Victory::Enter()
 {
+	if (m_transitionTimer.HasIntervalElapsed())
+	{
+		Game::PlayBGM("Data/Music/Victory.wav");
+	}
+
 	return m_transitionTimer.HasIntervalElapsed();
 }
 
@@ -96,7 +96,6 @@ bool PlayState_Victory::Leave()
 void PlayState_Victory::Render_Enter() const
 {
 	Game::GetWorld()->DrawToGrid();
-	DebugRenderSystem::Draw2DText(Stringf("Victory Enter: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
 
@@ -106,7 +105,6 @@ void PlayState_Victory::Render_Enter() const
 void PlayState_Victory::Render() const
 {
 	Game::GetWorld()->DrawToGrid();
-	DebugRenderSystem::Draw2DText(Stringf("Victory!: Press Start/Space/A to return"), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
 
 
@@ -116,5 +114,4 @@ void PlayState_Victory::Render() const
 void PlayState_Victory::Render_Leave() const
 {
 	Game::GetWorld()->DrawToGrid();
-	DebugRenderSystem::Draw2DText(Stringf("Victory Leave: %.2f seconds remaining", m_transitionTimer.GetTimeUntilIntervalEnds()), Window::GetInstance()->GetWindowBounds(), 0.f);
 }
