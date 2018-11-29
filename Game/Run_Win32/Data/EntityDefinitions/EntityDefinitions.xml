@@ -51,7 +51,7 @@
 	<EntityDefinition name="Cat" initial_health="5" id="3">
 
 		<!--Movement Parameters-->
-		<Movement max_acceleration="300.0" max_speed="40.0" max_deceleration="100.0" jump_impulse="80.0"/>
+		<Movement max_acceleration="500.0" max_speed="50.0" max_deceleration="500.0" jump_impulse="80.0"/>
 
 		<!--Visuals-->
 		<Visuals animation_set="Cat" default_sprite="Cat_idle_0"/>
@@ -292,7 +292,8 @@
 
 	<EntityDefinition name="Soldier" initial_health="1" id="16">
 
-		<Movement max_acceleration="2000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="10.0"/>
+		<Movement max_acceleration="2000.0" max_speed="10.0" 
+			max_deceleration="100.0" jump_impulse="10.0"/>
 
 		<Visuals animation_set="Soldier" default_sprite="Soldier_idle_0"/>
 
