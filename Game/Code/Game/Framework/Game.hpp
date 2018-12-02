@@ -15,6 +15,7 @@ class GameState;
 class GameObject;
 class RenderScene;
 class NetSession;
+class NetConnection;
 
 class Game
 {
@@ -30,6 +31,9 @@ public:
 	void ProcessInput();				// Process all input this frame
 	void Update();						// Updates all game object states, called each frame
 	void Render() const;				// Renders all game objects to screen, called each frame
+
+	void OnConnectionJoin(NetConnection* cp);
+	void OnConnectionLeave(NetConnection* cp);
 
 	static Game*	GetInstance();
 	static void		TransitionToGameState(GameState* newState);
@@ -50,7 +54,7 @@ private:
 
 	void		CheckToUpdateGameState();
 
-	void		RegisterGameMessages();
+	void		SetupNetwork();
 
 
 private:

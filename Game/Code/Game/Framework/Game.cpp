@@ -465,6 +465,17 @@ void Command_Disconnect(Command& cmd)
 }
 
 
+// NetObjectSystem
+void SendPlayerCreate(NetMessage& msg, void* args);
+void ReceivePlayerCreate(NetMessage& msg);
+void SendPlayerDestroy(NetMessage& msg, void* args);
+void ReceivePlayerDestroy(NetMessage* msg);
+
+void MakeSnapshot(void* out_snapshot, const void* object);
+void SendSnapshot(NetMessage& msg, const void* snapshot);
+void ReceiveSnapshot(NetMessage& msg, void* out_snapshot);
+void ApplySnapshot(void* snapshot, void* object);
+
 //-----------------------------------------------------------------------------------------------
 //--------------------------------- Game Class --------------------------------------------------
 //-----------------------------------------------------------------------------------------------
@@ -495,9 +506,7 @@ Game::Game()
 	m_renderScene->AddCamera(m_gameCamera);
 
 	// Net Session
-	m_netSession = new NetSession();
-	RegisterGameMessages();
-	//m_netSession->Bind(GAME_PORT, 10);
+	SetupNetwork();
 }
 
 
@@ -592,6 +601,24 @@ void Game::Render() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Callback for when a connection joins the game
+//
+void Game::OnConnectionJoin(NetConnection* cp)
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Callback for when a connection leaves the game
+//
+void Game::OnConnectionLeave(NetConnection* cp)
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Sets the pending state flag to the one given, so the next frame the game will switch to the
 // given state
 //
@@ -680,11 +707,15 @@ void Game::CheckToUpdateGameState()
 }
 
 
-//-----------------------------------------------------------------------------------------------
-// Registers all game net messages to the game NetSession
-//
-void Game::RegisterGameMessages()
+void Game::SetupNetwork()
 {
+	// Create the NetSession
+	m_netSession = new NetSession();
+
+	// Bind NetConnection event callbacks
+	m_netSession->m_onJoinCallback = std::bind(&Game::OnConnectionJoin, this, std::placeholders::_1);
+	m_netSession->m_onLeaveCallback = std::bind(&Game::OnConnectionLeave, this, std::placeholders::_1);
+
 	m_netSession->RegisterMessageDefinition(NET_MSG_UNRELIABLE_TEST, "unreliable_test", OnUnreliableTest);
 	m_netSession->RegisterMessageDefinition(NET_MSG_RELIABLE_TEST, "reliable_test", OnReliableTest, NET_MSG_OPTION_RELIABLE);
 	m_netSession->RegisterMessageDefinition(NET_MSG_SEQUENCE_TEST, "sequence_test", OnSequenceTest, (eNetMessageOption)(NET_MSG_OPTION_RELIABLE | NET_MSG_OPTION_IN_ORDER));
