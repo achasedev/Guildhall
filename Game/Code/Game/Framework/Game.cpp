@@ -322,54 +322,6 @@ void ThreadWork_ReliableTest(void* args)
 	free(args);
 }
 
-void ThreadWork_SequenceTest(void* args)
-{
-	Stopwatch timer;
-
-	ThreadWork_Data* data = (ThreadWork_Data*)args;
-
-	unsigned int sent = 0;
-	timer.SetInterval(0.03f);
-
-	while (sent < data->messageCount)
-	{
-		if (timer.HasIntervalElapsed())
-		{
-			NetMessage* message = new NetMessage(Game::GetNetSession()->GetMessageDefinition("sequence_test"));
-			message->AssignSequenceChannelID((uint8_t)data->channelIndex);
-
-			message->Write(sent);
-			message->Write(data->messageCount);
-
-			sent++;
-			timer.SetInterval(0.02f);
-
-			if (data->useAddress)
-			{
-				NetSender_t sender;
-				sender.address = data->address;
-				sender.netSession = Game::GetNetSession();
-
-				Game::GetNetSession()->SendMessageDirect(message, sender);
-			}
-			else
-			{
-				NetConnection* connection = Game::GetNetSession()->GetConnection((uint8_t)data->connectionIndex);
-				if (connection == nullptr)
-				{
-					ConsoleErrorf("No connection at %i", data->connectionIndex);
-				}
-				else
-				{
-					connection->Send(message);
-				}
-			}
-		}
-	}
-
-	free(args);
-}
-
 void Command_UnreliableTest(Command& cmd)
 {
 	unsigned int connectionIndex = INVALID_CONNECTION_INDEX;
@@ -424,38 +376,6 @@ void Command_ReliableTest(Command& cmd)
 
 	Thread::CreateAndDetach(ThreadWork_ReliableTest, data);
 }
-
-
-void Command_SequenceTest(Command& cmd)
-{
-	unsigned int connectionIndex = INVALID_CONNECTION_INDEX;
-	unsigned int messageCount = 10;
-
-	std::string address;
-	bool addressSpecifed = cmd.GetParam("a", address);
-	bool connectionSpecified = cmd.GetParam("i", connectionIndex);
-
-	if (!connectionSpecified && !addressSpecifed)
-	{
-		ConsoleErrorf("No connection index or address specified");
-		return;
-	}
-
-	cmd.GetParam("c", messageCount, &messageCount);
-
-	unsigned int channelIndex = 0;
-	cmd.GetParam("ch", channelIndex, &channelIndex);
-
-	ThreadWork_Data* data = (ThreadWork_Data*)malloc(sizeof(ThreadWork_Data));
-	data->messageCount = messageCount;
-	data->connectionIndex = connectionIndex;
-	data->address = NetAddress_t(address.c_str(), false);
-	data->useAddress = addressSpecifed;
-	data->channelIndex = channelIndex;
-
-	Thread::CreateAndDetach(ThreadWork_SequenceTest, data);
-}
-
 
 void Command_Disconnect(Command& cmd)
 {
@@ -549,7 +469,6 @@ void Game::Initialize()
 
 	Command::Register("unreliable_test", "Sends unreliable messages on a fixed interval for testing", Command_UnreliableTest);
 	Command::Register("reliable_test", "Sends reliable messages on a fixed interval for testing", Command_ReliableTest);
-	Command::Register("sequence_test", "Sends in-order messages on a fixed interval for testing", Command_SequenceTest);
 }
 
 
