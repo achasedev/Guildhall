@@ -69,7 +69,6 @@ void Projectile::OnEntityCollision(Entity* other)
 		Vector3 direction = (other->GetCenterPosition() - GetCenterPosition()).GetNormalized();
 		other->TakeDamage(m_definition->m_projectileDamage, m_definition->m_collisionDef.m_collisionKnockback * direction);
 
-		ConsolePrintf("Damage was %i", m_definition->m_projectileDamage);
 		if (m_definition->m_projectileHitRadius > 0.f)
 		{
 			Game::GetWorld()->ApplyExplosion(GetCoordinatePosition(), m_entityTeam, m_definition->m_projectileDamage, m_definition->m_projectileHitRadius, m_definition->m_collisionDef.m_collisionKnockback, other);

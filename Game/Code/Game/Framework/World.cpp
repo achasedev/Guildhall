@@ -18,6 +18,7 @@
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Core/LogSystem.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/HeatMap.hpp"
@@ -82,7 +83,7 @@ bool					CheckEntityCollision(Entity* first, Entity* second);
 BoundOverlapResult_t	PerformBroadphaseCheck(Entity* first, Entity* second);
 VoxelOverlapResult_t	PerformNarrowPhaseCheck(Entity* first, Entity* second, const BoundOverlapResult_t& r);
 
-void					CalculateCollisionCorrection(Entity* first, Entity* second, const VoxelOverlapResult_t& r);
+void					CalculateAndApplyCollisionCorrection(Entity* first, Entity* second, const VoxelOverlapResult_t& r);
 void					CalculateMassScalars(Entity* first, Entity* second, float& out_firstScalar, float& out_secondScalar);
 
 
@@ -601,7 +602,6 @@ void World::InitializeTerrain(const std::string mapName)
 		entity->SetPosition(spawns[i].position);
 
 		entity->SetOrientation(spawns[i].orientation);
-		ConsolePrintf("Orientation: %.2f", spawns[i].orientation);
 
 		AddEntity(entity);
 	}
@@ -1234,7 +1234,7 @@ bool CheckEntityCollision(Entity* first, Entity* second)
 	if (voxelResult.overlapOccurred)
 	{
 		// Apply corrections and call collision callbacks
-		CalculateCollisionCorrection(first, second, voxelResult);
+		CalculateAndApplyCollisionCorrection(first, second, voxelResult);
 
 		first->OnEntityCollision(second);
 		second->OnEntityCollision(first);
@@ -1356,14 +1356,14 @@ BoundOverlapResult_t PerformBroadphaseCheck(Entity* first, Entity* second)
 
 	// Calculate the X Overlap in voxels
 	r.xOverlapf = MinFloat(firstBounds.maxs.x - secondBounds.mins.x, secondBounds.maxs.x - firstBounds.mins.x);
-	r.xOverlapi = Ceiling(r.xOverlapf);
+	r.xOverlapi = RoundToNearestInt(r.xOverlapf);
 	r.xOverlapi = ClampInt(r.xOverlapi, 0, MinInt(firstDimensions.x, secondDimensions.x));
 
 	ASSERT_OR_DIE(r.xOverlapi <= firstDimensions.x && r.xOverlapi <= secondDimensions.x, "Error: xOverlap too large");
 
 	// Calculate the Y Overlap in voxels
 	r.yOverlapf = MinFloat(firstBounds.maxs.y - secondBounds.mins.y, secondBounds.maxs.y - firstBounds.mins.y);
-	r.yOverlapi = Ceiling(r.yOverlapf);
+	r.yOverlapi = RoundToNearestInt(r.yOverlapf);
 	r.yOverlapi = ClampInt(r.yOverlapi, 0, MinInt(firstDimensions.y, secondDimensions.y));
 
 	ASSERT_OR_DIE(r.yOverlapi <= firstDimensions.y && r.yOverlapi <= secondDimensions.y, "Error: yOverlap too large");
@@ -1371,7 +1371,7 @@ BoundOverlapResult_t PerformBroadphaseCheck(Entity* first, Entity* second)
 
 	// Calculate the Z Overlap in voxels
 	r.zOverlapf = MinFloat(firstBounds.maxs.z - secondBounds.mins.z, secondBounds.maxs.z - firstBounds.mins.z);
-	r.zOverlapi = Ceiling(r.zOverlapf);
+	r.zOverlapi = RoundToNearestInt(r.zOverlapf);
 	r.zOverlapi = ClampInt(r.zOverlapi, 0, MinInt(firstDimensions.z, secondDimensions.z));
 
 	ASSERT_OR_DIE(r.zOverlapi <= firstDimensions.z && r.zOverlapi <= secondDimensions.z, "Error: zOverlap too large");
@@ -1572,32 +1572,23 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 
 						collisionResult.firstHitCoords.push_back(firstCoords);
 						collisionResult.secondHitCoords.push_back(secondCoords);
+
+						minX = MinInt(minX, xIndex);
+						maxX = MaxInt(maxX, xIndex);
 					}
 				}
-			}
 
-			if (firstFlags != 0 || secondFlags != 0)
-			{
 				minY = MinInt(minY, yIndex);
 				minZ = MinInt(minZ, zIndex);
 				maxY = MaxInt(maxY, yIndex);
 				maxZ = MaxInt(maxZ, zIndex);
 			}
-
-			for (int xIndex = 0; xIndex < r.xOverlapi; ++xIndex)
-			{
-				if ((firstFlags & (TEXTURE_LEFTMOST_COLLISION_BIT >> xIndex)) != 0 || (secondFlags & (TEXTURE_LEFTMOST_COLLISION_BIT >> xIndex)) != 0)
-				{
-					minX = MinInt(minX, xIndex);
-					maxX = MaxInt(maxX, xIndex);
-				}
-			}
 		}
 	}
 
-	collisionResult.xOverlapi = MinInt(r.xOverlapi - minX, maxX + 1);
-	collisionResult.yOverlapi = MinInt(r.yOverlapi - minY, maxY + 1);
-	collisionResult.zOverlapi = MinInt(r.zOverlapi - minZ, maxZ + 1);
+	collisionResult.xOverlapi = ClampInt(maxX - minX + 1, 0, 100);
+	collisionResult.yOverlapi = ClampInt(maxY - minY + 1, 0, 100);	
+	collisionResult.zOverlapi = ClampInt(maxZ - minZ + 1, 0, 100);
 
 	collisionResult.xOverlapf = (float)collisionResult.xOverlapi;
 	collisionResult.yOverlapf = (float)collisionResult.yOverlapi;
@@ -1651,7 +1642,7 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 //- C FUNCTION ----------------------------------------------------------------------------------------------
 // Applies a corrective collision offset to both entities so they are no longer overlapping
 //
-void CalculateCollisionCorrection(Entity* first, Entity* second, const VoxelOverlapResult_t& r)
+void CalculateAndApplyCollisionCorrection(Entity* first, Entity* second, const VoxelOverlapResult_t& r)
 {
 	Vector3 firstPosition = first->GetPosition();
 	Vector3 secondPosition = second->GetPosition();
@@ -1699,12 +1690,18 @@ void CalculateCollisionCorrection(Entity* first, Entity* second, const VoxelOver
 
 	bool shouldCorrect = (firstScalar > 0.f || secondScalar > 0.f);
 
+	Vector3 firstFinalCorrection = firstScalar * finalCorrection;
+	Vector3 secondFinalCorrection = -secondScalar * finalCorrection;
+	Vector3 firstPosPreCorrection = first->GetPosition();
+	Vector3 secondPosPreCorrection = second->GetPosition();
+
 	if (shouldCorrect)
 	{
 		// Apply the correction
-		first->AddCollisionCorrection(firstScalar * finalCorrection);
-		second->AddCollisionCorrection(-secondScalar * finalCorrection);
+		first->AddCollisionCorrection(firstFinalCorrection);
+		second->AddCollisionCorrection(secondFinalCorrection);
 
+		ConsolePrintf("Collision applied");
 		// Zero out velocities if colliding against static
 		if (first->GetPhysicsType() == PHYSICS_TYPE_STATIC && second->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC)
 		{
@@ -1751,6 +1748,35 @@ void CalculateCollisionCorrection(Entity* first, Entity* second, const VoxelOver
 				}
 			}
 		}
+	}
+
+	// Log a bunch of info for checking
+	if (first->IsPlayer() || second->IsPlayer() && first->GetPhysicsType() == PHYSICS_TYPE_STATIC || second->GetPhysicsType() == PHYSICS_TYPE_STATIC)
+	{
+		LogTaggedPrintf("GAME", "Collision hit");
+
+		LogTaggedPrintf("Game", "Positions: (First: (%.2f, %.2f, %.2f) | (Second: (%.2f, %.2f, %.2f)", firstPosPreCorrection.x, firstPosPreCorrection.y, firstPosPreCorrection.z, secondPosPreCorrection.x, secondPosPreCorrection.y, secondPosPreCorrection.z);
+
+		AABB3 firstBounds = first->GetWorldBounds();
+		AABB3 secondBounds = second->GetWorldBounds();
+
+		LogTaggedPrintf("GAME", "Bounds: (First: Mins(%.2f, %.2f, %.2f) Maxs(%.2f, %.2f, %.2f) | (Second: Mins(%.2f, %.2f, %.2f) Maxs(%.2f, %.2f, %.2f)", firstBounds.mins.x, firstBounds.mins.y, firstBounds.mins.z, firstBounds.maxs.x, firstBounds.maxs.y, firstBounds.maxs.z, secondBounds.mins.x, secondBounds.mins.y, secondBounds.mins.z, secondBounds.maxs.x, secondBounds.maxs.y, secondBounds.maxs.z);
+
+		LogTaggedPrintf("GAME", "Overlaps Amounts (Int): (%i, %i, %i)", r.xOverlapi, r.yOverlapi, r.zOverlapi);
+		LogTaggedPrintf("GAME", "Overlaps Amounts (Float): (%.2f, %.2f, %.2f)", r.xOverlapf, r.yOverlapf, r.zOverlapf);
+		LogTaggedPrintf("GAME", "Direction chosen: %i", direction);
+
+		LogTaggedPrintf("GAME", "First correction: Scalar = %.2f, Overall Correction = (%.2f, %.2f, %.2f), Final Applied =  (%.2f, %.2f, %.2f)", firstScalar, finalCorrection.x, finalCorrection.y, finalCorrection.z, firstFinalCorrection.x, firstFinalCorrection.y, firstFinalCorrection.z);
+		LogTaggedPrintf("GAME", "Second correction: Scalar = %.2f, Overall Correction = (%.2f, %.2f, %.2f), Final Applied =  (%.2f, %.2f, %.2f)", secondScalar, finalCorrection.x, finalCorrection.y, finalCorrection.z, secondFinalCorrection.x, secondFinalCorrection.y, secondFinalCorrection.z);
+	
+		first->ApplyCollisionCorrection();
+		second->ApplyCollisionCorrection();
+
+		Vector3 firstPos = first->GetPosition();
+		Vector3 secondPos = second->GetPosition();
+
+		LogTaggedPrintf("GAME", "Pushed First to (%.2f, %.2f, %.2f)", firstPos.x, firstPos.y, firstPos.z);
+		LogTaggedPrintf("GAME", "Pushed Second to (%.2f, %.2f, %.2f)", secondPos.x, secondPos.y, secondPos.z);
 	}
 }
 
