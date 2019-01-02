@@ -18,6 +18,7 @@ public:
 
 	// Events
 	virtual void OnEntityCollision(Entity* other) override;
+
 	void OnEquip(Entity* playerEquipping);
 	void OnUnequip();
 
@@ -26,7 +27,7 @@ public:
 
 	bool IsOutOfAmmo() const;
 
-	const VoxelTexture* GetTextureForUIRender();
+	const VoxelSprite* GetTextureForUIRender();
 
 
 private:

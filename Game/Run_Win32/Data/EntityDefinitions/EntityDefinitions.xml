@@ -245,7 +245,7 @@
 
 	<EntityDefinition name="Walker" initial_health="1" id="13">
 
-		<Movement max_acceleration="3000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="30.0"/>
+		<Movement max_acceleration="3000.0" max_speed="0.0" max_deceleration="100.0" jump_impulse="30.0"/>
 
 		<Visuals animation_set="Walker" default_sprite="Walker_idle_0"/>
 
@@ -329,6 +329,16 @@
 	<EntityDefinition name="House" id="23">
 
 		<Visuals default_sprite="House" destructible="true"/>
+
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>
+		
+	</EntityDefinition>
+
+	<EntityDefinition name="TestCube" id="24">
+
+		<Visuals default_sprite="TestCube" destructible="true"/>
 
 		<Physics physics_type="static">
 			<CollisionDefinition response="no_correction" layer="world"/>

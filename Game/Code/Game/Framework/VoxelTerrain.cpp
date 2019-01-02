@@ -1,9 +1,9 @@
 #include "Engine/Core/Rgba.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
+#include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Framework/VoxelTerrain.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
-#include "Engine/Rendering/Resources/VoxelTexture.hpp"
 
 std::map<std::string, VoxelTerrain*> VoxelTerrain::s_terrains;
 
@@ -40,7 +40,7 @@ void VoxelTerrain::LoadTerrain(const XMLElement& terrainElement)
 
 	std::string filepath = ParseXmlAttribute(terrainElement, "file", "");
 
-	VoxelTexture* texture = new VoxelTexture();
+	VoxelSprite* texture = new VoxelSprite();
 	bool success = texture->CreateFromFile(filepath.c_str(), false);
 	ASSERT_OR_DIE(success, Stringf("Error: Couldn't load terrain \"%s\"", name.c_str()));
 
@@ -56,12 +56,12 @@ void VoxelTerrain::LoadTerrain(const XMLElement& terrainElement)
 			for (int x = 0; x < TERRAIN_DIMENSIONS.x; ++x)
 			{
 				IntVector3 coord = IntVector3(x, y, z);
-				Rgba color = texture->GetColorAtCoords(coord);
+				Rgba color = texture->GetColorAtRelativeCoords(coord, 0.f);
 
 				if (color.r == 255)
 				{
 					// Remove the key
-					texture->SetColorAtCoords(coord, Rgba(0, 0, 0, 0));
+					texture->SetColorAtRelativeCoords(coord, 0.f, Rgba(0, 0, 0, 0));
 
 					// Add the entity by ID
 					EntitySpawn_t spawn;
@@ -69,10 +69,10 @@ void VoxelTerrain::LoadTerrain(const XMLElement& terrainElement)
 					// Center the spawn
 					spawn.definition = EntityDefinition::GetDefinition((int)color.g);
 
-					IntVector3 halfDimensions = spawn.definition->GetDefaultSprite()->GetDimensions() / 2;
+					IntVector3 halfDimensions = spawn.definition->GetDefaultSprite()->GetBaseDimensions() / 2;
 
 					spawn.position = Vector3(IntVector3(coord.x, coord.y, coord.z));
-					spawn.orientation = (float)color.b * 2.f;
+					spawn.orientation = 270.f;
 
 					terrain->m_initialEntities.push_back(spawn);
 				}
@@ -87,13 +87,13 @@ void VoxelTerrain::LoadTerrain(const XMLElement& terrainElement)
 
 void VoxelTerrain::AddVoxel(const IntVector3& coords, const Rgba& color)
 {
-	m_texture->SetColorAtCoords(coords, color);
+	m_texture->SetColorAtRelativeCoords(coords, 0.f, color);
 }
 
 Rgba VoxelTerrain::RemoveVoxel(const IntVector3& coords)
 {
-	Rgba color = m_texture->GetColorAtCoords(coords);
-	m_texture->SetColorAtCoords(coords, Rgba(0, 0, 0, 0));
+	Rgba color = m_texture->GetColorAtRelativeCoords(coords, 0.f);
+	m_texture->SetColorAtRelativeCoords(coords, 0.f, Rgba(0, 0, 0, 0));
 
 	return color;
 }
@@ -102,7 +102,7 @@ int VoxelTerrain::GetHeightAtCoords(const IntVector2& coords)
 {
 	for (int y = 0; y < TERRAIN_DIMENSIONS.y; ++y)
 	{
-		Rgba color = m_texture->GetColorAtCoords(IntVector3(coords.x, y, coords.y));
+		Rgba color = m_texture->GetColorAtRelativeCoords(IntVector3(coords.x, y, coords.y), 0.f);
 		if (color.a == 0)
 		{
 			return y;
@@ -114,7 +114,7 @@ int VoxelTerrain::GetHeightAtCoords(const IntVector2& coords)
 
 Rgba VoxelTerrain::GetColorAtCoords(const IntVector3& coords)
 {
-	return m_texture->GetColorAtCoords(coords);
+	return m_texture->GetColorAtRelativeCoords(coords, 0.f);
 }
 
 

@@ -14,7 +14,6 @@
 #include "Game/Entity/Components/BehaviorComponent_PursueDirect.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
-#include "Engine/Rendering/Resources/VoxelTexture.hpp"
 
 // Global map for all entity definitions
 std::map<std::string, const EntityDefinition*> EntityDefinition::s_definitions;
@@ -254,7 +253,7 @@ std::string EntityDefinition::GetName() const
 //
 IntVector3 EntityDefinition::GetDimensions() const
 {
-	return m_defaultSprite->GetDimensions();
+	return m_defaultSprite->GetBaseDimensions();
 }
 
 

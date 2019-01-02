@@ -146,7 +146,7 @@ void GameState_Loading::LoadVoxelResources() const
 			std::string filename = ParseXmlAttribute(*currSpriteElement, "file");
 			ASSERT_OR_DIE(filename.size() > 0, "Error: VoxelAssets.xml has sprite element with no filename specified");
 
-			VoxelSprite::LoadVoxelSprites(filename);
+			VoxelSprite::LoadSpriteFile(filename);
 
 			currSpriteElement = currSpriteElement->NextSiblingElement();
 		}

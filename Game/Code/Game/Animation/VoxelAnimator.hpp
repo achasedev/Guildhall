@@ -8,7 +8,7 @@
 #include "Game/Animation/VoxelAnimation.hpp"
 
 class Stopwatch;
-class VoxelTexture;
+class VoxelSprite;
 class VoxelAnimationSet;
 class VoxelAnimation;
 
@@ -24,6 +24,7 @@ public:
 
 	// Producers
 	const VoxelSprite*	GetCurrentSprite() const;
+	const VoxelSprite*	GetDefaultSprite() const;
 	bool				IsCurrentAnimationFinished() const;
 	
 

@@ -1,181 +1,407 @@
-/************************************************************************/
-/* File: VoxelSprite.cpp
-/* Author: Andrew Chase
-/* Date: October 2nd, 2018
-/* Description: Implementation of the VoxelSprite class
-/************************************************************************/
 #include "Game/Animation/VoxelSprite.hpp"
-#include "Engine/Assets/AssetDB.hpp"
+#include "Engine/Core/File.hpp"
+#include "Engine/Core/Rgba.hpp"
 #include "Engine/Math/MathUtils.hpp"
-#include "Engine/Core/Utility/StringUtils.hpp"
-#include "Engine/Core/Utility/ErrorWarningAssert.hpp"
-#include "Engine/Rendering/Resources/VoxelTexture.hpp"
+#include "Engine/Core/Utility/XmlUtilities.hpp"
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 
-// Global map of sprites
+// Registry for all sprites used in animations/cloned from for destructibles
 std::map<std::string, const VoxelSprite*> VoxelSprite::s_sprites;
 
 
-//-----------------------------------------------------------------------------------------------
-// Constructor - takes the file name of the xml file
-//
-VoxelSprite::VoxelSprite(const std::string& name, const std::string& filename)
-	: m_name(name)
+VoxelSprite::VoxelSprite()
 {
-	VoxelTexture* northTexture = new VoxelTexture();
-	bool success = northTexture->CreateFromFile(filename.c_str(), true);
-
-	ASSERT_OR_DIE(success, Stringf("Error: VoxelSprite::VoxelSprite() couldn't open file %s", filename.c_str()));
-
-	// Dimensions check, so we can rotate and have it work
-	m_dimensions = northTexture->GetDimensions();
-
-
-	// Rotate to get the other 3 directions if we can
-	if (m_dimensions.x == m_dimensions.z)
-	{
-		// South
-		int destIndex = 0;
-		VoxelTexture* southTexture = northTexture->Clone();
-		for (int y = 0; y < m_dimensions.y; ++y)
-		{
-			for (int z = m_dimensions.z - 1; z >= 0; --z)
-			{
-				for (int x = m_dimensions.x - 1; x >= 0; --x)
-				{
-					int sourceIndex = y * (m_dimensions.x * m_dimensions.z) + z * m_dimensions.x + x;
-					southTexture->SetColorAtIndex(destIndex, northTexture->GetColorAtIndex(sourceIndex));
-					destIndex++;
-				}
-			}
-		}
-
-		// East
-		VoxelTexture* eastTexture = northTexture->Clone();
-		destIndex = 0;
-		for (int y = 0; y < m_dimensions.y; ++y)
-		{
-			for (int x = m_dimensions.x - 1; x >= 0; --x)
-			{
-				for (int z = 0; z < m_dimensions.z; ++z)
-				{
-					int sourceIndex = y * (m_dimensions.x * m_dimensions.z) + z * m_dimensions.x + x;
-					eastTexture->SetColorAtIndex(destIndex, northTexture->GetColorAtIndex(sourceIndex));
-					destIndex++;
-				}
-			}
-		}
-
-		// West
-		VoxelTexture* westTexture = northTexture->Clone();
-		destIndex = 0;
-		for (int y = 0; y < m_dimensions.y; ++y)
-		{
-			for (int x = 0; x < m_dimensions.x; ++x)
-			{
-				for (int z = m_dimensions.z - 1; z >= 0; --z)
-				{
-					int sourceIndex = y * (m_dimensions.x * m_dimensions.z) + z * m_dimensions.x + x;
-					westTexture->SetColorAtIndex(destIndex, northTexture->GetColorAtIndex(sourceIndex));
-					destIndex++;
-				}
-			}
-		}
-
-		// Set the textures
-		m_textures[DIRECTION_EAST] = eastTexture;
-		m_textures[DIRECTION_NORTH] = northTexture;
-		m_textures[DIRECTION_WEST] = westTexture;
-		m_textures[DIRECTION_SOUTH] = southTexture;
-	}
-	else
-	{
-		m_textures[DIRECTION_NORTH] = northTexture;
-		m_textures[DIRECTION_EAST] = nullptr;
-		m_textures[DIRECTION_SOUTH] = nullptr;
-		m_textures[DIRECTION_WEST] = nullptr;
-	}
 }
 
-
-//-----------------------------------------------------------------------------------------------
-// Private copy constructor
-//
-VoxelSprite::VoxelSprite(const VoxelSprite& copy)
-{
-	m_name = copy.m_name;
-	m_dimensions = copy.m_dimensions;
-
-	for (int i = 0; i < NUM_DIRECTIONS; ++i)
-	{
-		if (copy.m_textures[i] != nullptr)
-		{
-			m_textures[i] = copy.m_textures[i]->Clone();
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Destructor
-//
 VoxelSprite::~VoxelSprite()
 {
-	for (int i = 0; i < NUM_DIRECTIONS; ++i)
+	if (m_colorData != nullptr)
 	{
-		if (m_textures[i] != nullptr)
+		free(m_colorData);
+		m_colorData = nullptr;
+	}
+
+	if (m_collisionFlags != nullptr)
+	{
+		free(m_collisionFlags);
+		m_collisionFlags = nullptr;
+	}
+}
+
+bool VoxelSprite::CreateFromFile(const char* filename, bool createCollisionMatrix)
+{
+	File* file = new File();
+	bool opened = file->Open(filename, "r");
+
+	if (!opened)
+	{
+		return false;
+	}
+
+	file->LoadFileToMemory();
+
+	std::string currLine;
+
+	// "Qubicle Exchange Format"
+	file->GetNextLine(currLine);
+
+	if (currLine != "Qubicle Exchange Format")
+	{
+		ERROR_RECOVERABLE(Stringf("Error: VoxelSprite::CreateFromFile() only supports QEF files"));
+		return false;
+	}
+
+	// Version number
+	file->GetNextLine(currLine);
+
+	// Website
+	file->GetNextLine(currLine);
+
+	// Dimensions
+	file->GetNextLine(currLine);
+	
+	if (!SetFromText(currLine, m_dimensions))
+	{
+		ERROR_RECOVERABLE(Stringf("Error: VoxelSprite::CreateFromFile() couldn't get the dimensions of the texture."));
+		return false;
+	}
+
+	if (m_dimensions.x > MAX_TEXTURE_VOXEL_WIDTH)
+	{
+		createCollisionMatrix = false;
+	}
+
+	// Number of colors
+	file->GetNextLine(currLine);
+
+	int numColors;
+	SetFromText(currLine, numColors);
+
+	Rgba* colorPallette = (Rgba*)malloc(sizeof(Rgba) * numColors);
+	memset(colorPallette, 0, sizeof(Rgba) * numColors);
+
+	// Get the colors
+	for (int i = 0; i < numColors; ++i)
+	{
+		file->GetNextLine(currLine);
+		SetFromText(currLine, colorPallette[i]);
+	}
+
+	// Set up the texture colors
+	if (m_colorData != nullptr)
+	{
+		free(m_colorData);
+	}
+
+	unsigned int voxelCount = m_dimensions.x * m_dimensions.y * m_dimensions.z;
+	m_colorData = (Rgba*)malloc(sizeof(Rgba) * voxelCount);
+	memset(m_colorData, 0, sizeof(Rgba) * voxelCount);
+
+	// Set up the collision flags as well
+	if (createCollisionMatrix)
+	{
+		int amount = sizeof(uint32_t) * m_dimensions.y * m_dimensions.z;
+		m_collisionFlags = (uint32_t*)malloc(amount);
+		memset(m_collisionFlags, 0, amount);
+	}
+
+	// Now get all the voxel colors
+	while (!file->IsAtEndOfFile())
+	{
+		file->GetNextLine(currLine);
+
+		if (currLine.size() == 0)
 		{
-			delete m_textures[i];
-			m_textures[i] = nullptr;
+			break;
+		}
+
+		std::vector<std::string> voxelTokens = Tokenize(currLine, ' ');
+
+		// Get the voxel coords
+		int xCoord = StringToInt(voxelTokens[0]);
+
+		// *Flip from right handed to left handed basis
+		xCoord = m_dimensions.x - xCoord - 1;
+
+		int yCoord = StringToInt(voxelTokens[1]);
+		int zCoord = StringToInt(voxelTokens[2]);
+
+		int index = yCoord * (m_dimensions.x * m_dimensions.z) + zCoord * m_dimensions.x + xCoord;
+
+		int colorIndex = StringToInt(voxelTokens[3]);
+
+		m_colorData[index] = colorPallette[colorIndex];
+
+		// Update the collision bit for this voxel
+		if (createCollisionMatrix && m_colorData[index].a != 0)
+		{
+			uint32_t& flags = m_collisionFlags[yCoord * m_dimensions.z + zCoord];
+			flags |= (TEXTURE_LEFTMOST_COLLISION_BIT >> xCoord);
+		}
+	}
+
+	// Done!
+	free(colorPallette);
+
+	return true;
+}
+
+bool VoxelSprite::CreateFromColorStream(const Rgba* colors, const IntVector3& dimensions, bool createCollisionMatrix)
+{
+	m_dimensions = dimensions;
+
+	if (m_colorData != nullptr)
+	{
+		free(m_colorData);
+	}
+
+	int numVoxels = dimensions.x * dimensions.y * dimensions.z;
+
+	m_colorData = (Rgba*)malloc(sizeof(Rgba) * numVoxels);
+	memcpy(m_colorData, colors, numVoxels * sizeof(Rgba));
+
+	if (createCollisionMatrix)
+	{
+		m_collisionFlags = (uint32_t*)malloc(sizeof(uint32_t) * dimensions.y * dimensions.z);
+
+		for (int y = 0; y < m_dimensions.y; ++y)
+		{
+			for (int z = 0; z < m_dimensions.z; ++z)
+			{
+				for (int x = 0; x < m_dimensions.x; ++x)
+				{
+					Rgba color = GetColorAtRelativeCoords(IntVector3(x, y, z), 0.f);
+
+					if (color.a != 0)
+					{
+						int index = y * (m_dimensions.x * m_dimensions.z) + z * m_dimensions.x + x;
+						int byteIndex = index / 8;
+						int bitOffset = 7 - (index % 8);
+
+						uint32_t& collisionByte = m_collisionFlags[byteIndex];
+						collisionByte |= (1 << bitOffset);
+					}
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
+VoxelSprite* VoxelSprite::Clone() const
+{
+	VoxelSprite* newTexture = new VoxelSprite();
+	newTexture->m_dimensions = m_dimensions;
+
+	int voxelCount = m_dimensions.x * m_dimensions.y * m_dimensions.z;
+	size_t byteSize = sizeof(Rgba) * voxelCount;
+	newTexture->m_colorData = (Rgba*)malloc(byteSize);
+
+	memcpy(newTexture->m_colorData, m_colorData, byteSize);
+
+	// Collision
+	if (m_collisionFlags != nullptr)
+	{
+		newTexture->m_collisionFlags = (uint32_t*)malloc(sizeof(uint32_t) * m_dimensions.y * m_dimensions.z);
+		memcpy(newTexture->m_collisionFlags, m_collisionFlags, sizeof(uint32_t) * m_dimensions.y * m_dimensions.z);
+	}
+
+	return newTexture;
+}
+
+void VoxelSprite::SetColorAtRelativeCoords(const IntVector3& relativeCoords, float relativeOrientation, const Rgba& color)
+{
+	IntVector3 localCoords = GetLocalCoordsFromRelativeCoords(relativeCoords, relativeOrientation);
+
+	if (!AreLocalCoordsValid(localCoords.x, localCoords.y, localCoords.z))
+	{
+		ConsoleErrorf("Invalid coords set for sprite");
+		return;
+	}
+
+	int index = localCoords.y * (m_dimensions.x * m_dimensions.z) + localCoords.z * m_dimensions.x + localCoords.x;
+	SetColorAtIndex(index, color);
+}
+
+void VoxelSprite::SetColorAtIndex(unsigned int index, const Rgba& color)
+{
+	m_colorData[index] = color;
+	
+	int yCoord = index / (m_dimensions.x * m_dimensions.z);
+	int leftOver = index % (m_dimensions.x * m_dimensions.z);
+
+	int zCoord = leftOver / m_dimensions.x;
+	int xCoord = leftOver % m_dimensions.x;
+
+	if (m_collisionFlags != nullptr)
+	{
+		uint32_t& flags = m_collisionFlags[yCoord * m_dimensions.z + zCoord];
+		int mask = TEXTURE_LEFTMOST_COLLISION_BIT >> xCoord;
+
+		if (color.a == 0)
+		{
+			mask = ~mask;
+			flags &= mask;
+		}
+		else
+		{
+			flags |= (TEXTURE_LEFTMOST_COLLISION_BIT >> xCoord);
 		}
 	}
 }
 
-
-//-----------------------------------------------------------------------------------------------
-// Returns the texture representing the direction to render for the given angle
-//
-const VoxelTexture* VoxelSprite::GetTextureForOrientation(float angle) const
+Rgba VoxelSprite::GetColorAtRelativeCoords(const IntVector3& relativeCoords, float relativeOrientation) const
 {
-	float cardinalAngle = GetNearestCardinalAngle(angle);
+	IntVector3 localCoords = GetLocalCoordsFromRelativeCoords(relativeCoords, relativeOrientation);
 
-	const VoxelTexture* toReturn = nullptr;
-
-	if (cardinalAngle == 0.f)			{ toReturn = m_textures[DIRECTION_EAST]; }
-	else if (cardinalAngle == 90.f)		{ toReturn = m_textures[DIRECTION_NORTH]; }
-	else if (cardinalAngle == 180.f)	{ toReturn = m_textures[DIRECTION_WEST]; }
-	else								{ toReturn = m_textures[DIRECTION_SOUTH]; }
-
-	if (toReturn == nullptr)
+	if (!AreLocalCoordsValid(localCoords.x, localCoords.y, localCoords.z))
 	{
-		return m_textures[DIRECTION_NORTH];
+		return Rgba(0, 0, 0, 0);
 	}
 
-	return toReturn;
+	int index = localCoords.y * (m_dimensions.x * m_dimensions.z) + localCoords.z * m_dimensions.x + localCoords.x;
+	return m_colorData[index];
 }
 
+Rgba VoxelSprite::GetColorAtIndex(unsigned int index) const
+{
+	return m_colorData[index];
+}
 
-//-----------------------------------------------------------------------------------------------
-// Returns the dimensions of the voxel sprite
-//
-IntVector3 VoxelSprite::GetDimensions() const
+IntVector3 VoxelSprite::GetBaseDimensions() const
 {
 	return m_dimensions;
 }
 
-
-//-----------------------------------------------------------------------------------------------
-// Clones the VoxelSprite (deep copy)
-//
-VoxelSprite* VoxelSprite::Clone() const
+IntVector3 VoxelSprite::GetOrientedDimensions(float orientation) const
 {
-	return new VoxelSprite(*this);
+	float cardinalAngle = GetNearestCardinalAngle(orientation);
+
+	IntVector3 orientedDimensions = m_dimensions;
+
+	if (cardinalAngle == 90.f || cardinalAngle == 270.f)
+	{
+		orientedDimensions.x = m_dimensions.z;
+		orientedDimensions.z = m_dimensions.x;
+	}
+
+	return orientedDimensions;
+}
+
+unsigned int VoxelSprite::GetVoxelCount() const
+{
+	return m_dimensions.x * m_dimensions.y * m_dimensions.z;
+}
+
+uint32_t VoxelSprite::GetCollisionByteForRow(int referenceY, int referenceZ, float referenceOrientation) const
+{
+	float cardinalAngle = GetNearestCardinalAngle(referenceOrientation);
+
+	IntVector3 localCoords = GetLocalCoordsFromRelativeCoords(IntVector3(0, referenceY, referenceZ), referenceOrientation);
+
+	ASSERT_OR_DIE(AreLocalCoordsValid(localCoords.x, localCoords.y, localCoords.z), "Voxel texture received bad coords");
+
+	if (m_collisionFlags == nullptr)
+	{
+		return 0;
+	}
+	
+	uint32_t flags = 0;
+
+	if (cardinalAngle == 90.f) 
+	{
+		// Iterate across the 32-bit fields to grab a bit out of each, for the entire Z dimension
+		// Start low
+		IntVector3 orientedDimensions = GetOrientedDimensions(referenceOrientation);
+		uint32_t mask = TEXTURE_LEFTMOST_COLLISION_BIT >> referenceZ;
+		for (int zIndex = orientedDimensions.z; zIndex >= 0; --zIndex)
+		{
+			uint32_t localRowFlags = m_collisionFlags[referenceY * m_dimensions.z + zIndex];
+			flags |= (((localRowFlags & mask) << referenceZ) >> zIndex);
+		}
+	}
+	else if (cardinalAngle == 180.f) // Flip the Z
+	{
+		int invertedZ = m_dimensions.z - referenceZ - 1;
+		uint32_t backwardsFlags = m_collisionFlags[referenceY * m_dimensions.z + invertedZ];
+
+		flags = GetBitsReversed(backwardsFlags);
+		int diff = 32 - m_dimensions.x;
+		flags = flags << diff;
+	}
+	else if (cardinalAngle == 270.f)
+	{
+		// Iterate across the 32-bit fields to grab a bit out of each, for the entire Z dimension
+		// Start low
+		IntVector3 orientedDimensions = GetOrientedDimensions(referenceOrientation);
+		uint32_t mask = TEXTURE_LEFTMOST_COLLISION_BIT >> (orientedDimensions.x - referenceZ - 1);
+		for (int zIndex = 0; zIndex < orientedDimensions.z; ++zIndex)
+		{
+			uint32_t localRowFlags = m_collisionFlags[referenceY * m_dimensions.z + zIndex];
+			flags |= (((localRowFlags & mask) << referenceZ) >> zIndex);
+		}
+	}
+	else // 0.f Degree case - Just return them as they are
+	{
+		flags = m_collisionFlags[referenceY * m_dimensions.z + referenceZ];
+	}
+
+	return flags;
+}
+
+bool VoxelSprite::DoLocalCoordsHaveCollision(const IntVector3& coords) const
+{
+	if (m_collisionFlags == nullptr)
+	{
+		return false;
+	}
+
+	int index = coords.y * m_dimensions.z + coords.z;
+	int bitOffset = MAX_TEXTURE_VOXEL_WIDTH - coords.x - 1;
+	uint32_t flags = m_collisionFlags[index];
+
+	bool hasCollision = ((flags & (1 << bitOffset)) != 0);
+	return hasCollision;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// Loads a VoxelSprite xml file given the filename and constructs the sprites
+// Returns the sprite given by spriteName, nullptr if it doesn't exist
 //
-void VoxelSprite::LoadVoxelSprites(const std::string& filename)
+const VoxelSprite* VoxelSprite::GetVoxelSprite(const std::string& spriteName)
+{
+	bool spriteExists = s_sprites.find(spriteName) != s_sprites.end();
+
+	if (spriteExists)
+	{
+		return s_sprites.at(spriteName);
+	}
+
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns a clone of the sprite given by spriteName, nullptr if it doesn't exist
+//
+VoxelSprite* VoxelSprite::CreateVoxelSpriteClone(const std::string& spriteName)
+{
+	const VoxelSprite* spriteToClone = GetVoxelSprite(spriteName);
+
+	if (spriteToClone != nullptr)
+	{
+		return spriteToClone->Clone();
+	}
+
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Loads the voxel sprites specified in the given xml file
+//
+void VoxelSprite::LoadSpriteFile(const std::string& filename)
 {
 	// Load the document
 	XMLDocument document;
@@ -194,11 +420,15 @@ void VoxelSprite::LoadVoxelSprites(const std::string& filename)
 		ASSERT_OR_DIE(spriteName.size() > 0, Stringf("Error: VoxelSprite::LoadVoxelSpritesFromFile() found sprite with no name in %s", filename.c_str()));
 
 		// Get the sprite texture file
-		std::string fileName = ParseXmlAttribute(*spriteElement, "file");
-		ASSERT_OR_DIE(fileName.size() > 0, Stringf("Error: VoxelSprite::LoadVoxelSpritesFromFile() found sprite with no file in %s", filename.c_str()));
+		std::string modelFileName = ParseXmlAttribute(*spriteElement, "file");
+		ASSERT_OR_DIE(modelFileName.size() > 0, Stringf("Error: VoxelSprite::LoadVoxelSpritesFromFile() found sprite with no file in %s", filename.c_str()));
 
 		// Construct the sprite
-		VoxelSprite* sprite = new VoxelSprite(spriteName, fileName);
+		VoxelSprite* sprite = new VoxelSprite();
+		sprite->m_name = spriteName;
+		sprite->CreateFromFile(modelFileName.c_str(), true);
+
+		// Add the sprite to the registry
 		s_sprites[spriteName] = sprite;
 
 		// Move to the next element
@@ -208,32 +438,54 @@ void VoxelSprite::LoadVoxelSprites(const std::string& filename)
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns a clone of the VoxelSprite given by name if it exists, nullptr otherwise
+// Returns the local coords of the voxel referenced by the relative coordinates in the relative
+// orientation space
 //
-VoxelSprite* VoxelSprite::CreateVoxelSpriteClone(const std::string& name)
+IntVector3 VoxelSprite::GetLocalCoordsFromRelativeCoords(const IntVector3& relativeCoords, float relativeOrientation) const
 {
-	const VoxelSprite* baseSprite = GetVoxelSprite(name);
+	float cardinalAngle = GetNearestCardinalAngle(relativeOrientation);
 
-	if (baseSprite != nullptr)
+	IntVector3 localCoords = relativeCoords;
+
+	if (cardinalAngle == 90.f)
 	{
-		return baseSprite->Clone();
+		localCoords.x = relativeCoords.z;
+		localCoords.z = m_dimensions.z - relativeCoords.x - 1;
+	}
+	else if (cardinalAngle == 180.f)
+	{
+		localCoords.x = m_dimensions.x - relativeCoords.x - 1;
+		localCoords.z = m_dimensions.z - relativeCoords.z - 1;
+	}
+	else if (cardinalAngle == 270.f)
+	{
+		localCoords.x = m_dimensions.x - relativeCoords.z - 1;
+		localCoords.z = relativeCoords.x;
 	}
 
-	return nullptr;
+	// 0.f degree case means relative coords are the local coords, so just return
+
+	return localCoords;
 }
 
 
-//-----------------------------------------------------------------------------------------------
-// Returns the VoxelSprite given by name if it exists, nullptr otherwise
-//
-const VoxelSprite* VoxelSprite::GetVoxelSprite(const std::string& name)
-{
-	bool spriteExists = s_sprites.find(name) != s_sprites.end();
 
-	if (spriteExists)
+bool VoxelSprite::AreLocalCoordsValid(int x, int y, int z) const
+{
+	if (x < 0 || x >= m_dimensions.x)
 	{
-		return s_sprites.at(name);
+		return false;
 	}
 
-	return nullptr;
+	if (y < 0 || y >= m_dimensions.y)
+	{
+		return false;
+	}
+
+	if (z < 0 || z >= m_dimensions.z)
+	{
+		return false;
+	}
+
+	return true;
 }

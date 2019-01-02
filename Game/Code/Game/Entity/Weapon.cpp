@@ -149,13 +149,13 @@ bool Weapon::IsOutOfAmmo() const
 //-----------------------------------------------------------------------------------------------
 // Returns the texture of the weapon based on its current state; for UI rendering
 //
-const VoxelTexture* Weapon::GetTextureForUIRender()
+const VoxelSprite* Weapon::GetTextureForUIRender()
 {
 	float ammoPercentage = ((float)m_currAmmoCount / (float)m_definition->m_initialAmmoCount);
 
 	if (ammoPercentage > WEAPON_LOW_AMMO_PERCENTAGE)
 	{
-		return GetTextureForRender();
+		return GetVoxelSprite();
 	}
 
 	// Check if we should return the texture, for flashing effect
@@ -166,7 +166,7 @@ const VoxelTexture* Weapon::GetTextureForUIRender()
 
 	if (m_showTexture)
 	{
-		return GetTextureForRender();
+		return GetVoxelSprite();
 	}
 
 	return nullptr;

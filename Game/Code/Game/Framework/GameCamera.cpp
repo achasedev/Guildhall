@@ -51,7 +51,7 @@ void GameCamera::UpdatePositionBasedOnPlayers()
 		if (Game::IsPlayerAlive(i))
 		{
 			foundPlayer = true;
-			playerDimensions = players[i]->GetDimensions(); // All players should be the same dimensions...
+			playerDimensions = players[i]->GetOrientedDimensions();
 
 			IntVector3 pos = players[i]->GetCoordinatePosition();
 

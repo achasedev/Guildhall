@@ -333,7 +333,7 @@ void World::ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage
 		{
 			// Find all voxels in the entity that were affected
 			std::vector<IntVector3> hitCoords;
-			IntVector3 entityDimensions = currEntity->GetDimensions();
+			IntVector3 entityDimensions = currEntity->GetOrientedDimensions();
 			float radiusSquared = radius * radius;
 
 			for (int y = 0; y < entityDimensions.y; ++y)
@@ -405,7 +405,7 @@ void World::ParticalizeAllEntities()
 bool World::IsEntityOnMap(const Entity* entity) const
 {
 	Vector2 bottomLeft = entity->GetPosition().xz();
-	Vector2 topRight = bottomLeft + Vector2(entity->GetDimensions().xz()) + Vector2::ONES;
+	Vector2 topRight = bottomLeft + Vector2(entity->GetOrientedDimensions().xz()) + Vector2::ONES;
 
 	if (bottomLeft.x < 0.f || bottomLeft.y < 0.f)
 	{
@@ -682,7 +682,7 @@ void World::ApplyPhysicsStep()
 int World::GetMapHeightForEntity(const Entity* entity) const
 {
 	IntVector3 coordPosition = entity->GetCoordinatePosition();
-	IntVector2 dimensions = entity->GetDimensions().xz();
+	IntVector2 dimensions = entity->GetOrientedDimensions().xz();
 
 	return GetMapHeightForBounds(coordPosition, dimensions);
 }
@@ -752,7 +752,7 @@ void World::CheckEntityForGroundCollision(Entity* entity)
 		else
 		{
 			// Fell in a pit - let them fall until they're hidden, then kill them
-			IntVector3 dimensions = entity->GetDimensions();
+			IntVector3 dimensions = entity->GetOrientedDimensions();
 			if (position.y <= -(float)dimensions.y + 4)
 			{
 				entity->TakeDamage(9999999999);
@@ -913,9 +913,9 @@ void World::CheckEdgeCollisions()
 	{
 		Entity* entity = m_entities[entityIndex];
 
-		Vector3 bottomLeft = entity->GetPosition();
-		Vector3 entityDimensions = Vector3(entity->GetDimensions());
-		Vector3 topRight = bottomLeft + Vector3(entityDimensions.x, 0.f, entityDimensions.z);
+		AABB3 worldBounds = entity->GetWorldBounds();
+		Vector3 bottomLeft = worldBounds.mins;
+		Vector3 topRight = worldBounds.maxs;
 
 		Vector3 correction = Vector3::ZERO;
 
@@ -1256,14 +1256,8 @@ BoundOverlapResult_t PerformBroadphaseCheck(Entity* first, Entity* second)
 	Vector3 firstPosition = first->GetPosition();
 	Vector3 secondPosition = second->GetPosition();
 
-	IntVector3 firstDimensions = first->GetDimensions();
-	IntVector3 secondDimensions = second->GetDimensions();
-
-	Vector3 firstTopRight = firstPosition + Vector3(firstDimensions);
-	Vector3 secondTopRight = secondPosition + Vector3(secondDimensions);
-
-	AABB3 firstBounds = AABB3(firstPosition, firstTopRight);
-	AABB3 secondBounds = AABB3(secondPosition, secondTopRight);
+	AABB3 firstBounds = first->GetWorldBounds();
+	AABB3 secondBounds = second->GetWorldBounds();
 
 	// Check if the bounds overlap, and if not can early out
 	if (!DoAABB3sOverlap(firstBounds, secondBounds))
@@ -1354,6 +1348,9 @@ BoundOverlapResult_t PerformBroadphaseCheck(Entity* first, Entity* second)
 		}
 	}
 
+	IntVector3 firstDimensions = first->GetOrientedDimensions();
+	IntVector3 secondDimensions = second->GetOrientedDimensions();
+
 	// Calculate the X Overlap in voxels
 	r.xOverlapf = MinFloat(firstBounds.maxs.x - secondBounds.mins.x, secondBounds.maxs.x - firstBounds.mins.x);
 	r.xOverlapi = RoundToNearestInt(r.xOverlapf);
@@ -1385,8 +1382,8 @@ BoundOverlapResult_t PerformBroadphaseCheck(Entity* first, Entity* second)
 //
 VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, const BoundOverlapResult_t& r)
 {
-	IntVector3 firstDimensions = first->GetDimensions();
-	IntVector3 secondDimensions = second->GetDimensions();
+	IntVector3 firstDimensions = first->GetOrientedDimensions();
+	IntVector3 secondDimensions = second->GetOrientedDimensions();
 
 	//-----Set up offsets based on the relative position of first-----
 	int firstYOffset = 0;
@@ -1443,8 +1440,8 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 	}
 
 	// Get the textures
-	const VoxelTexture* firstTexture = first->GetTextureForRender();
-	const VoxelTexture* secondTexture = second->GetTextureForRender();
+	const VoxelSprite* firstTexture = first->GetVoxelSprite();
+	const VoxelSprite* secondTexture = second->GetVoxelSprite();
 
 	int minX = 100;
 	int minY = 100;
@@ -1459,8 +1456,8 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 	{
 		for (int zIndex = 0; zIndex < r.zOverlapi; ++zIndex)
 		{
-			uint32_t firstFlags = firstTexture->GetCollisionByteForRow(yIndex + firstYOffset, zIndex + firstZOffset);
-			uint32_t secondFlags = secondTexture->GetCollisionByteForRow(yIndex + secondYOffset, zIndex + secondZOffset);
+			uint32_t firstFlags = firstTexture->GetCollisionByteForRow(yIndex + firstYOffset, zIndex + firstZOffset, first->GetOrientation());
+			uint32_t secondFlags = secondTexture->GetCollisionByteForRow(yIndex + secondYOffset, zIndex + secondZOffset, second->GetOrientation());
 
 			// Bitshift the flags based on the x overlaps
 			switch (r.xCase)
@@ -1864,7 +1861,7 @@ void CalculateMassScalars(Entity* first, Entity* second, float& out_firstScalar,
 //
 void World::ParticalizeEntity(Entity* entity)
 {
-	const VoxelTexture* texture = entity->GetTextureForRender();
+	const VoxelSprite* texture = entity->GetVoxelSprite();
 	Vector3 entityPosition = entity->GetBottomCenterPosition();
 
 	unsigned int voxelCount = texture->GetVoxelCount();

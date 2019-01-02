@@ -38,7 +38,6 @@ void Item::Update()
 		float offset = 1.0f + SinDegrees(time * ITEM_BOB_RATE);
 
 		m_position = m_basePosition + Vector3(0.f, offset, 0.f);
-		m_orientation += ITEM_SPIN_RATE * m_bobTimer.GetDeltaSeconds();
 	}
 }
 

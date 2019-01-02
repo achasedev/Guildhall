@@ -16,7 +16,7 @@ public:
 	virtual ~AnimatedEntity();
 
 	virtual void Update() override;
-	virtual const VoxelTexture* GetTextureForRender() const override;
+	virtual const VoxelSprite* GetVoxelSprite() const override;
 
 	// Events
 	virtual void	OnEntityCollision(Entity* other) override;

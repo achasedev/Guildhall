@@ -19,10 +19,10 @@
 Particle::Particle(const Rgba& color, float lifetime, const Vector3& position, const Vector3& initialVelocity, bool attachToGround /*= false*/)
 	: Entity(EntityDefinition::GetDefinition("Particle"))
 {
-	ASSERT_OR_DIE(m_defaultTexture == nullptr, "Error: Particle definition has a default texture!");
+	ASSERT_OR_DIE(m_defaultSprite == nullptr, "Error: Particle definition has a default texture!");
 
-	m_defaultTexture = new VoxelTexture();
-	m_defaultTexture->CreateFromColorStream(&color, IntVector3(1, 1, 1), true);
+	m_defaultSprite = new VoxelSprite();
+	m_defaultSprite->CreateFromColorStream(&color, IntVector3(1, 1, 1), true);
 
 	m_position = position;
 	m_lifetime = lifetime;
@@ -88,7 +88,7 @@ void Particle::OnGroundCollision()
 		// Particle didn't fall into a hole
 		if (world->IsEntityOnMap(this) && yVelocity < 0.f && coordPosition.y > 0)
 		{
-			world->AddVoxelToTerrain(coordPosition, m_defaultTexture->GetColorAtIndex(0));
+			world->AddVoxelToTerrain(coordPosition, m_defaultSprite->GetColorAtIndex(0));
 			m_isMarkedForDelete = true;
 		}
 	}

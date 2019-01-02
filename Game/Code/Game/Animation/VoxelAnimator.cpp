@@ -70,6 +70,15 @@ const VoxelSprite* VoxelAnimator::GetCurrentSprite() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the default sprite of the animator
+//
+const VoxelSprite* VoxelAnimator::GetDefaultSprite() const
+{
+	return m_defaultSprite;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns true if the elapsed time is passed the duration of the current animation
 //
 bool VoxelAnimator::IsCurrentAnimationFinished() const

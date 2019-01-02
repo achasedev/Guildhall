@@ -5,10 +5,10 @@
 /* Description: Abstract class to represent a single voxel object
 /************************************************************************/
 #pragma once
+#include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/Vector3.hpp"
-#include "Engine/Rendering/Resources/VoxelTexture.hpp"
 
 class VoxelAnimator;
 class PhysicsComponent;
@@ -50,14 +50,14 @@ public:
 	Vector3							GetBottomCenterPosition() const;
 	float							GetOrientation() const;
 	eEntityTeam						GetTeam() const;
-	virtual const VoxelTexture*		GetTextureForRender() const;
+	virtual const VoxelSprite*		GetVoxelSprite() const;
 	CollisionDefinition_t			GetCollisionDefinition() const;
 	ePhysicsType					GetPhysicsType() const;
 	const EntityDefinition*			GetEntityDefinition() const;
 	PhysicsComponent*				GetPhysicsComponent() const;
-	virtual IntVector3				GetDimensions() const;
 	bool							IsPhysicsEnabled() const;
 	bool							IsDestructible() const;
+	IntVector3						GetOrientedDimensions() const;
 	AABB3							GetWorldBounds() const;
 	eCollisionLayer					GetCollisionLayer() const;
 
@@ -116,7 +116,7 @@ protected:
 
 	bool					m_isPlayer = false;
 
-	VoxelTexture*			m_defaultTexture = nullptr;
+	VoxelSprite*			m_defaultSprite = nullptr;
 
 	// Statics
 	static constexpr float	DEFAULT_MASS = 1.0f;

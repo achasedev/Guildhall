@@ -90,10 +90,10 @@ void Player::ReinitializeWithDefinition(const EntityDefinition* definition)
 	}
 
 	// Only create a default texture if the definition has one specified
-	if (m_defaultTexture != nullptr)
+	if (m_defaultSprite != nullptr)
 	{
-		delete m_defaultTexture;
-		m_defaultTexture = nullptr;
+		delete m_defaultSprite;
+		m_defaultSprite = nullptr;
 	}
 
 	// Set our health

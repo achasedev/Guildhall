@@ -9,7 +9,7 @@
 #include "Game/Entity/EntitySpawn.hpp"
 #include "Engine/Math/IntVector3.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
-class VoxelTexture;
+class VoxelSprite;
  
 class VoxelTerrain
 {
@@ -45,7 +45,7 @@ private:
 	//-----Private Data-----
 	
 	std::string m_name;
-	VoxelTexture* m_texture = nullptr;
+	VoxelSprite* m_texture = nullptr;
 	std::vector<EntitySpawn_t> m_initialEntities;
 
 	static const IntVector3 TERRAIN_DIMENSIONS;

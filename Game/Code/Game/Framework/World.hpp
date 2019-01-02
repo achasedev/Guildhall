@@ -22,7 +22,7 @@
 
 class Player;
 class Entity;
-class VoxelTexture;
+class VoxelSprite;
 class Particle;
 class VoxelTerrain;
 class VoxelFont;

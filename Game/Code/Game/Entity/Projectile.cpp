@@ -52,12 +52,12 @@ void Projectile::Update()
 //-----------------------------------------------------------------------------------------------
 // Returns the texture to use based on the orientation of the projectile
 //
-const VoxelTexture* Projectile::GetTextureForRender() const
+const VoxelSprite* Projectile::GetVoxelSprite() const
 {
-	return m_definition->m_defaultSprite->GetTextureForOrientation(m_orientation);
+	return m_definition->m_defaultSprite;
 }
 
-#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // On Collision event
 //

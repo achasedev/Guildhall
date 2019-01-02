@@ -58,9 +58,6 @@
     <ClCompile Include="Entity\Particle.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Animation\VoxelSprite.cpp">
-      <Filter>Architecture</Filter>
-    </ClCompile>
     <ClCompile Include="Animation\VoxelAnimation.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
@@ -148,6 +145,9 @@
     <ClCompile Include="Entity\Components\BehaviorComponent_ShootCircle.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Animation\VoxelSprite.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -181,7 +181,6 @@
     <ClInclude Include="Entity\Projectile.hpp" />
     <ClInclude Include="Framework\GameCamera.hpp" />
     <ClInclude Include="Entity\Particle.hpp" />
-    <ClInclude Include="Animation\VoxelSprite.hpp" />
     <ClInclude Include="Animation\VoxelAnimation.hpp" />
     <ClInclude Include="Animation\VoxelAnimator.hpp" />
     <ClInclude Include="Animation\VoxelAnimationSet.hpp" />
@@ -212,5 +211,6 @@
     <ClInclude Include="Entity\Components\BehaviorComponent_Charge.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_ShootDirect.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_ShootCircle.hpp" />
+    <ClInclude Include="Animation\VoxelSprite.hpp" />
   </ItemGroup>
 </Project>

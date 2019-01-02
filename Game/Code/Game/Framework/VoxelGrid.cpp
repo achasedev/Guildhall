@@ -12,6 +12,7 @@
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameCamera.hpp"
+#include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Framework/VoxelTerrain.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -21,7 +22,6 @@
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
 #include "Engine/Rendering/Shaders/ComputeShader.hpp"
-#include "Engine/Rendering/Resources/VoxelTexture.hpp"
 
 // Constants for any size grid
 #define VERTICES_PER_VOXEL 24
@@ -121,10 +121,11 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, const
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
-	const VoxelTexture* texture = entity->GetTextureForRender();
+	const VoxelSprite* texture = entity->GetVoxelSprite();
 	IntVector3 position = entity->GetCoordinatePosition() + offset;
+	float orientation = entity->GetOrientation();
 
-	Draw3DTexture(texture, position, whiteReplacement);
+	Draw3DTexture(texture, position, orientation, whiteReplacement);
 
 	// Hack to render the player's weapon
 	if (entity->IsPlayer())
@@ -135,12 +136,12 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, const
 		
 		if (weapon->GetEntityDefinition()->GetName() != "Pistol")
 		{
-			const VoxelTexture* weaponTexture = weapon->GetTextureForUIRender();
+			const VoxelSprite* weaponTexture = weapon->GetTextureForUIRender();
 
 			if (weaponTexture != nullptr)
 			{
 				IntVector3 weaponPosition = position + IntVector3(0, 12, 0);
-				Draw3DTexture(weaponTexture, weaponPosition);
+				Draw3DTexture(weaponTexture, weaponPosition, 0.f);
 			}
 		}
 	}
@@ -212,9 +213,9 @@ void VoxelGrid::DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset)
 //-----------------------------------------------------------------------------------------------
 // Draws the 3D texture to the grid
 //
-void VoxelGrid::Draw3DTexture(const VoxelTexture* texture, const IntVector3& startCoord, const Rgba& whiteReplacement /*= Rgba::WHITE*/)
+void VoxelGrid::Draw3DTexture(const VoxelSprite* texture, const IntVector3& startCoord, float orientation, const Rgba& whiteReplacement /*= Rgba::WHITE*/)
 {
-	IntVector3 dimensions = texture->GetDimensions();
+	IntVector3 dimensions = texture->GetOrientedDimensions(orientation);
 
 	for (int xOff = 0; xOff < dimensions.x; ++xOff)
 	{
@@ -230,7 +231,7 @@ void VoxelGrid::Draw3DTexture(const VoxelTexture* texture, const IntVector3& sta
 
 				if (index != -1)
 				{
-					Rgba colorToRender = texture->GetColorAtCoords(localCoords);
+					Rgba colorToRender = texture->GetColorAtRelativeCoords(localCoords, orientation);
 
 					if (colorToRender.a != 0)
 					{
@@ -256,9 +257,9 @@ void VoxelGrid::DebugDrawEntityCollision(const Entity* entity, const IntVector3&
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
-	const VoxelTexture* texture = entity->GetTextureForRender();
+	const VoxelSprite* texture = entity->GetVoxelSprite();
 	Vector3 position = entity->GetPosition();
-	IntVector3 dimensions = entity->GetDimensions();
+	IntVector3 dimensions = entity->GetOrientedDimensions();
 
 	// Coordinate the object occupies (object bottom center)
 	IntVector3 coordinatePosition = entity->GetCoordinatePosition() + offset;

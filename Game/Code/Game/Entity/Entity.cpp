@@ -23,15 +23,17 @@
 Entity::Entity(const EntityDefinition* definition)
 	: m_definition(definition)
 {
+	ASSERT_OR_DIE(definition != nullptr, "Error: Initializing Entity with null definition");
+
 	if (m_definition->m_physicsType == PHYSICS_TYPE_DYNAMIC)
 	{
 		m_physicsComponent = new PhysicsComponent(this);
 	}
 
 	// Only create a default texture if the definition has one specified
-	if (definition->m_defaultSprite != nullptr && !definition->m_isAnimated)
+	if (m_definition->m_defaultSprite != nullptr)
 	{
-		m_defaultTexture = definition->m_defaultSprite->GetTextureForOrientation(90.f)->Clone();
+		m_defaultSprite = definition->m_defaultSprite->Clone();
 	}
 
 	m_health = definition->m_initialHealth;
@@ -49,10 +51,10 @@ Entity::~Entity()
 		m_physicsComponent = nullptr;
 	}
 	
-	if (m_defaultTexture != nullptr)
+	if (m_defaultSprite != nullptr)
 	{
-		delete m_defaultTexture;
-		m_defaultTexture = nullptr;
+		delete m_defaultSprite;
+		m_defaultSprite = nullptr;
 	}
 }
 
@@ -86,24 +88,24 @@ void Entity::OnGroundCollision()
 //-----------------------------------------------------------------------------------------------
 // Callback for individual voxels hit during collision
 //
-void Entity::OnVoxelCollision(Entity* other, std::vector<IntVector3> voxelCoords)
+void Entity::OnVoxelCollision(Entity* other, std::vector<IntVector3> relativeVoxelCoords)
 {
 	if (!m_definition->m_isDestructible || (other != nullptr && !other->GetCollisionDefinition().m_canDestroyVoxels))
 	{
 		return;
 	}
 
-	int numVoxels = (int) voxelCoords.size();
-
+	// Need to remove each voxel relative to our current orientation
+	int numVoxels = (int) relativeVoxelCoords.size();
 	for (int i = 0; i < numVoxels; ++i)
 	{
-		IntVector3 currCoords = voxelCoords[i];
-
-		Rgba currColor = m_defaultTexture->GetColorAtCoords(currCoords);
+		IntVector3 currRelativeCoords = relativeVoxelCoords[i];
+		
+		Rgba currColor = m_defaultSprite->GetColorAtRelativeCoords(currRelativeCoords, m_orientation);
 
 		if (currColor.a > 0)
 		{
-			Vector3 position = GetPositionForLocalCoords(currCoords);
+			Vector3 position = GetPositionForLocalCoords(currRelativeCoords);
 
 			Vector3 velocity = Vector3(GetRandomFloatInRange(-1.f, 1.f), 1.0f, GetRandomFloatInRange(-1.f, 1.f));
 			velocity = 50.f * velocity.GetNormalized();
@@ -111,7 +113,7 @@ void Entity::OnVoxelCollision(Entity* other, std::vector<IntVector3> voxelCoords
 			Particle* particle = new Particle(currColor, 10.0f, position, velocity);
 			Game::GetWorld()->AddParticle(particle);
 
-			m_defaultTexture->SetColorAtCoords(currCoords, Rgba(0, 0, 0, 0));
+			m_defaultSprite->SetColorAtRelativeCoords(currRelativeCoords, m_orientation, Rgba(0, 0, 0, 0));
 		}
 	}
 }
@@ -261,7 +263,7 @@ Vector3 Entity::GetPosition() const
 //
 Vector3 Entity::GetCenterPosition() const
 {
-	Vector3 halfDimensions = Vector3(GetDimensions()) * 0.5f;
+	Vector3 halfDimensions = Vector3(GetOrientedDimensions()) * 0.5f;
 	return m_position + halfDimensions;
 }
 
@@ -298,9 +300,9 @@ eEntityTeam Entity::GetTeam() const
 //-----------------------------------------------------------------------------------------------
 // Returns the 3D texture to used for rendering, based on the current 2D orientation of the entity
 //
-const VoxelTexture* Entity::GetTextureForRender() const
+const VoxelSprite* Entity::GetVoxelSprite() const
 {
-	return m_defaultTexture;
+	return m_defaultSprite;
 }
 
 
@@ -341,16 +343,6 @@ PhysicsComponent* Entity::GetPhysicsComponent() const
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the dimensions of the entity
-//
-IntVector3 Entity::GetDimensions() const
-{
-	const VoxelTexture* texture = GetTextureForRender();
-	return texture->GetDimensions();
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Returns whether this entity should have the physics step applied to it
 //
 bool Entity::IsPhysicsEnabled() const
@@ -369,12 +361,21 @@ bool Entity::IsDestructible() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the dimensions of the entity, taking into consideration its current orientation 
+//
+IntVector3 Entity::GetOrientedDimensions() const
+{
+	return GetVoxelSprite()->GetOrientedDimensions(m_orientation);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the world bounds for the entity
 //
 AABB3 Entity::GetWorldBounds() const
 {
 	Vector3 bottomLeft = m_position;
-	Vector3 topRight = m_position + Vector3(GetDimensions());
+	Vector3 topRight = m_position + Vector3(GetVoxelSprite()->GetOrientedDimensions(m_orientation));
 	return AABB3(bottomLeft, topRight);
 }
 
@@ -464,7 +465,7 @@ Vector3 Entity::GetPositionForLocalCoords(const IntVector3& localCoords) const
 //
 Vector3 Entity::GetPositionForLocalIndex(unsigned int index) const
 {
-	IntVector3 dimensions = GetDimensions();
+	IntVector3 dimensions = GetOrientedDimensions();
 
 	int y = index / (dimensions.x * dimensions.z);
 	int leftOver = index % (dimensions.x * dimensions.z);

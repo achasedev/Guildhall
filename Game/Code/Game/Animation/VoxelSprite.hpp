@@ -1,63 +1,67 @@
-/************************************************************************/
-/* File: AnimationFrame.hpp
-/* Author: Andrew Chase
-/* Date: October 1st, 2018
-/* Description: Class to represent a single frame of an animation
-/************************************************************************/
 #pragma once
+#include "Engine/Math/IntVector3.hpp"
 #include <map>
 #include <string>
-#include "Engine/Math/IntVector3.hpp"
-#include "Engine/Core/Utility/XmlUtilities.hpp"
+#include <stdint.h>
 
-// For directionality
-enum eFrameDirection
-{
-	DIRECTION_EAST = 0,
-	DIRECTION_NORTH,
-	DIRECTION_WEST,
-	DIRECTION_SOUTH,
-	NUM_DIRECTIONS
-};
+#define MAX_TEXTURE_VOXEL_WIDTH (32)
+#define MAX_TEXTURE_BYTE_WIDTH (MAX_TEXTURE_VOXEL_WIDTH / 8)
+#define TEXTURE_LEFTMOST_COLLISION_BIT (0x80000000)
 
-class VoxelTexture;
+class Rgba;
 
 class VoxelSprite
 {
 public:
 	//-----Public Methods-----
 
-	VoxelSprite(const std::string& name, const std::string& filename);
+	VoxelSprite();
 	~VoxelSprite();
 
+	bool			CreateFromFile(const char* filename, bool createCollisionMatrix);
+	bool			CreateFromColorStream(const Rgba* colors, const IntVector3& dimensions, bool createCollisionMatrix);
+	VoxelSprite*	Clone() const;
+
+	// Mutators
+	void			SetColorAtRelativeCoords(const IntVector3& relativeCoords, float relativeOrientation, const Rgba& color);
+
+	Rgba			GetColorAtIndex(unsigned int index) const;					// Does not account of orientation!!
+	void			SetColorAtIndex(unsigned int index, const Rgba& color);		// Does not account of orientation!!
+
 	// Accessors
-	const VoxelTexture*			GetTextureForOrientation(float angle) const;
+	Rgba			GetColorAtRelativeCoords(const IntVector3& relativeCoords, float relativeOrientation) const;
+	IntVector3		GetBaseDimensions() const;
+	IntVector3		GetOrientedDimensions(float orientation) const;
+	unsigned int	GetVoxelCount() const;
+	uint32_t		GetCollisionByteForRow(int referenceY, int referenceZ, float referenceOrientation) const;
 
 	// Producers
-	IntVector3					GetDimensions() const;
-	VoxelSprite*				Clone() const;
+	bool			DoLocalCoordsHaveCollision(const IntVector3& coords) const;
+
 
 	// Statics
-	static void					LoadVoxelSprites(const std::string& filename);
-	static VoxelSprite*			CreateVoxelSpriteClone(const std::string& name);
-	static const VoxelSprite*	GetVoxelSprite(const std::string& name);
+	static const VoxelSprite*	GetVoxelSprite(const std::string& spriteName);
+	static VoxelSprite*			CreateVoxelSpriteClone(const std::string& spriteName);
+
+	static void					LoadSpriteFile(const std::string& filename);
 
 
 private:
 	//-----Private Methods-----
 
-	// No copying for now
-	VoxelSprite(const VoxelSprite& copy);
+	IntVector3	GetLocalCoordsFromRelativeCoords(const IntVector3& relativeCoords, float relativeOrientation) const;
+	bool		AreLocalCoordsValid(int x, int y, int z) const;
 
-	
+
+
 private:
 	//-----Private Data-----
-	
-	std::string		m_name;
-	IntVector3		m_dimensions;
-	VoxelTexture*	m_textures[NUM_DIRECTIONS];
 
-	// All sprites in the game are stored here
+	std::string m_name;
+	uint32_t*	m_collisionFlags = nullptr;
+	Rgba*		m_colorData = nullptr;
+	IntVector3	m_dimensions;
+
 	static std::map<std::string, const VoxelSprite*> s_sprites;
-	
+
 };

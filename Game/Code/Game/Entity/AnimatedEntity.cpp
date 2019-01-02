@@ -47,16 +47,16 @@ void AnimatedEntity::Update()
 //-----------------------------------------------------------------------------------------------
 // Returns the texture associated with the entity's current orientation and animation
 //
-const VoxelTexture* AnimatedEntity::GetTextureForRender() const
+const VoxelSprite* AnimatedEntity::GetVoxelSprite() const
 {
 	const VoxelSprite* sprite = m_animator->GetCurrentSprite();
 
 	if (sprite != nullptr)
 	{
-		return sprite->GetTextureForOrientation(m_orientation);
+		return sprite;
 	}
 
-	return nullptr;
+	return m_animator->GetDefaultSprite();
 }
 
 

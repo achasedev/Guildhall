@@ -17,6 +17,7 @@
 		<!-- Environment -->
 		<VoxelSprite file="Data/VoxelSprites/Environment/Tree1.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Environment/House.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Environment/TestCube.sprite"/>
 
 		<!-- Zombies -->
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Walker.sprite"/>

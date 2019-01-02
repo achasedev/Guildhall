@@ -13,7 +13,7 @@
 #include <string>
 
 class ComputeShader;
-class VoxelTexture;
+class VoxelSprite;
 class Entity;
 class HeatMap;
 class VoxelFont;
@@ -61,7 +61,7 @@ public:
 	void				Clear();
 	void				DrawEntity(const Entity* entity, const IntVector3& offset, const Rgba& whiteReplacement = Rgba::WHITE);
 	void				DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset);
-	void				Draw3DTexture(const VoxelTexture* texture, const IntVector3& startCoord, const Rgba& whiteReplacement = Rgba::WHITE);
+	void				Draw3DTexture(const VoxelSprite* texture, const IntVector3& startCoord, float orientation, const Rgba& whiteReplacement = Rgba::WHITE);
 
 	void				DebugDrawEntityCollision(const Entity* entity, const IntVector3& offset);
 

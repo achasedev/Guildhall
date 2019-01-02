@@ -217,7 +217,7 @@ void UpdatePlayerHeightForTransition(Player* player, World* transitionWorld, eTr
 		break;
 	}
 
-	IntVector3 bounds = player->GetDimensions();
+	IntVector3 bounds = player->GetOrientedDimensions();
 
 	int currMaxHeight = currWorld->GetMapHeightForEntity(player);
 	int transitionMaxHeight = transitionWorld->GetMapHeightForBounds(transitionCoord, bounds.xz());

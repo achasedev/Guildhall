@@ -11,7 +11,7 @@
 #include <vector>
 #include <string>
 
-class VoxelTexture;
+class VoxelSprite;
 
 // Enum for controlling the animation playback
 enum ePlayMode
