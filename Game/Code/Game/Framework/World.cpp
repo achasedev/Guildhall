@@ -208,12 +208,17 @@ void World::CleanUp()
 	}
 }
 
-
+#include "Engine/Input/InputSystem.hpp"
 //-----------------------------------------------------------------------------------------------
 // Update
 //
 void World::Update()
 {
+	if (InputSystem::GetInstance()->WasKeyJustPressed('I'))
+	{
+		m_drawCollisions = !m_drawCollisions;
+	}
+
 	PROFILE_LOG_SCOPE_FUNCTION();
 
 	// "Thinking" and other general updating (animation)
@@ -1148,7 +1153,14 @@ void World::DrawStaticEntitiesToGrid(const IntVector3& offset)
 	{
 		if (m_entities[entityIndex]->GetPhysicsType() == PHYSICS_TYPE_STATIC && !m_entities[entityIndex]->IsMarkedForDelete())
 		{
-			grid->DrawEntity(m_entities[entityIndex], offset);
+			if (m_drawCollisions)
+			{
+				grid->DrawEntityCollision(m_entities[entityIndex], offset);
+			}
+			else
+			{
+				grid->DrawEntity(m_entities[entityIndex], offset);
+			}
 		}
 	}
 }
@@ -1176,7 +1188,14 @@ void World::DrawDynamicEntitiesToGrid(const IntVector3& offset)
 				whiteReplacement = player->GetPlayerColor();
 			}
 
-			grid->DrawEntity(m_entities[entityIndex], offset, whiteReplacement);
+			if (m_drawCollisions)
+			{
+				grid->DrawEntityCollision(m_entities[entityIndex], offset);
+			}
+			else
+			{
+				grid->DrawEntity(m_entities[entityIndex], offset, whiteReplacement);
+			}
 		}
 	}
 }

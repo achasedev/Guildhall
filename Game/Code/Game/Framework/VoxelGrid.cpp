@@ -149,6 +149,44 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, const
 
 
 //-----------------------------------------------------------------------------------------------
+// Draws the entity's collision as a red visual to the grid
+//
+void VoxelGrid::DrawEntityCollision(const Entity* entity, const IntVector3& offset, const Rgba& whiteReplacement /*= Rgba::WHITE*/)
+{
+	const VoxelSprite* texture = entity->GetVoxelSprite();
+	IntVector3 dimensions = texture->GetOrientedDimensions(entity->GetOrientation());
+	IntVector3 startCoord = entity->GetCoordinatePosition();
+
+	for (int xOff = 0; xOff < dimensions.x; ++xOff)
+	{
+		for (int yOff = 0; yOff < dimensions.y; ++yOff)
+		{
+			for (int zOff = 0; zOff < dimensions.z; ++zOff)
+			{
+				uint32_t flags = texture->GetCollisionByteForRow(yOff, zOff, entity->GetOrientation());
+
+				IntVector3 localCoords = IntVector3(xOff, yOff, zOff);
+				IntVector3 currCoords = startCoord + localCoords;
+
+				int index = GetIndexForCoords(currCoords);
+
+				if (index != -1)
+				{
+					uint32_t mask = TEXTURE_LEFTMOST_COLLISION_BIT >> xOff;
+
+
+					if ((flags & mask) != 0)
+					{
+						m_gridColors[index] = Rgba::RED;
+					}
+				}
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Draws the terrain to the grid with the given heightmap
 //
 void VoxelGrid::DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset)

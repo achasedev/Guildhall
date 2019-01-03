@@ -315,10 +315,10 @@ uint32_t VoxelSprite::GetCollisionByteForRow(int referenceY, int referenceZ, flo
 		// Start low
 		IntVector3 orientedDimensions = GetOrientedDimensions(referenceOrientation);
 		uint32_t mask = TEXTURE_LEFTMOST_COLLISION_BIT >> referenceZ;
-		for (int zIndex = orientedDimensions.z; zIndex >= 0; --zIndex)
+		for (int zIndex = m_dimensions.z - 1; zIndex >= 0; --zIndex)
 		{
 			uint32_t localRowFlags = m_collisionFlags[referenceY * m_dimensions.z + zIndex];
-			flags |= (((localRowFlags & mask) << referenceZ) >> zIndex);
+			flags |= (((localRowFlags & mask) << referenceZ) >> (m_dimensions.z - zIndex - 1));
 		}
 	}
 	else if (cardinalAngle == 180.f) // Flip the Z
@@ -335,11 +335,11 @@ uint32_t VoxelSprite::GetCollisionByteForRow(int referenceY, int referenceZ, flo
 		// Iterate across the 32-bit fields to grab a bit out of each, for the entire Z dimension
 		// Start low
 		IntVector3 orientedDimensions = GetOrientedDimensions(referenceOrientation);
-		uint32_t mask = TEXTURE_LEFTMOST_COLLISION_BIT >> (orientedDimensions.x - referenceZ - 1);
-		for (int zIndex = 0; zIndex < orientedDimensions.z; ++zIndex)
+		uint32_t mask = TEXTURE_LEFTMOST_COLLISION_BIT >> (m_dimensions.x - referenceZ - 1);
+		for (int zIndex = 0; zIndex < m_dimensions.z; ++zIndex)
 		{
 			uint32_t localRowFlags = m_collisionFlags[referenceY * m_dimensions.z + zIndex];
-			flags |= (((localRowFlags & mask) << referenceZ) >> zIndex);
+			flags |= (((localRowFlags & mask) << (m_dimensions.x - referenceZ - 1)) >> zIndex);
 		}
 	}
 	else // 0.f Degree case - Just return them as they are

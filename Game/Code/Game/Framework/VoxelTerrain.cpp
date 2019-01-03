@@ -72,7 +72,7 @@ void VoxelTerrain::LoadTerrain(const XMLElement& terrainElement)
 					IntVector3 halfDimensions = spawn.definition->GetDefaultSprite()->GetBaseDimensions() / 2;
 
 					spawn.position = Vector3(IntVector3(coord.x, coord.y, coord.z));
-					spawn.orientation = 270.f;
+					spawn.orientation = 180.f;
 
 					terrain->m_initialEntities.push_back(spawn);
 				}

@@ -135,5 +135,5 @@ private:
 	std::vector<Particle*> m_particles;
 
 	bool					m_blockEdgeCollisions = true;
-
+	bool					m_drawCollisions = false;
 };
