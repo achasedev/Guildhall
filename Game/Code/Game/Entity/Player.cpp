@@ -199,6 +199,7 @@ void Player::OnDeath()
 	AnimatedEntity::OnDeath();
 
 	Game::GetWorld()->ParticalizeEntity(this);
+	Game::AddPointsToScore(PLAYER_DEATH_PENALTY);
 }
 
 

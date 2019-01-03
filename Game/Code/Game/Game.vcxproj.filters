@@ -148,6 +148,9 @@
     <ClCompile Include="Animation\VoxelSprite.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\Leaderboard.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -212,5 +215,6 @@
     <ClInclude Include="Entity\Components\BehaviorComponent_ShootDirect.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_ShootCircle.hpp" />
     <ClInclude Include="Animation\VoxelSprite.hpp" />
+    <ClInclude Include="Framework\Leaderboard.hpp" />
   </ItemGroup>
 </Project>

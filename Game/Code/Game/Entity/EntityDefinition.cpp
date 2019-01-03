@@ -81,6 +81,8 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 
 	m_initialHealth = ParseXmlAttribute(entityElement, "initial_health", m_initialHealth);
 
+	m_pointValue = ParseXmlAttribute(entityElement, "points", m_pointValue);
+
 	// Movement
 	const XMLElement* moveElement = entityElement.FirstChildElement("Movement");
 	if (moveElement != nullptr)

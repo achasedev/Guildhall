@@ -243,9 +243,9 @@
 
 	<!-- Enemies (LOAD AFTER WEAPONS)-->
 
-	<EntityDefinition name="Walker" initial_health="1" id="13">
+	<EntityDefinition name="Walker" initial_health="1" points="300" id="13">
 
-		<Movement max_acceleration="3000.0" max_speed="0.0" max_deceleration="100.0" jump_impulse="30.0"/>
+		<Movement max_acceleration="3000.0" max_speed="20.0" max_deceleration="100.0" jump_impulse="30.0"/>
 
 		<Visuals animation_set="Walker" default_sprite="Walker_idle_0"/>
 

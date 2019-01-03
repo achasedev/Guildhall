@@ -15,8 +15,8 @@ typedef void(*MenuOption_cb)(GameState_MainMenu* mainMenu, const std::string& ar
 struct MenuOption_t
 {
 	std::string text;
-	bool isSelectable;
-	MenuOption_cb callback;
+	bool isSelectable = false;
+	MenuOption_cb callback = nullptr;
 	std::string args;
 };
 
@@ -30,10 +30,13 @@ public:
 
 	void AddOption(const std::string text, bool isSelectable, MenuOption_cb callback, const std::string& args);
 
+	void SetLeftOption(MenuOption_cb callback, const std::string& args);
+	void SetRightOption(MenuOption_cb callback, const std::string& args);
+
 	void ProcessInput();
 
-	void SetCursorPosition(int cursorPosition);
-	int GetCursorPosition() const;
+	void	SetCursorPosition(int cursorPosition);
+	int		GetCursorPosition() const;
 	std::vector<std::string> GetTextsForRender() const;
 
 
@@ -51,4 +54,7 @@ private:
 	int m_cursorPosition = 0;
 	std::vector<MenuOption_t> m_options;
 
+	// Additional menu traversal
+	MenuOption_t m_leftOption;
+	MenuOption_t m_rightOption;
 };

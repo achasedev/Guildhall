@@ -15,15 +15,16 @@
 #include "Game/Framework/CampaignManager.hpp"
 #include "Game/GameStates/GameState_Loading.hpp"
 
+#include "Engine/Core/File.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/LogSystem.hpp"
 #include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
-#include "Engine/Rendering/Core/RenderScene.hpp"
-#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
-#include "Engine/Core/DeveloperConsole/Command.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
-
+#include "Engine/Rendering/Core/RenderScene.hpp"
+#include "Engine/Core/DeveloperConsole/Command.hpp"
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 void Command_KillAll(Command& cmd)
 {
@@ -93,6 +94,98 @@ void Game::CheckForPlayers()
 
 
 //-----------------------------------------------------------------------------------------------
+// Loads the leaderboards from file, if one exists
+//
+void Game::LoadLeaderboardsFromFile()
+{
+	File file;
+	bool success = file.Open("Data/Leaderboards.txt", "r");
+
+	if (!success)
+	{
+		// Initialize all current leaderboards to 0
+		for (int leaderboardIndex = 0; leaderboardIndex < NUM_LEADERBOARDS; ++leaderboardIndex)
+		{
+			Leaderboard& board = m_leaderboards[leaderboardIndex];
+
+			if (leaderboardIndex == 0)
+			{
+				board.m_name = Stringf("%i Player", leaderboardIndex + 1);
+
+			}
+			else
+			{
+				board.m_name = Stringf("%i Players", leaderboardIndex + 1);
+			}
+
+			for (int scoreIndex = 0; scoreIndex < NUM_SCORES_PER_LEADERBOARD; ++scoreIndex)
+			{
+				board.m_scores[scoreIndex] = 0;
+			}
+		}
+	}
+	else
+	{
+		file.LoadFileToMemory();
+
+		// Read off each leaderboard
+		for (int leaderboardIndex = 0; leaderboardIndex < NUM_LEADERBOARDS; ++leaderboardIndex)
+		{
+			Leaderboard& board = m_leaderboards[leaderboardIndex];
+
+			file.GetNextLine(board.m_name);
+
+			for (int scoreIndex = 0; scoreIndex < NUM_SCORES_PER_LEADERBOARD; ++scoreIndex)
+			{
+				std::string scoreText;
+				file.GetNextLine(scoreText);
+				int score = StringToInt(scoreText);
+
+				board.m_scores[scoreIndex] = score;
+			}
+		}
+
+		file.Close();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Writes the leaderboards to a text file
+//
+void Game::WriteLeaderboardsToFile()
+{
+	File file;
+
+	bool success = file.Open("Data/Leaderboards.txt", "w");
+
+	
+	if (!success)
+	{
+		LogTaggedPrintf("GAME", "Error: Couldn't open the leaderboard file for write");
+	}
+	else
+	{
+		for (int leaderboardIndex = 0; leaderboardIndex < NUM_LEADERBOARDS; ++leaderboardIndex)
+		{
+			Leaderboard& board = m_leaderboards[leaderboardIndex];
+
+			file.Write(board.m_name.c_str(), board.m_name.size());
+			file.Write("\n", 1);
+
+			for (int scoreIndex = 0; scoreIndex < NUM_SCORES_PER_LEADERBOARD; ++scoreIndex)
+			{
+				std::string scoreText = Stringf("%i\n", board.m_scores[scoreIndex]);
+				file.Write(scoreText.c_str(), scoreText.size());
+			}
+		}
+
+		file.Close();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Destructor - clean up any allocated members (private)
 //
 Game::~Game()
@@ -132,6 +225,8 @@ void Game::Initialize()
 	Renderer::GetInstance()->SetRendererGameClock(s_instance->m_gameClock);
 
 	Command::Register("killall", "Kills all entities", Command_KillAll);
+
+	s_instance->LoadLeaderboardsFromFile();
 }
 
 
@@ -140,6 +235,8 @@ void Game::Initialize()
 //
 void Game::ShutDown()
 {
+	s_instance->WriteLeaderboardsToFile();
+
 	delete s_instance;
 	s_instance = nullptr;
 }
@@ -333,6 +430,15 @@ Player** Game::GetPlayers()
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the leaderboards for the game
+//
+const Leaderboard* Game::GetLeaderboards()
+{
+	return s_instance->m_leaderboards;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the Campaign Manager for the game
 //
 CampaignManager* Game::GetCampaignManager()
@@ -370,7 +476,7 @@ void Game::ResetScore()
 //
 void Game::AddPointsToScore(int pointsToAdd)
 {
-	s_instance->m_score += pointsToAdd;
+	s_instance->m_score = ClampInt(s_instance->m_score + pointsToAdd, 0, 9999999);
 }
 
 

@@ -40,7 +40,6 @@ public:
 	void Respawn();
 	void EquipWeapon(Weapon* weapon);
 	void UnequipCurrentWeapon();
-	void EquipAbility(Ability* ability);
 
 	// Accessors
 	Rgba GetPlayerColor() const;

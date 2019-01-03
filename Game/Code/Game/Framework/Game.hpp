@@ -7,6 +7,7 @@
 /************************************************************************/
 #pragma once
 #include <vector>
+#include "Game/Framework/Leaderboard.hpp"
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 
@@ -20,6 +21,8 @@ class VoxelGrid;
 class VoxelFont;
 
 #define MAX_PLAYERS (4)
+#define PLAYER_DEATH_PENALTY (-2000)
+#define NUM_LEADERBOARDS (4)
 
 enum eGameStateState
 {
@@ -58,13 +61,14 @@ public:
 	static World*				GetWorld();
 	static void 				SetWorld(World* world);
 	static Player**				GetPlayers();
+	static const Leaderboard*	GetLeaderboards();
 	static CampaignManager*		GetCampaignManager();
 
 	static bool					IsPlayerAlive(unsigned int index);
 
 	static void					ResetScore();
 	static void					AddPointsToScore(int pointsToAdd);
-
+					
 	static void					DrawPlayerHUD();
 	static void					DrawScore();
 	static void					DrawHeading(const std::string& headingText);
@@ -81,6 +85,9 @@ private:
 	Game(const Game& copy) = delete;
 
 	void CheckForPlayers();
+
+	void LoadLeaderboardsFromFile();
+	void WriteLeaderboardsToFile();
 
 
 private:
@@ -105,10 +112,11 @@ private:
 	VoxelFont* m_menuFont = nullptr;
 
 	// Gameplay
-	int					m_score = 0;
+	int	m_score = 0;
+	Leaderboard m_leaderboards[NUM_LEADERBOARDS];
 
 	// Audio
-	SoundPlaybackID		m_bgm;
+	SoundPlaybackID	m_bgm;
 
 	static Game* s_instance;			// The singleton Game instance
 

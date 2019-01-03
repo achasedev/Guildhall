@@ -34,6 +34,26 @@ void Menu::AddOption(const std::string text, bool isSelectable, MenuOption_cb ca
 
 
 //-----------------------------------------------------------------------------------------------
+// Sets the option for what happens when left is pressed while on the menu
+//
+void Menu::SetLeftOption(MenuOption_cb callback, const std::string& args)
+{
+	m_leftOption.callback = callback;
+	m_leftOption.args = args;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the option for what happens when right is pressed while on the menu
+//
+void Menu::SetRightOption(MenuOption_cb callback, const std::string& args)
+{
+	m_rightOption.callback = callback;
+	m_rightOption.args = args;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Checks for menu input
 //
 void Menu::ProcessInput()
@@ -82,6 +102,20 @@ void Menu::ProcessInput()
 				done = true;
 			}
 		}
+	}
+
+	// Moving left
+	bool keyPressedLeft = input->WasKeyJustPressed(InputSystem::KEYBOARD_LEFT_ARROW);
+	if (keyPressedLeft && m_leftOption.callback != nullptr)
+	{
+		m_leftOption.callback(m_mainMenu, m_leftOption.args);
+	}
+
+	// Moving right
+	bool keyPressedRight = input->WasKeyJustPressed(InputSystem::KEYBOARD_RIGHT_ARROW);
+	if (keyPressedRight && m_rightOption.callback != nullptr)
+	{
+		m_rightOption.callback(m_mainMenu, m_rightOption.args);
 	}
 
 	// Selection

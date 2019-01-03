@@ -121,7 +121,6 @@ private:
 	ePhysicsType							m_physicsType = PHYSICS_TYPE_UNASSIGNED;
 	bool									m_affectedByGravity = true;
 	CollisionDefinition_t					m_collisionDef;
-	int										m_pointValue = 100;
 
 	// AnimatedEntity
 	float									m_maxMoveAcceleration = 300.f;
@@ -136,6 +135,7 @@ private:
 
 	// AIEntity
 	const BehaviorComponent*				m_behaviorPrototype;
+	int										m_pointValue = 100;
 
 	// Weapons
 	const EntityDefinition*					m_projectileDefinition = nullptr;
