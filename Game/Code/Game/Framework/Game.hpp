@@ -61,6 +61,7 @@ public:
 	static World*				GetWorld();
 	static void 				SetWorld(World* world);
 	static Player**				GetPlayers();
+	static int					GetCurrentPlayerCount();
 	static const Leaderboard*	GetLeaderboards();
 	static CampaignManager*		GetCampaignManager();
 
@@ -68,7 +69,8 @@ public:
 
 	static void					ResetScore();
 	static void					AddPointsToScore(int pointsToAdd);
-					
+	static void					UpdateLeaderboardWithCurrentScore();
+
 	static void					DrawPlayerHUD();
 	static void					DrawScore();
 	static void					DrawHeading(const std::string& headingText);

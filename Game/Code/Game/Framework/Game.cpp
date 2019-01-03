@@ -430,6 +430,24 @@ Player** Game::GetPlayers()
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the number of players in the game currently, regardless of whether they're alive
+//
+int Game::GetCurrentPlayerCount()
+{
+	int count = 0;
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		if (s_instance->m_players[i] != nullptr)
+		{
+			count++;
+		}
+	}
+
+	return count;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the leaderboards for the game
 //
 const Leaderboard* Game::GetLeaderboards()
@@ -477,6 +495,31 @@ void Game::ResetScore()
 void Game::AddPointsToScore(int pointsToAdd)
 {
 	s_instance->m_score = ClampInt(s_instance->m_score + pointsToAdd, 0, 9999999);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Updates the appropriate leaderboard with the given score if the given score makes it
+//
+void Game::UpdateLeaderboardWithCurrentScore()
+{
+	// Get the leaderboard
+	Leaderboard* board = &s_instance->m_leaderboards[GetCurrentPlayerCount() - 1];
+
+	for (int scoreIndex = 0; scoreIndex < NUM_SCORES_PER_LEADERBOARD; ++scoreIndex)
+	{
+		if (board->m_scores[scoreIndex] <= s_instance->m_score)
+		{
+			// Add the score in, pushing all lower scores down
+			for (int i = scoreIndex + 1; i < NUM_SCORES_PER_LEADERBOARD; ++i)
+			{
+				board->m_scores[i] = board->m_scores[i - 1];
+			}
+
+			board->m_scores[scoreIndex] = s_instance->m_score;
+			break;
+		}
+	}
 }
 
 

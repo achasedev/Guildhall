@@ -65,6 +65,7 @@ bool PlayState_Victory::Enter()
 {
 	if (m_transitionTimer.HasIntervalElapsed())
 	{
+		Game::UpdateLeaderboardWithCurrentScore();
 		Game::PlayBGM("Data/Music/Victory.wav");
 	}
 

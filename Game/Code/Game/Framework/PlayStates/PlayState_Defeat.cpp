@@ -61,7 +61,13 @@ void PlayState_Defeat::ProcessInput()
 //
 bool PlayState_Defeat::Enter()
 {
-	return m_transitionTimer.HasIntervalElapsed();
+	if (m_transitionTimer.HasIntervalElapsed())
+	{
+		Game::UpdateLeaderboardWithCurrentScore();
+		return true;
+	}
+
+	return false;
 }
 
 
