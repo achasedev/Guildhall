@@ -236,9 +236,6 @@ void GameState_Playing::Render() const
 		m_currentState->Render();
 	}
 
-	// Render the HUD
-	Game::DrawPlayerHUD();
-
 	if (Game::AreAllPlayersInitialized())
 	{
 		Game::DrawScore();

@@ -25,10 +25,20 @@ public:
 	virtual void Render() const override;
 	virtual void Render_Leave() const override;
 
+
+private:
+	//-----Private Methods-----
+
+	Rgba GetColorForCurrentScore() const;
+
 	
 private:
 	//-----Private Data-----
 	
+	Rgba m_victoryTextColor = Rgba::BLUE;
+	Rgba m_leaderboardTextColor = Rgba::BLUE;
+	Rgba m_scoresFlashColor;
+
 	static constexpr float VICTORY_TRANSITION_IN_TIME = 1.0f;
 	static constexpr float VICTORY_TRANSITION_OUT_TIME = 1.0f;
 

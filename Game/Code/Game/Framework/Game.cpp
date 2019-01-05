@@ -523,6 +523,15 @@ void Game::UpdateLeaderboardWithCurrentScore()
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Returns the current score of the game
+//
+int Game::GetScore()
+{
+	return s_instance->m_score;
+}
+
+
 //- C FUNCTION ----------------------------------------------------------------------------------
 // Returns the alignment used to render the given player's HUD
 //

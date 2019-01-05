@@ -125,6 +125,7 @@ bool PlayState_Stage::Leave()
 void PlayState_Stage::Render_Enter() const
 {
 	Game::GetWorld()->DrawToGrid();
+	Game::DrawPlayerHUD();
 }
 
 
@@ -134,6 +135,7 @@ void PlayState_Stage::Render_Enter() const
 void PlayState_Stage::Render() const
 {
 	Game::GetWorld()->DrawToGrid();
+	Game::DrawPlayerHUD();
 }
 
 
@@ -143,4 +145,5 @@ void PlayState_Stage::Render() const
 void PlayState_Stage::Render_Leave() const
 {
 	Game::GetWorld()->DrawToGrid();
+	Game::DrawPlayerHUD();
 }

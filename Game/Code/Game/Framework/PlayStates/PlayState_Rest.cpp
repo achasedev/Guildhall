@@ -422,6 +422,7 @@ bool PlayState_Rest::Leave()
 void PlayState_Rest::Render_Enter() const
 {
 	Game::GetWorld()->DrawToGrid();
+	Game::DrawPlayerHUD();
 }
 
 
@@ -431,6 +432,7 @@ void PlayState_Rest::Render_Enter() const
 void PlayState_Rest::Render() const
 {
 	Game::GetWorld()->DrawToGrid();
+	Game::DrawPlayerHUD();
 }
 
 
@@ -446,4 +448,6 @@ void PlayState_Rest::Render_Leave() const
 
 	Game::GetWorld()->DrawToGridWithOffset(currOffset);
 	m_worldToTransitionTo->DrawToGridWithOffset(transitionOffset);
+
+	Game::DrawPlayerHUD();
 }

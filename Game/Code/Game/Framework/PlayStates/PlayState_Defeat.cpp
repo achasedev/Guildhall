@@ -4,12 +4,12 @@
 /* Date: October 24th 2018
 /* Description: Implementation of the Defeat PlayState class
 /************************************************************************/
-#include "Game/Framework/PlayStates/PlayState_Defeat.hpp"
-#include "Engine/Input/InputSystem.hpp"
 #include "Game/Framework/Game.hpp"
-#include "Game/GameStates/GameState_MainMenu.hpp"
 #include "Game/Framework/World.hpp"
-
+#include "Game/Framework/VoxelFont.hpp"
+#include "Engine/Input/InputSystem.hpp"
+#include "Game/GameStates/GameState_MainMenu.hpp"
+#include "Game/Framework/PlayStates/PlayState_Defeat.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -95,6 +95,7 @@ bool PlayState_Defeat::Leave()
 void PlayState_Defeat::Render_Enter() const
 {
 	Game::GetWorld()->DrawToGrid();
+	Game::DrawPlayerHUD();
 }
 
 
@@ -104,6 +105,39 @@ void PlayState_Defeat::Render_Enter() const
 void PlayState_Defeat::Render() const
 {
 	Game::GetWorld()->DrawToGrid();
+	Game::DrawPlayerHUD();
+
+	// Draw the victory text
+	VoxelFont* menuFont = Game::GetMenuFont();
+
+	VoxelFontDraw_t options;
+	options.mode = VOXEL_FONT_FILL_NONE;
+	options.textColor = Rgba::BLUE;
+	options.fillColor = Rgba::BLUE;
+	options.font = menuFont;
+	options.scale = IntVector3(1, 1, 1);
+	options.up = IntVector3(0, 1, 0);
+	options.alignment = Vector3(0.5f, 0.5f, 0.5f);
+	options.borderThickness = 0;
+
+	Game::GetVoxelGrid()->DrawVoxelText("Victory", IntVector3(128, 8, 255), options);
+
+	// Draw the leaderboard
+	IntVector3 drawPosition = IntVector3(128, 50, 160);
+	options.up = IntVector3(0, 0, 1);
+
+	const Leaderboard& board = Game::GetLeaderboards()[Game::GetCurrentPlayerCount()];
+
+	Game::GetVoxelGrid()->DrawVoxelText(board.m_name, drawPosition, options);
+	drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
+
+	for (int i = 0; i < NUM_SCORES_PER_LEADERBOARD; ++i)
+	{
+		Game::GetVoxelGrid()->DrawVoxelText(Stringf("%i", board.m_scores[i]), drawPosition, options);
+		drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
+	}
+
+	Game::GetVoxelGrid()->DrawVoxelText("Press A", drawPosition, options);
 }
 
 
@@ -113,5 +147,5 @@ void PlayState_Defeat::Render() const
 void PlayState_Defeat::Render_Leave() const
 {
 	Game::GetWorld()->DrawToGrid();
-
+	Game::DrawPlayerHUD();
 }

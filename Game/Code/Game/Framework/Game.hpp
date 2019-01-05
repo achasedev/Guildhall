@@ -70,6 +70,7 @@ public:
 	static void					ResetScore();
 	static void					AddPointsToScore(int pointsToAdd);
 	static void					UpdateLeaderboardWithCurrentScore();
+	static int					GetScore();
 
 	static void					DrawPlayerHUD();
 	static void					DrawScore();

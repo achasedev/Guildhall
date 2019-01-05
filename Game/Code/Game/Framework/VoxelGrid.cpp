@@ -151,11 +151,11 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, const
 //-----------------------------------------------------------------------------------------------
 // Draws the entity's collision as a red visual to the grid
 //
-void VoxelGrid::DrawEntityCollision(const Entity* entity, const IntVector3& offset, const Rgba& whiteReplacement /*= Rgba::WHITE*/)
+void VoxelGrid::DrawEntityCollision(const Entity* entity, const IntVector3& offset)
 {
 	const VoxelSprite* texture = entity->GetVoxelSprite();
 	IntVector3 dimensions = texture->GetOrientedDimensions(entity->GetOrientation());
-	IntVector3 startCoord = entity->GetCoordinatePosition();
+	IntVector3 startCoord = entity->GetCoordinatePosition() + offset;
 
 	for (int xOff = 0; xOff < dimensions.x; ++xOff)
 	{
@@ -328,7 +328,7 @@ void VoxelGrid::DebugDrawEntityCollision(const Entity* entity, const IntVector3&
 //-----------------------------------------------------------------------------------------------
 // Draws the given text to the grid
 //
-void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options)
+void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options, VoxelFontOffset_cb offsetFunction /*= nullptr*/)
 {
 	IntVector3 textDimensions = options.font->GetTextDimensions(text);
 	textDimensions.x *= options.scale.x;
@@ -359,8 +359,16 @@ void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referen
 				int xOffset = ((xOff - options.borderThickness) / options.scale.x) % glyphDimensions.x;
 				int yOffset = (yOff - options.borderThickness) / options.scale.y;
 
+				IntVector3 worldFunctionOffset = IntVector3::ZERO;
+
+				if (offsetFunction != nullptr)
+				{
+					IntVector3 localFunctionOffset = offsetFunction(textDimensions, IntVector3(xOff, yOff, zOff));
+					worldFunctionOffset = options.right * localFunctionOffset.x + options.up * localFunctionOffset.y + forward * localFunctionOffset.z;
+				}
+
 				IntVector3 worldOffset = options.right * xOff + options.up * yOff + forward * zOff;
-				int index = GetIndexForCoords(startWorldCoord + worldOffset);
+				int index = GetIndexForCoords(startWorldCoord + worldOffset + worldFunctionOffset);
 
 				if (index == -1)
 				{

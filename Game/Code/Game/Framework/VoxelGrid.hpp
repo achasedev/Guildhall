@@ -44,6 +44,8 @@ struct VoxelFontDraw_t
 	IntVector3 scale = IntVector3::ONES;
 };
 
+typedef IntVector3(*VoxelFontOffset_cb)(const IntVector3& textDimensions, const IntVector3& localVoxelCoords);
+
 class VoxelGrid
 {
 	friend class World;
@@ -60,13 +62,13 @@ public:
 	// Mutators
 	void				Clear();
 	void				DrawEntity(const Entity* entity, const IntVector3& offset, const Rgba& whiteReplacement = Rgba::WHITE);
-	void				DrawEntityCollision(const Entity* entity, const IntVector3& offset, const Rgba& whiteReplacement = Rgba::WHITE);
+	void				DrawEntityCollision(const Entity* entity, const IntVector3& offset);
 	void				DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset);
 	void				Draw3DTexture(const VoxelSprite* texture, const IntVector3& startCoord, float orientation, const Rgba& whiteReplacement = Rgba::WHITE);
 
 	void				DebugDrawEntityCollision(const Entity* entity, const IntVector3& offset);
 
-	void				DrawVoxelText(const std::string& text, const IntVector3& startCoord, const VoxelFontDraw_t& options);
+	void				DrawVoxelText(const std::string& text, const IntVector3& startCoord, const VoxelFontDraw_t& options, VoxelFontOffset_cb offsetFunction = nullptr);
 	void				DrawWireBox(const IntVector3& startCoords, const IntVector3& dimensions, const Rgba& color,
 										bool shadeX = false, bool shadeY = false, bool shadeZ = false);
 	void				DrawSolidBox(const IntVector3& startCoords, const IntVector3& dimensions, const Rgba& color, bool overwrite = true);
