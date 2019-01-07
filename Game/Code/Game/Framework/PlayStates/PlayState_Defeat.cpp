@@ -7,9 +7,11 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/VoxelFont.hpp"
-#include "Engine/Input/InputSystem.hpp"
 #include "Game/GameStates/GameState_MainMenu.hpp"
 #include "Game/Framework/PlayStates/PlayState_Defeat.hpp"
+#include "Engine/Math/MathUtils.hpp"
+#include "Engine/Input/InputSystem.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -105,7 +107,6 @@ void PlayState_Defeat::Render_Enter() const
 void PlayState_Defeat::Render() const
 {
 	Game::GetWorld()->DrawToGrid();
-	Game::DrawPlayerHUD();
 
 	// Draw the victory text
 	VoxelFont* menuFont = Game::GetMenuFont();
@@ -115,29 +116,51 @@ void PlayState_Defeat::Render() const
 	options.textColor = Rgba::BLUE;
 	options.fillColor = Rgba::BLUE;
 	options.font = menuFont;
-	options.scale = IntVector3(1, 1, 1);
+	options.scale = IntVector3(2, 2, 1);
 	options.up = IntVector3(0, 1, 0);
 	options.alignment = Vector3(0.5f, 0.5f, 0.5f);
 	options.borderThickness = 0;
 
-	Game::GetVoxelGrid()->DrawVoxelText("Victory", IntVector3(128, 8, 255), options);
+	Game::GetVoxelGrid()->DrawVoxelText("Defeat", IntVector3(128, 32, 255), options, GetOffsetForFontWaveEffect);
 
-	// Draw the leaderboard
-	IntVector3 drawPosition = IntVector3(128, 50, 160);
+	options.scale = IntVector3::ONES;
 	options.up = IntVector3(0, 0, 1);
 
-	const Leaderboard& board = Game::GetLeaderboards()[Game::GetCurrentPlayerCount()];
+	// Draw the leaderboard
+	IntVector3 drawPosition = IntVector3(128, 40, 160);
+
+	const Leaderboard& board = Game::GetLeaderboards()[Game::GetCurrentPlayerCount() - 1];
 
 	Game::GetVoxelGrid()->DrawVoxelText(board.m_name, drawPosition, options);
 	drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
 
+	bool currentScoreRendered = false;
 	for (int i = 0; i < NUM_SCORES_PER_LEADERBOARD; ++i)
 	{
+		if (!currentScoreRendered && board.m_scores[i] == Game::GetScore())
+		{
+			float time = m_transitionTimer.GetElapsedTime();
+			float t = 0.5f * (SinDegrees(1000.f * time) + 1.0f);
+
+			options.textColor = Interpolate(m_leaderboardTextColor, m_scoresFlashColor, t);
+
+			currentScoreRendered = true;
+		}
+		else
+		{
+			options.textColor = m_leaderboardTextColor;
+		}
+
 		Game::GetVoxelGrid()->DrawVoxelText(Stringf("%i", board.m_scores[i]), drawPosition, options);
 		drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
 	}
 
-	Game::GetVoxelGrid()->DrawVoxelText("Press A", drawPosition, options);
+	drawPosition -= IntVector3(0, 0, 10);
+
+	Game::GetVoxelGrid()->DrawVoxelText("Press A", drawPosition, options, GetOffsetForFontWaveEffect);
+	drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
+
+	Game::GetVoxelGrid()->DrawVoxelText("to return", drawPosition, options, GetOffsetForFontWaveEffect);
 }
 
 

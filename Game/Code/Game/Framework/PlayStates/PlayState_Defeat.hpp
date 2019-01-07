@@ -29,6 +29,10 @@ public:
 private:
 	//-----Private Data-----
 
+	Rgba m_victoryTextColor = Rgba::BLUE;
+	Rgba m_leaderboardTextColor = Rgba::BLUE;
+	Rgba m_scoresFlashColor;
+
 	static constexpr float DEFEAT_TRANSITION_IN_TIME = 2.0f;
 	static constexpr float DEFEAT_TRANSITION_OUT_TIME = 2.0f;
 

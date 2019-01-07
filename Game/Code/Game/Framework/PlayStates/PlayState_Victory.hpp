@@ -27,12 +27,6 @@ public:
 
 
 private:
-	//-----Private Methods-----
-
-	Rgba GetColorForCurrentScore() const;
-
-	
-private:
 	//-----Private Data-----
 	
 	Rgba m_victoryTextColor = Rgba::BLUE;

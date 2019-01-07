@@ -34,3 +34,9 @@ private:
 	const IntVector2 m_glyphLayout; // Always 16x16
 
 };
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns an offset to be applied to the current voxel at local coords when rendering fonts
+//
+IntVector3 GetOffsetForFontWaveEffect(const IntVector3& textDimensions, const IntVector3& localCoords);

@@ -104,51 +104,6 @@ void PlayState_Victory::Render_Enter() const
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the color that should be used to render the current score on the leaderboard, for
-// flashing effect
-//
-Rgba PlayState_Victory::GetColorForCurrentScore() const
-{
-	float time = m_transitionTimer.GetElapsedTime();
-	float t = 0.5f * (SinDegrees(1000.f * time) + 1.0f);
-
-	return Interpolate(m_leaderboardTextColor, m_scoresFlashColor, t);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns an offset to be applied to the current voxel at local coords when rendering fonts
-//
-IntVector3 GetOffsetForFontWaveEffect(const IntVector3& textDimensions, const IntVector3& localCoords)
-{
-	int frontRange = 15;
-	int rearRange = 50;
-	float maxOffset = 10;
-
-	int time = (int) (100.f * Game::GetGameClock()->GetTotalSeconds());
-
-	int target = (time % (2 * textDimensions.x)) - frontRange;
-	int displacement = localCoords.x - target;
-	int distance = AbsoluteValue(displacement);
-
-	IntVector3 offset = IntVector3::ZERO;
-
-	if (displacement >= 0 && displacement <= frontRange)
-	{
-		float t = (float)(frontRange - distance) / (float)frontRange;
-		offset.z = (int)(-maxOffset * t);
-	}
-	else if (displacement < 0 && displacement > -rearRange)
-	{
-		float t = (float)(rearRange - distance) / (float)(rearRange);
-		offset.z = (int)(-maxOffset * t);
-	}
-
-	return offset;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Renders the running state
 //
 void PlayState_Victory::Render() const
@@ -186,7 +141,11 @@ void PlayState_Victory::Render() const
 	{
 		if (!currentScoreRendered && board.m_scores[i] == Game::GetScore())
 		{
-			options.textColor = GetColorForCurrentScore();
+			float time = m_transitionTimer.GetElapsedTime();
+			float t = 0.5f * (SinDegrees(1000.f * time) + 1.0f);
+
+			options.textColor = Interpolate(m_leaderboardTextColor, m_scoresFlashColor, t);
+
 			currentScoreRendered = true;
 		}
 		else
