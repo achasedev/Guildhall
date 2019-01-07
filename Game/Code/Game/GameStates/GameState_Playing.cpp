@@ -16,6 +16,7 @@
 #include "Game/GameStates/GameState_Playing.hpp"
 #include "Game/Framework/PlayStates/PlayState.hpp"
 #include "Game/Framework/PlayStates/PlayState_Rest.hpp"
+#include "Game/Framework/PlayStates/PlayState_Pause.hpp"
 #include "Game/Framework/PlayStates/PlayState_Stage.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
@@ -39,6 +40,12 @@ GameState_Playing::GameState_Playing()
 //
 GameState_Playing::~GameState_Playing()
 {
+	if (m_overrideState != nullptr)
+	{
+		delete m_overrideState;
+		m_overrideState = nullptr;
+	}
+
 	if (m_currentState != nullptr)
 	{
 		delete m_currentState;
@@ -123,6 +130,28 @@ void GameState_Playing::TransitionToPlayState(PlayState* state)
 
 
 //-----------------------------------------------------------------------------------------------
+// Creates a pause state to transition into, overriding any existing state
+//
+void GameState_Playing::PushOverrideState(PlayState* overrideState)
+{
+	m_overrideState = overrideState;
+	m_isTransitioning = true;
+	m_overrideEntered = false;
+	m_overrideState->StartEnterTimer();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Removes the override state, transitioning out and resuming the game
+//
+void GameState_Playing::PopOverrideState()
+{
+	m_isTransitioning = true;
+	m_overrideState->StartLeaveTimer();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns true if all current players are dead
 //
 bool GameState_Playing::AreAllPlayersDead() const
@@ -147,7 +176,11 @@ bool GameState_Playing::AreAllPlayersDead() const
 //
 void GameState_Playing::ProcessInput()
 {
-	if (m_currentState != nullptr)
+	if (m_overrideState != nullptr)
+	{
+		m_overrideState->ProcessInput();
+	}
+	else if (m_currentState != nullptr)
 	{
 		m_currentState->ProcessInput();
 	}
@@ -182,8 +215,31 @@ void GameState_Playing::Update()
 {
 	if (m_isTransitioning)
 	{
-		// Update on leave of the current state
-		if (m_currentState != nullptr)
+		// Check for overrides first
+		if (m_overrideState != nullptr)
+		{
+			if (!m_overrideEntered)
+			{
+				m_overrideEntered = m_overrideState->Enter();
+
+				if (m_overrideEntered)
+				{
+					m_isTransitioning = false;
+				}
+			}
+			else
+			{
+				bool leaveFinished = m_overrideState->Leave();
+
+				if (leaveFinished)
+				{
+					m_isTransitioning = false;
+					delete m_overrideState;
+					m_overrideState = nullptr;
+				}
+			}
+		}
+		else if (m_currentState != nullptr) // Update on leave of the current state
 		{
 			bool leaveFinished = m_currentState->Leave();
 
@@ -210,7 +266,14 @@ void GameState_Playing::Update()
 	}
 	else
 	{
-		m_currentState->Update();
+		if (m_overrideState != nullptr)
+		{
+			m_overrideState->Update();
+		}
+		else
+		{
+			m_currentState->Update();
+		}
 	}
 }
 
@@ -222,7 +285,18 @@ void GameState_Playing::Render() const
 {
 	if (m_isTransitioning)
 	{
-		if (m_currentState != nullptr)
+		if (m_overrideState != nullptr)
+		{
+			if (m_overrideEntered)
+			{
+				m_overrideState->Render_Leave();
+			}
+			else
+			{
+				m_overrideState->Render_Enter();
+			}
+		}
+		else if (m_currentState != nullptr)
 		{
 			m_currentState->Render_Leave();
 		}
@@ -230,6 +304,10 @@ void GameState_Playing::Render() const
 		{
 			m_transitionState->Render_Enter();
 		}
+	}
+	else if (m_overrideState != nullptr)
+	{
+		m_overrideState->Render();
 	}
 	else if (m_currentState != nullptr)
 	{

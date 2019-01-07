@@ -151,6 +151,9 @@
     <ClCompile Include="Framework\Leaderboard.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\PlayStates\PlayState_Pause.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -216,5 +219,6 @@
     <ClInclude Include="Entity\Components\BehaviorComponent_ShootCircle.hpp" />
     <ClInclude Include="Animation\VoxelSprite.hpp" />
     <ClInclude Include="Framework\Leaderboard.hpp" />
+    <ClInclude Include="Framework\PlayStates\PlayState_Pause.hpp" />
   </ItemGroup>
 </Project>

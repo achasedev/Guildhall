@@ -45,12 +45,17 @@ public:
 	virtual void Render_Leave() const override;
 
 	void TransitionToPlayState(PlayState* state);
+	void PushOverrideState(PlayState* overrideState);
+	void PopOverrideState();
 
 	bool AreAllPlayersDead() const;
 
 
 private:
 	//-----Private Data-----
+
+	PlayState* m_overrideState = nullptr;
+	bool m_overrideEntered = false;
 
 	PlayState* m_currentState = nullptr;
 	PlayState* m_transitionState = nullptr;

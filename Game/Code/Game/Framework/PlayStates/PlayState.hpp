@@ -58,3 +58,6 @@ protected:
 	float m_transitionOutTime = 0.f;
 	
 };
+
+
+int CheckForPause();

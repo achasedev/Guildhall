@@ -12,9 +12,9 @@
 #include "Game/GameStates/GameState_Playing.hpp"
 #include "Game/Framework/PlayStates/PlayState_Rest.hpp"
 #include "Game/Framework/PlayStates/PlayState_Victory.hpp"
+#include "Game/Framework/PlayStates/PlayState_Pause.hpp"
 #include "Game/Framework/PlayStates/PlayState_Defeat.hpp"
 #include "Game/Entity/Player.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -38,14 +38,23 @@ PlayState_Stage::~PlayState_Stage()
 //
 void PlayState_Stage::ProcessInput()
 {
-	// Check player input
-	Player** players = Game::GetPlayers();
+	int pauseIndex = CheckForPause();
 
-	for (int i = 0; i < MAX_PLAYERS; ++i)
+	if (pauseIndex != -1)
 	{
-		if (Game::IsPlayerAlive(i))
+		m_gameState->PushOverrideState(new PlayState_Pause(Game::GetPlayers()[pauseIndex]));
+	}
+	else
+	{
+		// Check player gameplay input
+		Player** players = Game::GetPlayers();
+
+		for (int i = 0; i < MAX_PLAYERS; ++i)
 		{
-			players[i]->ProcessGameplayInput();
+			if (Game::IsPlayerAlive(i))
+			{
+				players[i]->ProcessGameplayInput();
+			}
 		}
 	}
 }

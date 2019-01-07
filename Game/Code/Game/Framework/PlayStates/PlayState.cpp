@@ -9,7 +9,7 @@
 #include "Game/Framework/PlayStates/PlayState.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/GameCamera.hpp"
-
+#include "Engine/Input/InputSystem.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -78,4 +78,35 @@ void PlayState::UpdateWorldAndCamera()
 		//Game::GetGameCamera()->UpdatePositionBasedOnPlayers();
 		Game::GetGameCamera()->LookAtGridCenter();
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the index of the player that pressed pause if pause was pressed by keyboard or a controller
+//
+int CheckForPause()
+{
+	InputSystem* input = InputSystem::GetInstance();
+
+	// Check keyboard first
+	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_ESCAPE))
+	{
+		return 0;
+	}
+
+	// Check controllers
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		if (Game::GetPlayers()[i] != nullptr)
+		{
+			XboxController& controller = input->GetController(i);
+			if (controller.WasButtonJustPressed(XBOX_BUTTON_START))
+			{
+				return i;
+			}
+		}
+	}
+
+	// No pause pressed
+	return -1;
 }
