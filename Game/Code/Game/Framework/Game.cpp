@@ -44,6 +44,7 @@ Game::Game()
 {
 	// Clock
 	m_gameClock = new Clock(Clock::GetMasterClock());
+	m_gameClock->SetMaxDeltaTime((1.f / 30.f)); // Limit the time step to be no more than 1/30th a frame
 
 	// Camera
 	Renderer* renderer = Renderer::GetInstance();

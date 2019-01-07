@@ -176,18 +176,22 @@ bool GameState_Playing::AreAllPlayersDead() const
 //
 void GameState_Playing::ProcessInput()
 {
-	if (m_overrideState != nullptr)
+	if (!m_isTransitioning)
 	{
-		m_overrideState->ProcessInput();
+		if (m_overrideState != nullptr)
+		{
+			m_overrideState->ProcessInput();
+		}
+		else if (m_currentState != nullptr)
+		{
+			m_currentState->ProcessInput();
+		}
+		else
+		{
+			m_transitionState->ProcessInput();
+		}
 	}
-	else if (m_currentState != nullptr)
-	{
-		m_currentState->ProcessInput();
-	}
-	else
-	{
-		m_transitionState->ProcessInput();
-	}
+	
 
 	if (InputSystem::GetInstance()->WasKeyJustPressed('L'))
 	{

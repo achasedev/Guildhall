@@ -86,6 +86,9 @@ void PlayState_Pause::ProcessInput()
 bool PlayState_Pause::Enter()
 {
 	// Play a sound and translate the menu in (?)
+	float t = m_transitionTimer.GetElapsedTimeNormalized();
+	m_menuStartPosition.y = Interpolate(0, 40, t);
+
 	return m_transitionTimer.HasIntervalElapsed();
 }
 
@@ -108,7 +111,59 @@ void PlayState_Pause::Update()
 bool PlayState_Pause::Leave()
 {
 	// More sound and stuff here, volume adjustment
-	return m_transitionTimer.HasIntervalElapsed();
+	static bool isParticalized = false;
+	if (!isParticalized)
+	{
+		// Particalize the menu
+		VoxelFont* menuFont = Game::GetMenuFont();
+
+		VoxelFontDraw_t options;
+		options.mode = VOXEL_FONT_FILL_NONE;
+		options.textColor = Rgba::BLUE;
+		options.fillColor = Rgba::BLUE;
+		options.font = menuFont;
+		options.alignment = Vector3(0.5f, 0.5f, 0.5f);
+		options.borderThickness = 0;
+		options.scale = IntVector3::ONES;
+		options.up = IntVector3(0, 0, 1);
+
+		// Draw the menu options
+		IntVector3 drawPosition = IntVector3(128, 40, 160);
+		drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
+
+		for (int i = 0; i < m_menuText.size(); ++i)
+		{
+			options.textColor = Rgba::BLUE;
+
+			if (i == m_cursorIndex)
+			{
+				float time = m_transitionTimer.GetElapsedTime();
+				float t = 0.5f * (SinDegrees(1000.f * time) + 1.0f);
+
+				options.textColor = Interpolate(Rgba::BLUE, Rgba::WHITE, t);
+			}
+
+			Game::GetWorld()->ParticalizeVoxelText(m_menuText[i], drawPosition, options);
+			drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
+			if (i == 1)
+			{
+				drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
+			}
+		}
+
+		isParticalized = true;
+	}
+
+	UpdateWorldAndCamera();
+
+	bool finishedLeaving = m_transitionTimer.HasIntervalElapsed();
+
+	if (finishedLeaving)
+	{
+		isParticalized = false;
+	}
+
+	return finishedLeaving;
 }
 
 
@@ -117,10 +172,7 @@ bool PlayState_Pause::Leave()
 //
 void PlayState_Pause::Render_Enter() const
 {
-	Game::GetWorld()->DrawToGrid();
-	Game::DrawPlayerHUD();
-
-	// Render the menu in
+	Render();
 }
 
 
@@ -130,8 +182,8 @@ void PlayState_Pause::Render_Enter() const
 void PlayState_Pause::Render() const
 {
 	Game::GetWorld()->DrawToGrid();
+	Game::DrawPlayerHUD();
 
-	// Draw the victory text
 	VoxelFont* menuFont = Game::GetMenuFont();
 
 	VoxelFontDraw_t options;
@@ -145,7 +197,7 @@ void PlayState_Pause::Render() const
 	options.up = IntVector3(0, 0, 1);
 
 	// Draw the menu options
-	IntVector3 drawPosition = IntVector3(128, 40, 160);
+	IntVector3 drawPosition = m_menuStartPosition;
 	drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
 
 	for (int i = 0; i < m_menuText.size(); ++i)
@@ -177,8 +229,6 @@ void PlayState_Pause::Render_Leave() const
 {
 	Game::GetWorld()->DrawToGrid();
 	Game::DrawPlayerHUD();
-
-	// Blow up the menu
 }
 
 

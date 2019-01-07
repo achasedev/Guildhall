@@ -35,12 +35,14 @@ private:
 private:
 	//-----Private Data-----
 
+	IntVector3 m_menuStartPosition = IntVector3(128, 40, 160);
+
 	Player* m_playerThatPaused = nullptr;
 	int m_cursorIndex = 2;
 	std::vector<std::string> m_menuText;
 	bool m_resumePressed = false;
 
-	static constexpr float PAUSE_TRANSITION_IN_TIME = 1.0f;
-	static constexpr float PAUSE_TRANSITION_OUT_TIME = 1.0f;
+	static constexpr float PAUSE_TRANSITION_IN_TIME = 0.2f;
+	static constexpr float PAUSE_TRANSITION_OUT_TIME = 0.f;
 
 };
