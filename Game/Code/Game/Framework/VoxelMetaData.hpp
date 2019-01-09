@@ -1,4 +1,9 @@
-
+/************************************************************************/
+/* File: VoxelMetaData.hpp
+/* Author: Andrew Chase
+/* Date: January 8th, 2018
+/* Description: Class to represent meta data for a single voxel in a grid
+/************************************************************************/
 #include <stdint.h>
 
 class VoxelMetaData
@@ -16,5 +21,4 @@ private:
 
 	int8_t m_flags = 0;
 
-	// Color data (?)
 };
