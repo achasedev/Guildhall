@@ -77,22 +77,17 @@ class BehaviorComponent;
 
 class EntityDefinition
 {
-	friend class AIEntity;
-	friend class Entity;
-	friend class AnimatedEntity;
-	friend class Player;
-	friend class Item;
-	friend class Weapon;
-	friend class Projectile;
-	friend class CharacterSelectVolume;
-
 public:
 	//-----Public Methods-----
+
+	EntityDefinition() {} // Only to be used by Campaign manager for character select!
+	EntityDefinition(const XMLElement& entityElement);
+
+	BehaviorComponent* ConstructBehaviorPrototype(const XMLElement& behaviorElement);
 	
-	
-	std::string	GetName() const;
-	IntVector3 GetDimensions() const;
-	BehaviorComponent* CloneBehaviorPrototype() const;
+	std::string			GetName() const;
+	IntVector3			GetDimensions() const;
+	BehaviorComponent*	CloneBehaviorPrototype() const;
 
 	bool				HasGravity() const;
 	int					GetInitialHealth() const;
@@ -101,17 +96,10 @@ public:
 	static void						LoadDefinitions(const std::string& filename);
 	static const EntityDefinition*	GetDefinition(const std::string& defName);
 	static const EntityDefinition*	GetDefinition(int id);
+	static void						AddDefinition(const EntityDefinition* definition);
 
 
-private:
-	//-----Private Methods-----
-	
-	EntityDefinition(const XMLElement& entityElement);
-
-	BehaviorComponent* ConstructBehaviorPrototype(const XMLElement& behaviorElement);
-
-	
-private:
+public:
 	//-----Private Data-----
 	
 	// Entity Base class

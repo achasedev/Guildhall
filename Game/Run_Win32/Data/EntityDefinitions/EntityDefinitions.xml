@@ -78,69 +78,6 @@
 
 	</EntityDefinition>
 
-
-	<!-- Character Select -->
-	<EntityDefinition name="CharacterSelect_cat" id="5">
-
-		<!--Visuals-->
-		<Visuals default_sprite="Cat_character_select"/>
-
-		<!--Physics-->
-		<Physics physics_type="static">
-			<CollisionDefinition response="ignore_correction" layer="world"/>
-		</Physics>
-
-		<!-- Character Select Only -->
-		<CharacterSelect player_definition="Cat"/>
-
-	</EntityDefinition>
-
-	<EntityDefinition name="CharacterSelect_mouse" id="6">
-
-		<!--Visuals-->
-		<Visuals default_sprite="Mouse_character_select"/>
-
-		<!--Physics-->
-		<Physics physics_type="static">
-			<CollisionDefinition response="ignore_correction" layer="world"/>
-		</Physics>
-
-		<!-- Character Select Only -->
-		<CharacterSelect player_definition="Mouse"/>
-
-	</EntityDefinition>
-
-	<EntityDefinition name="CharacterSelect_nerd" id="7">
-
-		<!--Visuals-->
-		<Visuals default_sprite="Nerd_character_select"/>
-
-		<!--Physics-->
-		<Physics physics_type="static">
-			<CollisionDefinition response="ignore_correction" layer="world"/>
-		</Physics>
-
-		<!-- Character Select Only -->
-		<CharacterSelect player_definition="Nerd"/>
-
-	</EntityDefinition>
-
-	<EntityDefinition name="CharacterSelect_oldman" id="8">
-
-		<!--Visuals-->
-		<Visuals default_sprite="OldMan_character_select"/>
-
-		<!--Physics-->
-		<Physics physics_type="static">
-			<CollisionDefinition response="ignore_correction" layer="world"/>
-		</Physics>
-
-		<!-- Character Select Only -->
-		<CharacterSelect player_definition="OldMan"/>
-
-	</EntityDefinition>
-
-
 	<!-- Projectiles -->
 
 	<EntityDefinition name="Bullet" id="9">

@@ -47,6 +47,7 @@ public:
 
 	//-----Public Methods-----
 	
+	CampaignStage() {}
 	CampaignStage(const XMLElement& element);
 	~CampaignStage();
 

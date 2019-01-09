@@ -1,0 +1,8 @@
+<CharacterSelect map="CharacterSelect">
+
+	<Entity character="Cat" position="20.0,5.0,20.0" orientation="0.0"/>
+	<Entity character="Mouse" position="20.0,5.0,220.0" orientation="0.0"/>
+	<Entity character="Nerd" position="220.0,5.0,20.0" orientation="0.0"/>
+	<Entity character="OldMan" position="220.0,5.0,220.0" orientation="0.0"/>
+
+</CharacterSelect>

@@ -156,7 +156,20 @@ void World::InititalizeForStage(CampaignStage* stage)
 	{
 		InitialStaticSpawn_t& spawn = stage->m_initialStatics[entityIndex];
 
-		Entity* entity = new CharacterSelectVolume(spawn.definition);
+		// Gross if statement - for Select volumes in the character select, needs
+		// to be spawned as the subclass	
+		bool isSelectVolume = spawn.definition->m_name.find("_SelectVolume") != std::string::npos;
+
+		Entity* entity = nullptr;
+
+		if (isSelectVolume)
+		{
+			entity = new CharacterSelectVolume(spawn.definition);
+		}
+		else
+		{
+			entity = new Entity(spawn.definition);
+		}
 
 		entity->SetPosition(spawn.position);
 		entity->SetOrientation(spawn.orientation);
@@ -164,7 +177,7 @@ void World::InititalizeForStage(CampaignStage* stage)
 		AddEntity(entity);
 	}
 
-	// Add in the players
+	// Add the players to the world
 	Player** players = Game::GetPlayers();
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{

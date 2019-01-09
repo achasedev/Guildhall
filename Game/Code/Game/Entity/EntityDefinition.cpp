@@ -352,3 +352,15 @@ const EntityDefinition* EntityDefinition::GetDefinition(int id)
 
 	return nullptr;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the given definition to the registry, checking for duplicates
+//
+void EntityDefinition::AddDefinition(const EntityDefinition* definition)
+{
+	bool alreadyExists = s_definitions.find(definition->m_name) != s_definitions.end();
+	GUARANTEE_OR_DIE(!alreadyExists, Stringf("Error: Duplicate definition added: \"%s\"", definition->m_name.c_str()));
+
+	s_definitions[definition->m_name] = definition;
+}

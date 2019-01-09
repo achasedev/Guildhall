@@ -230,24 +230,60 @@ void CampaignManager::InitializeSpawnPoints(const XMLElement& rootElement)
 //
 void CampaignManager::InitializeStages(const XMLElement& rootElement)
 {
-	// Push in the character select stage
+	// Push in the character select stage to be able to transition into it
 	if (m_characterSelectStage == nullptr)
 	{
 		XMLDocument document;
-		document.LoadFile("Data/CharacterSelect.xml");
+		document.LoadFile("Data/CharacterSelect.stage");
 
 		const XMLElement* root = document.RootElement();
-		const XMLElement* stageElement = root->FirstChildElement();
+		m_characterSelectStage = new CampaignStage();
+		m_characterSelectStage->m_mapName = ParseXmlAttribute(*root, "map", "CharacterSelect");
 
-		m_characterSelectStage = new CampaignStage(*stageElement);
-		m_characterSelectStage->AddStaticSpawn(EntityDefinition::GetDefinition("CharacterSelect_cat"), Vector3(20.f, 5.f, 20.f), 0.f);
-		m_characterSelectStage->AddStaticSpawn(EntityDefinition::GetDefinition("CharacterSelect_mouse"), Vector3(20.f, 5.f, 220.f), 90.f);
-		m_characterSelectStage->AddStaticSpawn(EntityDefinition::GetDefinition("CharacterSelect_nerd"), Vector3(220.f, 5.f, 20.f), 180.f);
-		m_characterSelectStage->AddStaticSpawn(EntityDefinition::GetDefinition("CharacterSelect_oldman"), Vector3(220.f, 5.f, 220.f), 270.f);
+		const XMLElement* entityElement = root->FirstChildElement();
+		GUARANTEE_OR_DIE(entityElement != nullptr, "Error: Character Select has no characters!");
 
-		//m_characterSelectStage->AddStaticSpawn(EntityDefinition::GetDefinition("TestCube"), Vector3(100.f, 5.f, 100.f), 0.f);
+		while (entityElement != nullptr)
+		{
+			// Get the character select definition
+			std::string playerCharacterName = ParseXmlAttribute(*entityElement, "character", "");
+			const EntityDefinition* characterDefinition = EntityDefinition::GetDefinition(playerCharacterName);
+
+			GUARANTEE_OR_DIE(characterDefinition != nullptr, Stringf("Error: Character \"%s\" doesn't exist!", playerCharacterName.c_str()));
+
+			// Try to get the character select volume for this player
+			std::string volumeName = playerCharacterName + "_SelectVolume";
+
+			const EntityDefinition* volumeDefinition = EntityDefinition::GetDefinition(volumeName);
+
+			if (volumeDefinition == nullptr)
+			{
+				// No volume created yet for this character, so create one now (prevents needed to define one in data)
+				EntityDefinition* volumeDefinitionTemp = new EntityDefinition();
+				volumeDefinitionTemp->m_name = volumeName;
+				volumeDefinitionTemp->m_collisionDef.layer = COLLISION_LAYER_WORLD;
+				volumeDefinitionTemp->m_collisionDef.m_response = COLLISION_RESPONSE_IGNORE_CORRECTION;
+				volumeDefinitionTemp->m_physicsType = PHYSICS_TYPE_STATIC;
+				volumeDefinitionTemp->m_playerCharacterDefinition = characterDefinition;
+				volumeDefinitionTemp->m_defaultSprite = characterDefinition->m_defaultSprite;
+
+				EntityDefinition::AddDefinition(volumeDefinitionTemp);
+				volumeDefinition = volumeDefinitionTemp;
+			}
+
+			// Parse the position and orientation
+			Vector3 position = ParseXmlAttribute(*entityElement, "position", Vector3::ZERO);
+			float orientation = ParseXmlAttribute(*entityElement, "orientation", 0.f);
+
+			// Add in the static to be spawned when the world is spawned
+			m_characterSelectStage->AddStaticSpawn(volumeDefinition, position, orientation);
+
+			// Move to next element
+			entityElement = entityElement->NextSiblingElement();
+		}
 	}
 	
+	// Put the character select stage first so we start with it
 	m_stages.push_back(m_characterSelectStage);
 
 	// Initialize all the stages in the campaign
