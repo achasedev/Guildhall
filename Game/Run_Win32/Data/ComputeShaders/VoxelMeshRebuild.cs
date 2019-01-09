@@ -11,6 +11,7 @@ struct VertexVoxel
 	uint color;
 };
 
+
 // Buffers
 layout(binding=0, std140) uniform timeUBO
 {
@@ -25,17 +26,22 @@ layout(binding=8, std430) buffer colorSSBO
 	uint VOXEL_COLORS[];
 };	
 
-layout(binding=9, std430) buffer offsetSSBO
+layout(binding=9, std430) buffer metaSSBO
+{
+	uint VOXEL_META_DATA[];
+};
+
+layout(binding=10, std430) buffer offsetSSBO
 {
 	uint OFFSETS[];
 };	
 
-layout(binding=10, std430) buffer vertexSSBO
+layout(binding=11, std430) buffer vertexSSBO
 {
 	VertexVoxel VERTICES[];
 };	
 
-layout(binding=11, std430) buffer indexSSBO
+layout(binding=12, std430) buffer indexSSBO
 {
 	uint INDICES[];
 };	
@@ -71,6 +77,19 @@ ivec2 g_shadowOffsets[4] = ivec2[](
 	ivec2(-1, 0),
 	ivec2(1, 0),
 	ivec2(0, 0));
+
+
+bool IsMetaBitSet(uint voxelIndex, int flagIndex)
+{
+	uint setIndex = voxelIndex / 4;
+	uint subsetIndex = voxelIndex % 4;
+
+	uint flagSet = VOXEL_META_DATA[setIndex];
+	uint flags = (flagSet >> (8 * subsetIndex + flagIndex));
+
+	return ((flags & 0x1) != 0);
+}
+
 
 bool IsNeighborEmpty(uvec3 currCoords, uint directionIndex)
 {
@@ -120,6 +139,15 @@ uint ToUInt(vec4 floatColor)
 
 float GetShadowScalar(uvec3 coords, uint directionIndex)
 {
+	// First check if we should even receive a shadow
+	uvec3 globalDimensions = gl_NumWorkGroups * gl_WorkGroupSize;
+	uint baseIndex = coords.y * (globalDimensions.x * globalDimensions.z) + coords.z * globalDimensions.x + coords.x;
+ 
+ 	if (!IsMetaBitSet(baseIndex, 1))
+ 	{
+ 		return 1.0f;
+ 	}
+
 	// Check the column we're in, if anything is above us then we're completely shadowed
 	// (Direct overhead light)
 
@@ -127,7 +155,6 @@ float GetShadowScalar(uvec3 coords, uint directionIndex)
 	ivec2 xzCoordsPreCheck = ivec2(coords.xz) + offsets;
 
 	// Edge case checks
-	uvec3 globalDimensions = gl_NumWorkGroups * gl_WorkGroupSize;
 	if (xzCoordsPreCheck.x < 0 || xzCoordsPreCheck.x >= globalDimensions.x || xzCoordsPreCheck.y < 0 || xzCoordsPreCheck.y >= globalDimensions.z)
 	{
 		return 1.0f; // Don't shadow faces that are on the edge
@@ -137,13 +164,12 @@ float GetShadowScalar(uvec3 coords, uint directionIndex)
 
 	for (uint yCoord = coords.y + 1; yCoord < globalDimensions.y; ++yCoord)
 	{
-
 		uint voxelIndex = yCoord * (globalDimensions.x * globalDimensions.z) + xzCoords.y * globalDimensions.x + xzCoords.x;
 
-		// If voxel above is solid, then the 
-		if ((VOXEL_COLORS[voxelIndex] & 0xff000000) != 0)
+		// If voxel above is solid and casts shadows, then we return a darkening scalar
+		if ((VOXEL_COLORS[voxelIndex] & 0xff000000) != 0 && (IsMetaBitSet(voxelIndex, 0)))
 		{
-			return 0.75f;
+			return 0.5f;
 		}
 	}
 

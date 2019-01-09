@@ -1159,7 +1159,11 @@ void World::DrawStaticEntitiesToGrid(const IntVector3& offset)
 			}
 			else
 			{
-				grid->DrawEntity(m_entities[entityIndex], offset);
+				VoxelDrawOptions_t options;
+				options.castsShadows = true;
+				options.receivesShadows = true;
+
+				grid->DrawEntity(m_entities[entityIndex], offset, options);
 			}
 		}
 	}
@@ -1194,7 +1198,12 @@ void World::DrawDynamicEntitiesToGrid(const IntVector3& offset)
 			}
 			else
 			{
-				grid->DrawEntity(m_entities[entityIndex], offset, whiteReplacement);
+				VoxelDrawOptions_t options;
+				options.castsShadows = true;
+				options.receivesShadows = true;
+				options.whiteReplacement = whiteReplacement;
+
+				grid->DrawEntity(m_entities[entityIndex], offset, options);
 			}
 		}
 	}

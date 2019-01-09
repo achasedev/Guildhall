@@ -14,6 +14,7 @@
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Framework/VoxelTerrain.hpp"
+#include "Game/Framework/VoxelMetaData.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/IntVector3.hpp"
@@ -28,9 +29,11 @@
 #define INDICES_PER_VOXEL 36
 
 #define COLOR_BINDING (8)
-#define COUNT_BINDING (9)
-#define VERTEX_BINDING (10)
-#define INDEX_BINDING (11)
+#define META_BINDING (9)
+#define COUNT_BINDING (10)
+#define VERTEX_BINDING (11)
+#define INDEX_BINDING (12)
+
 
 bool AreCoordsOnEdge(const IntVector3& coords, const IntVector3& dimensions)
 {
@@ -51,6 +54,12 @@ bool AreCoordsOnEdge(const IntVector3& coords, const IntVector3& dimensions)
 //
 VoxelGrid::~VoxelGrid()
 {
+	if (m_metaData != nullptr)
+	{
+		free(m_metaData);
+		m_metaData = nullptr;
+	}
+
 	if (m_gridColors != nullptr)
 	{
 		free(m_gridColors);
@@ -70,6 +79,9 @@ void VoxelGrid::Initialize(const IntVector3& voxelDimensions)
 
 	m_gridColors = (Rgba*)malloc(numVoxels * sizeof(Rgba));
 	memset(m_gridColors, 0, numVoxels * sizeof(Rgba));
+
+	m_metaData = (VoxelMetaData*)malloc(numVoxels * sizeof(VoxelMetaData));
+	memset(m_metaData, 0, numVoxels * sizeof(VoxelMetaData));
 
 	for (int i = 0; i < numVoxels; ++i)
 	{
@@ -111,13 +123,14 @@ void VoxelGrid::Clear()
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 	memset(m_gridColors, 0, GetVoxelCount() * sizeof(Rgba));
+	memset(m_metaData, 0, GetVoxelCount() * sizeof(VoxelMetaData));
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Draws the 3D texture to the grid
 //
-void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, const Rgba& whiteReplacement /*= Rgba::WHITE*/)
+void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, VoxelDrawOptions_t options /*= VoxelDrawOptions_t()*/)
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
@@ -125,7 +138,7 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, const
 	IntVector3 position = entity->GetCoordinatePosition() + offset;
 	float orientation = entity->GetOrientation();
 
-	Draw3DTexture(texture, position, orientation, whiteReplacement);
+	Draw3DTexture(texture, position, orientation, options);
 
 	// Hack to render the player's weapon
 	if (entity->IsPlayer())
@@ -141,6 +154,8 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, const
 			if (weaponTexture != nullptr)
 			{
 				IntVector3 weaponPosition = position + IntVector3(0, 12, 0);
+				
+				// Don't let the weapons cast or receive shadows, so pass default param for options
 				Draw3DTexture(weaponTexture, weaponPosition, 0.f);
 			}
 		}
@@ -178,6 +193,11 @@ void VoxelGrid::DrawEntityCollision(const Entity* entity, const IntVector3& offs
 					if ((flags & mask) != 0)
 					{
 						m_gridColors[index] = Rgba::RED;
+
+						// Apply meta data
+						VoxelMetaData& data = m_metaData[index];
+						data.SetCastsShadows(false);
+						data.SetReceivesShadows(false);
 					}
 				}
 			}
@@ -229,6 +249,11 @@ void VoxelGrid::DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset)
 					if (gridIndex >= 0)
 					{
 						m_gridColors[gridIndex] = color;
+
+						// Apply meta data
+						VoxelMetaData& data = m_metaData[gridIndex];
+						data.SetCastsShadows(true);
+						data.SetReceivesShadows(true);
 					}
 				}
 			}
@@ -241,6 +266,11 @@ void VoxelGrid::DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset)
 				if (gridIndex >= 0)
 				{
 					m_gridColors[gridIndex] = color;
+
+					// Apply meta data
+					VoxelMetaData& data = m_metaData[gridIndex];
+					data.SetCastsShadows(true);
+					data.SetReceivesShadows(true);
 				}
 			}
 		}
@@ -251,7 +281,7 @@ void VoxelGrid::DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset)
 //-----------------------------------------------------------------------------------------------
 // Draws the 3D texture to the grid
 //
-void VoxelGrid::Draw3DTexture(const VoxelSprite* texture, const IntVector3& startCoord, float orientation, const Rgba& whiteReplacement /*= Rgba::WHITE*/)
+void VoxelGrid::Draw3DTexture(const VoxelSprite* texture, const IntVector3& startCoord, float orientation, VoxelDrawOptions_t options /*= VoxelDrawOptions_t()*/)
 {
 	IntVector3 dimensions = texture->GetOrientedDimensions(orientation);
 
@@ -276,10 +306,15 @@ void VoxelGrid::Draw3DTexture(const VoxelSprite* texture, const IntVector3& star
 						// Allow white to be replaced, for player shirt colors
 						if (colorToRender == Rgba::WHITE)
 						{
-							colorToRender = whiteReplacement;
+							colorToRender = options.whiteReplacement;
 						}
 
 						m_gridColors[index] = colorToRender;
+
+						// Apply meta data
+						VoxelMetaData& data = m_metaData[index];
+						data.SetCastsShadows(options.castsShadows);
+						data.SetReceivesShadows(options.receivesShadows);
 					}
 				}
 			}
@@ -379,6 +414,11 @@ void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referen
 				if ((xOff < options.borderThickness || xOff > textDimensions.x - options.borderThickness - 1) || (yOff < options.borderThickness || yOff > textDimensions.y - options.borderThickness - 1))
 				{
 					m_gridColors[index] = options.fillColor;
+
+					// Apply meta data
+					VoxelMetaData& data = m_metaData[index];
+					data.SetCastsShadows(false);
+					data.SetReceivesShadows(false);
 					continue;
 				}
 
@@ -388,10 +428,20 @@ void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referen
 				if (baseColor.a > 0)
 				{
 					m_gridColors[index] = options.textColor;
+
+					// Apply meta data
+					VoxelMetaData& data = m_metaData[index];
+					data.SetCastsShadows(false);
+					data.SetReceivesShadows(false);
 				}
 				else if (options.mode == VOXEL_FONT_FILL_FULL)
 				{
 					m_gridColors[index] = options.fillColor;
+
+					// Apply meta data
+					VoxelMetaData& data = m_metaData[index];
+					data.SetCastsShadows(false);
+					data.SetReceivesShadows(false);
 				}
 			}
 		}
@@ -431,6 +481,11 @@ void VoxelGrid::DrawWireBox(const IntVector3& startCoords, const IntVector3& dim
 					if (index != -1)
 					{
 						m_gridColors[index] = color;
+
+						// Apply meta data
+						VoxelMetaData& data = m_metaData[index];
+						data.SetCastsShadows(false);
+						data.SetReceivesShadows(false);
 					}
 				}
 			}
@@ -460,6 +515,11 @@ void VoxelGrid::DrawSolidBox(const IntVector3& startCoords, const IntVector3& di
 					if (shouldWrite)
 					{
 						m_gridColors[index] = color;
+
+						// Apply meta data
+						VoxelMetaData& data = m_metaData[index];
+						data.SetCastsShadows(false);
+						data.SetReceivesShadows(false);
 					}
 				}
 			}
@@ -524,6 +584,10 @@ void VoxelGrid::InitializeBuffers()
 	m_colorBuffer.Bind(COLOR_BINDING);
 	m_colorBuffer.CopyToGPU(voxelCount * sizeof(Rgba), nullptr);
 
+	// Meta Buffer
+	m_metaBuffer.Bind(META_BINDING);
+	m_metaBuffer.CopyToGPU(voxelCount * sizeof(VoxelMetaData), nullptr);
+
 	// Count Buffer
 	m_countBuffer.Bind(COUNT_BINDING);
 
@@ -549,6 +613,9 @@ void VoxelGrid::UpdateBuffers()
 
 	// Send down the color data
 	m_colorBuffer.CopyToGPU(GetVoxelCount() * sizeof(Rgba), m_gridColors);
+
+	// Send down the meta data
+	m_metaBuffer.CopyToGPU(GetVoxelCount() * sizeof(VoxelMetaData), m_metaData);
 
 	// Clear the face count
 	unsigned int val = 0;

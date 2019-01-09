@@ -18,6 +18,7 @@ class Entity;
 class HeatMap;
 class VoxelFont;
 class VoxelTerrain;
+class VoxelMetaData;
 
 enum eVoxelFontFill
 {
@@ -44,6 +45,13 @@ struct VoxelFontDraw_t
 	IntVector3 scale = IntVector3::ONES;
 };
 
+struct VoxelDrawOptions_t
+{
+	bool receivesShadows = false;
+	bool castsShadows = false;
+	Rgba whiteReplacement = Rgba::WHITE;
+};
+
 typedef IntVector3(*VoxelFontOffset_cb)(const IntVector3& textDimensions, const IntVector3& localVoxelCoords);
 
 class VoxelGrid
@@ -61,10 +69,10 @@ public:
 
 	// Mutators
 	void				Clear();
-	void				DrawEntity(const Entity* entity, const IntVector3& offset, const Rgba& whiteReplacement = Rgba::WHITE);
+	void				DrawEntity(const Entity* entity, const IntVector3& offset, VoxelDrawOptions_t options = VoxelDrawOptions_t());
 	void				DrawEntityCollision(const Entity* entity, const IntVector3& offset);
 	void				DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset);
-	void				Draw3DTexture(const VoxelSprite* texture, const IntVector3& startCoord, float orientation, const Rgba& whiteReplacement = Rgba::WHITE);
+	void				Draw3DTexture(const VoxelSprite* texture, const IntVector3& startCoord, float orientation, VoxelDrawOptions_t options = VoxelDrawOptions_t());
 
 	void				DebugDrawEntityCollision(const Entity* entity, const IntVector3& offset);
 
@@ -96,10 +104,12 @@ private:
 
 	// Grid representation
 	Rgba*					m_gridColors = nullptr;
+	VoxelMetaData*			m_metaData = nullptr;
 	IntVector3				m_dimensions;
 
 	// Meshbuilding
 	RenderBuffer			m_colorBuffer;
+	RenderBuffer			m_metaBuffer;
 	RenderBuffer			m_countBuffer;
 	Mesh					m_mesh;
 	ComputeShader*			m_computeShader = nullptr;
