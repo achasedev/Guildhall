@@ -18,6 +18,7 @@
 #include "Game/Framework/PlayStates/PlayState_Rest.hpp"
 #include "Game/Framework/PlayStates/PlayState_Pause.hpp"
 #include "Game/Framework/PlayStates/PlayState_Stage.hpp"
+#include "Game/Framework/PlayStates/PlayState_ControllerConnect.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
@@ -65,12 +66,8 @@ GameState_Playing::~GameState_Playing()
 //
 bool GameState_Playing::Enter()
 {
- 	// Set up the mouse for FPS controls
-	Mouse& mouse = InputSystem::GetMouse();
-
-	mouse.ShowMouseCursor(false);
-	mouse.LockCursorToClient(true);
-	mouse.SetCursorMode(CURSORMODE_RELATIVE);
+	// Player 1 started this transition, so we know their controller is connected
+	Game::GetPlayers()[0] = new Player(0);
 
 	Game::GetCampaignManager()->Initialize("Data/Spawning.xml");
 	Game::GetWorld()->InititalizeForStage(Game::GetCampaignManager()->GetNextStage());
@@ -135,6 +132,7 @@ void GameState_Playing::TransitionToPlayState(PlayState* state)
 void GameState_Playing::PushOverrideState(PlayState* overrideState)
 {
 	m_overrideState = overrideState;
+	m_previousTransitionStateBeforeOverride = m_isTransitioning;
 	m_isTransitioning = true;
 	m_overrideEntered = false;
 	m_overrideState->StartEnterTimer();
@@ -172,24 +170,61 @@ bool GameState_Playing::AreAllPlayersDead() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Checks for controller activity, in case one disconnects or is connected
+//
+void GameState_Playing::PerformControllerCheck()
+{
+	Player** players = Game::GetPlayers();
+	InputSystem* input = InputSystem::GetInstance();
+
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		if (players[i] == nullptr)
+		{
+			// No player exists, check if they tried to join
+			XboxController& controller = input->GetController(i);
+
+			if (controller.IsConnected() && controller.WasButtonJustPressed(XBOX_BUTTON_START))
+			{
+				// Player joined! Make them
+				const EntityDefinition* playerDef = EntityDefinition::GetRandomPlayerDefinition();
+
+				players[i] = new Player(playerDef, i);
+
+				Game::GetWorld()->AddEntity(players[i]);
+			}
+		}
+		else
+		{
+			// Player exists, check if the controller disconnected and if so pause the game
+			XboxController& controller = input->GetController(i);
+
+			if (!controller.IsConnected())
+			{
+				PushOverrideState(new PlayState_ControllerConnect(i));
+				return; // Don't push more than one controller connect state at once, otherwise we will override the previous
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Checks for input
 //
 void GameState_Playing::ProcessInput()
 {
-	if (!m_isTransitioning)
+	if (m_overrideState != nullptr)
 	{
-		if (m_overrideState != nullptr)
-		{
-			m_overrideState->ProcessInput();
-		}
-		else if (m_currentState != nullptr)
-		{
-			m_currentState->ProcessInput();
-		}
-		else
-		{
-			m_transitionState->ProcessInput();
-		}
+		m_overrideState->ProcessInput();
+	}
+	else if (m_currentState != nullptr)
+	{
+		m_currentState->ProcessInput();
+	}
+	else
+	{
+		m_transitionState->ProcessInput();
 	}
 	
 
@@ -229,6 +264,7 @@ void GameState_Playing::Update()
 				if (m_overrideEntered)
 				{
 					m_isTransitioning = false;
+					m_overrideState->StartUpdating();
 				}
 			}
 			else
@@ -237,7 +273,7 @@ void GameState_Playing::Update()
 
 				if (leaveFinished)
 				{
-					m_isTransitioning = false;
+					m_isTransitioning = m_previousTransitionStateBeforeOverride;
 					delete m_overrideState;
 					m_overrideState = nullptr;
 				}

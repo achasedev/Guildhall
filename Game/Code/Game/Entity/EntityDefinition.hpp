@@ -96,6 +96,7 @@ public:
 	static void						LoadDefinitions(const std::string& filename);
 	static const EntityDefinition*	GetDefinition(const std::string& defName);
 	static const EntityDefinition*	GetDefinition(int id);
+	static const EntityDefinition*	GetRandomPlayerDefinition();
 	static void						AddDefinition(const EntityDefinition* definition);
 
 
@@ -109,6 +110,7 @@ public:
 	ePhysicsType							m_physicsType = PHYSICS_TYPE_UNASSIGNED;
 	bool									m_affectedByGravity = true;
 	CollisionDefinition_t					m_collisionDef;
+	bool									m_isPlayerDef = false;
 
 	// AnimatedEntity
 	float									m_maxMoveAcceleration = 300.f;

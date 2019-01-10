@@ -49,6 +49,7 @@ public:
 	void PopOverrideState();
 
 	bool AreAllPlayersDead() const;
+	void PerformControllerCheck();
 
 
 private:
@@ -61,5 +62,6 @@ private:
 	PlayState* m_transitionState = nullptr;
 
 	bool m_isTransitioning = false;
+	bool m_previousTransitionStateBeforeOverride = false; // In case we push an override while we are already transitioning
 
 };

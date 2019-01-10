@@ -287,10 +287,20 @@ void World::DrawToGridWithOffset(const IntVector3& offset)
 
 
 //-----------------------------------------------------------------------------------------------
-// Adds the entity to the world
+// Adds the entity to the world, checking for duplicates
 //
 void World::AddEntity(Entity* entity)
 {
+	// Check for duplicates
+	for (int i = 0; i < (int)m_entities.size(); ++i)
+	{
+		if (m_entities[i] == entity)
+		{
+			return;
+		}
+	}
+
+	// Safe to add
 	m_entities.push_back(entity);
 	entity->OnSpawn();
 }

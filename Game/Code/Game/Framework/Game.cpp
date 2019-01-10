@@ -75,26 +75,6 @@ Game::Game()
 
 
 //-----------------------------------------------------------------------------------------------
-// Checks for connected controllers and instantiates players
-//
-void Game::CheckForPlayers()
-{
-	// Create the players if they're added
-	Player** players = Game::GetPlayers();
-
-	for (int i = 0; i < MAX_PLAYERS; ++i)
-	{
-		// Make the player if they don't exist yet
-		if (InputSystem::GetInstance()->GetController(i).IsConnected() && players[i] == nullptr)
-		{
-			players[i] = new Player(i);
-			players[i]->SetPosition(Vector3(128.f, 0.f, 128.f));
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Loads the leaderboards from file, if one exists
 //
 void Game::LoadLeaderboardsFromFile()
@@ -225,6 +205,14 @@ void Game::Initialize()
 	// Set the game clock on the Renderer
 	Renderer::GetInstance()->SetRendererGameClock(s_instance->m_gameClock);
 
+	// Set up the mouse for FPS controls (Free camera)
+	Mouse& mouse = InputSystem::GetMouse();
+
+	mouse.ShowMouseCursor(false);
+	mouse.LockCursorToClient(true);
+	mouse.SetCursorMode(CURSORMODE_RELATIVE);
+
+	// Commands
 	Command::Register("killall", "Kills all entities", Command_KillAll);
 
 	s_instance->LoadLeaderboardsFromFile();
@@ -261,11 +249,6 @@ void Game::ProcessInput()
 //
 void Game::Update()
 {
-	if (m_doneLoading)
-	{
-		CheckForPlayers();
-	}
-
 	if (m_gameStateState == GAME_STATE_TRANSITIONING_OUT)
 	{
 		// Update on leave of the current state

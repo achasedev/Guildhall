@@ -12,8 +12,10 @@
 #include "Game/Entity/Components/BehaviorComponent_ShootDirect.hpp"
 #include "Game/Entity/Components/BehaviorComponent_ShootCircle.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursueDirect.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
+
 
 // Global map for all entity definitions
 std::map<std::string, const EntityDefinition*> EntityDefinition::s_definitions;
@@ -79,8 +81,9 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 	m_id = ParseXmlAttribute(entityElement, "id", m_id);
 	ASSERT_OR_DIE(m_id >= 0, "Error: EntityDefinition lacks an ID");
 
-	m_initialHealth = ParseXmlAttribute(entityElement, "initial_health", m_initialHealth);
+	m_isPlayerDef = ParseXmlAttribute(entityElement, "is_player", false);
 
+	m_initialHealth = ParseXmlAttribute(entityElement, "initial_health", m_initialHealth);
 	m_pointValue = ParseXmlAttribute(entityElement, "points", m_pointValue);
 
 	// Movement
@@ -351,6 +354,32 @@ const EntityDefinition* EntityDefinition::GetDefinition(int id)
 	}
 
 	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns a random definition that can be used to initialize a player
+//
+const EntityDefinition* EntityDefinition::GetRandomPlayerDefinition()
+{
+	// Get all possible player definitions
+
+	std::vector<const EntityDefinition*> playerDefs;
+
+	std::map <std::string, const EntityDefinition*>::const_iterator itr = s_definitions.begin();
+
+	for (itr; itr != s_definitions.end(); itr++)
+	{
+		if (itr->second->m_isPlayerDef)
+		{
+			playerDefs.push_back(itr->second);
+		}
+	}
+
+	// Pick a random one and return
+	int randomIndex = GetRandomIntLessThan((int) playerDefs.size());
+
+	return playerDefs[randomIndex];
 }
 
 

@@ -1,7 +1,6 @@
 <EntityDefinitions>
 
 	<!-- Players -->
-
 	<EntityDefinition name="PlayerUninitialized" initial_health="0" id="0">
 
 		<!--Movement Parameters-->
@@ -18,7 +17,7 @@
 	</EntityDefinition>
 
 
-	<EntityDefinition name="OldMan" initial_health="5" id="1">
+	<EntityDefinition name="OldMan" initial_health="5" id="1" is_player="true">
 
 		<!--Movement Parameters-->
 		<Movement max_acceleration="300.0" max_speed="40.0" max_deceleration="100.0" jump_impulse="80.0"/>
@@ -33,7 +32,7 @@
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Nerd" initial_health="5" id="2">
+	<EntityDefinition name="Nerd" initial_health="5" id="2" is_player="true">
 
 		<!--Movement Parameters-->
 		<Movement max_acceleration="300.0" max_speed="40.0" max_deceleration="100.0" jump_impulse="80.0"/>
@@ -48,7 +47,7 @@
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Cat" initial_health="5" id="3">
+	<EntityDefinition name="Cat" initial_health="5" id="3" is_player="true">
 
 		<!--Movement Parameters-->
 		<Movement max_acceleration="500.0" max_speed="50.0" max_deceleration="500.0" jump_impulse="80.0"/>
@@ -63,7 +62,7 @@
 
 	</EntityDefinition>
 
-	<EntityDefinition name="Mouse" initial_health="8" id="4">
+	<EntityDefinition name="Mouse" initial_health="8" id="4" is_player="true">
 
 		<!--Movement Parameters-->
 		<Movement max_acceleration="300.0" max_speed="40.0" max_deceleration="100.0" jump_impulse="80.0"/>

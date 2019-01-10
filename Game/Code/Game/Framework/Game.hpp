@@ -87,8 +87,6 @@ private:
 	~Game();
 	Game(const Game& copy) = delete;
 
-	void CheckForPlayers();
-
 	void LoadLeaderboardsFromFile();
 	void WriteLeaderboardsToFile();
 

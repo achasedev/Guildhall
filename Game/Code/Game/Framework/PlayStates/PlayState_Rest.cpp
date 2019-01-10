@@ -13,6 +13,8 @@
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Framework/PlayStates/PlayState_Rest.hpp"
 #include "Game/Framework/PlayStates/PlayState_Stage.hpp"
+#include "Game/Framework/PlayStates/PlayState_Pause.hpp"
+#include "Game/Framework/PlayStates/PlayState_ControllerConnect.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
 #define TRANSITION_EDGE_SIZE (10)
@@ -287,14 +289,23 @@ void PlayState_Rest::ProcessInput()
 {
 	if (m_state != TRANSITION_STATE_LEAVING)
 	{
-		// Check player input
-		Player** players = Game::GetPlayers();
+		int pauseIndex = CheckForPause();
 
-		for (int i = 0; i < MAX_PLAYERS; ++i)
+		if (pauseIndex != -1)
 		{
-			if (Game::IsPlayerAlive(i))
+			m_gameState->PushOverrideState(new PlayState_Pause(Game::GetPlayers()[pauseIndex]));
+		}
+		else
+		{
+			// Check player input
+			Player** players = Game::GetPlayers();
+
+			for (int i = 0; i < MAX_PLAYERS; ++i)
 			{
-				players[i]->ProcessGameplayInput();
+				if (Game::IsPlayerAlive(i))
+				{
+					players[i]->ProcessGameplayInput();
+				}
 			}
 		}
 	}
@@ -340,6 +351,9 @@ bool PlayState_Rest::Enter()
 //
 void PlayState_Rest::Update()
 {
+	// Check the controllers
+	m_gameState->PerformControllerCheck();
+
 	// Check if the players are near the move location
 	bool playersReady = AreAllPlayersInExitEdge(m_edgeToExit) && Game::AreAllPlayersInitialized();
 
@@ -404,6 +418,7 @@ bool PlayState_Rest::Leave()
 		{
 			if (players[i] != nullptr)
 			{
+				Game::GetWorld()->AddEntity(players[i]);
 				players[i]->SetPosition(GetTransitionPosition(players[i], m_edgeToEnter));
 				players[i]->GetPhysicsComponent()->SetGravity(true);
 			}

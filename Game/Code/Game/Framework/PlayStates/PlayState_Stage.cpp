@@ -65,6 +65,9 @@ void PlayState_Stage::ProcessInput()
 //
 void PlayState_Stage::Update()
 {
+	// Check the controllers
+	m_gameState->PerformControllerCheck();
+
 	CampaignManager* stageMan = Game::GetCampaignManager();
 
 	// Update the stage logic first

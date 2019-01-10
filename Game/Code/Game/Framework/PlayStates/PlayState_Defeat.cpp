@@ -35,23 +35,26 @@ PlayState_Defeat::~PlayState_Defeat()
 //
 void PlayState_Defeat::ProcessInput()
 {
-	InputSystem* input = InputSystem::GetInstance();
-	bool spacePressed = input->WasKeyJustPressed(' ');
+	if (m_state == TRANSITION_STATE_UPDATING)
+	{
+		InputSystem* input = InputSystem::GetInstance();
+		bool spacePressed = input->WasKeyJustPressed(' ');
 
-	if (spacePressed)
-	{
-		Game::GetInstance()->TransitionToGameState(new GameState_MainMenu());
-	}
-	else
-	{
-		// Check controllers
-		for (int i = 0; i < MAX_PLAYERS; ++i)
+		if (spacePressed)
 		{
-			XboxController& controller = input->GetController(i);
-
-			if (controller.WasButtonJustPressed(XBOX_BUTTON_START) || controller.WasButtonJustPressed(XBOX_BUTTON_A))
+			Game::GetInstance()->TransitionToGameState(new GameState_MainMenu());
+		}
+		else
+		{
+			// Check controllers
+			for (int i = 0; i < MAX_PLAYERS; ++i)
 			{
-				Game::GetInstance()->TransitionToGameState(new GameState_MainMenu());
+				XboxController& controller = input->GetController(i);
+
+				if (controller.WasButtonJustPressed(XBOX_BUTTON_START) || controller.WasButtonJustPressed(XBOX_BUTTON_A))
+				{
+					Game::GetInstance()->TransitionToGameState(new GameState_MainMenu());
+				}
 			}
 		}
 	}
