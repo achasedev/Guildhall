@@ -4,6 +4,7 @@
 /* Date: October 25th 2018
 /* Description: Implementation of the Stage PlayState
 /************************************************************************/
+#include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/GameCamera.hpp"
@@ -14,7 +15,8 @@
 #include "Game/Framework/PlayStates/PlayState_Victory.hpp"
 #include "Game/Framework/PlayStates/PlayState_Pause.hpp"
 #include "Game/Framework/PlayStates/PlayState_Defeat.hpp"
-#include "Game/Entity/Player.hpp"
+#include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/Time/Clock.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -113,11 +115,26 @@ bool PlayState_Stage::Enter()
 //
 bool PlayState_Stage::Leave()
 {
+	// Cool effect - set the clock time scale
+	float timeScale = 1.0f;
+
+	if (m_transitionTimer.GetElapsedTimeNormalized() < 0.5f)
+	{
+		timeScale = ClampFloatZeroToOne(1.1f - GetFractionInRange(m_transitionTimer.GetElapsedTime(), 0.f, 0.5f * STAGE_TRANSITION_OUT_TIME));
+	}
+	else
+	{
+		timeScale = ClampFloatZeroToOne(GetFractionInRange(m_transitionTimer.GetElapsedTime(), 0.5f * STAGE_TRANSITION_OUT_TIME, STAGE_TRANSITION_OUT_TIME) + 0.1f);
+	}
+
+	Game::GetGameClock()->SetScale(timeScale);
+
 	UpdateWorldAndCamera();
 
 	// Do stuff
 	if (m_transitionTimer.HasIntervalElapsed())
 	{
+		Game::GetGameClock()->SetScale(1.0f);
 		return true;
 	}
 
