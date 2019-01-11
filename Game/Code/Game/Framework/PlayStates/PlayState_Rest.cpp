@@ -317,7 +317,7 @@ void PlayState_Rest::ProcessInput()
 //
 bool PlayState_Rest::Enter()
 {
-	// Respawn the dead players
+	// Respawn the dead players immediately, to avoid waiting
  	Player** players = Game::GetPlayers();
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)

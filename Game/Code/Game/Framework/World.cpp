@@ -248,6 +248,8 @@ void World::Update()
 
 	// Clean Up
 	DeleteMarkedEntities();
+
+	RespawnDeadPlayers();
 }	
 
 
@@ -1156,6 +1158,24 @@ void World::DeleteMarkedEntities()
 			}
 
 			m_particles.pop_back();
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks if any players are dead and have their wait timer expired, and if so replaces them on the
+// world
+//
+void World::RespawnDeadPlayers()
+{
+	Player** players = Game::GetPlayers();
+
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		if (players[i] != nullptr && players[i]->IsMarkedForDelete() && players[i]->GetRespawnTimeRemaining() <= 0.f)
+		{
+			players[i]->Respawn();
 		}
 	}
 }

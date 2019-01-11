@@ -107,8 +107,8 @@ private:
 		void CheckEdgeCollisions();
 
 	void ApplyCollisionCorrections();
-
 	void DeleteMarkedEntities();
+	void RespawnDeadPlayers();
 
 	// Render
 	void DrawStaticEntitiesToGrid(const IntVector3& offset);

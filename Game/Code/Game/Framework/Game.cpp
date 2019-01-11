@@ -538,18 +538,18 @@ Vector3 GetHUDAlignmentForPlayerID(int id)
 //
 IntVector3 GetHUDStartForPlayerID(int id)
 {
-	IntVector3 hudStart = IntVector3(1, 35, 252);
+	IntVector3 hudStart = IntVector3(2, 34, 252);
 
 	// HUD is on the top (players 1 and 2)
 	if (id <= 1)
 	{
-		hudStart.y += 10;
+		hudStart.y += 11;
 	}
 
 	// HUD is on the right (players 2 and 4)
 	if (id % 2 == 1)
 	{
-		hudStart.x = 254;
+		hudStart.x = 253;
 	}
 
 	return hudStart;
@@ -594,84 +594,146 @@ void DrawHUDForPlayer(int playerID, Player* player, VoxelGrid* grid, VoxelFont* 
 	options.font = font;
 	options.scale = IntVector3(1, 1, 4);
 	options.borderThickness = 0;
-
-	// Parameters that depend on player ID
-
 	options.alignment = GetHUDAlignmentForPlayerID(playerID);
+
 	IntVector3 startCoords = GetHUDStartForPlayerID(playerID);
-	IntVector3 currDrawCoords = startCoords;
 
-	// Draw the player text
-	std::string hudText = GetHUDTextForPlayerID(playerID);
+	// Assemble the string
+	std::string playerHudText;
 
-	IntVector3 textCoords = currDrawCoords - IntVector3(0, 0, 2);
-	grid->DrawVoxelText(hudText, textCoords, options);
-
-	int textWidth = font->GetTextDimensions(hudText).x;
-
-	currDrawCoords.x += (playerID % 2 == 1 ? -textWidth : textWidth);
-	IntVector3 textBackgroundCoords = ((playerID % 2) == 1 ? currDrawCoords : startCoords);
-	grid->DrawSolidBox(textBackgroundCoords - IntVector3(1, 1, 0), IntVector3(textWidth + 2, 10, 4), options.fillColor);
-
-
-	// If the player exists, draw the rest
+	// Draw health if they're alive
 	if (player != nullptr)
 	{
-		currDrawCoords += IntVector3(playerID % 2 == 1 ? -2 : 0, 0, 0);
-
-		int maxHealth = player->GetEntityDefinition()->GetInitialHealth();
-		int currHealth = player->GetHealth();
-
-		grid->DrawSolidBox(currDrawCoords, IntVector3(1, 8, 4), options.fillColor);
-		currDrawCoords.x += (playerID % 2 == 1 ? -8 : 1);
-
-		IntVector3 healthBoxStart = currDrawCoords;
-
-		for (int i = 0; i < maxHealth; ++i)
+		// Draw the player's health bar
+		if (!player->IsRespawning())
 		{
-			Rgba color = Rgba::GRAY;
+			char healthbox = 0;
 
-			IntVector3 currBoxStart = currDrawCoords;
-			IntVector3 healthBoxDimensions = IntVector3(8, 8, 4);
-
-			if (i < currHealth)
+			for (int i = 0; i < player->GetHealth(); ++i)
 			{
-				color = Rgba::RED;
-
-				currBoxStart.z -= 2;
-				healthBoxDimensions.z += 2;
+				playerHudText += healthbox;
 			}
-			else
-			{
-				currBoxStart.z += 2;
-				healthBoxDimensions.z -= 2;
-			}
-
-			grid->DrawSolidBox(currBoxStart, healthBoxDimensions, color);
-			
-			currDrawCoords.x += (playerID % 2 == 1 ? -1 : 8);
-
-			grid->DrawSolidBox(currDrawCoords, IntVector3(1, 8, 4), options.fillColor);
-			currDrawCoords.x += (playerID % 2 == 1 ? -8 : 1);
 		}
-
-
-		IntVector3 borderDimensions = IntVector3(AbsoluteValue(currDrawCoords.x - healthBoxStart.x) + 1, 10, 4);
-
-		IntVector3 borderStart = IntVector3((playerID % 2 == 1) ? currDrawCoords.x + 9 : healthBoxStart.x, startCoords.y, startCoords.z);
-		grid->DrawWireBox(borderStart - IntVector3(1, 1, 0), borderDimensions, options.fillColor, true, true, false);
+		else
+		{
+			// Draw "Wait X" if respawning
+			playerHudText = Stringf("Wait %i", (int)player->GetRespawnTimeRemaining());
+		}
+	}
+	else if (player == nullptr && InputSystem::GetInstance()->GetController(playerID).IsConnected())
+	{
+		// Draw "Press Start" if controller connected but not spawned
+		playerHudText = "Press Start";
 	}
 	else
 	{
-		grid->DrawVoxelText("Press Start", currDrawCoords + IntVector3(0, 0, -2), options);
-
-		IntVector3 textStart = currDrawCoords;
-		currDrawCoords.x += ((playerID % 2 == 1) ? -1 : 1) * font->GetTextDimensions("Press Start").x;
-	
-		IntVector3 borderStart = IntVector3((playerID % 2 == 1) ? currDrawCoords.x : textStart.x, textStart.y, textStart.z);
-		IntVector3 borderDimensions = IntVector3(AbsoluteValue(textStart.x - currDrawCoords.x), 10, 4);
-		grid->DrawSolidBox(borderStart - IntVector3(1, 1, 0), borderDimensions, options.fillColor);
+		// Draw "No Pad" if no controller connected
+		playerHudText = "No Pad";
 	}
+
+
+	// Lastly, append/prepend the player icon based on alignment
+	if (options.alignment.x == 1.0f)
+	{
+		playerHudText += Stringf(" P%i", playerID);
+	}
+	else
+	{
+		playerHudText.insert(0, Stringf("P%i ", playerID));
+	}
+
+	grid->DrawVoxelText(playerHudText, startCoords, options);
+
+	// Draw a box background
+	IntVector3 boxDimensions = options.font->GetTextDimensions(playerHudText);
+
+	// Add padding for a border
+	boxDimensions += IntVector3(3, 3, 0);
+
+	IntVector3 boxStart = startCoords + IntVector3(-2, -2, 2);
+
+	// If the box is on the right, we need to move the box start over to the left
+	if (options.alignment.x == 1.0f)
+	{
+		boxStart.x -= options.font->GetTextDimensions(playerHudText).x;
+	}
+
+	grid->DrawSolidBox(boxStart, boxDimensions, options.fillColor);
+
+
+// 	IntVector3 currDrawCoords = startCoords;
+// 
+// 	// Draw the player text
+// 	std::string hudText = GetHUDTextForPlayerID(playerID);
+// 
+// 	IntVector3 textCoords = currDrawCoords - IntVector3(0, 0, 2);
+// 	grid->DrawVoxelText(hudText, textCoords, options);
+// 
+// 	int textWidth = font->GetTextDimensions(hudText).x;
+// 
+// 	currDrawCoords.x += (playerID % 2 == 1 ? -textWidth : textWidth);
+// 	IntVector3 textBackgroundCoords = ((playerID % 2) == 1 ? currDrawCoords : startCoords);
+// 	grid->DrawSolidBox(textBackgroundCoords - IntVector3(1, 1, 0), IntVector3(textWidth + 2, 10, 4), options.fillColor);
+// 
+// 
+// 	// If the player exists, draw the rest
+// 	if (player != nullptr)
+// 	{
+// 		currDrawCoords += IntVector3(playerID % 2 == 1 ? -2 : 0, 0, 0);
+// 
+// 		int maxHealth = player->GetEntityDefinition()->GetInitialHealth();
+// 		int currHealth = player->GetHealth();
+// 
+// 		grid->DrawSolidBox(currDrawCoords, IntVector3(1, 8, 4), options.fillColor);
+// 		currDrawCoords.x += (playerID % 2 == 1 ? -8 : 1);
+// 
+// 		IntVector3 healthBoxStart = currDrawCoords;
+// 
+// 		for (int i = 0; i < maxHealth; ++i)
+// 		{
+// 			Rgba color = Rgba::GRAY;
+// 
+// 			IntVector3 currBoxStart = currDrawCoords;
+// 			IntVector3 healthBoxDimensions = IntVector3(8, 8, 4);
+// 
+// 			if (i < currHealth)
+// 			{
+// 				color = Rgba::RED;
+// 
+// 				currBoxStart.z -= 2;
+// 				healthBoxDimensions.z += 2;
+// 			}
+// 			else
+// 			{
+// 				currBoxStart.z += 2;
+// 				healthBoxDimensions.z -= 2;
+// 			}
+// 
+// 			grid->DrawSolidBox(currBoxStart, healthBoxDimensions, color);
+// 			
+// 			currDrawCoords.x += (playerID % 2 == 1 ? -1 : 8);
+// 
+// 			grid->DrawSolidBox(currDrawCoords, IntVector3(1, 8, 4), options.fillColor);
+// 			currDrawCoords.x += (playerID % 2 == 1 ? -8 : 1);
+// 		}
+// 
+// 
+// 		IntVector3 borderDimensions = IntVector3(AbsoluteValue(currDrawCoords.x - healthBoxStart.x) + 1, 10, 4);
+// 
+// 		IntVector3 borderStart = IntVector3((playerID % 2 == 1) ? currDrawCoords.x + 9 : healthBoxStart.x, startCoords.y, startCoords.z);
+// 		grid->DrawWireBox(borderStart - IntVector3(1, 1, 0), borderDimensions, options.fillColor, true, true, false);
+// 	}
+// 	else
+// 	{
+// 		grid->DrawVoxelText("Press Start", currDrawCoords + IntVector3(0, 0, -2), options);
+// 
+// 		IntVector3 textStart = currDrawCoords;
+// 		currDrawCoords.x += ((playerID % 2 == 1) ? -1 : 1) * font->GetTextDimensions("Press Start").x;
+// 	
+// 		IntVector3 borderStart = IntVector3((playerID % 2 == 1) ? currDrawCoords.x : textStart.x, textStart.y, textStart.z);
+// 		IntVector3 borderDimensions = IntVector3(AbsoluteValue(textStart.x - currDrawCoords.x), 10, 4);
+// 		grid->DrawSolidBox(borderStart - IntVector3(1, 1, 0), borderDimensions, options.fillColor);
+// 	}
 }
 
 

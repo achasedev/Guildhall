@@ -27,6 +27,7 @@ enum eVoxelFontFill
 	VOXEL_FONT_FILL_EDGE
 };
 
+
 struct VoxelFontDraw_t
 {
 	const VoxelFont* font;
@@ -76,7 +77,8 @@ public:
 
 	void				DebugDrawEntityCollision(const Entity* entity, const IntVector3& offset);
 
-	void				DrawVoxelText(const std::string& text, const IntVector3& startCoord, const VoxelFontDraw_t& options, VoxelFontOffset_cb offsetFunction = nullptr);
+	IntVector3			DrawVoxelText(const std::string& text, const IntVector3& startCoord, const VoxelFontDraw_t& options, VoxelFontOffset_cb offsetFunction = nullptr);
+
 	void				DrawWireBox(const IntVector3& startCoords, const IntVector3& dimensions, const Rgba& color,
 										bool shadeX = false, bool shadeY = false, bool shadeZ = false);
 	void				DrawSolidBox(const IntVector3& startCoords, const IntVector3& dimensions, const Rgba& color, bool overwrite = true);

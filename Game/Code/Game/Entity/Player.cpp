@@ -199,7 +199,10 @@ void Player::OnDeath()
 	AnimatedEntity::OnDeath();
 
 	Game::GetWorld()->ParticalizeEntity(this);
-	Game::AddPointsToScore(PLAYER_DEATH_PENALTY);
+	Game::AddPointsToScore(PLAYER_DEATH_SCORE_PENALTY);
+
+	// Start the respawn process
+	m_respawnTimer.SetInterval(RESPAWN_INTERVAL);
 }
 
 
@@ -236,10 +239,18 @@ void Player::Shoot()
 //
 void Player::Respawn()
 {
+	// Place the player in the air somewhere
+	Vector3 position = Vector3(GetRandomFloatInRange(10.f, 246.f), 54.f, GetRandomFloatInRange(10.f, 246.f));
+	float orientation = GetRandomFloatInRange(0.f, 360.f);
+
+	SetPosition(position);
+	SetOrientation(orientation);
+
 	m_isMarkedForDelete = false;
-	m_health = 10;
+	m_health = m_definition->m_initialHealth;
 	
 	m_physicsComponent->StopAllMovement();
+	m_respawnTimer.Reset();
 }
 
 
@@ -293,6 +304,24 @@ int Player::GetPlayerID() const
 Weapon* Player::GetCurrentWeapon() const
 {
 	return m_currWeapon;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the time left on the player's respawn timer
+//
+float Player::GetRespawnTimeRemaining() const
+{
+	return m_respawnTimer.GetTimeUntilIntervalEnds();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether the player is dead and currently respawning
+//
+bool Player::IsRespawning() const
+{
+	return (m_isMarkedForDelete && m_respawnTimer.GetTimeUntilIntervalEnds() > 0.f);
 }
 
 

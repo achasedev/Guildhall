@@ -21,7 +21,7 @@ class VoxelGrid;
 class VoxelFont;
 
 #define MAX_PLAYERS (4)
-#define PLAYER_DEATH_PENALTY (-2000)
+#define PLAYER_DEATH_SCORE_PENALTY (-2000)
 #define NUM_LEADERBOARDS (4)
 
 enum eGameStateState

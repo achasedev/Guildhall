@@ -156,7 +156,11 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, Voxel
 				IntVector3 weaponPosition = position + IntVector3(0, 12, 0);
 				
 				// Don't let the weapons cast or receive shadows, so pass default param for options
-				Draw3DTexture(weaponTexture, weaponPosition, 0.f);
+
+				VoxelDrawOptions_t options;
+				options.castsShadows = false;
+				options.receivesShadows = false;
+				Draw3DTexture(weaponTexture, weaponPosition, 0.f, options);
 			}
 		}
 	}
@@ -361,9 +365,9 @@ void VoxelGrid::DebugDrawEntityCollision(const Entity* entity, const IntVector3&
 
 
 //-----------------------------------------------------------------------------------------------
-// Draws the given text to the grid
+// Draws the given text to the grid, returning the coords after the end of the text drawn
 //
-void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options, VoxelFontOffset_cb offsetFunction /*= nullptr*/)
+IntVector3 VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options, VoxelFontOffset_cb offsetFunction /*= nullptr*/)
 {
 	IntVector3 textDimensions = options.font->GetTextDimensions(text);
 	textDimensions.x *= options.scale.x;
@@ -380,10 +384,9 @@ void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referen
 	startWorldCoord -= options.up * (int)((float)textDimensions.y * options.alignment.y);
 	startWorldCoord -= forward * (int)((float)textDimensions.z * options.alignment.z);
 
-	//.IntVector3 worldSpan = options.right * textDimensions.x + options.up * textDimensions.y + forward * textDimensions.z;
-
 	IntVector3 glyphDimensions = options.font->GetGlyphDimensions();
 
+	IntVector3 lastTraversedWorldCoord = IntVector3::ZERO;
 	for (int zOff = 0; zOff < textDimensions.z; ++zOff)
 	{
 		for (int yOff = 0; yOff < textDimensions.y; ++yOff)
@@ -403,6 +406,7 @@ void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referen
 				}
 
 				IntVector3 worldOffset = options.right * xOff + options.up * yOff + forward * zOff;
+				lastTraversedWorldCoord = startWorldCoord + worldOffset + worldFunctionOffset;
 				int index = GetIndexForCoords(startWorldCoord + worldOffset + worldFunctionOffset);
 
 				if (index == -1)
@@ -446,6 +450,8 @@ void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referen
 			}
 		}
 	}
+
+	return lastTraversedWorldCoord + options.right + (options.right * options.borderThickness);
 }
 
 

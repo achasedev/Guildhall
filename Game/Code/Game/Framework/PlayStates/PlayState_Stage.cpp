@@ -87,12 +87,6 @@ void PlayState_Stage::Update()
 			m_gameState->TransitionToPlayState(new PlayState_Rest());
 		}
 	}
-
-	// Check for defeat
-	if (m_gameState->AreAllPlayersDead())
-	{
-		m_gameState->TransitionToPlayState(new PlayState_Defeat());
-	}
 }
 
 
