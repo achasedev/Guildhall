@@ -113,7 +113,7 @@ void GameState_MainMenu::Render() const
 
 	VoxelFontDraw_t options;
 	options.mode = VOXEL_FONT_FILL_NONE;
-	options.textColor = Rgba::BLUE;
+	options.glyphColors.push_back(Rgba::BLUE);
 	options.fillColor = Rgba::BLUE;
 	options.font = menuFont;
 	options.scale = IntVector3(1, 1, 1);
@@ -340,7 +340,7 @@ void GameState_MainMenu::DrawCurrentMenu() const
 
 		VoxelFontDraw_t options;
 		options.mode = VOXEL_FONT_FILL_NONE;
-		options.textColor = color;
+		options.glyphColors.push_back(color);
 		options.fillColor = Rgba::BLUE;
 		options.font = menuFont;
 		options.scale = IntVector3(1, 1, 1);
@@ -375,7 +375,7 @@ void GameState_MainMenu::ParticalizeCurrentMenu() const
 
 		VoxelFontDraw_t options;
 		options.mode = VOXEL_FONT_FILL_NONE;
-		options.textColor = color;
+		options.glyphColors.push_back(color);
 		options.fillColor = Rgba::BLUE;
 		options.font = menuFont;
 		options.scale = IntVector3(1, 1, 1);

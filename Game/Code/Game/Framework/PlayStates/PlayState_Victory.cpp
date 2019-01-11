@@ -118,7 +118,7 @@ void PlayState_Victory::Render() const
 
 	VoxelFontDraw_t options;
 	options.mode = VOXEL_FONT_FILL_NONE;
-	options.textColor = Rgba::BLUE;
+	options.glyphColors.push_back(Rgba::BLUE);
 	options.fillColor = Rgba::BLUE;
 	options.font = menuFont;
 	options.scale = IntVector3(2, 2, 1);
@@ -147,13 +147,13 @@ void PlayState_Victory::Render() const
 			float time = m_transitionTimer.GetElapsedTime();
 			float t = 0.5f * (SinDegrees(1000.f * time) + 1.0f);
 
-			options.textColor = Interpolate(m_leaderboardTextColor, m_scoresFlashColor, t);
+			options.glyphColors[0] = Interpolate(m_leaderboardTextColor, m_scoresFlashColor, t);
 
 			currentScoreRendered = true;
 		}
 		else
 		{
-			options.textColor = m_leaderboardTextColor;
+			options.glyphColors[0] = m_leaderboardTextColor;
 		}
 
 		Game::GetVoxelGrid()->DrawVoxelText(Stringf("%i", board.m_scores[i]), drawPosition, options);

@@ -119,7 +119,7 @@ bool PlayState_Pause::Leave()
 
 		VoxelFontDraw_t options;
 		options.mode = VOXEL_FONT_FILL_NONE;
-		options.textColor = Rgba::BLUE;
+		options.glyphColors.push_back(Rgba::BLUE);
 		options.fillColor = Rgba::BLUE;
 		options.font = menuFont;
 		options.alignment = Vector3(0.5f, 0.5f, 0.5f);
@@ -133,14 +133,14 @@ bool PlayState_Pause::Leave()
 
 		for (int i = 0; i < m_menuText.size(); ++i)
 		{
-			options.textColor = Rgba::BLUE;
+			options.glyphColors[0] = Rgba::BLUE;
 
 			if (i == m_cursorIndex)
 			{
 				float time = m_transitionTimer.GetElapsedTime();
 				float t = 0.5f * (SinDegrees(1000.f * time) + 1.0f);
 
-				options.textColor = Interpolate(Rgba::BLUE, Rgba::WHITE, t);
+				options.glyphColors[0] = Interpolate(Rgba::BLUE, Rgba::WHITE, t);
 			}
 
 			Game::GetWorld()->ParticalizeVoxelText(m_menuText[i], drawPosition, options);
@@ -188,7 +188,7 @@ void PlayState_Pause::Render() const
 
 	VoxelFontDraw_t options;
 	options.mode = VOXEL_FONT_FILL_NONE;
-	options.textColor = Rgba::BLUE;
+	options.glyphColors.push_back(Rgba::BLUE);
 	options.fillColor = Rgba::BLUE;
 	options.font = menuFont;
 	options.alignment = Vector3(0.5f, 0.5f, 0.5f);
@@ -202,14 +202,14 @@ void PlayState_Pause::Render() const
 
 	for (int i = 0; i < m_menuText.size(); ++i)
 	{
-		options.textColor = Rgba::BLUE;
+		options.glyphColors[0] = Rgba::BLUE;
 
 		if (i == m_cursorIndex)
 		{
 			float time = m_transitionTimer.GetElapsedTime();
 			float t = 0.5f * (SinDegrees(1000.f * time) + 1.0f);
 
-			options.textColor = Interpolate(Rgba::BLUE, Rgba::WHITE, t);
+			options.glyphColors[0] = Interpolate(Rgba::BLUE, Rgba::WHITE, t);
 		}
 
 		Game::GetVoxelGrid()->DrawVoxelText(m_menuText[i], drawPosition, options);

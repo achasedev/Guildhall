@@ -107,7 +107,7 @@ bool PlayState_ControllerConnect::Leave()
 
 		VoxelFontDraw_t options;
 		options.mode = VOXEL_FONT_FILL_NONE;
-		options.textColor = Rgba::BLUE;
+		options.glyphColors.push_back(Rgba::BLUE);
 		options.fillColor = Rgba::BLUE;
 		options.font = menuFont;
 		options.alignment = Vector3(0.5f, 0.5f, 0.5f);
@@ -166,7 +166,7 @@ void PlayState_ControllerConnect::Render() const
 
 	VoxelFontDraw_t options;
 	options.mode = VOXEL_FONT_FILL_NONE;
-	options.textColor = Rgba::BLUE;
+	options.glyphColors.push_back(Rgba::BLUE);
 	options.fillColor = Rgba::BLUE;
 	options.font = menuFont;
 	options.alignment = Vector3(0.5f, 0.5f, 0.5f);

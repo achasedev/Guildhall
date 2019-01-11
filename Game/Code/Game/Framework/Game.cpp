@@ -589,7 +589,6 @@ void DrawHUDForPlayer(int playerID, Player* player, VoxelGrid* grid, VoxelFont* 
 {
 	VoxelFontDraw_t options;
 	options.mode = VOXEL_FONT_FILL_NONE;
-	options.textColor = Rgba::WHITE;
 	options.fillColor = Player::GetColorForPlayerID(playerID);
 	options.font = font;
 	options.scale = IntVector3(1, 1, 4);
@@ -612,37 +611,70 @@ void DrawHUDForPlayer(int playerID, Player* player, VoxelGrid* grid, VoxelFont* 
 			for (int i = 0; i < player->GetHealth(); ++i)
 			{
 				playerHudText += healthbox;
+				options.glyphColors.push_back(Rgba::RED);
+			}
+
+			// Push missing heath as negative boxes
+			for (int i = player->GetHealth(); i < player->GetEntityDefinition()->m_initialHealth; ++i)
+			{
+				playerHudText += healthbox;
+				options.glyphColors.push_back(Rgba(0, 0, 0, 0));
 			}
 		}
 		else
 		{
 			// Draw "Wait X" if respawning
 			playerHudText = Stringf("Wait %i", (int)player->GetRespawnTimeRemaining());
+
+			for (int i = 0; i < (int) playerHudText.size(); ++i)
+			{
+				options.glyphColors.push_back(Rgba::WHITE);
+			}
 		}
 	}
 	else if (player == nullptr && InputSystem::GetInstance()->GetController(playerID).IsConnected())
 	{
 		// Draw "Press Start" if controller connected but not spawned
 		playerHudText = "Press Start";
+
+		for (int i = 0; i < (int)playerHudText.size(); ++i)
+		{
+			options.glyphColors.push_back(Rgba::WHITE);
+		}
 	}
 	else
 	{
 		// Draw "No Pad" if no controller connected
-		playerHudText = "No Pad";
+		playerHudText = "Connect Ctrl";
+
+		for (int i = 0; i < (int)playerHudText.size(); ++i)
+		{
+			options.glyphColors.push_back(Rgba::WHITE);
+		}
 	}
 
 
 	// Lastly, append/prepend the player icon based on alignment
 	if (options.alignment.x == 1.0f)
 	{
-		playerHudText += Stringf(" P%i", playerID);
+		std::string iconText = Stringf(" P%i", playerID);
+		playerHudText += iconText;
+
+		for (int i = 0; i < (int)iconText.size(); ++i)
+		{
+			options.glyphColors.push_back(Rgba::WHITE);
+		}
 	}
 	else
 	{
-		playerHudText.insert(0, Stringf("P%i ", playerID));
-	}
+		std::string iconText = Stringf("P%i ", playerID);
+		playerHudText.insert(0, iconText);
 
-	grid->DrawVoxelText(playerHudText, startCoords, options);
+		for (int i = 0; i < (int)iconText.size(); ++i)
+		{
+			options.glyphColors.insert(options.glyphColors.begin(), Rgba::WHITE);
+		}
+	}
 
 	// Draw a box background
 	IntVector3 boxDimensions = options.font->GetTextDimensions(playerHudText);
@@ -658,82 +690,9 @@ void DrawHUDForPlayer(int playerID, Player* player, VoxelGrid* grid, VoxelFont* 
 		boxStart.x -= options.font->GetTextDimensions(playerHudText).x;
 	}
 
+	// Draw the box first so we can "remove" from it with the empty health boxes
 	grid->DrawSolidBox(boxStart, boxDimensions, options.fillColor);
-
-
-// 	IntVector3 currDrawCoords = startCoords;
-// 
-// 	// Draw the player text
-// 	std::string hudText = GetHUDTextForPlayerID(playerID);
-// 
-// 	IntVector3 textCoords = currDrawCoords - IntVector3(0, 0, 2);
-// 	grid->DrawVoxelText(hudText, textCoords, options);
-// 
-// 	int textWidth = font->GetTextDimensions(hudText).x;
-// 
-// 	currDrawCoords.x += (playerID % 2 == 1 ? -textWidth : textWidth);
-// 	IntVector3 textBackgroundCoords = ((playerID % 2) == 1 ? currDrawCoords : startCoords);
-// 	grid->DrawSolidBox(textBackgroundCoords - IntVector3(1, 1, 0), IntVector3(textWidth + 2, 10, 4), options.fillColor);
-// 
-// 
-// 	// If the player exists, draw the rest
-// 	if (player != nullptr)
-// 	{
-// 		currDrawCoords += IntVector3(playerID % 2 == 1 ? -2 : 0, 0, 0);
-// 
-// 		int maxHealth = player->GetEntityDefinition()->GetInitialHealth();
-// 		int currHealth = player->GetHealth();
-// 
-// 		grid->DrawSolidBox(currDrawCoords, IntVector3(1, 8, 4), options.fillColor);
-// 		currDrawCoords.x += (playerID % 2 == 1 ? -8 : 1);
-// 
-// 		IntVector3 healthBoxStart = currDrawCoords;
-// 
-// 		for (int i = 0; i < maxHealth; ++i)
-// 		{
-// 			Rgba color = Rgba::GRAY;
-// 
-// 			IntVector3 currBoxStart = currDrawCoords;
-// 			IntVector3 healthBoxDimensions = IntVector3(8, 8, 4);
-// 
-// 			if (i < currHealth)
-// 			{
-// 				color = Rgba::RED;
-// 
-// 				currBoxStart.z -= 2;
-// 				healthBoxDimensions.z += 2;
-// 			}
-// 			else
-// 			{
-// 				currBoxStart.z += 2;
-// 				healthBoxDimensions.z -= 2;
-// 			}
-// 
-// 			grid->DrawSolidBox(currBoxStart, healthBoxDimensions, color);
-// 			
-// 			currDrawCoords.x += (playerID % 2 == 1 ? -1 : 8);
-// 
-// 			grid->DrawSolidBox(currDrawCoords, IntVector3(1, 8, 4), options.fillColor);
-// 			currDrawCoords.x += (playerID % 2 == 1 ? -8 : 1);
-// 		}
-// 
-// 
-// 		IntVector3 borderDimensions = IntVector3(AbsoluteValue(currDrawCoords.x - healthBoxStart.x) + 1, 10, 4);
-// 
-// 		IntVector3 borderStart = IntVector3((playerID % 2 == 1) ? currDrawCoords.x + 9 : healthBoxStart.x, startCoords.y, startCoords.z);
-// 		grid->DrawWireBox(borderStart - IntVector3(1, 1, 0), borderDimensions, options.fillColor, true, true, false);
-// 	}
-// 	else
-// 	{
-// 		grid->DrawVoxelText("Press Start", currDrawCoords + IntVector3(0, 0, -2), options);
-// 
-// 		IntVector3 textStart = currDrawCoords;
-// 		currDrawCoords.x += ((playerID % 2 == 1) ? -1 : 1) * font->GetTextDimensions("Press Start").x;
-// 	
-// 		IntVector3 borderStart = IntVector3((playerID % 2 == 1) ? currDrawCoords.x : textStart.x, textStart.y, textStart.z);
-// 		IntVector3 borderDimensions = IntVector3(AbsoluteValue(textStart.x - currDrawCoords.x), 10, 4);
-// 		grid->DrawSolidBox(borderStart - IntVector3(1, 1, 0), borderDimensions, options.fillColor);
-// 	}
+	grid->DrawVoxelText(playerHudText, startCoords, options);
 }
 
 
@@ -771,7 +730,7 @@ void Game::DrawHeading(const std::string& headingText)
 {
 	VoxelFontDraw_t options;
 	options.mode = VOXEL_FONT_FILL_NONE;
-	options.textColor = Rgba::WHITE;
+	options.glyphColors.push_back(Rgba::WHITE);
 	options.font = s_instance->m_hudFont;
 	options.scale = IntVector3(1, 1, 4);
 	options.borderThickness = 0;

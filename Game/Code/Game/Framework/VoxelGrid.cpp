@@ -156,10 +156,6 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, Voxel
 				IntVector3 weaponPosition = position + IntVector3(0, 12, 0);
 				
 				// Don't let the weapons cast or receive shadows, so pass default param for options
-
-				VoxelDrawOptions_t options;
-				options.castsShadows = false;
-				options.receivesShadows = false;
 				Draw3DTexture(weaponTexture, weaponPosition, 0.f, options);
 			}
 		}
@@ -367,8 +363,10 @@ void VoxelGrid::DebugDrawEntityCollision(const Entity* entity, const IntVector3&
 //-----------------------------------------------------------------------------------------------
 // Draws the given text to the grid, returning the coords after the end of the text drawn
 //
-IntVector3 VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options, VoxelFontOffset_cb offsetFunction /*= nullptr*/)
+void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options, VoxelFontOffset_cb offsetFunction /*= nullptr*/)
 {
+	ASSERT_OR_DIE(options.glyphColors.size() == 1 || options.glyphColors.size() == text.size(), Stringf("Error: VoxelFont color mismatch - Colors = %i | Glyphs = %i", options.glyphColors.size(), text.size()).c_str());
+
 	IntVector3 textDimensions = options.font->GetTextDimensions(text);
 	textDimensions.x *= options.scale.x;
 	textDimensions.y *= options.scale.y;
@@ -386,7 +384,6 @@ IntVector3 VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& r
 
 	IntVector3 glyphDimensions = options.font->GetGlyphDimensions();
 
-	IntVector3 lastTraversedWorldCoord = IntVector3::ZERO;
 	for (int zOff = 0; zOff < textDimensions.z; ++zOff)
 	{
 		for (int yOff = 0; yOff < textDimensions.y; ++yOff)
@@ -394,6 +391,7 @@ IntVector3 VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& r
 			for (int xOff = 0; xOff < textDimensions.x; ++xOff)
 			{
 				int charIndex = ((xOff - options.borderThickness) / options.scale.x) / glyphDimensions.x;
+
 				int xOffset = ((xOff - options.borderThickness) / options.scale.x) % glyphDimensions.x;
 				int yOffset = (yOff - options.borderThickness) / options.scale.y;
 
@@ -406,7 +404,6 @@ IntVector3 VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& r
 				}
 
 				IntVector3 worldOffset = options.right * xOff + options.up * yOff + forward * zOff;
-				lastTraversedWorldCoord = startWorldCoord + worldOffset + worldFunctionOffset;
 				int index = GetIndexForCoords(startWorldCoord + worldOffset + worldFunctionOffset);
 
 				if (index == -1)
@@ -431,7 +428,13 @@ IntVector3 VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& r
 
 				if (baseColor.a > 0)
 				{
-					m_gridColors[index] = options.textColor;
+					int colorIndex = charIndex;
+					if (options.glyphColors.size() == 1)
+					{
+						colorIndex = 0;
+					}
+
+					m_gridColors[index] = options.glyphColors[colorIndex];
 
 					// Apply meta data
 					VoxelMetaData& data = m_metaData[index];
@@ -450,8 +453,6 @@ IntVector3 VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& r
 			}
 		}
 	}
-
-	return lastTraversedWorldCoord + options.right + (options.right * options.borderThickness);
 }
 
 
