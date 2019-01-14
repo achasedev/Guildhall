@@ -15,6 +15,12 @@
 Menu::Menu(GameState_MainMenu* mainMenu)
 	: m_mainMenu(mainMenu)
 {
+	// Get sounds
+	AudioSystem* audio = AudioSystem::GetInstance();
+
+	m_cursorSound = audio->CreateOrGetSound("Data/Audio/SFX/Menu/GUI Sound Effects_031.wav");
+	m_confirmSound = audio->CreateOrGetSound("Data/Audio/SFX/Menu/Menu2A.wav");
+	m_returnSound = audio->CreateOrGetSound("Data/Audio/SFX/Menu/Iten2A.wav");
 }
 
 
@@ -65,6 +71,7 @@ void Menu::ProcessInput()
 	if (keyPressedDown)
 	{
 		bool done = false;
+		int oldPosition = m_cursorPosition;
 
 		while (!done)
 		{
@@ -80,6 +87,11 @@ void Menu::ProcessInput()
 				done = true;
 			}
 		}
+
+		if (oldPosition != m_cursorPosition)
+		{
+			AudioSystem::GetInstance()->PlaySound(m_cursorSound);
+		}
 	}
 
 	// Moving up
@@ -87,6 +99,7 @@ void Menu::ProcessInput()
 	if (keyPressedUp)
 	{
 		bool done = false;
+		int oldPosition = m_cursorPosition;
 
 		while (!done)
 		{
@@ -101,6 +114,11 @@ void Menu::ProcessInput()
 			{
 				done = true;
 			}
+		}
+
+		if (oldPosition != m_cursorPosition)
+		{
+			AudioSystem::GetInstance()->PlaySound(m_cursorSound);
 		}
 	}
 
@@ -121,6 +139,8 @@ void Menu::ProcessInput()
 	// Selection
 	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_SPACEBAR))
 	{
+		AudioSystem::GetInstance()->PlaySound(m_confirmSound);
+
 		ProcessCurrentMenuSelection();
 	}
 }

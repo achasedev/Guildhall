@@ -68,6 +68,14 @@ void CampaignManager::Initialize(const char* filename)
 	m_totalSpawnedThisStage = 0;
 
 	Game::ResetScore();
+
+	// Start the music
+	std::string musicName = ParseXmlAttribute(*rootElement, "music", "");
+
+	if (!IsStringNullOrEmpty(musicName))
+	{
+		Game::PlayBGM(musicName);
+	}
 }
 
 

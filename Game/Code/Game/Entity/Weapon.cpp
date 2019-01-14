@@ -110,9 +110,6 @@ void Weapon::Shoot()
 		world->AddEntity(proj);
 		m_currAmmoCount--;
 
-		SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound("Data/SFX/Shoot.wav");
-		AudioSystem::GetInstance()->PlaySound(sound, false, 0.5f);
-
 		if (IsOutOfAmmo())
 		{
 			return;

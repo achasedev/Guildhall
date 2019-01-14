@@ -74,9 +74,6 @@ void AIEntity::OnDeath()
 	{
 		Game::AddPointsToScore(m_definition->m_pointValue);
 	}
-
-	SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound("Data/SFX/Death.wav");
-	AudioSystem::GetInstance()->PlaySound(sound);
 }
 
 

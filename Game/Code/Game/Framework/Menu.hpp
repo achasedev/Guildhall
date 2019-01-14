@@ -7,6 +7,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "Engine/Audio/AudioSystem.hpp"
 
 class GameState_MainMenu;
 typedef void(*MenuOption_cb)(GameState_MainMenu* mainMenu, const std::string& args);
@@ -57,4 +58,8 @@ private:
 	// Additional menu traversal
 	MenuOption_t m_leftOption;
 	MenuOption_t m_rightOption;
+
+	SoundID m_cursorSound;
+	SoundID m_confirmSound;
+	SoundID m_returnSound;
 };

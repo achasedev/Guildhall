@@ -5,11 +5,13 @@
 /* Description: Class to represent the state when the Game is at the main menu
 /************************************************************************/
 #pragma once
+#include <string>
 #include <vector>
 #include "Game/GameStates/GameState.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/IntVector3.hpp"
+#include "Engine/Core/Time/Stopwatch.hpp"
 
 class VoxelFont;
 class World;
@@ -64,4 +66,6 @@ private:
 
 	VoxelEmitter* m_emitters[2];
 
+	// Audio
+	Stopwatch m_introTimer;
 };

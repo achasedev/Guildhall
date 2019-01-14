@@ -75,6 +75,44 @@ Game::Game()
 
 
 //-----------------------------------------------------------------------------------------------
+// Checks if there's currently a crossfade in the music, and adjust volumes accordingly
+//
+void Game::UpdateMusicCrossfade()
+{
+	if (s_instance->m_musicCrossfading)
+	{
+		float t = ClampFloatZeroToOne(s_instance->m_musicCrossfadeTimer.GetElapsedTimeNormalized());
+
+		AudioSystem* audio = AudioSystem::GetInstance();
+
+		if (s_instance->m_transitionBgm != MISSING_SOUND_ID)
+		{
+			audio->SetSoundPlaybackVolume(m_transitionBgm, t);
+		}
+
+		if (s_instance->m_currentBgm != MISSING_SOUND_ID)
+		{
+			audio->SetSoundPlaybackVolume(m_currentBgm, 1.0f - t);
+		}
+
+		if (t == 1.0f)
+		{
+			if (s_instance->m_currentBgm != MISSING_SOUND_ID)
+			{
+				audio->StopSound(m_currentBgm);
+			}
+
+			s_instance->m_currentBgm = s_instance->m_transitionBgm;
+			s_instance->m_transitionBgm = -1;
+
+			s_instance->m_musicCrossfadeTimer.Reset();
+			s_instance->m_musicCrossfading = false;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Loads the leaderboards from file, if one exists
 //
 void Game::LoadLeaderboardsFromFile()
@@ -282,6 +320,9 @@ void Game::Update()
 	{
 		m_currentState->Update();
 	}
+
+	// Update any music crossfades
+	UpdateMusicCrossfade();
 }
 
 
@@ -766,12 +807,52 @@ bool Game::AreAllPlayersInitialized()
 //-----------------------------------------------------------------------------------------------
 // Plays the given background music
 //
-void Game::PlayBGM(const std::string filename)
+void Game::PlayBGM(const std::string filename, bool fadeIn /*= true*/)
 {
-	AudioSystem::GetInstance()->StopSound(s_instance->m_bgm);
+	AudioSystem* audio = AudioSystem::GetInstance();
+	Stopwatch* crossfadeTimer = &s_instance->m_musicCrossfadeTimer;
 
-	SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound(filename);
-	s_instance->m_bgm = AudioSystem::GetInstance()->PlaySound(sound, true);
+	// Don't do any transitioning if no sound is currently playing
+	if (!fadeIn)
+	{
+		SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound(filename);
+
+		if (sound != MISSING_SOUND_ID)
+		{
+			if (s_instance->m_currentBgm != MISSING_SOUND_ID)
+			{
+				audio->StopSound(s_instance->m_currentBgm);
+			}
+
+			s_instance->m_currentBgm = audio->PlaySound(sound, true, 1.f);
+		}
+
+		s_instance->m_transitionBgm = MISSING_SOUND_ID;
+		crossfadeTimer->Reset();
+	}
+	else
+	{
+		// If we currently were transitioning, just set the other to be full volume
+		if (!crossfadeTimer->HasIntervalElapsed())
+		{
+			audio->StopSound(s_instance->m_currentBgm);
+			s_instance->m_currentBgm = s_instance->m_transitionBgm;
+			audio->SetSoundPlaybackVolume(s_instance->m_currentBgm, 1.0f);
+
+			s_instance->m_transitionBgm = MISSING_SOUND_ID;
+		}
+
+		SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound(filename);
+
+		if (sound != MISSING_SOUND_ID)
+		{
+			s_instance->m_transitionBgm = audio->PlaySound(sound, true, 0.f);
+		}
+
+		crossfadeTimer->SetInterval(MUSIC_CROSSFADE_DURATION);
+	}
+
+	s_instance->m_musicCrossfading = fadeIn;
 }
 
 

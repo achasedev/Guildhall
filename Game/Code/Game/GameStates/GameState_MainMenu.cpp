@@ -29,6 +29,8 @@ GameState_MainMenu::GameState_MainMenu()
 
 	m_emitters[0] = new VoxelEmitter(50.f, 2.0f, Vector3(64.f, 8.f, 160.f), Vector3(0.f, 100.f, 0.f), 20.f);
 	m_emitters[1] = new VoxelEmitter(50.f, 2.0f, Vector3(192.f, 8.f, 160.f), Vector3(0.f, 100.f, 0.f), 20.f);
+
+	m_introTimer.SetInterval(15.875f);
 }
 
 
@@ -97,6 +99,15 @@ void GameState_MainMenu::Update()
 	m_emitters[1]->Update();
 
 	Game::GetWorld()->Update();
+
+	// Also Update the music from the intro - hack
+	static bool looping = false;
+	if (m_introTimer.HasIntervalElapsed() && !looping)
+	{
+		Game::PlayBGM("Data/Audio/Music/Theme Song 8-bit V1 _looping.wav", false);
+		m_introTimer.Reset();
+		looping = true;
+	}
 }
 
 
@@ -139,7 +150,7 @@ void GameState_MainMenu::Render_Leave() const
 //
 bool GameState_MainMenu::Enter()
 {
-	Game::PlayBGM("Data/Music/Song.wav");
+	Game::PlayBGM("Data/Audio/Music/Theme Song 8-bit V1 _opening.wav");
 
 	return true;
 }

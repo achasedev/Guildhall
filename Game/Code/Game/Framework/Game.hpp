@@ -10,6 +10,7 @@
 #include "Game/Framework/Leaderboard.hpp"
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Core/Time/Stopwatch.hpp"
 
 class Clock;
 class World;
@@ -50,8 +51,8 @@ public:
 
 	GameState* GetGameState() const;
 
-	static Game*	GetInstance();
-	static void		TransitionToGameState(GameState* newState);
+	static Game*				GetInstance();
+	static void					TransitionToGameState(GameState* newState);
 
 	static VoxelFont*			GetMenuFont();
 	static VoxelGrid*			GetVoxelGrid();
@@ -78,7 +79,7 @@ public:
 
 	static bool					AreAllPlayersInitialized();
 
-	static void					PlayBGM(const std::string filename);
+	static void					PlayBGM(const std::string filename, bool fadeIn = true);
 
 private:
 	//-----Private Methods-----
@@ -86,6 +87,8 @@ private:
 	Game();
 	~Game();
 	Game(const Game& copy) = delete;
+
+	void UpdateMusicCrossfade();
 
 	void LoadLeaderboardsFromFile();
 	void WriteLeaderboardsToFile();
@@ -117,7 +120,12 @@ private:
 	Leaderboard m_leaderboards[NUM_LEADERBOARDS];
 
 	// Audio
-	SoundPlaybackID	m_bgm;
+	SoundPlaybackID		m_currentBgm = MISSING_SOUND_ID;
+	SoundPlaybackID		m_transitionBgm = MISSING_SOUND_ID;
+	Stopwatch			m_musicCrossfadeTimer;
+	bool				m_musicCrossfading = false;
+
+	static constexpr float MUSIC_CROSSFADE_DURATION = 1.0f;
 
 	static Game* s_instance;			// The singleton Game instance
 
