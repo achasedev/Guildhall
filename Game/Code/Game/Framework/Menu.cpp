@@ -18,9 +18,9 @@ Menu::Menu(GameState_MainMenu* mainMenu)
 	// Get sounds
 	AudioSystem* audio = AudioSystem::GetInstance();
 
-	m_cursorSound = audio->CreateOrGetSound("Data/Audio/SFX/Menu/GUI Sound Effects_031.wav");
-	m_confirmSound = audio->CreateOrGetSound("Data/Audio/SFX/Menu/Menu2A.wav");
-	m_returnSound = audio->CreateOrGetSound("Data/Audio/SFX/Menu/Iten2A.wav");
+	m_cursorSound = audio->CreateOrGetSound("Data/Audio/SFX/Menu/sfx_sounds_interaction7.wav");
+	m_confirmSound = audio->CreateOrGetSound("Data/Audio/SFX/Menu/sfx_sounds_damage3.wav");
+	m_returnSound = audio->CreateOrGetSound("Data/Audio/SFX/Menu/sfx_sounds_damage3.wav");
 }
 
 
@@ -90,7 +90,7 @@ void Menu::ProcessInput()
 
 		if (oldPosition != m_cursorPosition)
 		{
-			AudioSystem::GetInstance()->PlaySound(m_cursorSound);
+			AudioSystem::GetInstance()->PlaySound(m_cursorSound, false, 0.2f);
 		}
 	}
 
@@ -118,7 +118,7 @@ void Menu::ProcessInput()
 
 		if (oldPosition != m_cursorPosition)
 		{
-			AudioSystem::GetInstance()->PlaySound(m_cursorSound);
+			AudioSystem::GetInstance()->PlaySound(m_cursorSound, false, 0.2f);
 		}
 	}
 

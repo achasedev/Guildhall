@@ -150,6 +150,7 @@ void GameState_MainMenu::Render_Leave() const
 //
 bool GameState_MainMenu::Enter()
 {
+	Game::SetBGMVolume(1.0f);
 	Game::PlayBGM("Data/Audio/Music/Theme Song 8-bit V1 _opening.wav");
 
 	return true;

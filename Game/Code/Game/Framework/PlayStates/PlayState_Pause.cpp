@@ -85,11 +85,25 @@ void PlayState_Pause::ProcessInput()
 //
 bool PlayState_Pause::Enter()
 {
+	static bool pauseEntered = false;
+
+	if (!pauseEntered)
+	{
+		Game::SetBGMVolume(0.2f);
+		pauseEntered = true;
+	}
+
 	// Play a sound and translate the menu in (?)
 	float t = m_transitionTimer.GetElapsedTimeNormalized();
 	m_menuStartPosition.y = Interpolate(0, 40, t);
 
-	return m_transitionTimer.HasIntervalElapsed();
+	if (m_transitionTimer.HasIntervalElapsed())
+	{
+		pauseEntered = false;
+		return true;
+	}
+
+	return false;
 }
 
 
@@ -161,6 +175,7 @@ bool PlayState_Pause::Leave()
 	if (finishedLeaving)
 	{
 		isParticalized = false;
+		Game::SetBGMVolume(1.0f);
 	}
 
 	return finishedLeaving;

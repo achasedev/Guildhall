@@ -80,6 +80,8 @@ public:
 	static bool					AreAllPlayersInitialized();
 
 	static void					PlayBGM(const std::string filename, bool fadeIn = true);
+	static void					SetBGMVolume(float newVolume, bool transitionTo = true);
+
 
 private:
 	//-----Private Methods-----
@@ -120,10 +122,14 @@ private:
 	Leaderboard m_leaderboards[NUM_LEADERBOARDS];
 
 	// Audio
-	SoundPlaybackID		m_currentBgm = MISSING_SOUND_ID;
-	SoundPlaybackID		m_transitionBgm = MISSING_SOUND_ID;
+	SoundPlaybackID		m_trackTendingToTarget = MISSING_SOUND_ID;
+	SoundPlaybackID		m_trackTendingToZero = MISSING_SOUND_ID;
 	Stopwatch			m_musicCrossfadeTimer;
 	bool				m_musicCrossfading = false;
+
+	float				m_targetMusicVolume = 1.0f;
+	float				m_tendingTargetCurrentVolume = 0.f;
+	float				m_tendingZeroCurrentVolume = 0.f;
 
 	static constexpr float MUSIC_CROSSFADE_DURATION = 1.0f;
 

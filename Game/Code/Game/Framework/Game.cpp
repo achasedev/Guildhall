@@ -79,36 +79,93 @@ Game::Game()
 //
 void Game::UpdateMusicCrossfade()
 {
-	if (s_instance->m_musicCrossfading)
+	// Check volume
+	if (m_trackTendingToTarget != MISSING_SOUND_ID && m_tendingTargetCurrentVolume != m_targetMusicVolume)
 	{
-		float t = ClampFloatZeroToOne(s_instance->m_musicCrossfadeTimer.GetElapsedTimeNormalized());
+		ConsolePrintf("Entered the if");
+		float delta = m_gameClock->GetDeltaTime();
+
+		if (m_tendingTargetCurrentVolume < m_targetMusicVolume)
+		{
+			m_tendingTargetCurrentVolume = ClampFloat(m_tendingTargetCurrentVolume + delta, 0.f, s_instance->m_targetMusicVolume);
+		}
+		else
+		{
+			m_tendingTargetCurrentVolume = ClampFloat(m_tendingTargetCurrentVolume - delta, s_instance->m_targetMusicVolume, 1.0f);
+		}
+
+		AudioSystem* audio = AudioSystem::GetInstance();
+		audio->SetSoundPlaybackVolume(m_trackTendingToTarget, m_tendingTargetCurrentVolume);
+		ConsolePrintf("Set playback volume to %.2f", m_tendingTargetCurrentVolume);
+	}
+
+	if (m_trackTendingToZero != MISSING_SOUND_ID)
+	{
+		float delta = s_instance->m_gameClock->GetDeltaTime();
+
+		s_instance->m_tendingZeroCurrentVolume = ClampFloatZeroToOne(s_instance->m_tendingZeroCurrentVolume - delta);
 
 		AudioSystem* audio = AudioSystem::GetInstance();
 
-		if (s_instance->m_transitionBgm != MISSING_SOUND_ID)
+		if (m_tendingZeroCurrentVolume == 0.f)
 		{
-			audio->SetSoundPlaybackVolume(m_transitionBgm, t);
+			audio->StopSound(m_trackTendingToZero);
+			m_trackTendingToZero = MISSING_SOUND_ID;
 		}
-
-		if (s_instance->m_currentBgm != MISSING_SOUND_ID)
+		else
 		{
-			audio->SetSoundPlaybackVolume(m_currentBgm, 1.0f - t);
-		}
-
-		if (t == 1.0f)
-		{
-			if (s_instance->m_currentBgm != MISSING_SOUND_ID)
-			{
-				audio->StopSound(m_currentBgm);
-			}
-
-			s_instance->m_currentBgm = s_instance->m_transitionBgm;
-			s_instance->m_transitionBgm = -1;
-
-			s_instance->m_musicCrossfadeTimer.Reset();
-			s_instance->m_musicCrossfading = false;
+			audio->SetSoundPlaybackVolume(m_trackTendingToZero, m_tendingZeroCurrentVolume);
 		}
 	}
+
+// 	if (s_instance->m_musicCrossfading)
+// 	{
+// 		float t = s_instance->m_targetMusicVolume * ClampFloatZeroToOne(s_instance->m_musicCrossfadeTimer.GetElapsedTimeNormalized());
+// 
+// 		AudioSystem* audio = AudioSystem::GetInstance();
+// 
+// 		if (s_instance->m_trackTendingToZero != MISSING_SOUND_ID)
+// 		{
+// 			audio->SetSoundPlaybackVolume(m_trackTendingToZero, t);
+// 		}
+// 
+// 		if (s_instance->m_trackTendingToTarget != MISSING_SOUND_ID)
+// 		{
+// 			audio->SetSoundPlaybackVolume(m_trackTendingToTarget, s_instance->m_targetMusicVolume - t);
+// 		}
+// 
+// 		if (t == s_instance->m_targetMusicVolume)
+// 		{
+// 			if (s_instance->m_trackTendingToTarget != MISSING_SOUND_ID)
+// 			{
+// 				audio->StopSound(m_trackTendingToTarget);
+// 			}
+// 
+// 			s_instance->m_trackTendingToTarget = s_instance->m_trackTendingToZero;
+// 			s_instance->m_trackTendingToZero = -1;
+// 
+// 			s_instance->m_musicCrossfadeTimer.Reset();
+// 			s_instance->m_musicCrossfading = false;
+// 		}
+// 	}
+// 
+// 	// Check volume
+// 	if (s_instance->m_tendingTargetCurrentVolume != s_instance->m_targetMusicVolume)
+// 	{
+// 		float delta = s_instance->m_gameClock->GetDeltaTime();
+// 
+// 		if (s_instance->m_tendingTargetCurrentVolume < s_instance->m_targetMusicVolume)
+// 		{
+// 			s_instance->m_tendingTargetCurrentVolume = ClampFloat(s_instance->m_tendingTargetCurrentVolume + delta, 0.f, s_instance->m_targetMusicVolume);
+// 		}
+// 		else
+// 		{
+// 			s_instance->m_tendingTargetCurrentVolume = ClampFloat(s_instance->m_tendingTargetCurrentVolume - delta, s_instance->m_targetMusicVolume, 1.0f);
+// 		}
+// 
+// 		AudioSystem* audio = AudioSystem::GetInstance();
+// 		audio->SetSoundPlaybackVolume(s_instance->m_trackTendingToTarget, s_instance->m_tendingTargetCurrentVolume);
+// 	}
 }
 
 
@@ -810,49 +867,105 @@ bool Game::AreAllPlayersInitialized()
 void Game::PlayBGM(const std::string filename, bool fadeIn /*= true*/)
 {
 	AudioSystem* audio = AudioSystem::GetInstance();
-	Stopwatch* crossfadeTimer = &s_instance->m_musicCrossfadeTimer;
 
-	// Don't do any transitioning if no sound is currently playing
-	if (!fadeIn)
-	{
-		SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound(filename);
+	SoundID nextSong = AudioSystem::GetInstance()->CreateOrGetSound(filename);
 
-		if (sound != MISSING_SOUND_ID)
+	if (fadeIn)
+	{		
+		if (s_instance->m_trackTendingToZero != MISSING_SOUND_ID)
 		{
-			if (s_instance->m_currentBgm != MISSING_SOUND_ID)
-			{
-				audio->StopSound(s_instance->m_currentBgm);
-			}
-
-			s_instance->m_currentBgm = audio->PlaySound(sound, true, 1.f);
+			audio->StopSound(s_instance->m_trackTendingToZero);
 		}
 
-		s_instance->m_transitionBgm = MISSING_SOUND_ID;
-		crossfadeTimer->Reset();
+		s_instance->m_trackTendingToZero = s_instance->m_trackTendingToTarget;
+		s_instance->m_tendingZeroCurrentVolume = s_instance->m_tendingTargetCurrentVolume;
+
+		s_instance->m_tendingTargetCurrentVolume = 0.f;
+		s_instance->m_trackTendingToTarget = audio->PlaySound(nextSong, true, s_instance->m_tendingTargetCurrentVolume);
 	}
 	else
 	{
-		// If we currently were transitioning, just set the other to be full volume
-		if (!crossfadeTimer->HasIntervalElapsed())
+		if (s_instance->m_trackTendingToZero != MISSING_SOUND_ID)
 		{
-			audio->StopSound(s_instance->m_currentBgm);
-			s_instance->m_currentBgm = s_instance->m_transitionBgm;
-			audio->SetSoundPlaybackVolume(s_instance->m_currentBgm, 1.0f);
-
-			s_instance->m_transitionBgm = MISSING_SOUND_ID;
+			audio->StopSound(s_instance->m_trackTendingToZero);
+			s_instance->m_trackTendingToZero = MISSING_SOUND_ID;
+			s_instance->m_tendingZeroCurrentVolume = 0.f;
 		}
 
-		SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound(filename);
-
-		if (sound != MISSING_SOUND_ID)
+		if (s_instance->m_trackTendingToTarget != MISSING_SOUND_ID)
 		{
-			s_instance->m_transitionBgm = audio->PlaySound(sound, true, 0.f);
+			audio->StopSound(s_instance->m_trackTendingToTarget);
 		}
 
-		crossfadeTimer->SetInterval(MUSIC_CROSSFADE_DURATION);
+		s_instance->m_tendingTargetCurrentVolume = s_instance->m_targetMusicVolume;
+		s_instance->m_trackTendingToTarget = audio->PlaySound(nextSong, true, s_instance->m_tendingTargetCurrentVolume);
 	}
 
-	s_instance->m_musicCrossfading = fadeIn;
+
+
+// 	Stopwatch* crossfadeTimer = &s_instance->m_musicCrossfadeTimer;
+// 
+// 	// Don't do any transitioning if no sound is currently playing
+// 	if (!fadeIn)
+// 	{
+// 		SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound(filename);
+// 
+// 		if (sound != MISSING_SOUND_ID)
+// 		{
+// 			if (s_instance->m_trackTendingToTarget != MISSING_SOUND_ID)
+// 			{
+// 				audio->StopSound(s_instance->m_trackTendingToTarget);
+// 			}
+// 
+// 			s_instance->m_trackTendingToTarget = audio->PlaySound(sound, true, 1.f);
+// 		}
+// 
+// 		s_instance->m_trackTendingToZero = MISSING_SOUND_ID;
+// 		crossfadeTimer->Reset();
+// 	}
+// 	else
+// 	{
+// 		// If we currently were transitioning, just set the other to be full volume
+// 		if (s_instance->m_musicCrossfading)
+// 		{
+// 			audio->StopSound(s_instance->m_trackTendingToTarget);
+// 
+// 			if (s_instance->m_trackTendingToZero != MISSING_SOUND_ID)
+// 			{
+// 				s_instance->m_trackTendingToTarget = s_instance->m_trackTendingToZero;
+// 				audio->SetSoundPlaybackVolume(s_instance->m_trackTendingToTarget, s_instance->m_targetMusicVolume);
+// 
+// 				s_instance->m_trackTendingToZero = MISSING_SOUND_ID;
+// 			}
+// 		}
+// 
+// 		SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound(filename);
+// 
+// 		if (sound != MISSING_SOUND_ID)
+// 		{
+// 			s_instance->m_trackTendingToZero = audio->PlaySound(sound, true, 0.f);
+// 		}
+// 
+// 		crossfadeTimer->SetInterval(MUSIC_CROSSFADE_DURATION);
+// 	}
+// 
+// 	s_instance->m_musicCrossfading = fadeIn;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the volume that the background music should be at, and will tranition towards it
+// If transitionTo is false, the bgm is immediately set to that volume
+//
+void Game::SetBGMVolume(float newVolume, bool transitionTo /*= true*/)
+{
+	s_instance->m_targetMusicVolume = newVolume;
+
+	if (!transitionTo)
+	{
+		s_instance->m_tendingTargetCurrentVolume = newVolume;
+		AudioSystem::GetInstance()->SetSoundPlaybackVolume(s_instance->m_trackTendingToTarget, s_instance->m_targetMusicVolume);
+	}
 }
 
 
