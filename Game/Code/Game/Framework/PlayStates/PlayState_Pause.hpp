@@ -6,6 +6,7 @@
 /************************************************************************/
 #pragma once
 #include "Game/Framework/PlayStates/PlayState.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 
 class PlayState_Pause : public PlayState
 {
@@ -41,6 +42,9 @@ private:
 	int m_cursorIndex = 2;
 	std::vector<std::string> m_menuText;
 	bool m_resumePressed = false;
+
+	SoundID m_pauseEnterSound = MISSING_SOUND_ID;
+	SoundID m_pauseLeaveSound = MISSING_SOUND_ID;
 
 	static constexpr float PAUSE_TRANSITION_IN_TIME = 0.2f;
 	static constexpr float PAUSE_TRANSITION_OUT_TIME = 0.f;

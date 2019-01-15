@@ -26,6 +26,10 @@ PlayState_Pause::PlayState_Pause(Player* pausingPlayer)
 	m_menuText.push_back("Paused");
 	m_menuText.push_back("Resume");
 	m_menuText.push_back("Quit");
+
+	AudioSystem* audio = AudioSystem::GetInstance();
+	m_pauseEnterSound = audio->CreateOrGetSound("Data/Audio/SFX/Menu/sfx_sounds_pause2_in.wav");
+	m_pauseLeaveSound = audio->CreateOrGetSound("Data/Audio/SFX/Menu/sfx_sounds_pause2_out.wav");
 }
 
 
@@ -89,6 +93,7 @@ bool PlayState_Pause::Enter()
 
 	if (!pauseEntered)
 	{
+		AudioSystem::GetInstance()->PlaySound(m_pauseEnterSound, false, 0.4f);
 		Game::SetBGMVolume(0.2f);
 		pauseEntered = true;
 	}
@@ -175,6 +180,7 @@ bool PlayState_Pause::Leave()
 	if (finishedLeaving)
 	{
 		isParticalized = false;
+		AudioSystem::GetInstance()->PlaySound(m_pauseLeaveSound, false, 0.4f);
 		Game::SetBGMVolume(1.0f);
 	}
 
