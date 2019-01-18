@@ -148,9 +148,6 @@ float GetShadowScalar(uvec3 coords, uint directionIndex)
  		return 1.0f;
  	}
 
-	// Check the column we're in, if anything is above us then we're completely shadowed
-	// (Direct overhead light)
-
 	ivec2 offsets = g_shadowOffsets[directionIndex];
 	ivec2 xzCoordsPreCheck = ivec2(coords.xz) + offsets;
 

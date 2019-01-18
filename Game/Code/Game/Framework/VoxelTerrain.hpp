@@ -9,8 +9,10 @@
 #include "Game/Entity/EntitySpawn.hpp"
 #include "Engine/Math/IntVector3.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
+
+class HeatMap;
 class VoxelSprite;
- 
+
 class VoxelTerrain
 {
 public:
@@ -46,6 +48,7 @@ private:
 	
 	std::string m_name;
 	VoxelSprite* m_texture = nullptr;
+	HeatMap* m_heightmap = nullptr;
 	std::vector<EntitySpawn_t> m_initialEntities;
 
 	static const IntVector3 TERRAIN_DIMENSIONS;

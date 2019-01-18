@@ -4,6 +4,8 @@
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Framework/VoxelTerrain.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
+#include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/Utility/HeatMap.hpp"
 
 std::map<std::string, VoxelTerrain*> VoxelTerrain::s_terrains;
 
@@ -15,6 +17,7 @@ VoxelTerrain* VoxelTerrain::Clone() const
 	clone->m_name = m_name;
 	clone->m_texture = m_texture->Clone();
 	clone->m_initialEntities = m_initialEntities;
+	clone->m_heightmap = new HeatMap(*m_heightmap);
 
 	return clone;
 }
@@ -31,6 +34,20 @@ VoxelTerrain* VoxelTerrain::GetTerrainClone(const std::string& terrainName)
 	return nullptr;
 }
 
+int GetSpriteHeightAtCoords(VoxelSprite* sprite, const IntVector2& coords, const IntVector3& spriteDimensions)
+{
+	for (int y = 0; y < spriteDimensions.y; ++y)
+	{
+		Rgba color = sprite->GetColorAtRelativeCoords(IntVector3(coords.x, y, coords.y), 0.f);
+		if (color.a == 0)
+		{
+			return y;
+		}
+	}
+
+	return 0;
+}
+
 void VoxelTerrain::LoadTerrain(const XMLElement& terrainElement)
 {
 	std::string name = ParseXmlAttribute(terrainElement, "name", "");
@@ -44,10 +61,22 @@ void VoxelTerrain::LoadTerrain(const XMLElement& terrainElement)
 	bool success = texture->CreateFromFile(filepath.c_str(), false);
 	ASSERT_OR_DIE(success, Stringf("Error: Couldn't load terrain \"%s\"", name.c_str()));
 
+	HeatMap* heightMap = new HeatMap(TERRAIN_DIMENSIONS.xz(), 0.f);
+
+	for (int z = 0; z < TERRAIN_DIMENSIONS.z; ++z)
+	{
+		for (int x = 0; x < TERRAIN_DIMENSIONS.x; ++x)
+		{
+			IntVector2 coords = IntVector2(x, z);
+			heightMap->SetHeat(coords, GetSpriteHeightAtCoords(texture, coords, TERRAIN_DIMENSIONS));
+		}
+	}
+	
 	VoxelTerrain* terrain = new VoxelTerrain();
 	terrain->m_texture = texture;
 	terrain->m_name = name;
-
+	terrain->m_heightmap = heightMap;
+	
 	// Post process - remove chroma keys
 	for (int y = 0; y < TERRAIN_DIMENSIONS.y; ++y)
 	{
@@ -85,31 +114,36 @@ void VoxelTerrain::LoadTerrain(const XMLElement& terrainElement)
 }
 
 
-void VoxelTerrain::AddVoxel(const IntVector3& coords, const Rgba& color)
+void VoxelTerrain::AddVoxel(const IntVector3& relativeCoords, const Rgba& color)
 {
-	m_texture->SetColorAtRelativeCoords(coords, 0.f, color);
+	m_texture->SetColorAtRelativeCoords(relativeCoords, 0.f, color);
+
+	// Update the height map if applicable
+	int oldHeight = (int)m_heightmap->GetHeat(relativeCoords.xz());
+	if (relativeCoords.y == oldHeight)
+	{
+		m_heightmap->SetHeat(relativeCoords.xz(), (float)(oldHeight + 1));
+	}
 }
 
-Rgba VoxelTerrain::RemoveVoxel(const IntVector3& coords)
+Rgba VoxelTerrain::RemoveVoxel(const IntVector3& relativeCoords)
 {
-	Rgba color = m_texture->GetColorAtRelativeCoords(coords, 0.f);
-	m_texture->SetColorAtRelativeCoords(coords, 0.f, Rgba(0, 0, 0, 0));
+	Rgba color = m_texture->GetColorAtRelativeCoords(relativeCoords, 0.f);
+	m_texture->SetColorAtRelativeCoords(relativeCoords, 0.f, Rgba(0, 0, 0, 0));
+
+	// Update the height map if applicable
+	int oldHeight = (int)m_heightmap->GetHeat(relativeCoords.xz());
+	if (relativeCoords.y == oldHeight - 1)
+	{
+		m_heightmap->SetHeat(relativeCoords.xz(), (float)(oldHeight - 1));
+	}
 
 	return color;
 }
 
 int VoxelTerrain::GetHeightAtCoords(const IntVector2& coords)
 {
-	for (int y = 0; y < TERRAIN_DIMENSIONS.y; ++y)
-	{
-		Rgba color = m_texture->GetColorAtRelativeCoords(IntVector3(coords.x, y, coords.y), 0.f);
-		if (color.a == 0)
-		{
-			return y;
-		}
-	}
-
-	return 0;
+	return (int)m_heightmap->GetHeat(coords);
 }
 
 Rgba VoxelTerrain::GetColorAtCoords(const IntVector3& coords)
