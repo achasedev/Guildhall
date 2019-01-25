@@ -30,8 +30,8 @@ public:
 	void StartLeaveTimer();
 
 
-private:
-	//-----Private Data-----
+protected:
+	//-----Protected Data-----
 
 	Stopwatch m_transitionTimer;
 

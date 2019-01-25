@@ -5,13 +5,7 @@
 /* Description: Implementation of the GameState_Loading class
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
-#include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameCommon.hpp"
-#include "Game/Animation/VoxelSprite.hpp"
-#include "Game/Framework/VoxelTerrain.hpp"
-#include "Game/Entity/EntityDefinition.hpp"
-#include "Game/Animation/VoxelAnimation.hpp"
-#include "Game/Animation/VoxelAnimationSet.hpp"
 #include "Game/GameStates/GameState_Loading.hpp"
 #include "Game/GameStates/GameState_MainMenu.hpp"
 
@@ -75,7 +69,7 @@ void GameState_Loading::Render() const
 
 	BitmapFont* font = AssetDB::CreateOrGetBitmapFont("Data/Images/Fonts/Default.png");
 	AABB2 loadingBounds = AABB2(Vector2(0.35f * Window::GetInstance()->GetAspect() * Renderer::UI_ORTHO_HEIGHT, 0.3f * Renderer::UI_ORTHO_HEIGHT), Vector2(0.65f * Window::GetInstance()->GetAspect() * Renderer::UI_ORTHO_HEIGHT, 0.7f * Renderer::UI_ORTHO_HEIGHT));
-	renderer->DrawTextInBox2D("Loading Game\n(with one second sleep)...", loadingBounds, Vector2(0.5f, 0.5f), 50.f, TEXT_DRAW_OVERRUN, font);
+	renderer->DrawTextInBox2D("Loading Game...", loadingBounds, Vector2(0.5f, 0.5f), 50.f, TEXT_DRAW_OVERRUN, font);
 }
 
 
@@ -87,6 +81,13 @@ void GameState_Loading::Render_Leave() const
 	Render();
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Loads all resources used by the game
+//
+void GameState_Loading::LoadResources() const
+{
+}
 
 //-----------------------------------------------------------------------------------------------
 // Enter updating step
@@ -110,107 +111,4 @@ bool GameState_Loading::Leave()
 void GameState_Loading::Render_Enter() const
 {
 	Render();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Loads external resources from disk using the Renderer
-//
-void GameState_Loading::LoadResources() const
-{
-	LoadVoxelResources();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Loads all voxel assets used for rendering
-//
-void GameState_Loading::LoadVoxelResources() const
-{
-	XMLDocument document;
-	XMLError error = document.LoadFile("Data/VoxelAssets.xml");
-	ASSERT_OR_DIE(error == tinyxml2::XML_SUCCESS, "Error: Game couldn't open VoxelAssets.xml file");
-
-	const XMLElement* rootElement = document.RootElement();
-	ASSERT_OR_DIE(rootElement != nullptr, "Error: VoxelAssets.xml has no root element.");
-
-	// Voxel Sprites
-	{
-		const XMLElement* spritesElement = rootElement->FirstChildElement("VoxelSprites");
-		ASSERT_OR_DIE(spritesElement != nullptr, "Error: VoxelAssets.xml has no VoxelSprites element.");
-
-		const XMLElement* currSpriteElement = spritesElement->FirstChildElement();
-
-		while (currSpriteElement != nullptr)
-		{
-			std::string filename = ParseXmlAttribute(*currSpriteElement, "file");
-			ASSERT_OR_DIE(filename.size() > 0, "Error: VoxelAssets.xml has sprite element with no filename specified");
-
-			VoxelSprite::LoadSpriteFile(filename);
-
-			currSpriteElement = currSpriteElement->NextSiblingElement();
-		}
-	}
-
-
-	// Voxel Animation Sets
-	{
-		const XMLElement* setsElement = rootElement->FirstChildElement("VoxelAnimationSets");
-		ASSERT_OR_DIE(setsElement != nullptr, "Error: VoxelAssets.xml has no VoxelAnimationSets element.");
-
-		const XMLElement* currSetElement = setsElement->FirstChildElement();
-
-		while (currSetElement != nullptr)
-		{
-			std::string filename = ParseXmlAttribute(*currSetElement, "file");
-			ASSERT_OR_DIE(filename.size() > 0, "Error: VoxelAssets.xml has animation set element with no filename specified");
-
-			VoxelAnimationSet::LoadSet(filename);
-
-			currSetElement = currSetElement->NextSiblingElement();
-		}
-	}
-
-
-	// Voxel Animations
-	{
-		const XMLElement* animsElement = rootElement->FirstChildElement("VoxelAnimations");
-		ASSERT_OR_DIE(animsElement != nullptr, "Error: VoxelAssets.xml has no VoxelAnimationSets element.");
-
-		const XMLElement* currAnimElement = animsElement->FirstChildElement();
-
-		while (currAnimElement != nullptr)
-		{
-			std::string filename = ParseXmlAttribute(*currAnimElement, "file");
-			ASSERT_OR_DIE(filename.size() > 0, "Error: VoxelAssets.xml has animation element with no filename specified");
-
-			VoxelAnimation::LoadVoxelAnimations(filename);
-
-			currAnimElement = currAnimElement->NextSiblingElement();
-		}
-	}
-
-	// Entity Definitions
-	{
-		const XMLElement* defElement = rootElement->FirstChildElement("EntityDefinitions");
-		if (defElement != nullptr)
-		{
-			std::string defFilename = ParseXmlAttribute(*defElement, "file", "");
-			EntityDefinition::LoadDefinitions(defFilename);
-		}
-	}
-
-	// Voxel Terrains
-	{
-		const XMLElement* terrainsElement = rootElement->FirstChildElement("VoxelTerrains");
-		ASSERT_OR_DIE(terrainsElement != nullptr, "Error: VoxelAssets.xml has no VoxelTerrains");
-
-		const XMLElement* terrainElement = terrainsElement->FirstChildElement();
-
-		while (terrainElement != nullptr)
-		{
-			VoxelTerrain::LoadTerrain(*terrainElement);
-			terrainElement = terrainElement->NextSiblingElement();
-		}
-	}
 }

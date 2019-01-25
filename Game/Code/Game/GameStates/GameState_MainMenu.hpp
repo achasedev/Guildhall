@@ -13,20 +13,6 @@
 #include "Engine/Math/IntVector3.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
 
-class VoxelFont;
-class World;
-class VoxelEmitter;
-class Menu;
-
-enum eSubMenu
-{
-	SUB_MENU_MAIN,
-	SUB_MENU_EPISODES,
-	SUB_MENU_LEADERBOARD_1,
-	SUB_MENU_LEADERBOARD_2, 
-	SUB_MENU_LEADERBOARD_3, 
-	SUB_MENU_LEADERBOARD_4
-};
 
 class GameState_MainMenu : public GameState
 {
@@ -46,26 +32,8 @@ public:
 	virtual void Render() const override;
 	virtual void Render_Leave() const override;
 
-	void MoveToSubMenu(eSubMenu subMenu);
-
-
-private:
-	//-----Private Methods-----
-
-	void DrawCurrentMenu() const;
-	void ParticalizeCurrentMenu() const;
-
 
 private:
 	//-----Private Data-----
 
-	Menu*						m_currentMenu = nullptr;
-
-	IntVector3					m_menuStartCoord = IntVector3(128, 20, 160);
-	Vector3						m_defaultCameraPosition = Vector3(128.f, 100.f, 35.f);
-
-	VoxelEmitter* m_emitters[2];
-
-	// Audio
-	Stopwatch m_introTimer;
 };
