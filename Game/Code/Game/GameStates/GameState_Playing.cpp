@@ -123,6 +123,10 @@ void GameState_Playing::TransitionToPlayState(PlayState* state)
 	{
 		m_currentState->StartLeaveTimer();
 	}
+	else
+	{
+		m_transitionState->StartEnterTimer();
+	}
 }
 
 

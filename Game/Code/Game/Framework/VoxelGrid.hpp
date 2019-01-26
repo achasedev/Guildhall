@@ -76,6 +76,7 @@ public:
 
 	// Mutators
 	void				Clear();
+	void				ColorVoxelAtCoords(const IntVector3& coords, const Rgba& color);
 	void				DrawEntity(const Entity* entity, const IntVector3& offset, VoxelDrawOptions_t options = VoxelDrawOptions_t());
 	void				DrawEntityCollision(const Entity* entity, const IntVector3& offset);
 	void				DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset);

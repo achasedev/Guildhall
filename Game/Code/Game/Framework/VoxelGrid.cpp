@@ -128,6 +128,20 @@ void VoxelGrid::Clear()
 
 
 //-----------------------------------------------------------------------------------------------
+// Colors the given grid coordinate the given color
+//
+void VoxelGrid::ColorVoxelAtCoords(const IntVector3& coords, const Rgba& color)
+{
+	int index = GetIndexForCoords(coords);
+
+	if (index != -1)
+	{
+		m_gridColors[index] = color;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Draws the 3D texture to the grid
 //
 void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, VoxelDrawOptions_t options /*= VoxelDrawOptions_t()*/)

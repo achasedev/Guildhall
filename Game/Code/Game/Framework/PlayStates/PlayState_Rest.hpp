@@ -35,8 +35,8 @@ private:
 	
 	IntVector3 m_nextScreenTextAnchor;
 
-	IntVector3 m_nextScreenTextStart = IntVector3(128, 80, 128);
-	IntVector3 m_nextScreenTextTarget = IntVector3(128, 48, 128);
+	IntVector3 m_nextScreenTextStart = IntVector3(128, 100, 128);
+	IntVector3 m_nextScreenTextTarget = IntVector3(128, 56, 128);
 
 	World* m_worldToTransitionTo = nullptr;
 

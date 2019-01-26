@@ -113,47 +113,45 @@ IntVector3 GetOffsetForFontWaveEffect(const IntVector3& localCoords, const IntVe
 	return offset;
 }
 
-#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // Returns the color for the given voxel to make a white wave effect along the X axis
 //
 Rgba GetColorForWaveEffect(const IntVector3& localCoords, const IntVector3& worldCoords, const Rgba& baseColor, void* args)
 {
 	// Get the args
-	IntVector3 direction = *(IntVector3*)(args);
-	int frequency = *(int*)((char*)args + sizeof(IntVector3));
+	VoxelFontColorWaveArgs_t colorArgs = *(VoxelFontColorWaveArgs_t*)args;
 
 	int frontRange = 15;
 	int rearRange = 50;
 
 	IntVector3 worldDimensions = Game::GetWorld()->GetDimensions();
 
-	int axisLength = (direction.y == 0 ? worldDimensions.x : worldDimensions.y);
+	int axisLength = (colorArgs.direction.y == 0 ? worldDimensions.x : worldDimensions.y);
 	int coordAlongAxis = worldCoords.x;
-	int directionCoefficient = direction.x;
+	int directionCoefficient = colorArgs.direction.x;
 
-	if (direction.y != 0)
+	if (colorArgs.direction.y != 0)
 	{
 		coordAlongAxis = worldCoords.y;
-		directionCoefficient = direction.y;
+		directionCoefficient = colorArgs.direction.y;
 	}
-	else if (direction.z != 0)
+	else if (colorArgs.direction.z != 0)
 	{
 		coordAlongAxis = worldCoords.z;
-		directionCoefficient = direction.z;
+		directionCoefficient = colorArgs.direction.z;
 	}
 
-	int time = directionCoefficient * (int)(100.f * Game::GetGameClock()->GetTotalSeconds());
+	int time = (int) (colorArgs.speed * (float)(directionCoefficient * (int)(100.f * Game::GetGameClock()->GetTotalSeconds())));
 
 	// Bad hack to make it work in the other direction
+	// Will not work correctly if the game runs for over 2700 hours
 	if (time < 0.f)
 	{
 		time += 9999999;
 	}
 
-	ConsolePrintf("%i", directionCoefficient);
-
-	int target = (time % (frequency * axisLength)) - frontRange;
+	int target = (time % (2 * axisLength)) - frontRange;
 	int displacement = coordAlongAxis - target;
 	int distance = AbsoluteValue(displacement);
 

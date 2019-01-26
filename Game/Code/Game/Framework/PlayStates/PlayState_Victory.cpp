@@ -126,6 +126,12 @@ void PlayState_Victory::Render() const
 	options.alignment = Vector3(0.5f, 0.5f, 0.5f);
 	options.borderThickness = 0;
 	options.colorFunction = GetColorForWaveEffect;
+
+	VoxelFontColorWaveArgs_t colorArgs;
+	colorArgs.direction = IntVector3(1, 0, 0);
+	colorArgs.speed = 1.0f;
+
+	options.colorFunctionArgs = &colorArgs;
 	options.offsetFunction = GetOffsetForFontWaveEffect;
 
 	Game::GetVoxelGrid()->DrawVoxelText("Victory", IntVector3(128, 32, 255), options);

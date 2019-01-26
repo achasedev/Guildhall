@@ -41,7 +41,15 @@ private:
 //
 IntVector3 GetOffsetForFontWaveEffect(const IntVector3& localCoords, const IntVector3& worldCoords, void* args);
 
+
 //-----------------------------------------------------------------------------------------------
 // Returns the color for the given voxel to make a white wave effect along the X axis positive
 //
 Rgba GetColorForWaveEffect(const IntVector3& localCoords, const IntVector3& worldCoords, const Rgba& baseColor, void* args);
+
+// Struct for GetColorWaveEffect function args
+struct VoxelFontColorWaveArgs_t
+{
+	IntVector3 direction = IntVector3(1, 0, 0);
+	float speed = 1.f;
+};
