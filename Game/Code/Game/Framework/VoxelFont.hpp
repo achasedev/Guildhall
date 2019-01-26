@@ -39,4 +39,9 @@ private:
 //-----------------------------------------------------------------------------------------------
 // Returns an offset to be applied to the current voxel at local coords when rendering fonts
 //
-IntVector3 GetOffsetForFontWaveEffect(const IntVector3& textDimensions, const IntVector3& localCoords);
+IntVector3 GetOffsetForFontWaveEffect(const IntVector3& localCoords, const IntVector3& worldCoords, void* args);
+
+//-----------------------------------------------------------------------------------------------
+// Returns the color for the given voxel to make a white wave effect along the X axis positive
+//
+Rgba GetColorForWaveEffect(const IntVector3& localCoords, const IntVector3& worldCoords, const Rgba& baseColor, void* args);

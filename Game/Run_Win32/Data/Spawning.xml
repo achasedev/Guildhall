@@ -25,10 +25,20 @@
 
 		</Stage> 
 
-		<Stage map="Houses" enter="south">
+		<Stage map="Houses" enter="west">
 			<SpawnEvent entity="Walker" spawn_point="2" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
 
-		</Stage> 
+		</Stage>
+
+		<Stage map="Houses" enter="north">
+			<SpawnEvent entity="Walker" spawn_point="2" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+
+		</Stage>
+
+		<Stage map="Houses" enter="east">
+			<SpawnEvent entity="Walker" spawn_point="2" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+
+		</Stage>
 <!--
 		<Stage map="Trees" enter="east">
 			<SpawnEvent entity="Tank" spawn_point="2" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>

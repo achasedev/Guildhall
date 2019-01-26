@@ -68,7 +68,7 @@ void VoxelTerrain::LoadTerrain(const XMLElement& terrainElement)
 		for (int x = 0; x < TERRAIN_DIMENSIONS.x; ++x)
 		{
 			IntVector2 coords = IntVector2(x, z);
-			heightMap->SetHeat(coords, GetSpriteHeightAtCoords(texture, coords, TERRAIN_DIMENSIONS));
+			heightMap->SetHeat(coords, (float) GetSpriteHeightAtCoords(texture, coords, TERRAIN_DIMENSIONS));
 		}
 	}
 	

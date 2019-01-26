@@ -123,8 +123,9 @@ void PlayState_Defeat::Render() const
 	options.up = IntVector3(0, 1, 0);
 	options.alignment = Vector3(0.5f, 0.5f, 0.5f);
 	options.borderThickness = 0;
+	options.offsetFunction = GetOffsetForFontWaveEffect;
 
-	Game::GetVoxelGrid()->DrawVoxelText("Defeat", IntVector3(128, 32, 255), options, GetOffsetForFontWaveEffect);
+	Game::GetVoxelGrid()->DrawVoxelText("Defeat", IntVector3(128, 32, 255), options);
 
 	options.scale = IntVector3::ONES;
 	options.up = IntVector3(0, 0, 1);
@@ -160,10 +161,11 @@ void PlayState_Defeat::Render() const
 
 	drawPosition -= IntVector3(0, 0, 10);
 
-	Game::GetVoxelGrid()->DrawVoxelText("Press A", drawPosition, options, GetOffsetForFontWaveEffect);
+	options.offsetFunction = GetOffsetForFontWaveEffect;
+	Game::GetVoxelGrid()->DrawVoxelText("Press A", drawPosition, options);
 	drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
 
-	Game::GetVoxelGrid()->DrawVoxelText("to return", drawPosition, options, GetOffsetForFontWaveEffect);
+	Game::GetVoxelGrid()->DrawVoxelText("to return", drawPosition, options);
 }
 
 

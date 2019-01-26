@@ -32,9 +32,12 @@ private:
 	//-----Private Data-----
 	
 	// Timer for controlling when to move to the next stage state
-	//Stopwatch				m_restTimer;
 	
-	IntVector3 m_transitionOffset = IntVector3::ZERO;
+	IntVector3 m_nextScreenTextAnchor;
+
+	IntVector3 m_nextScreenTextStart = IntVector3(128, 80, 128);
+	IntVector3 m_nextScreenTextTarget = IntVector3(128, 48, 128);
+
 	World* m_worldToTransitionTo = nullptr;
 
 	eTransitionEdge m_edgeToEnter;

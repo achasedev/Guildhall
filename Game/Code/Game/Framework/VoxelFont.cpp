@@ -5,6 +5,7 @@
 /* Description: Implementation of the VoxelFont class
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/World.hpp"
 #include "Game/Framework/VoxelFont.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -81,18 +82,19 @@ IntVector3 VoxelFont::GetTextDimensions(const std::string& text) const
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns an offset to be applied to the current voxel at local coords when rendering fonts
+// Returns an offset to be applied to the current voxel at world coords when rendering fonts
 //
-IntVector3 GetOffsetForFontWaveEffect(const IntVector3& textDimensions, const IntVector3& localCoords)
+IntVector3 GetOffsetForFontWaveEffect(const IntVector3& localCoords, const IntVector3& worldCoords, void* args)
 {
 	int frontRange = 15;
 	int rearRange = 50;
 	float maxOffset = 10;
 
+	IntVector3 worldDimensions = Game::GetWorld()->GetDimensions();
 	int time = (int)(100.f * Game::GetGameClock()->GetTotalSeconds());
 
-	int target = (time % (2 * textDimensions.x)) - frontRange;
-	int displacement = localCoords.x - target;
+	int target = (time % (2 * worldDimensions.x)) - frontRange;
+	int displacement = worldCoords.x - target;
 	int distance = AbsoluteValue(displacement);
 
 	IntVector3 offset = IntVector3::ZERO;
@@ -109,4 +111,65 @@ IntVector3 GetOffsetForFontWaveEffect(const IntVector3& textDimensions, const In
 	}
 
 	return offset;
+}
+
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+//-----------------------------------------------------------------------------------------------
+// Returns the color for the given voxel to make a white wave effect along the X axis
+//
+Rgba GetColorForWaveEffect(const IntVector3& localCoords, const IntVector3& worldCoords, const Rgba& baseColor, void* args)
+{
+	// Get the args
+	IntVector3 direction = *(IntVector3*)(args);
+	int frequency = *(int*)((char*)args + sizeof(IntVector3));
+
+	int frontRange = 15;
+	int rearRange = 50;
+
+	IntVector3 worldDimensions = Game::GetWorld()->GetDimensions();
+
+	int axisLength = (direction.y == 0 ? worldDimensions.x : worldDimensions.y);
+	int coordAlongAxis = worldCoords.x;
+	int directionCoefficient = direction.x;
+
+	if (direction.y != 0)
+	{
+		coordAlongAxis = worldCoords.y;
+		directionCoefficient = direction.y;
+	}
+	else if (direction.z != 0)
+	{
+		coordAlongAxis = worldCoords.z;
+		directionCoefficient = direction.z;
+	}
+
+	int time = directionCoefficient * (int)(100.f * Game::GetGameClock()->GetTotalSeconds());
+
+	// Bad hack to make it work in the other direction
+	if (time < 0.f)
+	{
+		time += 9999999;
+	}
+
+	ConsolePrintf("%i", directionCoefficient);
+
+	int target = (time % (frequency * axisLength)) - frontRange;
+	int displacement = coordAlongAxis - target;
+	int distance = AbsoluteValue(displacement);
+
+	Rgba finalColor = baseColor;
+
+	float t = 0.f;
+	if (displacement >= 0 && displacement <= frontRange)
+	{
+		t = (float)(frontRange - distance) / (float)frontRange;
+		finalColor = Interpolate(baseColor, Rgba::WHITE, t);
+	}
+	else if (displacement < 0 && displacement > -rearRange)
+	{
+		t = (float)(rearRange - distance) / (float)(rearRange);
+		finalColor = Interpolate(baseColor, Rgba::WHITE, t);
+	}
+
+	return finalColor;
 }

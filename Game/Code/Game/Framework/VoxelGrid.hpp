@@ -27,6 +27,9 @@ enum eVoxelFontFill
 	VOXEL_FONT_FILL_EDGE
 };
 
+typedef IntVector3(*VoxelFontOffset_cb)(const IntVector3& localCoords, const IntVector3& worldCoords, void* args);
+typedef Rgba(*VoxelFontColor_cb)(const IntVector3& localCoords, const IntVector3& worldCoords, const Rgba& baseColor, void* args);
+
 struct VoxelFontDraw_t
 {
 	const VoxelFont* font;
@@ -39,11 +42,16 @@ struct VoxelFontDraw_t
 
 	IntVector3 right = IntVector3(1, 0, 0);
 	IntVector3 up = IntVector3(0, 1, 0);
-
+	IntVector3 scale = IntVector3::ONES;
 	Vector3 alignment = Vector3::ZERO;
 
-	IntVector3 scale = IntVector3::ONES;
+	VoxelFontOffset_cb offsetFunction = nullptr;
+	void* offsetFunctionArgs = nullptr;
+
+	VoxelFontColor_cb colorFunction = nullptr;
+	void* colorFunctionArgs = nullptr;
 };
+
 
 struct VoxelDrawOptions_t
 {
@@ -52,7 +60,6 @@ struct VoxelDrawOptions_t
 	Rgba whiteReplacement = Rgba::WHITE;
 };
 
-typedef IntVector3(*VoxelFontOffset_cb)(const IntVector3& textDimensions, const IntVector3& localVoxelCoords);
 
 class VoxelGrid
 {
@@ -76,7 +83,7 @@ public:
 
 	void				DebugDrawEntityCollision(const Entity* entity, const IntVector3& offset);
 
-	void				DrawVoxelText(const std::string& text, const IntVector3& startCoord, const VoxelFontDraw_t& options, VoxelFontOffset_cb offsetFunction = nullptr);
+	void				DrawVoxelText(const std::string& text, const IntVector3& startCoord, const VoxelFontDraw_t& options);
 
 	void				DrawWireBox(const IntVector3& startCoords, const IntVector3& dimensions, const Rgba& color,
 										bool shadeX = false, bool shadeY = false, bool shadeZ = false);

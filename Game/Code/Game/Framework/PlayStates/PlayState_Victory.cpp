@@ -125,8 +125,12 @@ void PlayState_Victory::Render() const
 	options.up = IntVector3(0, 1, 0);
 	options.alignment = Vector3(0.5f, 0.5f, 0.5f);
 	options.borderThickness = 0;
+	options.colorFunction = GetColorForWaveEffect;
+	options.offsetFunction = GetOffsetForFontWaveEffect;
 
-	Game::GetVoxelGrid()->DrawVoxelText("Victory", IntVector3(128, 32, 255), options, GetOffsetForFontWaveEffect);
+	Game::GetVoxelGrid()->DrawVoxelText("Victory", IntVector3(128, 32, 255), options);
+	options.offsetFunction = nullptr;
+	options.colorFunction = nullptr;
 
 	options.scale = IntVector3::ONES;
 	options.up = IntVector3(0, 0, 1);
@@ -140,6 +144,7 @@ void PlayState_Victory::Render() const
 	drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
 
 	bool currentScoreRendered = false;
+	Rgba flashColor;
 	for (int i = 0; i < NUM_SCORES_PER_LEADERBOARD; ++i)
 	{
 		if (!currentScoreRendered && board.m_scores[i] == Game::GetScore())
@@ -147,7 +152,8 @@ void PlayState_Victory::Render() const
 			float time = m_transitionTimer.GetElapsedTime();
 			float t = 0.5f * (SinDegrees(1000.f * time) + 1.0f);
 
-			options.glyphColors[0] = Interpolate(m_leaderboardTextColor, m_scoresFlashColor, t);
+			flashColor = Interpolate(m_leaderboardTextColor, m_scoresFlashColor, t);
+			options.glyphColors[0] = flashColor;
 
 			currentScoreRendered = true;
 		}
@@ -160,12 +166,24 @@ void PlayState_Victory::Render() const
 		drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
 	}
 
+	if (currentScoreRendered)
+	{
+		drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
+		options.glyphColors[0] = flashColor;
+		Game::GetVoxelGrid()->DrawVoxelText("New Record", drawPosition, options);
+		drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
+	}
+
 	drawPosition -= IntVector3(0, 0, 10);
 
-	Game::GetVoxelGrid()->DrawVoxelText("Press A", drawPosition, options, GetOffsetForFontWaveEffect);
+	options.glyphColors[0] = m_leaderboardTextColor;
+	options.offsetFunction = GetOffsetForFontWaveEffect;
+	options.colorFunction = GetColorForWaveEffect;
+
+	Game::GetVoxelGrid()->DrawVoxelText("Press A", drawPosition, options);
 	drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
 
-	Game::GetVoxelGrid()->DrawVoxelText("to return", drawPosition, options, GetOffsetForFontWaveEffect);
+	Game::GetVoxelGrid()->DrawVoxelText("to return", drawPosition, options);
 }
 
 

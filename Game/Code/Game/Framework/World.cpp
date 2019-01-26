@@ -353,7 +353,7 @@ void World::ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage
 
 		if (currEntity->GetTeam() == team) { continue; }
 
-		if (currEntity->IsDynamic())
+		if (currEntity->IsDynamic() && currEntity != hitEntity)
 		{
 			Vector3 direction = (currEntity->GetCenterPosition() - Vector3(coord)).GetNormalized();
 			Vector3 impulse = direction * impulseMagnitude;
@@ -770,7 +770,7 @@ void World::CheckEntityForGroundCollision(Entity* entity)
 			entity->OnGroundCollision();
 
 			// Then snap to map height
-			position.y = mapHeight;
+			position.y = (float) mapHeight;
 			entity->SetPosition(position);
 
 			PhysicsComponent* comp = entity->GetPhysicsComponent();
@@ -785,7 +785,7 @@ void World::CheckEntityForGroundCollision(Entity* entity)
 			IntVector3 dimensions = entity->GetOrientedDimensions();
 			if (position.y <= -(float)dimensions.y + 4)
 			{
-				entity->TakeDamage(9999999999);
+				entity->TakeDamage(99999);
 			}
 		}
 	}

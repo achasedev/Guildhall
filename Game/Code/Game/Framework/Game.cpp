@@ -65,7 +65,7 @@ Game::Game()
 
 	// VoxelFont
 	m_hudFont = new VoxelFont("HUD", "Data/Images/Fonts/VoxelFont.png");
-	m_menuFont = new VoxelFont("Menu", "Data/Images/Fonts/Default.png");
+	m_menuFont = new VoxelFont("Menu", "Data/Images/Fonts/VoxelFont.png");
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{

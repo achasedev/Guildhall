@@ -7,6 +7,7 @@
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
+#include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/CampaignManager.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
@@ -16,6 +17,7 @@
 #include "Game/Framework/PlayStates/PlayState_Pause.hpp"
 #include "Game/Framework/PlayStates/PlayState_ControllerConnect.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/Time/Clock.hpp"
 
 #define TRANSITION_EDGE_SIZE (10)
 
@@ -311,7 +313,7 @@ void PlayState_Rest::ProcessInput()
 	}
 }
 
-
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 //-----------------------------------------------------------------------------------------------
 // Enter update step
 //
@@ -330,7 +332,14 @@ bool PlayState_Rest::Enter()
 
 	UpdateWorldAndCamera();
 
-	if (m_transitionTimer.HasIntervalElapsed())
+	// Move the next stage text down
+	float t = ClampFloatZeroToOne(m_transitionTimer.GetElapsedTimeNormalized());
+	m_nextScreenTextAnchor = Interpolate(m_nextScreenTextStart, m_nextScreenTextTarget, t);
+	ConsolePrintf("(%i, %i, %i)", m_nextScreenTextAnchor.x, m_nextScreenTextAnchor.y, m_nextScreenTextAnchor.z);
+
+	static bool worldSetup = false;
+
+	if (!worldSetup)
 	{
 		// Get the next stage and initialize the next world to enter
 		CampaignStage* nextStage = Game::GetCampaignManager()->GetNextStage();
@@ -338,7 +347,12 @@ bool PlayState_Rest::Enter()
 		m_worldToTransitionTo->InititalizeForStage(nextStage);
 		m_edgeToEnter = m_worldToTransitionTo->GetDirectionToEnter();
 		m_edgeToExit = GetEdgeToExit(m_edgeToEnter);
-		
+		worldSetup = true;
+	}
+
+	if (m_transitionTimer.HasIntervalElapsed())
+	{
+		worldSetup = false;
 		return true;
 	}
 
@@ -436,8 +450,34 @@ bool PlayState_Rest::Leave()
 //
 void PlayState_Rest::Render_Enter() const
 {
-	Game::GetWorld()->DrawToGrid();
-	Game::DrawPlayerHUD();
+	Render();
+}
+
+
+//---C FUNCTION----------------------------------------------------------------------------------
+// Returns the character representation of the edge for exiting
+// Used for rendering the "GO!" text segment
+//
+char GetArrowForExitEdge(eTransitionEdge edge)
+{
+	switch (edge)
+	{
+	case EDGE_NORTH:
+		return 1;
+		break;
+	case EDGE_SOUTH:
+		return 3;
+		break;
+	case EDGE_EAST:
+		return 4;
+		break;
+	case EDGE_WEST:
+		return 2;
+		break;
+	default:
+		return 0;
+		break;
+	}
 }
 
 
@@ -448,6 +488,49 @@ void PlayState_Rest::Render() const
 {
 	Game::GetWorld()->DrawToGrid();
 	Game::DrawPlayerHUD();
+
+	// Draw the next screen text
+	VoxelFontDraw_t options;
+	options.alignment = Vector3(0.5f);
+	options.font = Game::GetMenuFont();
+	options.glyphColors.push_back(Rgba::BLUE);
+	options.scale = IntVector3(3, 3, 1);
+
+	Game::GetVoxelGrid()->DrawVoxelText("GO!", m_nextScreenTextAnchor, options);
+
+	char arrowChar = GetArrowForExitEdge(m_edgeToExit);
+
+	options.colorFunction = GetColorForWaveEffect;
+	options.colorFunctionArgs = malloc(sizeof(IntVector3) + sizeof(int));
+
+	switch (arrowChar)
+	{
+	case 1:
+		*(IntVector3*)options.colorFunctionArgs = IntVector3(0, 0, 1);
+		break;
+	case 2:
+		*(IntVector3*)options.colorFunctionArgs = IntVector3(-1, 0, 0);
+		break;
+	case 3:
+		*(IntVector3*)options.colorFunctionArgs = IntVector3(0, 0, -1);
+		break;
+	case 4:
+		*(IntVector3*)options.colorFunctionArgs = IntVector3(1, 0, 0);
+		break;
+	default:
+		break;
+	}
+
+	*(int*)((char*)options.colorFunctionArgs + sizeof(IntVector3)) = 2;
+
+	std::string arrow = "";
+	arrow += arrowChar;
+	options.scale = IntVector3(4, 4, 1);
+	options.up = IntVector3(0, 0, 1);
+	IntVector3 arrowCoords = m_nextScreenTextAnchor - IntVector3(0, 4 * options.font->GetGlyphDimensions().y, 0);
+	Game::GetVoxelGrid()->DrawVoxelText(arrow, arrowCoords, options);
+
+	free(options.colorFunctionArgs);
 }
 
 
@@ -465,4 +548,47 @@ void PlayState_Rest::Render_Leave() const
 	m_worldToTransitionTo->DrawToGridWithOffset(transitionOffset);
 
 	Game::DrawPlayerHUD();
+
+	// Draw the next screen text with the offset
+	VoxelFontDraw_t options;
+	options.alignment = Vector3(0.5f);
+	options.font = Game::GetMenuFont();
+	options.glyphColors.push_back(Rgba::BLUE);
+	options.scale = IntVector3(3, 3, 1);
+
+	Game::GetVoxelGrid()->DrawVoxelText("GO!", m_nextScreenTextAnchor + currOffset, options);
+
+	char arrowChar = GetArrowForExitEdge(m_edgeToExit);
+
+	options.colorFunction = GetColorForWaveEffect;
+	options.colorFunctionArgs = malloc(sizeof(IntVector3) + sizeof(int));
+
+	switch (arrowChar)
+	{
+	case 1:
+		*(IntVector3*)options.colorFunctionArgs = IntVector3(0, 0, 1);
+		break;
+	case 2:
+		*(IntVector3*)options.colorFunctionArgs = IntVector3(-1, 0, 0);
+		break;
+	case 3:
+		*(IntVector3*)options.colorFunctionArgs = IntVector3(0, 0, -1);
+		break;
+	case 4:
+		*(IntVector3*)options.colorFunctionArgs = IntVector3(1, 0, 0);
+		break;
+	default:
+		break;
+	}
+
+	*(int*)((char*)options.colorFunctionArgs + sizeof(IntVector3)) = 2;
+
+	std::string arrow = "";
+	arrow += arrowChar;
+	options.scale = IntVector3(4, 4, 1);
+	options.up = IntVector3(0, 0, 1);
+	IntVector3 arrowCoords = m_nextScreenTextAnchor - IntVector3(0, 4 * options.font->GetGlyphDimensions().y, 0);
+	Game::GetVoxelGrid()->DrawVoxelText(arrow, arrowCoords + currOffset, options);
+
+	free(options.colorFunctionArgs);
 }

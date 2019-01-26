@@ -213,6 +213,9 @@ void LoadSubMenu(GameState_MainMenu* mainMenu, const std::string& args)
 //
 void StartEpisode(GameState_MainMenu* mainMenu, const std::string& args)
 {
+	UNUSED(args);
+	UNUSED(mainMenu);
+
 	Game::TransitionToGameState(new GameState_Playing());
 }
 
@@ -222,6 +225,9 @@ void StartEpisode(GameState_MainMenu* mainMenu, const std::string& args)
 //
 void QuitSelection(GameState_MainMenu* mainMenu, const std::string& args)
 {
+	UNUSED(args);
+	UNUSED(mainMenu);
+
 	App::GetInstance()->Quit();
 }
 

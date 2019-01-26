@@ -68,7 +68,7 @@ void PlayState_Pause::ProcessInput()
 			m_cursorIndex--;
 			if (m_cursorIndex < 2)
 			{
-				m_cursorIndex = m_menuText.size() - 1;
+				m_cursorIndex = (int) m_menuText.size() - 1;
 			}
 		}
 

@@ -363,7 +363,7 @@ void VoxelGrid::DebugDrawEntityCollision(const Entity* entity, const IntVector3&
 //-----------------------------------------------------------------------------------------------
 // Draws the given text to the grid, returning the coords after the end of the text drawn
 //
-void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options, VoxelFontOffset_cb offsetFunction /*= nullptr*/)
+void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options)
 {
 	ASSERT_OR_DIE(options.glyphColors.size() == 1 || options.glyphColors.size() == text.size(), Stringf("Error: VoxelFont color mismatch - Colors = %i | Glyphs = %i", options.glyphColors.size(), text.size()).c_str());
 
@@ -395,15 +395,15 @@ void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referen
 				int xOffset = ((xOff - options.borderThickness) / options.scale.x) % glyphDimensions.x;
 				int yOffset = (yOff - options.borderThickness) / options.scale.y;
 
+				IntVector3 worldOffset = options.right * xOff + options.up * yOff + forward * zOff;
 				IntVector3 worldFunctionOffset = IntVector3::ZERO;
 
-				if (offsetFunction != nullptr)
+				if (options.offsetFunction != nullptr)
 				{
-					IntVector3 localFunctionOffset = offsetFunction(textDimensions, IntVector3(xOff, yOff, zOff));
+					IntVector3 localFunctionOffset = options.offsetFunction(IntVector3(xOff, yOff, zOff), startWorldCoord + worldOffset, options.offsetFunctionArgs);
 					worldFunctionOffset = options.right * localFunctionOffset.x + options.up * localFunctionOffset.y + forward * localFunctionOffset.z;
 				}
 
-				IntVector3 worldOffset = options.right * xOff + options.up * yOff + forward * zOff;
 				int index = GetIndexForCoords(startWorldCoord + worldOffset + worldFunctionOffset);
 
 				if (index == -1)
@@ -434,7 +434,15 @@ void VoxelGrid::DrawVoxelText(const std::string& text, const IntVector3& referen
 						colorIndex = 0;
 					}
 
-					m_gridColors[index] = options.glyphColors[colorIndex];
+					if (options.colorFunction != nullptr)
+					{
+						m_gridColors[index] = options.colorFunction(IntVector3(xOff, yOff, zOff), startWorldCoord + worldOffset, options.glyphColors[colorIndex], options.colorFunctionArgs);
+					}
+					else
+					{
+						m_gridColors[index] = options.glyphColors[colorIndex];
+					}
+
 
 					// Apply meta data
 					VoxelMetaData& data = m_metaData[index];
