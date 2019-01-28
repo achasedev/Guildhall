@@ -235,7 +235,7 @@ void Game::Render() const
 	renderer->DrawTextInBox2D(Stringf("Number of Entries shown: %i (out of %i)", m_numSegmentsBeingAnalyzed, m_numSegmentsTotal), bounds, Vector2::ZERO, FONT_HEIGHT, TEXT_DRAW_OVERRUN, font);
 	bounds.Translate(Vector2(0.f, -FONT_HEIGHT));
 
-	renderer->DrawTextInBox2D(Stringf("Frequency span per entry: %f hz", 44100.f / (float)m_numSegmentsBeingAnalyzed), bounds, Vector2::ZERO, FONT_HEIGHT, TEXT_DRAW_OVERRUN, font);
+	renderer->DrawTextInBox2D(Stringf("Frequency span per entry: %f hz", 44100.f / (float)m_numSegmentsTotal), bounds, Vector2::ZERO, FONT_HEIGHT, TEXT_DRAW_OVERRUN, font);
 	bounds.Translate(Vector2(0.f, -FONT_HEIGHT));
 
 	renderer->DrawTextInBox2D(Stringf("Max Value: %f", m_maxValue), bounds, Vector2::ZERO, FONT_HEIGHT, TEXT_DRAW_OVERRUN, font);

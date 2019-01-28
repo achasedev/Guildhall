@@ -84,8 +84,8 @@ private:
 	float m_maxValue = 0.f;
 	float m_sumOfValues = 0.f;
 
-	static constexpr int FFT_WINDOW_SIZE = 1024;
-	static constexpr int FFT_WINDOW_FRACTION_DIVISOR = 2;
+	static constexpr int FFT_WINDOW_SIZE = 4096;
+	static constexpr int FFT_WINDOW_FRACTION_DIVISOR = 8;
 
 	static constexpr float FONT_HEIGHT = 30.f;
 	static Game* s_instance;			// The singleton Game instance
