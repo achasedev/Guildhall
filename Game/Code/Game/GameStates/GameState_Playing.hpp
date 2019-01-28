@@ -6,6 +6,7 @@
 /************************************************************************/
 #pragma once
 #include "Game/GameStates/GameState.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
 #include <string>
 #include <vector>
@@ -37,7 +38,5 @@ private:
 
 private:
 	//-----Private Data-----
-
-	bool m_isTransitioning = false;
 
 };

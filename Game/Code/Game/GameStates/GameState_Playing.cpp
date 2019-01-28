@@ -13,15 +13,15 @@
 #include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 #include "Engine/Rendering/Core/ForwardRenderingPath.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Base constructor
 //
 GameState_Playing::GameState_Playing()
-	: GameState(1.f, 1.f)
+	: GameState(0.f, 0.f)
 {
 }
 
@@ -39,7 +39,7 @@ GameState_Playing::~GameState_Playing()
 //
 bool GameState_Playing::Enter()
 {
-	return m_transitionTimer.HasIntervalElapsed();
+	return true;
 }
 
 
