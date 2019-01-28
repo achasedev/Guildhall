@@ -1,9 +1,0 @@
-<VoxelSprites>
-
-	<VoxelSprite name="Mouse_idle_0" file="Data/VoxelModels/Players/Mouse/Mouse_idle_0.qef"/>
-	<VoxelSprite name="Mouse_idle_1" file="Data/VoxelModels/Players/Mouse/Mouse_idle_1.qef"/>
-	<VoxelSprite name="Mouse_walk_0" file="Data/VoxelModels/Players/Mouse/Mouse_walk_0.qef"/>
-	<VoxelSprite name="Mouse_walk_1" file="Data/VoxelModels/Players/Mouse/Mouse_walk_1.qef"/>
-	<VoxelSprite name="Mouse_character_select" file="Data/VoxelModels/Players/Mouse/Mouse_character_select.qef"/>
-
-</VoxelSprites>

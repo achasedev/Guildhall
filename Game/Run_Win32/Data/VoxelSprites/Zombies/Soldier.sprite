@@ -1,8 +1,0 @@
-<VoxelSprites>
-
-	<VoxelSprite name="Soldier_idle_0" file="Data/VoxelModels/Zombies/Soldier/Soldier_idle_0.qef"/>
-	<VoxelSprite name="Soldier_idle_1" file="Data/VoxelModels/Zombies/Soldier/Soldier_idle_1.qef"/>
-	<VoxelSprite name="Soldier_walk_0" file="Data/VoxelModels/Zombies/Soldier/Soldier_walk_0.qef"/>
-	<VoxelSprite name="Soldier_walk_1" file="Data/VoxelModels/Zombies/Soldier/Soldier_walk_1.qef"/>
-
-</VoxelSprites>

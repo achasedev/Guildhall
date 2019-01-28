@@ -1,9 +1,0 @@
-<VoxelSprites>
-
-	<VoxelSprite name="Nerd_idle_0" file="Data/VoxelModels/Players/Nerd/Nerd_idle_0.qef"/>
-	<VoxelSprite name="Nerd_idle_1" file="Data/VoxelModels/Players/Nerd/Nerd_idle_1.qef"/>
-	<VoxelSprite name="Nerd_walk_0" file="Data/VoxelModels/Players/Nerd/Nerd_walk_0.qef"/>
-	<VoxelSprite name="Nerd_walk_1" file="Data/VoxelModels/Players/Nerd/Nerd_walk_1.qef"/>
-	<VoxelSprite name="Nerd_character_select" file="Data/VoxelModels/Players/Nerd/Nerd_character_select.qef"/>
-
-</VoxelSprites>
