@@ -191,23 +191,23 @@ bool VoxelSprite::CreateFromColorStream(const Rgba* colors, const IntVector3& di
 
 VoxelSprite* VoxelSprite::Clone() const
 {
-	VoxelSprite* newTexture = new VoxelSprite();
-	newTexture->m_dimensions = m_dimensions;
+	VoxelSprite* newSprite = new VoxelSprite();
+	newSprite->m_dimensions = m_dimensions;
 
 	int voxelCount = m_dimensions.x * m_dimensions.y * m_dimensions.z;
 	size_t byteSize = sizeof(Rgba) * voxelCount;
-	newTexture->m_colorData = (Rgba*)malloc(byteSize);
+	newSprite->m_colorData = (Rgba*)malloc(byteSize);
 
-	memcpy(newTexture->m_colorData, m_colorData, byteSize);
+	memcpy(newSprite->m_colorData, m_colorData, byteSize);
 
 	// Collision
 	if (m_collisionFlags != nullptr)
 	{
-		newTexture->m_collisionFlags = (uint32_t*)malloc(sizeof(uint32_t) * m_dimensions.y * m_dimensions.z);
-		memcpy(newTexture->m_collisionFlags, m_collisionFlags, sizeof(uint32_t) * m_dimensions.y * m_dimensions.z);
+		newSprite->m_collisionFlags = (uint32_t*)malloc(sizeof(uint32_t) * m_dimensions.y * m_dimensions.z);
+		memcpy(newSprite->m_collisionFlags, m_collisionFlags, sizeof(uint32_t) * m_dimensions.y * m_dimensions.z);
 	}
 
-	return newTexture;
+	return newSprite;
 }
 
 void VoxelSprite::SetColorAtRelativeCoords(const IntVector3& relativeCoords, float relativeOrientation, const Rgba& color)

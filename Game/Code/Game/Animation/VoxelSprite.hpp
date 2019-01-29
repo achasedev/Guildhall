@@ -18,9 +18,9 @@ public:
 	VoxelSprite();
 	~VoxelSprite();
 
-	bool			CreateFromFile(const char* filename, bool createCollisionMatrix);
-	bool			CreateFromColorStream(const Rgba* colors, const IntVector3& dimensions, bool createCollisionMatrix);
-	VoxelSprite*	Clone() const;
+	bool					CreateFromFile(const char* filename, bool createCollisionMatrix);
+	bool					CreateFromColorStream(const Rgba* colors, const IntVector3& dimensions, bool createCollisionMatrix);
+	VoxelSprite*			Clone() const;
 
 	// Mutators
 	void			SetColorAtRelativeCoords(const IntVector3& relativeCoords, float relativeOrientation, const Rgba& color);
@@ -46,16 +46,16 @@ public:
 	static void					LoadSpriteFile(const std::string& filename);
 
 
-private:
-	//-----Private Methods-----
+protected:
+	//-----Protected Methods-----
 
 	IntVector3	GetLocalCoordsFromRelativeCoords(const IntVector3& relativeCoords, float relativeOrientation) const;
 	bool		AreLocalCoordsValid(int x, int y, int z) const;
 
 
 
-private:
-	//-----Private Data-----
+protected:
+	//-----Protected Data-----
 
 	std::string m_name;
 	uint32_t*	m_collisionFlags = nullptr;

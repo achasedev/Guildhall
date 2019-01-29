@@ -81,7 +81,7 @@ void Projectile::OnEntityCollision(Entity* other)
 
 
 //-----------------------------------------------------------------------------------------------
-// Destroys the terrain the projectile hit and kills the projectile
+// Destroys the map the projectile hit and kills the projectile
 //
 void Projectile::OnGroundCollision()
 {

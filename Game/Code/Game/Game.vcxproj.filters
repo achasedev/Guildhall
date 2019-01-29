@@ -133,9 +133,6 @@
     <ClCompile Include="Framework\Menu.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Framework\VoxelTerrain.cpp">
-      <Filter>Architecture</Filter>
-    </ClCompile>
     <ClCompile Include="Entity\Components\BehaviorComponent_Charge.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
@@ -158,6 +155,12 @@
       <Filter>Architecture</Filter>
     </ClCompile>
     <ClCompile Include="Framework\PlayStates\PlayState_ControllerConnect.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\VoxelMap.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\MapDefinition.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
   </ItemGroup>
@@ -218,7 +221,6 @@
     <ClInclude Include="Entity\Weapon.hpp" />
     <ClInclude Include="Entity\CharacterSelectVolume.hpp" />
     <ClInclude Include="Framework\Menu.hpp" />
-    <ClInclude Include="Framework\VoxelTerrain.hpp" />
     <ClInclude Include="Entity\EntitySpawn.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_Charge.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_ShootDirect.hpp" />
@@ -228,5 +230,8 @@
     <ClInclude Include="Framework\PlayStates\PlayState_Pause.hpp" />
     <ClInclude Include="Framework\VoxelMetaData.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_ControllerConnect.hpp" />
+    <ClInclude Include="Framework\VoxelMap.hpp" />
+    <ClInclude Include="Framework\VoxelTerrain.hpp" />
+    <ClInclude Include="Framework\MapDefinition.hpp" />
   </ItemGroup>
 </Project>

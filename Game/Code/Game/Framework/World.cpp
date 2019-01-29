@@ -11,7 +11,7 @@
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/GameCamera.hpp"
-#include "Game/Framework/VoxelTerrain.hpp"
+#include "Game/Framework/VoxelMap.hpp"
 #include "Game/Framework/CampaignStage.hpp"
 #include "Game/Entity/CharacterSelectVolume.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
@@ -109,10 +109,10 @@ World::~World()
 //
 void World::InitializeForMenu()
 {
-	if (m_terrain != nullptr)
+	if (m_map != nullptr)
 	{
-		delete m_terrain;
-		m_terrain = nullptr;
+		delete m_map;
+		m_map = nullptr;
 	}
 }
 
@@ -122,9 +122,9 @@ void World::InitializeForMenu()
 //
 void World::InititalizeForStage(CampaignStage* stage)
 {
-	if (m_terrain != nullptr)
+	if (m_map != nullptr)
 	{
-		delete m_terrain;
+		delete m_map;
 	}
 
 	// Clean up entities
@@ -146,8 +146,8 @@ void World::InititalizeForStage(CampaignStage* stage)
 
 	m_particles.clear();
 
-	// Initialize terrain and static entities on terrain
-	InitializeTerrain(stage->m_mapName);
+	// Initialize map and static entities on map
+	IntializeMap(stage->m_mapName);
 	
 	// Add in the entities from the stage
 	int numEntities = (int) stage->m_initialStatics.size();
@@ -214,10 +214,10 @@ void World::CleanUp()
 
 	m_particles.clear();
 
-	if (m_terrain != nullptr)
+	if (m_map != nullptr)
 	{
-		delete m_terrain;
-		m_terrain = nullptr;
+		delete m_map;
+		m_map = nullptr;
 	}
 }
 
@@ -272,9 +272,9 @@ void World::DrawToGridWithOffset(const IntVector3& offset)
 	VoxelGrid* grid = Game::GetVoxelGrid();
 
 	// Color in the ground, if there is one
-	if (m_terrain != nullptr)
+	if (m_map != nullptr)
 	{
-		grid->DrawTerrain(m_terrain, offset);
+		grid->Drawmap(m_map, offset);
 	}
 
 	// Color in static geometry
@@ -337,12 +337,12 @@ void World::AddParticle(Particle* particle)
 
 
 //-----------------------------------------------------------------------------------------------
-// Creates an explosion at the given coord and radius, destroying terrain and hitting entities 
+// Creates an explosion at the given coord and radius, destroying map and hitting entities 
 //
 void World::ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage /*= 0*/, 
 	float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/, Entity* hitEntity /*=nullptr*/)
 {
-	DestroyTerrain(coord, radius, impulseMagnitude);
+	DestroyPartOfMap(coord, radius, impulseMagnitude);
 
 	// Apply damage and knockback to entities within the radius
 	std::vector<Entity*> entities = GetEntitiesThatOverlapSphere(Vector3(coord), radius);
@@ -392,11 +392,11 @@ void World::ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage
 
 
 //-----------------------------------------------------------------------------------------------
-// Sets the voxel at the given coord to the given color in the terrain
+// Sets the voxel at the given coord to the given color in the map
 //
-void World::AddVoxelToTerrain(const IntVector3& coord, const Rgba& color)
+void World::AddVoxelTomap(const IntVector3& coord, const Rgba& color)
 {
-	m_terrain->AddVoxel(coord, color);
+	m_map->AddVoxel(coord, color);
 }
 
 
@@ -515,14 +515,14 @@ IntVector3 World::GetDimensions() const
 //
 int World::GetGroundElevationAtCoord(const IntVector2& coord) const
 {
-	return m_terrain->GetHeightAtCoords(coord);
+	return m_map->GetHeightAtCoords(coord);
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the max elevation of the terrain
+// Returns the max elevation of the map
 //
-int World::GetCurrentMaxHeightOfTerrain() const
+int World::GetCurrentMaxHeightOfmap() const
 {
 	int max = -1;
 
@@ -618,13 +618,13 @@ void World::ParticalizeVoxelText(const std::string& text, const IntVector3& refe
 
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 //-----------------------------------------------------------------------------------------------
-// Sets the terrain and initial entities given the name of the map
+// Sets the map and initial entities given the name of the map
 //
-void World::InitializeTerrain(const std::string mapName)
+void World::IntializeMap(const std::string mapName)
 {
-	m_terrain = VoxelTerrain::GetTerrainClone(mapName);
+	m_map = VoxelMap::GetMapClone(mapName);
 
-	const std::vector<EntitySpawn_t> spawns = m_terrain->GetInitialEntities();
+	const std::vector<EntitySpawn_t> spawns = m_map->GetInitialEntities();
 
 	for (int i = 0; i < (int)spawns.size(); ++i)
 	{
@@ -719,11 +719,11 @@ int World::GetMapHeightForEntity(const Entity* entity) const
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the max terrain height at the given position and dimensions
+// Returns the max map height at the given position and dimensions
 //
 int World::GetMapHeightForBounds(const IntVector3& coordPosition, const IntVector2& dimensions) const
 {
-	if (m_terrain == nullptr)
+	if (m_map == nullptr)
 	{
 		return 0;
 	}
@@ -738,7 +738,7 @@ int World::GetMapHeightForBounds(const IntVector3& coordPosition, const IntVecto
 			IntVector3 currPos = coordPosition + IntVector3(x, 0, z);
 			if (AreCoordsOnMap(currPos.xz()))
 			{
-				int currHeight = m_terrain->GetHeightAtCoords(currPos.xz());
+				int currHeight = m_map->GetHeightAtCoords(currPos.xz());
 
 				// Update the max height over this area
 				maxHeight = MaxInt(maxHeight, currHeight);
@@ -793,9 +793,9 @@ void World::CheckEntityForGroundCollision(Entity* entity)
 
 
 //-----------------------------------------------------------------------------------------------
-// Destroys the terrain at coord and within a given radius
+// Destroys the map at coord and within a given radius
 //
-void World::DestroyTerrain(const IntVector3& hitCoordinate, float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/)
+void World::DestroyPartOfMap(const IntVector3& hitCoordinate, float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/)
 {
 	if (!AreCoordsInWorld(hitCoordinate))
 	{
@@ -826,11 +826,11 @@ void World::DestroyTerrain(const IntVector3& hitCoordinate, float radius /*= 0.f
 				}
 
 				float distanceSquared = (Vector3(hitCoordinate) - Vector3(currCoord)).GetLengthSquared();
-				int heightAtCurrCoord = m_terrain->GetHeightAtCoords(currCoord.xz());
+				int heightAtCurrCoord = m_map->GetHeightAtCoords(currCoord.xz());
 
 				if (distanceSquared <= radiusSquared)
 				{
-					Rgba color = m_terrain->RemoveVoxel(currCoord);
+					Rgba color = m_map->RemoveVoxel(currCoord);
 
 					if (CheckRandomChance(0.1f))
 					{
@@ -842,7 +842,7 @@ void World::DestroyTerrain(const IntVector3& hitCoordinate, float radius /*= 0.f
 				}
 				else if (y > hitCoordinate.y && y < heightAtCurrCoord)
 				{
-					Rgba color = m_terrain->GetColorAtCoords(IntVector3(currCoord.x, y, currCoord.z));
+					Rgba color = m_map->GetColorAtCoords(IntVector3(currCoord.x, y, currCoord.z));
 
 					Particle* particle = new Particle(color, 2.0f, Vector3(currCoord), Vector3::ZERO, false);
 					AddParticle(particle);

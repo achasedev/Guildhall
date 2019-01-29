@@ -9,11 +9,11 @@
 #include "Game/Entity/Weapon.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
+#include "Game/Framework/VoxelMap.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
-#include "Game/Framework/VoxelTerrain.hpp"
 #include "Game/Framework/VoxelMetaData.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -221,9 +221,9 @@ void VoxelGrid::DrawEntityCollision(const Entity* entity, const IntVector3& offs
 
 
 //-----------------------------------------------------------------------------------------------
-// Draws the terrain to the grid with the given heightmap
+// Draws the map to the grid with the given heightmap
 //
-void VoxelGrid::DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset)
+void VoxelGrid::Drawmap(VoxelMap* map, const IntVector3& offset)
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 
@@ -231,7 +231,7 @@ void VoxelGrid::DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset)
 	{
 		for (int heightMapX = 0; heightMapX < m_dimensions.x; ++heightMapX)
 		{
-			int height = terrain->GetHeightAtCoords(IntVector2(heightMapX, heightMapZ));
+			int height = map->GetHeightAtCoords(IntVector2(heightMapX, heightMapZ));
 
 			height = ClampInt(height + offset.y, 0, m_dimensions.y);
 
@@ -240,9 +240,9 @@ void VoxelGrid::DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset)
 				continue;
 			}
 
-			int westDiff = AbsoluteValue(terrain->GetHeightAtCoords(IntVector2(heightMapX - 1, heightMapZ)) + offset.y - height);
-			int eastDiff = AbsoluteValue(terrain->GetHeightAtCoords(IntVector2(heightMapX + 1, heightMapZ)) + offset.y - height);
-			int southDiff = AbsoluteValue(terrain->GetHeightAtCoords(IntVector2(heightMapX, heightMapZ - 1)) + offset.y - height);
+			int westDiff = AbsoluteValue(map->GetHeightAtCoords(IntVector2(heightMapX - 1, heightMapZ)) + offset.y - height);
+			int eastDiff = AbsoluteValue(map->GetHeightAtCoords(IntVector2(heightMapX + 1, heightMapZ)) + offset.y - height);
+			int southDiff = AbsoluteValue(map->GetHeightAtCoords(IntVector2(heightMapX, heightMapZ - 1)) + offset.y - height);
 
 			bool hasSharpDiff = (westDiff > 1 || eastDiff > 1 || southDiff > 1);
 
@@ -256,7 +256,7 @@ void VoxelGrid::DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset)
 
 				for (int y = height - 1; y >= height - maxFill; --y)
 				{
-					Rgba color = terrain->GetColorAtCoords(IntVector3(heightMapX, y, heightMapZ));
+					Rgba color = map->GetColorAtCoords(IntVector3(heightMapX, y, heightMapZ));
 
 					int gridIndex = GetIndexForCoords(IntVector3(gridCoords.x, y, gridCoords.z));
 
@@ -273,7 +273,7 @@ void VoxelGrid::DrawTerrain(VoxelTerrain* terrain, const IntVector3& offset)
 			}
 			else
 			{
-				Rgba color = terrain->GetColorAtCoords(IntVector3(heightMapX, height - 1, heightMapZ));
+				Rgba color = map->GetColorAtCoords(IntVector3(heightMapX, height - 1, heightMapZ));
 
 				int gridIndex = GetIndexForCoords(gridCoords);
 

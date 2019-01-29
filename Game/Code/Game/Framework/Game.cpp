@@ -480,7 +480,7 @@ float Game::GetDeltaTime()
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the world used for all entities and terrain
+// Returns the world used for all entities and map
 //
 World* Game::GetWorld()
 {

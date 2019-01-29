@@ -312,6 +312,7 @@
     <ClCompile Include="Framework\GameCamera.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
     <ClCompile Include="Framework\Leaderboard.cpp" />
+    <ClCompile Include="Framework\MapDefinition.cpp" />
     <ClCompile Include="Framework\Menu.cpp" />
     <ClCompile Include="Framework\PlayStates\PlayState.cpp" />
     <ClCompile Include="Framework\PlayStates\PlayState_ControllerConnect.cpp" />
@@ -326,7 +327,7 @@
     <ClCompile Include="Framework\VoxelGrid.cpp" />
     <ClCompile Include="Framework\CampaignStage.cpp" />
     <ClCompile Include="Framework\VoxelMetaData.cpp" />
-    <ClCompile Include="Framework\VoxelTerrain.cpp" />
+    <ClCompile Include="Framework\VoxelMap.cpp" />
     <ClCompile Include="Framework\World.cpp" />
     <ClCompile Include="GameStates\GameState.cpp" />
     <ClCompile Include="GameStates\GameState_Loading.cpp" />
@@ -366,6 +367,7 @@
     <ClInclude Include="Framework\GameCamera.hpp" />
     <ClInclude Include="Framework\GameCommon.hpp" />
     <ClInclude Include="Framework\Leaderboard.hpp" />
+    <ClInclude Include="Framework\MapDefinition.hpp" />
     <ClInclude Include="Framework\Menu.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_ControllerConnect.hpp" />
@@ -380,6 +382,7 @@
     <ClInclude Include="Framework\VoxelGrid.hpp" />
     <ClInclude Include="Framework\CampaignStage.hpp" />
     <ClInclude Include="Framework\VoxelMetaData.hpp" />
+    <ClInclude Include="Framework\VoxelMap.hpp" />
     <ClInclude Include="Framework\VoxelTerrain.hpp" />
     <ClInclude Include="Framework\World.hpp" />
     <ClInclude Include="GameStates\GameState.hpp" />

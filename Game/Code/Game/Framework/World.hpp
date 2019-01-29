@@ -24,7 +24,7 @@ class Player;
 class Entity;
 class VoxelSprite;
 class Particle;
-class VoxelTerrain;
+class VoxelMap;
 class VoxelFont;
 class CampaignStage;
 
@@ -65,13 +65,13 @@ public:
 	void RemoveEntity(Entity* entity);
 	void AddParticle(Particle* particle);
 	void ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage = 0, float radius = 0.f, float impulseMagnitude = 0.f, Entity* hitEntity = nullptr);
-	void AddVoxelToTerrain(const IntVector3& coord, const Rgba& color);
+	void AddVoxelTomap(const IntVector3& coord, const Rgba& color);
 	void SetBlockEdgeCollision(bool shouldBlock);
 
 	// Accessors
 	IntVector3			GetDimensions() const;
 	int					GetGroundElevationAtCoord(const IntVector2& coord) const;
-	int					GetCurrentMaxHeightOfTerrain() const;
+	int					GetCurrentMaxHeightOfmap() const;
 	eTransitionEdge		GetDirectionToEnter() const;
 
 	// Producers
@@ -93,7 +93,7 @@ public:
 private:
 	//-----Private Methods-----
 
-	void InitializeTerrain(const std::string mapName);
+	void IntializeMap(const std::string mapName);
 
 	void UpdateEntities();
 	void UpdateParticles();
@@ -115,11 +115,11 @@ private:
 	void DrawDynamicEntitiesToGrid(const IntVector3& offset);
 	void DrawParticlesToGrid(const IntVector3& offset);
 
-	// Terrain
+	// map
 	void CheckEntityForGroundCollision(Entity* entity);
 
 	// Explosions
-	void DestroyTerrain(const IntVector3& coord, float radius = 0.f, float impulseMagnitude = 0.f);
+	void DestroyPartOfMap(const IntVector3& coord, float radius = 0.f, float impulseMagnitude = 0.f);
 
 
 private:
@@ -128,12 +128,13 @@ private:
 	const IntVector3 m_dimensions = IntVector3(256, 64, 256);
 	eTransitionEdge m_enterEdge = EDGE_WEST;
 
-	// Terrain
-	VoxelTerrain* m_terrain = nullptr;
+	// map
+	VoxelMap* m_map = nullptr;
 
-	std::vector<Entity*> m_entities;
-	std::vector<Particle*> m_particles;
+	std::vector<Entity*>	m_entities;
+	std::vector<Particle*>	m_particles;
 
 	bool					m_blockEdgeCollisions = true;
 	bool					m_drawCollisions = false;
+
 };

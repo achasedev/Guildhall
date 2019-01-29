@@ -1,57 +1,46 @@
 /************************************************************************/
 /* File: VoxelTerrain.hpp
 /* Author: Andrew Chase
-/* Date: November 25th 2018
-/* Description: Class to represent the terrain of a world
+/* Date: January 29th, 2018
+/* Description: Static class to represent the grounds used for maps
 /************************************************************************/
-#pragma once
 #include <map>
-#include "Game/Entity/EntitySpawn.hpp"
-#include "Engine/Math/IntVector3.hpp"
-#include "Engine/Core/Utility/XmlUtilities.hpp"
+#include <vector>
+#include <string>
 
-class HeatMap;
 class VoxelSprite;
 
-class VoxelTerrain
+class VoxelTerrain : public VoxelSprite
 {
 public:
 	//-----Public Methods-----
-	
 
-	static VoxelTerrain* GetTerrainClone(const std::string& terrainName);
-	static void LoadTerrain(const XMLElement& terrainElement);
+	static VoxelTerrain LoadTerrainFile(const std::string& terrainFile);
 
-	// Mutators
-	void AddVoxel(const IntVector3& coords, const Rgba& color);
-	Rgba RemoveVoxel(const IntVector3& coords);
+	static VoxelTerrain* CreateVoxelTerrainCloneForName(const std::string& name);
 
-	// Accessors
-	int GetHeightAtCoords(const IntVector2& coords);
-	Rgba GetColorAtCoords(const IntVector3& coords);
-	const std::vector<EntitySpawn_t>& GetInitialEntities() const;
+	// Get the const sprite
+
+	// Since we can read it, copy & paste the clone function to do the same with a newed off terrain
+
+	// Set the type member of the terrain
+
+	// return it
 
 
-public:
-	//-----Public Data-----
-	
+	static VoxelTerrain* CreateVoxelTerrainCloneForType(const std::string& type);
+
 
 private:
 	//-----Private Methods-----
-	
-	VoxelTerrain() {};
-	VoxelTerrain* Clone() const;
 
-	
+
+
 private:
 	//-----Private Data-----
-	
-	std::string m_name;
-	VoxelSprite* m_texture = nullptr;
-	HeatMap* m_heightmap = nullptr;
-	std::vector<EntitySpawn_t> m_initialEntities;
 
-	static const IntVector3 TERRAIN_DIMENSIONS;
-	static std::map<std::string, VoxelTerrain*> s_terrains;
+	std::string m_terrainType;
+
+	static std::map<std::string, std::vector<std::string>> m_terrainsByType;
 
 };

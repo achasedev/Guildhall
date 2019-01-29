@@ -88,7 +88,7 @@ void Particle::OnGroundCollision()
 		// Particle didn't fall into a hole
 		if (world->IsEntityOnMap(this) && yVelocity < 0.f && coordPosition.y > 0)
 		{
-			world->AddVoxelToTerrain(coordPosition, m_defaultSprite->GetColorAtIndex(0));
+			world->AddVoxelTomap(coordPosition, m_defaultSprite->GetColorAtIndex(0));
 			m_isMarkedForDelete = true;
 		}
 	}

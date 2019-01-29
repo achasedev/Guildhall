@@ -8,7 +8,7 @@
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
-#include "Game/Framework/VoxelTerrain.hpp"
+#include "Game/Framework/VoxelMap.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Animation/VoxelAnimation.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
@@ -128,7 +128,7 @@ void GameState_Loading::LoadResources() const
 void GameState_Loading::LoadVoxelResources() const
 {
 	XMLDocument document;
-	XMLError error = document.LoadFile("Data/VoxelAssets.xml");
+	XMLError error = document.LoadFile("Data/GameAssetsToLoad.xml");
 	ASSERT_OR_DIE(error == tinyxml2::XML_SUCCESS, "Error: Game couldn't open VoxelAssets.xml file");
 
 	const XMLElement* rootElement = document.RootElement();
@@ -200,17 +200,19 @@ void GameState_Loading::LoadVoxelResources() const
 		}
 	}
 
-	// Voxel Terrains
+	// Voxel Maps
 	{
-		const XMLElement* terrainsElement = rootElement->FirstChildElement("VoxelTerrains");
-		ASSERT_OR_DIE(terrainsElement != nullptr, "Error: VoxelAssets.xml has no VoxelTerrains");
+		const XMLElement* mapsElement = rootElement->FirstChildElement("Maps");
+		ASSERT_OR_DIE(mapsElement != nullptr, "Error: GameAssetsToLoad.xml has no maps");
 
-		const XMLElement* terrainElement = terrainsElement->FirstChildElement();
+		const XMLElement* mapElement = mapsElement->FirstChildElement();
 
-		while (terrainElement != nullptr)
+		while (mapElement != nullptr)
 		{
-			VoxelTerrain::LoadTerrain(*terrainElement);
-			terrainElement = terrainElement->NextSiblingElement();
+			std::string mapFilePath = ParseXmlAttribute(*mapElement, "file", "");
+			VoxelMap::LoadMap(mapFilePath);
+
+			mapElement = mapElement->NextSiblingElement();
 		}
 	}
 }

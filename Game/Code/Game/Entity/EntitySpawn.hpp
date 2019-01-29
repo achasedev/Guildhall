@@ -5,12 +5,34 @@
 /* Description: Shared struct to describe an entity spawn
 /************************************************************************/
 #pragma once
+#include <vector>
 #include "Engine/Math/Vector3.hpp"
 class EntityDefinition;
 
-struct EntitySpawn_t
+struct OccupiedArea_t
 {
-	const EntityDefinition* definition = nullptr;
-	Vector3 position;
-	float orientation;
+	IntVector2 mins;
+	IntVector2 maxs;
+};
+
+struct EntitySpawnArea_t
+{
+public:
+	//-----Public Methods-----
+
+
+public:
+	//-----Public Data-----
+
+	const EntityDefinition* m_definitionToSpawn = nullptr;
+	bool m_allowOverlapsInThisArea = false;
+	bool m_allowOverlapsGlobally = false;
+
+	int m_spawnCount = 1;
+
+	IntVector2 m_spawnBoundsMins = IntVector2::ZERO;
+	IntVector2 m_spawnBoundsMaxs = IntVector2::ZERO;
+
+	float m_spawnOrientation = -1.f; // -1 here indicates use random orientations
+
 };
