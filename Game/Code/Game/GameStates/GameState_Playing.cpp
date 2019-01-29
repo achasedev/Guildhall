@@ -8,6 +8,7 @@
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 #include "Game/GameStates/GameState_MainMenu.hpp"
+#include "Engine/Core/Window.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Rendering/Core/Camera.hpp"
@@ -95,7 +96,15 @@ void GameState_Playing::Render() const
 	DebugRenderSystem* system = DebugRenderSystem::GetInstance();
 
 	system->DrawBasis(Vector3::ZERO, Vector3::ZERO, 0.f);
-	system->Draw2DText("Playing", AABB2(Vector2(0.f, 0.f), Vector2(200.f, 200.f)), 0.f, Rgba::WHITE, 50.f, Vector2(0.f, 1.0f));
+
+	AABB2 bounds = Window::GetInstance()->GetWindowBounds();
+	system->Draw2DText("Playing", bounds, 0.f, Rgba::WHITE, 50.f, Vector2(1.f, 0.0f));
+	bounds.Translate(Vector2(0.f, -50.f));
+
+	Camera* camera = Game::GetGameCamera();
+
+	Vector3 rotation = camera->GetRotation();
+	system->Draw2DText(Stringf("Camera Rotation: (%.2f, %.2f, %.2f)", rotation.x, rotation.y, rotation.z), bounds, 0.f, Rgba::WHITE, 50.f, Vector2(1.f, 0.0f));
 }
 
 
