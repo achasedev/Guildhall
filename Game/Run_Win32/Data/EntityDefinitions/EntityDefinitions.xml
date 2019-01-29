@@ -87,7 +87,7 @@
 			<CollisionDefinition response="ignore_correction" can_destroy_voxels="true" knockback="10.0"/>
 		</Physics>
 
-		<Projectile speed="200.0" damage="2" lifetime="0.7"/>
+		<Projectile speed="200.0" damage="2" lifetime="0.7" hit_radius="1.0"/>
 
 	</EntityDefinition>
 

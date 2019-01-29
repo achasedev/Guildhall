@@ -20,8 +20,8 @@
 			<SpawnEvent entity="Walker" spawn_point="2" spawn_rate="2" spawn_count_delay="10" spawn_time_delay="1.0" total_to_spawn="5"/>
 		</Stage>
 -->
-		<Stage map="Houses" enter="south">
-			<SpawnEvent entity="Walker" spawn_point="2" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+		<Stage map="FreshMart" enter="west">
+			<SpawnEvent entity="Walker" spawn_point="0" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
 
 		</Stage> 
 

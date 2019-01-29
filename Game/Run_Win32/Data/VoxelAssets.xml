@@ -73,6 +73,7 @@
 		<VoxelTerrain name="Flat" file="Data/VoxelModels/Maps/Flat.qef"/>
 		<VoxelTerrain name="Trees" file="Data/VoxelModels/Maps/Trees.qef"/>
 		<VoxelTerrain name="Houses" file="Data/VoxelModels/Maps/Houses.qef"/>
+		<VoxelTerrain name="FreshMart" file="Data/VoxelModels/Maps/FreshMart.qef"/>
 		<VoxelTerrain name="HousesAndTrees" file="Data/VoxelModels/Maps/HousesAndTrees.qef"/>
 		<VoxelTerrain name="CharacterSelect" file="Data/VoxelModels/Maps/CharacterSelect.qef"/>
 	</VoxelTerrains>

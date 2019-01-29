@@ -45,9 +45,10 @@ int GetSpriteHeightAtCoords(VoxelSprite* sprite, const IntVector2& coords, const
 		}
 	}
 
-	return 0;
+	return spriteDimensions.y;
 }
 
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 void VoxelTerrain::LoadTerrain(const XMLElement& terrainElement)
 {
 	std::string name = ParseXmlAttribute(terrainElement, "name", "");
@@ -77,6 +78,7 @@ void VoxelTerrain::LoadTerrain(const XMLElement& terrainElement)
 	terrain->m_name = name;
 	terrain->m_heightmap = heightMap;
 	
+	int count = 0;
 	// Post process - remove chroma keys
 	for (int y = 0; y < TERRAIN_DIMENSIONS.y; ++y)
 	{
@@ -89,6 +91,7 @@ void VoxelTerrain::LoadTerrain(const XMLElement& terrainElement)
 
 				if (color.r == 255)
 				{
+					count++;
 					// Remove the key
 					texture->SetColorAtRelativeCoords(coord, 0.f, Rgba(0, 0, 0, 0));
 
@@ -108,6 +111,8 @@ void VoxelTerrain::LoadTerrain(const XMLElement& terrainElement)
 			}
 		}
 	}
+
+	ConsolePrintf("%i ChromaKeys", count);
 
 	// Add it to the registry of prototypes
 	s_terrains[name] = terrain;

@@ -1769,7 +1769,6 @@ void CalculateAndApplyCollisionCorrection(Entity* first, Entity* second, const V
 		first->AddCollisionCorrection(firstFinalCorrection);
 		second->AddCollisionCorrection(secondFinalCorrection);
 
-		ConsolePrintf("Collision applied");
 		// Zero out velocities if colliding against static
 		if (first->GetPhysicsType() == PHYSICS_TYPE_STATIC && second->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC)
 		{
