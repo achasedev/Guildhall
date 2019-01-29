@@ -43,7 +43,9 @@ Game::Game()
 
 	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 
-	SetupDSPForTrack("Data/Audio/Music/Test.mp3");
+	//SetupDSPForTrack("Data/Audio/Music/Test.mp3");
+	SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/Test.mp3");
+	AudioSystem::GetInstance()->PlaySound(sound, true);
 }
 
 
@@ -201,7 +203,7 @@ void Game::Update()
 // 		m_currentState->Update();
 // 	}
 
-	UpdateBarMesh();
+	//UpdateBarMesh();
 }
 
 
@@ -224,29 +226,29 @@ void Game::Render() const
 // 	default:
 // 		break;
 // 	}
-	Renderer* renderer = Renderer::GetInstance();
-	renderer->SetCurrentCamera(renderer->GetUICamera());
-	AABB2 bounds = renderer->GetUIBounds();
-	BitmapFont* font = AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png");
-
-	renderer->DrawTextInBox2D(Stringf("Number of Channels: %i", m_numChannels), bounds, Vector2::ZERO, FONT_HEIGHT, TEXT_DRAW_OVERRUN, font);
-	bounds.Translate(Vector2(0.f, -FONT_HEIGHT));
-
-	renderer->DrawTextInBox2D(Stringf("Number of Entries shown: %i (out of %i)", m_numSegmentsBeingAnalyzed, m_numSegmentsTotal), bounds, Vector2::ZERO, FONT_HEIGHT, TEXT_DRAW_OVERRUN, font);
-	bounds.Translate(Vector2(0.f, -FONT_HEIGHT));
-
-	renderer->DrawTextInBox2D(Stringf("Frequency span per entry: %f hz", 44100.f / (float)m_numSegmentsTotal), bounds, Vector2::ZERO, FONT_HEIGHT, TEXT_DRAW_OVERRUN, font);
-	bounds.Translate(Vector2(0.f, -FONT_HEIGHT));
-
-	renderer->DrawTextInBox2D(Stringf("Max Value: %f", m_maxValue), bounds, Vector2::ZERO, FONT_HEIGHT, TEXT_DRAW_OVERRUN, font);
-	bounds.Translate(Vector2(0.f, -FONT_HEIGHT));
-
-	renderer->DrawTextInBox2D(Stringf("Zero Count: %i", m_zeroCount), bounds, Vector2::ZERO, FONT_HEIGHT, TEXT_DRAW_OVERRUN, font);
-	bounds.Translate(Vector2(0.f, -FONT_HEIGHT));
-
-	renderer->DrawTextInBox2D(Stringf("Sum of Values: %f", m_sumOfValues), bounds, Vector2::ZERO, FONT_HEIGHT, TEXT_DRAW_OVERRUN, font);
-
-	renderer->DrawMesh(&m_barMesh);
+// 	Renderer* renderer = Renderer::GetInstance();
+// 	renderer->SetCurrentCamera(renderer->GetUICamera());
+// 	AABB2 bounds = renderer->GetUIBounds();
+// 	BitmapFont* font = AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png");
+// 
+// 	renderer->DrawTextInBox2D(Stringf("Number of Channels: %i", m_numChannels), bounds, Vector2::ZERO, FONT_HEIGHT, TEXT_DRAW_OVERRUN, font);
+// 	bounds.Translate(Vector2(0.f, -FONT_HEIGHT));
+// 
+// 	renderer->DrawTextInBox2D(Stringf("Number of Entries shown: %i (out of %i)", m_numSegmentsBeingAnalyzed, m_numSegmentsTotal), bounds, Vector2::ZERO, FONT_HEIGHT, TEXT_DRAW_OVERRUN, font);
+// 	bounds.Translate(Vector2(0.f, -FONT_HEIGHT));
+// 
+// 	renderer->DrawTextInBox2D(Stringf("Frequency span per entry: %f hz", 44100.f / (float)m_numSegmentsTotal), bounds, Vector2::ZERO, FONT_HEIGHT, TEXT_DRAW_OVERRUN, font);
+// 	bounds.Translate(Vector2(0.f, -FONT_HEIGHT));
+// 
+// 	renderer->DrawTextInBox2D(Stringf("Max Value: %f", m_maxValue), bounds, Vector2::ZERO, FONT_HEIGHT, TEXT_DRAW_OVERRUN, font);
+// 	bounds.Translate(Vector2(0.f, -FONT_HEIGHT));
+// 
+// 	renderer->DrawTextInBox2D(Stringf("Zero Count: %i", m_zeroCount), bounds, Vector2::ZERO, FONT_HEIGHT, TEXT_DRAW_OVERRUN, font);
+// 	bounds.Translate(Vector2(0.f, -FONT_HEIGHT));
+// 
+// 	renderer->DrawTextInBox2D(Stringf("Sum of Values: %f", m_sumOfValues), bounds, Vector2::ZERO, FONT_HEIGHT, TEXT_DRAW_OVERRUN, font);
+// 
+// 	renderer->DrawMesh(&m_barMesh);
 }
 
 

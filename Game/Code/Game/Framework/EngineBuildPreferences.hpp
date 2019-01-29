@@ -12,3 +12,4 @@
 
 // Enables the profiler
 //#define PROFILING_ENABLED
+#define FFT_ENABLED
