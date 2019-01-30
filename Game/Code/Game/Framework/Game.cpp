@@ -43,8 +43,7 @@ Game::Game()
 
 	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 
-	//SetupDSPForTrack("Data/Audio/Music/Test.mp3");
-	SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/Test.mp3");
+	SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/120bpm.mp3");
 	AudioSystem::GetInstance()->PlaySound(sound, true);
 }
 
