@@ -15,32 +15,24 @@ class VoxelTerrain : public VoxelSprite
 public:
 	//-----Public Methods-----
 
-	static VoxelTerrain LoadTerrainFile(const std::string& terrainFile);
-
-	static VoxelTerrain* CreateVoxelTerrainCloneForName(const std::string& name);
-
-	// Get the const sprite
-
-	// Since we can read it, copy & paste the clone function to do the same with a newed off terrain
-
-	// Set the type member of the terrain
-
-	// return it
-
-
-	static VoxelTerrain* CreateVoxelTerrainCloneForType(const std::string& type);
+	static void				LoadTerrainFile(const std::string& terrainFile);
+	static VoxelTerrain*	CreateVoxelTerrainCloneForName(const std::string& name);
+	static VoxelTerrain*	CreateVoxelTerrainCloneForType(const std::string& type);
 
 
 private:
 	//-----Private Methods-----
 
+	// Helper for assigning a type to a terrain when creating one from a sprite
+	static std::string FindTypeForTerrain(VoxelTerrain* terrain);
 
 
 private:
 	//-----Private Data-----
 
-	std::string m_terrainType;
+	std::string m_terrainType; // The "category" of the terrain
 
-	static std::map<std::string, std::vector<std::string>> m_terrainsByType;
+	// Groups terrain names by type, so type -> vector of names under that type
+	static std::map<std::string, std::vector<std::string>> s_terrainsByType;
 
 };

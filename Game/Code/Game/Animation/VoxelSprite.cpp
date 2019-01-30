@@ -192,6 +192,7 @@ bool VoxelSprite::CreateFromColorStream(const Rgba* colors, const IntVector3& di
 VoxelSprite* VoxelSprite::Clone() const
 {
 	VoxelSprite* newSprite = new VoxelSprite();
+	newSprite->m_name = m_name;
 	newSprite->m_dimensions = m_dimensions;
 
 	int voxelCount = m_dimensions.x * m_dimensions.y * m_dimensions.z;
@@ -429,7 +430,7 @@ void VoxelSprite::LoadSpriteFile(const std::string& filename)
 		sprite->CreateFromFile(modelFileName.c_str(), true);
 
 		// Add the sprite to the registry
-		s_sprites[spriteName] = sprite;
+		AddSpriteToRegistry(sprite);
 
 		// Move to the next element
 		spriteElement = spriteElement->NextSiblingElement();
@@ -488,4 +489,17 @@ bool VoxelSprite::AreLocalCoordsValid(int x, int y, int z) const
 	}
 
 	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the given sprite to the registry, checking for duplicates
+//
+void VoxelSprite::AddSpriteToRegistry(VoxelSprite* sprite)
+{
+	// Throw an error if we try to add one more than once
+	bool alreadyExists = s_sprites.find(sprite->m_name) != s_sprites.end();
+	GUARANTEE_RECOVERABLE(!alreadyExists, Stringf("VoxelSprite::AddSpriteToRegistry() tried to add duplicate sprite named \"%s\"", sprite->m_name));
+
+	s_sprites[sprite->m_name] = sprite;
 }

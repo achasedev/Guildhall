@@ -12,6 +12,8 @@ class Rgba;
 
 class VoxelSprite
 {
+	friend class VoxelTerrain;
+
 public:
 	//-----Public Methods-----
 
@@ -52,6 +54,7 @@ protected:
 	IntVector3	GetLocalCoordsFromRelativeCoords(const IntVector3& relativeCoords, float relativeOrientation) const;
 	bool		AreLocalCoordsValid(int x, int y, int z) const;
 
+	static void AddSpriteToRegistry(VoxelSprite* sprite);
 
 
 protected:

@@ -1,7 +1,7 @@
 <VoxelTerrains type="Grass">
 
 	<VoxelTerrain name="Grass1" file="Data/VoxelModels/Terrains/Grass1.qef"/>
-	<VoxelTerrain name="Grass1" file="Data/VoxelModels/Terrains/Grass2.qef"/>
-	<VoxelTerrain name="Grass1" file="Data/VoxelModels/Terrains/Grass3.qef"/>
+	<VoxelTerrain name="Grass2" file="Data/VoxelModels/Terrains/Grass2.qef"/>
+	<VoxelTerrain name="Grass3" file="Data/VoxelModels/Terrains/Grass3.qef"/>
 
 </VoxelTerrains>
