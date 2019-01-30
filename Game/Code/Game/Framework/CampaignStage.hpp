@@ -10,6 +10,7 @@
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 #include <vector>
 
+class MapDefinition;
 class EntityDefinition;
 
 // Single description for a spawn event
@@ -57,7 +58,7 @@ public:
 private:
 	//-----Private Data-----
 	
-	std::string						m_mapName;
+	const MapDefinition*			m_mapDefinition = nullptr;
 	eTransitionEdge					m_edgeToEnter;
 
 	std::vector<InitialStaticSpawn_t> m_initialStatics;

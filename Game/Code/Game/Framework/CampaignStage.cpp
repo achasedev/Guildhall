@@ -5,10 +5,10 @@
 /* Description: Implementation of the CampaignStage class
 /************************************************************************/
 #include "Game/Framework/CampaignStage.hpp"
+#include "Game/Framework/MapDefinition.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
-
 
 //- C FUNCTION ----------------------------------------------------------------------------------
 // Converts the string representation of the enter edge into the enum
@@ -53,7 +53,11 @@ CampaignStage::CampaignStage(const XMLElement& element)
 		spawnElement = spawnElement->NextSiblingElement();
 	}
 
-	m_mapName = ParseXmlAttribute(element, "map", m_mapName);
+	std::string mapName = ParseXmlAttribute(element, "map", "");
+	GUARANTEE_OR_DIE(!IsStringNullOrEmpty(mapName), Stringf("Campaign stage defined with a missing map name"));
+
+	m_mapDefinition = MapDefinition::GetDefinitionByName(mapName);
+	GUARANTEE_OR_DIE(m_mapDefinition != nullptr, Stringf("Campaign stage is defined with map name \"%s\" that doesn't exist", mapName.c_str()));
 
 	std::string edgeText = ParseXmlAttribute(element, "enter", "");
 	m_edgeToEnter = GetEdgeForString(edgeText);

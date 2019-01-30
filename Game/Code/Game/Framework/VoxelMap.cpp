@@ -9,32 +9,9 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/HeatMap.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
-std::map<std::string, VoxelMap*> VoxelMap::s_maps;
 
 const IntVector3 VoxelMap::MAP_DIMENSIONS = IntVector3(256, 64, 256);
 
-VoxelMap* VoxelMap::Clone() const
-{
-	VoxelMap* clone = new VoxelMap();
-	clone->m_name = m_name;
-	clone->m_terrain = m_terrain->Clone();
-	clone->m_staticSpawnAreas = m_staticSpawnAreas;
-	clone->m_heightmap = new HeatMap(*m_heightmap);
-
-	return clone;
-}
-
-VoxelMap* VoxelMap::GetMapClone(const std::string& mapName)
-{
-	bool nameExists = s_maps.find(mapName) != s_maps.end();
-
-	if (nameExists)
-	{
-		return s_maps.at(mapName)->Clone();
-	}
-
-	return nullptr;
-}
 
 int GetSpriteHeightAtCoords(VoxelSprite* sprite, const IntVector2& coords, const IntVector3& spriteDimensions)
 {
@@ -50,67 +27,12 @@ int GetSpriteHeightAtCoords(VoxelSprite* sprite, const IntVector2& coords, const
 	return spriteDimensions.y;
 }
 
-#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
-void VoxelMap::LoadMap(const std::string& mapFilePath)
-{
-	// Load the XML document
-	XMLDocument document;
-	XML_ERROR error = document.LoadFile(mapFilePath.c_str());
-
-	if (error != tinyxml2::XML_SUCCESS)
-	{
-		ConsoleErrorf("Couldn't open map file %s", mapFilePath.c_str());
-		return;
-	}
-
-	const XMLElement* root = document.RootElement();
-
-	// Name
-	std::string name = ParseXmlAttribute(*root, "name", name);
-
-	// Terrain File
-	VoxelSprite* terrainSprite = new VoxelSprite();
-	bool spriteLoaded = terrainSprite->CreateFromFile()
-
-	std::string name = ParseXmlAttribute(mapElement, "name", "");
-	bool nameAlreadyTaken = s_maps.find(name) != s_maps.end();
-
-	ASSERT_OR_DIE(!nameAlreadyTaken, Stringf("Error: Duplicate map name \"%s\"", name.c_str()));
-
-	std::string filepath = ParseXmlAttribute(mapElement, "file", "");
-
-	VoxelSprite* texture = new VoxelSprite();
-	bool success = texture->CreateFromFile(filepath.c_str(), false);
-	ASSERT_OR_DIE(success, Stringf("Error: Couldn't load map \"%s\"", name.c_str()));
-
-	HeatMap* heightMap = new HeatMap(MAP_DIMENSIONS.xz(), 0.f);
-
-	for (int z = 0; z < MAP_DIMENSIONS.z; ++z)
-	{
-		for (int x = 0; x < MAP_DIMENSIONS.x; ++x)
-		{
-			IntVector2 coords = IntVector2(x, z);
-			heightMap->SetHeat(coords, (float) GetSpriteHeightAtCoords(texture, coords, MAP_DIMENSIONS));
-		}
-	}
-	
-	VoxelMap* map = new VoxelMap();
-	map->m_terrain = texture;
-	map->m_name = name;
-	map->m_heightmap = heightMap;
-	
-
-	// Add it to the registry of prototypes
-	s_maps[name] = map;
-}
-
 
 VoxelMap* VoxelMap::CreateMapFromDefinition(const MapDefinition* mapDefinition)
 {
 	ASSERT_OR_DIE(mapDefinition != nullptr, "VoxelMap::CreateMapFromDefinition() was given a nullptr definition");
 
 	VoxelMap* map = new VoxelMap();
-
 	map->m_mapDefinition = mapDefinition;
 
 	// Initialize the terrain by using either the type or the name
@@ -122,7 +44,22 @@ VoxelMap* VoxelMap::CreateMapFromDefinition(const MapDefinition* mapDefinition)
 	{
 		map->m_terrain = VoxelTerrain::CreateVoxelTerrainCloneForType(mapDefinition->m_terrainType);
 	}
+
+	// Create the heightmap
+	map->m_heightmap = new HeatMap(MAP_DIMENSIONS.xz(), 0.f);
+
+	for (int z = 0; z < MAP_DIMENSIONS.z; ++z)
+	{
+		for (int x = 0; x < MAP_DIMENSIONS.x; ++x)
+		{
+			IntVector2 coords = IntVector2(x, z);
+			map->m_heightmap->SetHeat(coords, (float)GetSpriteHeightAtCoords(map->m_terrain, coords, MAP_DIMENSIONS));
+		}
+	}
+
+	return map;
 }
+
 
 void VoxelMap::AddVoxel(const IntVector3& relativeCoords, const Rgba& color)
 {
@@ -160,13 +97,3 @@ Rgba VoxelMap::GetColorAtCoords(const IntVector3& coords)
 {
 	return m_terrain->GetColorAtRelativeCoords(coords, 0.f);
 }
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns the list of entities that are initially spawned on this map
-//
-const std::vector<EntitySpawn_t>& VoxelMap::GetInitialEntities() const
-{
-	return m_staticSpawnAreas;
-}
-

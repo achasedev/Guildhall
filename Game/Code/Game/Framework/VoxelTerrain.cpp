@@ -6,6 +6,7 @@
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
+std::map<std::string, std::vector<std::string>> VoxelTerrain::s_terrainsByType;
 
 void VoxelTerrain::LoadTerrainFile(const std::string& terrainFile)
 {
@@ -41,7 +42,7 @@ void VoxelTerrain::LoadTerrainFile(const std::string& terrainFile)
 
 		if (!success)
 		{
-			ERROR_AND_DIE(Stringf("Terrain file %s tried to create sprite %s but failed"), terrainFile.c_str(), voxelModelFilePath.c_str());
+			ERROR_AND_DIE(Stringf("Terrain file %s tried to create sprite %s but failed", terrainFile.c_str(), voxelModelFilePath.c_str()));
 		}
 
 		// Add the sprite for use later
@@ -64,27 +65,23 @@ void VoxelTerrain::LoadTerrainFile(const std::string& terrainFile)
 VoxelTerrain* VoxelTerrain::CreateVoxelTerrainCloneForName(const std::string& name)
 {
 	const VoxelSprite* sprite = VoxelSprite::GetVoxelSprite(name);
+	GUARANTEE_OR_DIE(sprite != nullptr, Stringf("%s", name.c_str()));
 
-	if (sprite != nullptr)
-	{
-		VoxelTerrain* terrain = new VoxelTerrain();
+	VoxelTerrain* terrain = new VoxelTerrain();
 
-		terrain->m_name = sprite->m_name;
-		terrain->m_dimensions = sprite->m_dimensions;
+	terrain->m_name = sprite->m_name;
+	terrain->m_dimensions = sprite->m_dimensions;
 
-		int voxelCount = terrain->m_dimensions.x * terrain->m_dimensions.y * terrain->m_dimensions.z;
-		size_t byteSize = sizeof(Rgba) * voxelCount;
-		terrain->m_colorData = (Rgba*)malloc(byteSize);
+	int voxelCount = terrain->m_dimensions.x * terrain->m_dimensions.y * terrain->m_dimensions.z;
+	size_t byteSize = sizeof(Rgba) * voxelCount;
+	terrain->m_colorData = (Rgba*)malloc(byteSize);
 
-		memcpy(terrain->m_colorData, sprite->m_colorData, byteSize);
+	memcpy(terrain->m_colorData, sprite->m_colorData, byteSize);
 
-		// Get the type
-		terrain->m_terrainType = FindTypeForTerrain(terrain);
+	// Get the type
+	terrain->m_terrainType = FindTypeForTerrain(terrain);
 
-		return terrain;
-	}
-
-	return nullptr;
+	return terrain;
 }
 
 VoxelTerrain* VoxelTerrain::CreateVoxelTerrainCloneForType(const std::string& type)
@@ -110,10 +107,10 @@ std::string VoxelTerrain::FindTypeForTerrain(VoxelTerrain* terrain)
 		{
 			if (namesUnderType[nameIndex] == terrain->m_name)
 			{
-				terrain->m_terrainType = itr->first;
-				return;
+				return itr->first;
 			}
 		}
 	}
-}
 
+	return "NO_TYPE_FOUND";
+}

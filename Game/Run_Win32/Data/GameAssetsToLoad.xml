@@ -82,7 +82,10 @@
 
 	<Maps>
 		<Map file="Data/Maps/Forest1.map"/>
-		<Map file="Data/Maps/FreshMart.map"/>
+		<Map file="Data/Maps/Forest2.map"/>
+		<Map file="Data/Maps/Forest3.map"/>
+
+		<!-- Need to internalize this map (?) -->
 		<Map file="Data/Maps/CharacterSelect.map"/>
 	</Maps>
 

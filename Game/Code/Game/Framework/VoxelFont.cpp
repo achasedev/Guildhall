@@ -86,6 +86,8 @@ IntVector3 VoxelFont::GetTextDimensions(const std::string& text) const
 //
 IntVector3 GetOffsetForFontWaveEffect(const IntVector3& localCoords, const IntVector3& worldCoords, void* args)
 {
+	UNUSED(args);
+
 	int frontRange = 15;
 	int rearRange = 50;
 	float maxOffset = 10;
@@ -119,6 +121,8 @@ IntVector3 GetOffsetForFontWaveEffect(const IntVector3& localCoords, const IntVe
 //
 Rgba GetColorForWaveEffect(const IntVector3& localCoords, const IntVector3& worldCoords, const Rgba& baseColor, void* args)
 {
+	UNUSED(localCoords);
+
 	// Get the args
 	VoxelFontColorWaveArgs_t colorArgs = *(VoxelFontColorWaveArgs_t*)args;
 

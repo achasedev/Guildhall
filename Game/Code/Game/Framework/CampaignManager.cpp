@@ -9,12 +9,12 @@
 #include "Game/Framework/SpawnPoint.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Framework/CampaignStage.hpp"
+#include "Game/Framework/MapDefinition.hpp"
 #include "Game/Framework/CampaignManager.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -246,7 +246,7 @@ void CampaignManager::InitializeStages(const XMLElement& rootElement)
 
 		const XMLElement* root = document.RootElement();
 		m_characterSelectStage = new CampaignStage();
-		m_characterSelectStage->m_mapName = ParseXmlAttribute(*root, "map", "CharacterSelect");
+		m_characterSelectStage->m_mapDefinition = MapDefinition::GetDefinitionByName("CharacterSelect");
 
 		const XMLElement* entityElement = root->FirstChildElement();
 		GUARANTEE_OR_DIE(entityElement != nullptr, "Error: Character Select has no characters!");

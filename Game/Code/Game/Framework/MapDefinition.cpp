@@ -4,6 +4,8 @@
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
+// Registry of map definitions (only filled at boot up, not during gameplay)
+std::map<std::string, const MapDefinition*> MapDefinition::s_definitions;
 
 //-----------------------------------------------------------------------------------------------
 // Loads a map from file and sets up the definition for it
@@ -19,12 +21,14 @@ void MapDefinition::LoadMap(const std::string& mapFilePath)
 	const XMLElement* rootElement = document.RootElement();
 	GUARANTEE_RECOVERABLE(rootElement != nullptr, Stringf("No root element specified in map %s", mapFilePath.c_str()));
 
-	m_name = ParseXmlAttribute(*rootElement, "name", m_name);
-	GUARANTEE_RECOVERABLE(!IsStringNullOrEmpty(m_name), Stringf("No name specified for map %s", mapFilePath.c_str()));
+	MapDefinition* mapDefinition = new MapDefinition();
 
-	m_terrainName = ParseXmlAttribute(*rootElement, "terrain", m_terrainName);
-	m_terrainType = ParseXmlAttribute(*rootElement, "terrain_type", m_terrainType);
-	GUARANTEE_RECOVERABLE(!IsStringNullOrEmpty(m_terrainType) || !IsStringNullOrEmpty(m_terrainName), Stringf("No terrain type specified for map %s", mapFilePath.c_str()));
+	mapDefinition->m_name = ParseXmlAttribute(*rootElement, "name", mapDefinition->m_name);
+	GUARANTEE_RECOVERABLE(!IsStringNullOrEmpty(mapDefinition->m_name), Stringf("No name specified for map %s", mapFilePath.c_str()));
+
+	mapDefinition->m_terrainName = ParseXmlAttribute(*rootElement, "terrain", mapDefinition->m_terrainName);
+	mapDefinition->m_terrainType = ParseXmlAttribute(*rootElement, "terrain_type", mapDefinition->m_terrainType);
+	GUARANTEE_RECOVERABLE(!IsStringNullOrEmpty(mapDefinition->m_terrainType) || !IsStringNullOrEmpty(mapDefinition->m_terrainName), Stringf("No terrain type specified for map %s", mapFilePath.c_str()));
 
 	// Iterate over all initial spawn elements and store off the spawn info
 	// These spawns will be executed whenever a map is initialized from this definition
@@ -36,10 +40,9 @@ void MapDefinition::LoadMap(const std::string& mapFilePath)
 
 		// Definition to spawn
 		std::string definitionName = ParseXmlAttribute(*spawnElement, "definition", definitionName);
-		GUARANTEE_RECOVERABLE(!IsStringNullOrEmpty(definitionName), "No definition specified for spawn element in map %s", mapFilePath.c_str());
+		GUARANTEE_RECOVERABLE(!IsStringNullOrEmpty(definitionName), Stringf("No definition specified for spawn element in map %s", mapFilePath.c_str()));
 
 		spawnArea.m_definitionToSpawn = EntityDefinition::GetDefinition(definitionName);
-
 
 		// Spawn area
 		spawnArea.m_spawnBoundsMins = ParseXmlAttribute(*spawnElement, "spawn_start", IntVector2(0, 0));
@@ -78,18 +81,21 @@ void MapDefinition::LoadMap(const std::string& mapFilePath)
 		}
 
 		// Add the spawn area to our list
-		m_initialSpawns.push_back(spawnArea);
+		mapDefinition->m_initialSpawns.push_back(spawnArea);
 
 		// Iterate
 		spawnElement = spawnElement->NextSiblingElement("Spawn");
 	}
+
+	// Add it to the registry, checking for duplicates
+	AddDefinitionToRegistry(mapDefinition);
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Returns the definition given by the mapName from the registry, nullptr if it doesn't exist
 //
-const MapDefinition* MapDefinition::GetMapDefinitionByName(const std::string& mapName)
+const MapDefinition* MapDefinition::GetDefinitionByName(const std::string& mapName)
 {
 	bool exists = s_definitions.find(mapName) != s_definitions.end();
 
@@ -99,4 +105,16 @@ const MapDefinition* MapDefinition::GetMapDefinitionByName(const std::string& ma
 	}
 
 	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the given definition to the registry, checking for duplicates
+//
+void MapDefinition::AddDefinitionToRegistry(const MapDefinition* definition)
+{
+	bool alreadyExists = s_definitions.find(definition->m_name) != s_definitions.end();
+	GUARANTEE_OR_DIE(!alreadyExists, Stringf("Duplicate map definition exists for name \"%s\"", definition->m_name.c_str()));
+
+	s_definitions[definition->m_name] = definition;
 }

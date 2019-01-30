@@ -13,10 +13,9 @@ class MapDefinition
 public:
 	//-----Public Methods-----
 
-	void LoadMap(const std::string& mapFilePath);
-
-	const MapDefinition* GetMapDefinitionByName(const std::string& mapName);
-
+	static void		LoadMap(const std::string& mapFilePath);
+	static const	MapDefinition* GetDefinitionByName(const std::string& mapName);
+	
 
 public:
 	//-----Public Data-----
@@ -27,6 +26,12 @@ public:
 	std::string m_terrainName; // For specific terrains (if specified)
 
 	std::vector<EntitySpawnArea_t> m_initialSpawns; // For spawning entities on the map when it's initialized
+
+
+private:
+	//-----Private Methods-----
+
+	static void AddDefinitionToRegistry(const MapDefinition* definition);
 
 
 private:

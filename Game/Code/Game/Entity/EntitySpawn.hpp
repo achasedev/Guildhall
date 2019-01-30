@@ -7,13 +7,9 @@
 #pragma once
 #include <vector>
 #include "Engine/Math/Vector3.hpp"
-class EntityDefinition;
+#include "Engine/Math/IntVector2.hpp"
 
-struct OccupiedArea_t
-{
-	IntVector2 mins;
-	IntVector2 maxs;
-};
+class EntityDefinition;
 
 struct EntitySpawnArea_t
 {

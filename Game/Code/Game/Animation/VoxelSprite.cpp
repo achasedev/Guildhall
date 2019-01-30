@@ -33,10 +33,7 @@ bool VoxelSprite::CreateFromFile(const char* filename, bool createCollisionMatri
 	File* file = new File();
 	bool opened = file->Open(filename, "r");
 
-	if (!opened)
-	{
-		return false;
-	}
+	GUARANTEE_OR_DIE(opened, Stringf("Couldn't open model file %s", filename));
 
 	file->LoadFileToMemory();
 
@@ -499,7 +496,7 @@ void VoxelSprite::AddSpriteToRegistry(VoxelSprite* sprite)
 {
 	// Throw an error if we try to add one more than once
 	bool alreadyExists = s_sprites.find(sprite->m_name) != s_sprites.end();
-	GUARANTEE_RECOVERABLE(!alreadyExists, Stringf("VoxelSprite::AddSpriteToRegistry() tried to add duplicate sprite named \"%s\"", sprite->m_name));
+	GUARANTEE_RECOVERABLE(!alreadyExists, Stringf("VoxelSprite::AddSpriteToRegistry() tried to add duplicate sprite named \"%s\"", sprite->m_name.c_str()));
 
 	s_sprites[sprite->m_name] = sprite;
 }

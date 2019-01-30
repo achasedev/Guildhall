@@ -5,10 +5,12 @@
 /* Description: Implementation of the GameState_Loading class
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/VoxelMap.hpp"
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
-#include "Game/Framework/VoxelMap.hpp"
+#include "Game/Framework/VoxelTerrain.hpp"
+#include "Game/Framework/MapDefinition.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Animation/VoxelAnimation.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
@@ -200,19 +202,38 @@ void GameState_Loading::LoadVoxelResources() const
 		}
 	}
 
-	// Voxel Maps
+	// Voxel Terrains
+	{
+		const XMLElement* terrainsElement = rootElement->FirstChildElement("VoxelTerrains");
+		GUARANTEE_OR_DIE(terrainsElement != nullptr, Stringf("No terrains specified in GameAssetsToLoad.xml"));
+
+		const XMLElement* terrainElement = terrainsElement->FirstChildElement("VoxelTerrain");
+		GUARANTEE_OR_DIE(terrainElement != nullptr, Stringf("No terrains specified in GameAssetsToLoad.xml"));
+
+		while (terrainElement != nullptr)
+		{
+			std::string terrainFilePath = ParseXmlAttribute(*terrainElement, "file", "");
+			GUARANTEE_OR_DIE(!IsStringNullOrEmpty(terrainFilePath), Stringf("Terrain element in GameAssetsToLoad.xml has an empty file path"));
+
+			VoxelTerrain::LoadTerrainFile(terrainFilePath);
+
+			terrainElement = terrainElement->NextSiblingElement("VoxelTerrain");
+		}
+	}
+
+	// Maps
 	{
 		const XMLElement* mapsElement = rootElement->FirstChildElement("Maps");
 		ASSERT_OR_DIE(mapsElement != nullptr, "Error: GameAssetsToLoad.xml has no maps");
 
-		const XMLElement* mapElement = mapsElement->FirstChildElement();
+		const XMLElement* mapElement = mapsElement->FirstChildElement("Map");
 
 		while (mapElement != nullptr)
 		{
 			std::string mapFilePath = ParseXmlAttribute(*mapElement, "file", "");
-			VoxelMap::LoadMap(mapFilePath);
+			MapDefinition::LoadMap(mapFilePath);
 
-			mapElement = mapElement->NextSiblingElement();
+			mapElement = mapElement->NextSiblingElement("Map");
 		}
 	}
 }

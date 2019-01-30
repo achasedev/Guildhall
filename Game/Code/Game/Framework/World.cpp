@@ -147,7 +147,7 @@ void World::InititalizeForStage(CampaignStage* stage)
 	m_particles.clear();
 
 	// Initialize map and static entities on map
-	IntializeMap(stage->m_mapName);
+	IntializeMap(stage->m_mapDefinition);
 	
 	// Add in the entities from the stage
 	int numEntities = (int) stage->m_initialStatics.size();
@@ -616,25 +616,15 @@ void World::ParticalizeVoxelText(const std::string& text, const IntVector3& refe
 	}
 }
 
-#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // Sets the map and initial entities given the name of the map
 //
-void World::IntializeMap(const std::string mapName)
+void World::IntializeMap(const MapDefinition* mapDefinition)
 {
-	m_map = VoxelMap::GetMapClone(mapName);
+	m_map = VoxelMap::CreateMapFromDefinition(mapDefinition);
 
-	const std::vector<EntitySpawn_t> spawns = m_map->GetInitialEntities();
-
-	for (int i = 0; i < (int)spawns.size(); ++i)
-	{
-		Entity* entity = new Entity(spawns[i].definition);
-		entity->SetPosition(spawns[i].position);
-
-		entity->SetOrientation(spawns[i].orientation);
-
-		AddEntity(entity);
-	}
+	// From the definition, add in the spawns
 }
 
 

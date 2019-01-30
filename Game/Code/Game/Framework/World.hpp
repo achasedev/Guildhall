@@ -27,6 +27,7 @@ class Particle;
 class VoxelMap;
 class VoxelFont;
 class CampaignStage;
+class MapDefinition;
 
 struct HeatMapSet_t
 {
@@ -93,7 +94,7 @@ public:
 private:
 	//-----Private Methods-----
 
-	void IntializeMap(const std::string mapName);
+	void IntializeMap(const MapDefinition* mapDefinition);
 
 	void UpdateEntities();
 	void UpdateParticles();

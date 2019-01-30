@@ -30,13 +30,6 @@ public:
 	int GetHeightAtCoords(const IntVector2& coords);
 	Rgba GetColorAtCoords(const IntVector3& coords);
 	
-
-private:
-	//-----Private Methods-----
-	
-	VoxelMap() {};
-	VoxelMap* Clone() const;
-
 	
 private:
 	//-----Private Data-----

@@ -328,6 +328,7 @@
     <ClCompile Include="Framework\CampaignStage.cpp" />
     <ClCompile Include="Framework\VoxelMetaData.cpp" />
     <ClCompile Include="Framework\VoxelMap.cpp" />
+    <ClCompile Include="Framework\VoxelTerrain.cpp" />
     <ClCompile Include="Framework\World.cpp" />
     <ClCompile Include="GameStates\GameState.cpp" />
     <ClCompile Include="GameStates\GameState_Loading.cpp" />

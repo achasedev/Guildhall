@@ -518,7 +518,11 @@ void ShadeExitEdge(eTransitionEdge exitEdge)
 	IntVector3 worldDimensions = world->GetDimensions();
 
 	// Set up our iteration limits
-	int startX, startZ, endX, endZ;
+	int startX = 0;
+	int startZ = 0;
+	int endX = 0;
+	int endZ = 0;
+
 	switch (exitEdge)
 	{
 	case EDGE_NORTH:
