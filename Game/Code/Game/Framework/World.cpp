@@ -13,8 +13,10 @@
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/VoxelMap.hpp"
 #include "Game/Framework/CampaignStage.hpp"
+#include "Game/Framework/MapDefinition.hpp"
 #include "Game/Entity/CharacterSelectVolume.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
+
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Math/AABB2.hpp"
@@ -24,9 +26,12 @@
 #include "Engine/Core/Utility/HeatMap.hpp"
 #include "Engine/Core/Time/ProfileLogScoped.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 
 #define DYNAMIC_COLLISION_MAX_ITERATION_COUNT (10)
 #define MAX_COLLISION_LAYERS (3)
+#define MAX_SPAWN_ATTEMPTS_PER_AREA (10)
+
 //#define PARTICLES_COLLIDE
 
 enum eOverlapCase
@@ -624,7 +629,121 @@ void World::IntializeMap(const MapDefinition* mapDefinition)
 {
 	m_map = VoxelMap::CreateMapFromDefinition(mapDefinition);
 
+	// Spawn the map entities
+	SpawnMapEntities(mapDefinition);
+
+	// Spawn the campaign entities (?)
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Spawns all map entities specified in the map definition
+//
+void World::SpawnMapEntities(const MapDefinition* mapDefinition)
+{
 	// From the definition, add in the spawns
+	std::vector<IntAABB2> globalOccupiedSpaces;
+
+	int spawnAreaCount = (int)mapDefinition->m_initialSpawns.size();
+
+	for (int areaIndex = 0; areaIndex < spawnAreaCount; ++areaIndex)
+	{
+		std::vector<IntAABB2> areaOccupiedSpaces;
+		const EntitySpawnArea_t& area = mapDefinition->m_initialSpawns[areaIndex];
+
+		int spawnCount = area.m_countRangeToSpawn.GetRandomInRange();
+		for (int spawnIndex = 0; spawnIndex < spawnCount; ++spawnIndex)
+		{
+			IntAABB2 spawnResultArea;
+			bool locationFound = FindSpawnLocation(area, spawnResultArea, areaOccupiedSpaces, globalOccupiedSpaces);
+			
+			if (locationFound)
+			{
+				areaOccupiedSpaces.push_back(spawnResultArea);
+				globalOccupiedSpaces.push_back(spawnResultArea);
+
+				// Spawn the entity
+				Entity* entity = new Entity(area.m_definitionToSpawn);
+
+				entity->SetOrientation((area.m_spawnOrientation > 0.f ? area.m_spawnOrientation : GetRandomFloatInRange(0.f, 360.f)));
+				int height = GetMapHeightForBounds(IntVector3(spawnResultArea.mins.x, 0, spawnResultArea.mins.y), entity->GetOrientedDimensions().xz());
+
+				entity->SetPosition(Vector3(spawnResultArea.mins.x, height, spawnResultArea.mins.y));
+				AddEntity(entity);
+				ConsolePrintf("Added Entity");
+			}
+			else
+			{
+				ConsoleErrorf("Failed to spawn entity %s", area.m_definitionToSpawn->m_name.c_str());
+				break; // Don't attempt anymore spawn counts if we couldn't spawn this one
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Attempts to spawn the entity in the given spawn area, returning true on success
+//
+bool World::FindSpawnLocation(const EntitySpawnArea_t& spawnArea, IntAABB2& out_spawnedArea, 
+	const std::vector<IntAABB2>& areaOccupiedAreas, std::vector<IntAABB2>& globalOccupiedAreas)
+{
+	for (int attemptIndex = 0; attemptIndex < MAX_SPAWN_ATTEMPTS_PER_AREA; ++attemptIndex)
+	{
+		IntVector2 randomSpot = spawnArea.m_spawnBounds.GetRandomPointInside();
+		IntAABB2 randomArea = IntAABB2(randomSpot, randomSpot + spawnArea.m_definitionToSpawn->GetDimensions().xz());
+
+		// Check if the entity fits in the area at this spot
+		if (!spawnArea.m_spawnBounds.DoesContain(randomArea))
+		{
+			continue;
+		}
+
+		// Check if this entity overlaps others in this area
+		bool conflictsWithAreaSpawns = false;
+		if (!spawnArea.m_allowOverlapsInThisArea)
+		{
+			for (int i = 0; i < (int)areaOccupiedAreas.size(); ++i)
+			{
+				if (IntAABB2::DoIntAABB2sOverlap(randomArea, areaOccupiedAreas[i]))
+				{
+					conflictsWithAreaSpawns = true;
+					break;
+				}
+			}
+		}
+
+		if (conflictsWithAreaSpawns)
+		{
+			continue;
+		}
+
+		// Check if this entity overlaps others globally
+		bool conflictsWithGlobalSpawns = false;
+		if (!spawnArea.m_allowOverlapsGlobally)
+		{
+			for (int i = 0; i < (int)globalOccupiedAreas.size(); ++i)
+			{
+				if (IntAABB2::DoIntAABB2sOverlap(randomArea, globalOccupiedAreas[i]))
+				{
+					conflictsWithGlobalSpawns = true;
+					break;
+				}
+			}
+		}
+
+		if (conflictsWithGlobalSpawns)
+		{
+			continue;
+		}
+
+		// Found working location
+		out_spawnedArea = randomArea;
+		return true;
+	}
+
+	// Never reached end of loop, so spawn was unsuccessful
+	return false;
 }
 
 

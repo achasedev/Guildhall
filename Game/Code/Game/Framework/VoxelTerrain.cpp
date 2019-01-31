@@ -1,3 +1,9 @@
+/************************************************************************/
+/* File: VoxelTerrain.cpp
+/* Author: Andrew Chase
+/* Date: January 31st 2019
+/* Description: Implementation of the VoxelTerrain class
+/************************************************************************/
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Framework/VoxelTerrain.hpp"
 #include "Engine/Core/Rgba.hpp"
@@ -6,8 +12,12 @@
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
+// Registry of name translations by type
 std::map<std::string, std::vector<std::string>> VoxelTerrain::s_terrainsByType;
 
+//-----------------------------------------------------------------------------------------------
+// Loads the terrain file
+//
 void VoxelTerrain::LoadTerrainFile(const std::string& terrainFile)
 {
 	XMLDocument document;
@@ -62,11 +72,16 @@ void VoxelTerrain::LoadTerrainFile(const std::string& terrainFile)
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Creates a clone of the VoxelTerrain with the given name and returns it
+//
 VoxelTerrain* VoxelTerrain::CreateVoxelTerrainCloneForName(const std::string& name)
 {
+	// Get the sprite for it
 	const VoxelSprite* sprite = VoxelSprite::GetVoxelSprite(name);
-	GUARANTEE_OR_DIE(sprite != nullptr, Stringf("%s", name.c_str()));
+	GUARANTEE_OR_DIE(sprite != nullptr, Stringf("Terrain %s doesn't exist", name.c_str()));
 
+	// Create the terrain from the sprite
 	VoxelTerrain* terrain = new VoxelTerrain();
 
 	terrain->m_name = sprite->m_name;
@@ -84,17 +99,27 @@ VoxelTerrain* VoxelTerrain::CreateVoxelTerrainCloneForName(const std::string& na
 	return terrain;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Create a VoxelTerrain clone that corresponds with the given type
+//
 VoxelTerrain* VoxelTerrain::CreateVoxelTerrainCloneForType(const std::string& type)
 {
-	// Get a random name
+	// Get a random name with that type
 	const std::vector<std::string>& namesUnderType = s_terrainsByType[type];
 
 	int size = (int)namesUnderType.size();
 	int randomIndex = GetRandomIntLessThan(size);
 	
+	// Create and return it
 	return CreateVoxelTerrainCloneForName(namesUnderType[randomIndex]);
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Finds the type that this terrain falls under; used for initializing a terrain by name from
+// a voxel sprite
+//
 std::string VoxelTerrain::FindTypeForTerrain(VoxelTerrain* terrain)
 {
 	std::map < std::string, std::vector<std::string>>::const_iterator itr = s_terrainsByType.begin();

@@ -82,7 +82,6 @@ void Game::UpdateMusicCrossfade()
 	// Check volume
 	if (m_trackTendingToTarget != MISSING_SOUND_ID && m_tendingTargetCurrentVolume != m_targetMusicVolume)
 	{
-		ConsolePrintf("Entered the if");
 		float delta = m_gameClock->GetDeltaTime();
 
 		if (m_tendingTargetCurrentVolume < m_targetMusicVolume)
@@ -96,7 +95,6 @@ void Game::UpdateMusicCrossfade()
 
 		AudioSystem* audio = AudioSystem::GetInstance();
 		audio->SetSoundPlaybackVolume(m_trackTendingToTarget, m_tendingTargetCurrentVolume);
-		ConsolePrintf("Set playback volume to %.2f", m_tendingTargetCurrentVolume);
 	}
 
 	if (m_trackTendingToZero != MISSING_SOUND_ID)

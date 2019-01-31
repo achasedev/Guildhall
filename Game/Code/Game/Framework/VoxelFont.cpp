@@ -87,6 +87,7 @@ IntVector3 VoxelFont::GetTextDimensions(const std::string& text) const
 IntVector3 GetOffsetForFontWaveEffect(const IntVector3& localCoords, const IntVector3& worldCoords, void* args)
 {
 	UNUSED(args);
+	UNUSED(localCoords);
 
 	int frontRange = 15;
 	int rearRange = 50;

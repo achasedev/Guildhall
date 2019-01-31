@@ -1,3 +1,4 @@
+#include "Engine/Math/IntAABB2.hpp"
 #include "Game/Framework/MapDefinition.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
@@ -45,13 +46,13 @@ void MapDefinition::LoadMap(const std::string& mapFilePath)
 		spawnArea.m_definitionToSpawn = EntityDefinition::GetDefinition(definitionName);
 
 		// Spawn area
-		spawnArea.m_spawnBoundsMins = ParseXmlAttribute(*spawnElement, "spawn_start", IntVector2(0, 0));
+		IntVector2 spawnStart = ParseXmlAttribute(*spawnElement, "spawn_start", IntVector2(0, 0));
 		IntVector2 spawnRange = ParseXmlAttribute(*spawnElement, "spawn_range", IntVector2(256, 256));
 
-		spawnArea.m_spawnBoundsMaxs = spawnArea.m_spawnBoundsMins + spawnRange;
+		spawnArea.m_spawnBounds = IntAABB2(spawnStart, spawnStart + spawnRange);
 
 		// Spawn count and orientation
-		spawnArea.m_spawnCount = ParseXmlAttribute(*spawnElement, "count", spawnArea.m_spawnCount);
+		spawnArea.m_countRangeToSpawn = ParseXmlAttribute(*spawnElement, "count", spawnArea.m_countRangeToSpawn);
 		spawnArea.m_spawnOrientation = ParseXmlAttribute(*spawnElement, "orientation", spawnArea.m_spawnOrientation);
 
 		// Overlap flags

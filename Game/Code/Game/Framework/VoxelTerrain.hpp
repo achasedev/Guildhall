@@ -2,7 +2,7 @@
 /* File: VoxelTerrain.hpp
 /* Author: Andrew Chase
 /* Date: January 29th, 2018
-/* Description: Static class to represent the grounds used for maps
+/* Description: Class to represent the grounds used for maps
 /************************************************************************/
 #include <map>
 #include <vector>
@@ -22,6 +22,10 @@ public:
 
 private:
 	//-----Private Methods-----
+
+	// Use CreateVoxelTerrain... instead
+	VoxelTerrain() {}
+	VoxelTerrain(const VoxelTerrain& copy) = delete;
 
 	// Helper for assigning a type to a terrain when creating one from a sprite
 	static std::string FindTypeForTerrain(VoxelTerrain* terrain);

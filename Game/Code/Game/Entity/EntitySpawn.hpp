@@ -7,7 +7,8 @@
 #pragma once
 #include <vector>
 #include "Engine/Math/Vector3.hpp"
-#include "Engine/Math/IntVector2.hpp"
+#include "Engine/Math/IntAABB2.hpp"
+#include "Engine/Math/IntRange.hpp"
 
 class EntityDefinition;
 
@@ -24,10 +25,9 @@ public:
 	bool m_allowOverlapsInThisArea = false;
 	bool m_allowOverlapsGlobally = false;
 
-	int m_spawnCount = 1;
+	IntRange m_countRangeToSpawn = IntRange(1, 1);
 
-	IntVector2 m_spawnBoundsMins = IntVector2::ZERO;
-	IntVector2 m_spawnBoundsMaxs = IntVector2::ZERO;
+	IntAABB2 m_spawnBounds = IntAABB2::ZEROS; 
 
 	float m_spawnOrientation = -1.f; // -1 here indicates use random orientations
 

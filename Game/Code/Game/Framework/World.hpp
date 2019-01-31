@@ -9,11 +9,13 @@
 #include <thread>
 #include <shared_mutex>
 #include "Game/Entity/Entity.hpp"
+#include "Game/Entity/EntitySpawn.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/CampaignStage.hpp"
 
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Math/IntRange.hpp"
+#include "Engine/Math/IntAABB2.hpp"
 #include "Engine/Math/IntVector3.hpp"
 #include "Engine/Core/Utility/HeatMap.hpp"
 
@@ -95,6 +97,9 @@ private:
 	//-----Private Methods-----
 
 	void IntializeMap(const MapDefinition* mapDefinition);
+	void SpawnMapEntities(const MapDefinition* mapDefinition);
+		bool FindSpawnLocation(const EntitySpawnArea_t& spawnArea, IntAABB2& out_spawnedArea, 
+			const std::vector<IntAABB2>& areaOccupiedAreas, std::vector<IntAABB2>& globalOccupiedAreas);
 
 	void UpdateEntities();
 	void UpdateParticles();

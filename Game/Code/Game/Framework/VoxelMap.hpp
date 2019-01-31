@@ -23,25 +23,25 @@ public:
 	static VoxelMap* CreateMapFromDefinition(const MapDefinition* mapDefinition);
 
 	// Mutators
-	void AddVoxel(const IntVector3& coords, const Rgba& color);
-	Rgba RemoveVoxel(const IntVector3& coords);
+	void	AddVoxel(const IntVector3& coords, const Rgba& color);
+	Rgba	RemoveVoxel(const IntVector3& coords);
 
 	// Accessors
-	int GetHeightAtCoords(const IntVector2& coords);
-	Rgba GetColorAtCoords(const IntVector3& coords);
+	int		GetHeightAtCoords(const IntVector2& coords);
+	Rgba	GetColorAtCoords(const IntVector3& coords);
 	
 	
 private:
 	//-----Private Data-----
 	
 	// From Data
-	const MapDefinition* m_mapDefinition = nullptr;
+	const MapDefinition*	m_mapDefinition = nullptr;
 
 	// State
-	VoxelTerrain* m_terrain = nullptr;
-	HeatMap* m_heightmap = nullptr;
+	VoxelTerrain*			m_terrain = nullptr;
+	HeatMap*				m_heightmap = nullptr;
 
 	// Statics
-	static const IntVector3 MAP_DIMENSIONS;				// All maps need to be this size
+	static const IntVector3 MAP_DIMENSIONS;	// All maps need to be this size
 
 };
