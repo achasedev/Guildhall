@@ -174,16 +174,16 @@ Vector2 GetTransitionDirectionForEnterEdge(eTransitionEdge enterEdge)
 	switch (enterEdge)
 	{
 	case EDGE_NORTH:
-		direction = Vector2::DIRECTION_DOWN;
+		direction = Vector2::MINUS_Y_AXIS;
 		break;
 	case EDGE_SOUTH:
-		direction = Vector2::DIRECTION_UP;
+		direction = Vector2::Y_AXIS;
 		break;
 	case EDGE_EAST:
-		direction = Vector2::DIRECTION_LEFT;
+		direction = Vector2::MINUS_X_AXIS;
 		break;
 	case EDGE_WEST:
-		direction = Vector2::DIRECTION_RIGHT;
+		direction = Vector2::X_AXIS;
 		break;
 	default:
 		break;

@@ -137,7 +137,7 @@ void AnimatedEntity::Jump()
 {
 	if (AreMostlyEqual(m_physicsComponent->GetVelocity().y, 0.f))
 	{
-		m_physicsComponent->AddImpulse(Vector3::DIRECTION_UP * m_definition->m_jumpImpulse * 1.2f);
+		m_physicsComponent->AddImpulse(Vector3::Y_AXIS * m_definition->m_jumpImpulse * 1.2f);
 	}
 }
 

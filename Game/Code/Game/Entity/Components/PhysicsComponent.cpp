@@ -135,7 +135,7 @@ void PhysicsComponent::ApplyPhysicsStep()
 	// Apply force
 	if (m_affectedByGravity)
 	{
-		m_force += Vector3::DIRECTION_DOWN * m_owningEntity->GetMass() * GRAVITY_MAGNITUDE;
+		m_force += Vector3::MINUS_Y_AXIS * m_owningEntity->GetMass() * GRAVITY_MAGNITUDE;
 		m_owningEntity->SetIsGrounded(false); // Collision detection will set this to true if we're falling through something
 	}
 

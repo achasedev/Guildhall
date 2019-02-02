@@ -25,7 +25,7 @@ private:
 	float m_spread = 0.f;
 	float m_particleLifetime = 1.0f;
 	Vector3 m_spawnPosition = Vector3::ZERO;
-	Vector3 m_initialParticleVelocity = Vector3::DIRECTION_UP;
+	Vector3 m_initialParticleVelocity = Vector3::Y_AXIS;
 	Stopwatch m_stopwatch;
 	
 	bool m_shouldEmit = true;
