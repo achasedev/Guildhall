@@ -246,6 +246,9 @@ void App::ProcessInput()
 		}
 		else
 		{
+			// For FFT input during gameplay
+			AudioSystem::GetInstance()->ProcessInput();
+
 			Game::GetInstance()->ProcessInput();
 		}
 	}
