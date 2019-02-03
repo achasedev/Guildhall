@@ -5,13 +5,14 @@
 /* Description: Class to control per-stage entity spawning
 /************************************************************************/
 #pragma once
+#include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 #include <vector>
 
-class CampaignStage;
-class SpawnPoint;
+class CampaignStageData;
 class EntityDefinition;
+class CampaignDefinition;
 
 class CampaignManager
 {
@@ -21,53 +22,44 @@ public:
 	CampaignManager();
 	~CampaignManager();
 
-	void	Initialize(const char* filename);
+	void	Initialize(const CampaignDefinition* definition);
 	void	CleanUp();
 
 	void	Update();
 
 	// Accessors
-	int		GetStageCount() const;
-	bool	IsCurrentStageFinal() const;
-	int		GetCurrentStageNumber() const;
-	bool	IsCurrentStageFinished() const;
-	CampaignStage* GetNextStage() const;
+	int							GetStageCount() const;
+	bool						IsCurrentStageFinal() const;
+	int							GetCurrentStageNumber() const;
+	bool						IsCurrentStageFinished() const;
+	const CampaignStageData*	GetNextStage() const;
+	int							GetEnemyCountLeftInStage() const;
 
 	// Mutators
-	void			StartNextStage();
+	void						StartNextStage();
 
-
-public:
-	//-----Public Data-----
 	
-
 private:
 	//-----Private Methods-----
 	
-	void	InitializeSpawnPoints(const XMLElement& rootElement);
-	void	InitializeStages(const XMLElement& rootElement);
-
-	bool	PerformStageEndCheck();
-
-	int		GetTotalSpawnCount() const;
-	int		GetSpawnCountForType(const EntityDefinition* definition) const;
+	int		GetCurrentLiveEnemyCount() const;
 
 
 private:
 	//-----Private Data-----
 
 	// State
-	Stopwatch					m_stageTimer;
-	Stopwatch					m_spawnTick;
+	Clock							m_spawnClock;
+	Stopwatch						m_stageTimer;
+	Stopwatch						m_spawnTick;
 
-	bool						m_currStageFinished = false;
-	int							m_currStageIndex = -1;
-	int							m_totalSpawnedThisStage = 0;
+	std::vector<EntitySpawnEvent*>	m_currentSpawnEvents;
+
+	bool							m_currStageFinished = false;
+	int								m_currStageIndex = 0;
+	int								m_totalSpawnedThisStage = 0;
 
 	// Data
-	CampaignStage*						m_characterSelectStage = nullptr;
-	std::vector<CampaignStage*>			m_stages;
-	std::vector<SpawnPoint*>			m_spawnPoints;
-	int									m_maxSpawnedEntities = 100000;
+	const CampaignDefinition*		m_campaignDefinition = nullptr;
 
 };

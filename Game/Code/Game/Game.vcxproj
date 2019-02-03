@@ -309,6 +309,7 @@
     <ClCompile Include="Entity\Projectile.cpp" />
     <ClCompile Include="Entity\Weapon.cpp" />
     <ClCompile Include="Framework\App.cpp" />
+    <ClCompile Include="Framework\CampaignDefinition.cpp" />
     <ClCompile Include="Framework\GameCamera.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
     <ClCompile Include="Framework\Leaderboard.cpp" />
@@ -325,7 +326,7 @@
     <ClCompile Include="Framework\CampaignManager.cpp" />
     <ClCompile Include="Framework\SpawnPoint.cpp" />
     <ClCompile Include="Framework\VoxelGrid.cpp" />
-    <ClCompile Include="Framework\CampaignStage.cpp" />
+    <ClCompile Include="Framework\CampaignStageData.cpp" />
     <ClCompile Include="Framework\VoxelMetaData.cpp" />
     <ClCompile Include="Framework\VoxelMap.cpp" />
     <ClCompile Include="Framework\VoxelTerrain.cpp" />
@@ -363,6 +364,7 @@
     <ClInclude Include="Entity\Projectile.hpp" />
     <ClInclude Include="Entity\Weapon.hpp" />
     <ClInclude Include="Framework\App.hpp" />
+    <ClInclude Include="Framework\CampaignDefinition.hpp" />
     <ClInclude Include="Framework\EngineBuildPreferences.hpp" />
     <ClInclude Include="Framework\Game.hpp" />
     <ClInclude Include="Framework\GameCamera.hpp" />
@@ -381,7 +383,7 @@
     <ClInclude Include="Framework\CampaignManager.hpp" />
     <ClInclude Include="Framework\SpawnPoint.hpp" />
     <ClInclude Include="Framework\VoxelGrid.hpp" />
-    <ClInclude Include="Framework\CampaignStage.hpp" />
+    <ClInclude Include="Framework\CampaignStageData.hpp" />
     <ClInclude Include="Framework\VoxelMetaData.hpp" />
     <ClInclude Include="Framework\VoxelMap.hpp" />
     <ClInclude Include="Framework\VoxelTerrain.hpp" />

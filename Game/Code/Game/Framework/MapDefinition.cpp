@@ -37,7 +37,7 @@ void MapDefinition::LoadMap(const std::string& mapFilePath)
 
 	while (spawnElement != nullptr)
 	{
-		EntitySpawnArea_t spawnArea;
+		MapAreaSpawn_t spawnArea;
 
 		// Definition to spawn
 		std::string definitionName = ParseXmlAttribute(*spawnElement, "definition", definitionName);

@@ -4,7 +4,7 @@
 /* Date: October 20th 2018
 /* Description: Implementation of the CampaignStage class
 /************************************************************************/
-#include "Game/Framework/CampaignStage.hpp"
+#include "Game/Framework/CampaignStageData.hpp"
 #include "Game/Framework/MapDefinition.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -29,7 +29,7 @@ eTransitionEdge GetEdgeForString(const std::string& text)
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
-CampaignStage::CampaignStage(const XMLElement& element)
+CampaignStageData::CampaignStageData(const XMLElement& element)
 {
 	// Spawn info
 	const XMLElement* spawnElement = element.FirstChildElement();
@@ -40,7 +40,7 @@ CampaignStage::CampaignStage(const XMLElement& element)
 
 		info.spawnCountDelay	= ParseXmlAttribute(*spawnElement,	"spawn_count_delay",	info.spawnCountDelay);
 		info.spawnTimeDelay		= ParseXmlAttribute(*spawnElement,	"spawn_time_delay",		info.spawnTimeDelay);
-		info.countToSpawn		= ParseXmlAttribute(*spawnElement,	"total_to_spawn",		info.countToSpawn);
+		info.totalToSpawn		= ParseXmlAttribute(*spawnElement,	"total_to_spawn",		info.totalToSpawn);
 		info.spawnRate			= ParseXmlAttribute(*spawnElement,	"spawn_rate",			info.spawnRate);
 		info.spawnPointID		= ParseXmlAttribute(*spawnElement,	"spawn_point",			info.spawnPointID);
 
@@ -48,7 +48,7 @@ CampaignStage::CampaignStage(const XMLElement& element)
 		GUARANTEE_OR_DIE(typeName != "", "Error: Missing entity type in stage definition");
 		info.definition = EntityDefinition::GetDefinition(typeName);
 
-		m_events.push_back(info);
+		m_eventPrototypes.push_back(info);
 
 		spawnElement = spawnElement->NextSiblingElement();
 	}
@@ -67,17 +67,39 @@ CampaignStage::CampaignStage(const XMLElement& element)
 //-----------------------------------------------------------------------------------------------
 // Destructor
 //
-CampaignStage::~CampaignStage()
+CampaignStageData::~CampaignStageData()
 {
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Clones all entity spawn events as part of this stage to be updated by the CampaignManager
+//
+void CampaignStageData::CloneAllEventPrototypes(CampaignManager* manager, std::vector<EntitySpawnEvent*>& out_spawnEventClones) const
+{
+	// Safety check to ensure it's empty
+	for (int i = 0; i < (int)out_spawnEventClones.size(); ++i)
+	{
+		delete out_spawnEventClones[i];
+	}
+
+	out_spawnEventClones.clear();
+
+	int numEvents = (int) m_eventPrototypes.size();
+	for (int eventIndex = 0; eventIndex < numEvents; ++eventIndex)
+	{
+		EntitySpawnEvent* clone = m_eventPrototypes[eventIndex]->Clone(manager);
+		out_spawnEventClones.push_back(clone);
+	}
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Adds the static spawn to the stage
 //
-void CampaignStage::AddStaticSpawn(const EntityDefinition* definition, const Vector3& position, float orientation)
+void CampaignStageData::AddInitialSpawn(const EntityDefinition* definition, const Vector3& position, float orientation)
 {
-	InitialStaticSpawn_t spawn;
+	InitialStageSpawn_t spawn;
 	spawn.definition = definition;
 	spawn.position = position;
 	spawn.orientation = orientation;

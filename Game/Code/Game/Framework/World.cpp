@@ -12,7 +12,7 @@
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/VoxelMap.hpp"
-#include "Game/Framework/CampaignStage.hpp"
+#include "Game/Framework/CampaignStageData.hpp"
 #include "Game/Framework/MapDefinition.hpp"
 #include "Game/Entity/CharacterSelectVolume.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
@@ -125,7 +125,7 @@ void World::InitializeForMenu()
 //-----------------------------------------------------------------------------------------------
 // Initializes the grid and any other setup
 //
-void World::InititalizeForStage(CampaignStage* stage)
+void World::InititalizeForStage(CampaignStageData* stage)
 {
 	if (m_map != nullptr)
 	{
@@ -159,7 +159,7 @@ void World::InititalizeForStage(CampaignStage* stage)
 
 	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
 	{
-		InitialStaticSpawn_t& spawn = stage->m_initialStatics[entityIndex];
+		InitialStageSpawn_t& spawn = stage->m_initialStatics[entityIndex];
 
 		// Gross if statement - for Select volumes in the character select, needs
 		// to be spawned as the subclass	
@@ -649,7 +649,7 @@ void World::SpawnMapEntities(const MapDefinition* mapDefinition)
 	for (int areaIndex = 0; areaIndex < spawnAreaCount; ++areaIndex)
 	{
 		std::vector<IntAABB2> areaOccupiedSpaces;
-		const EntitySpawnArea_t& area = mapDefinition->m_initialSpawns[areaIndex];
+		const MapAreaSpawn_t& area = mapDefinition->m_initialSpawns[areaIndex];
 
 		int spawnCount = area.m_countRangeToSpawn.GetRandomInRange();
 		for (int spawnIndex = 0; spawnIndex < spawnCount; ++spawnIndex)
@@ -685,7 +685,7 @@ void World::SpawnMapEntities(const MapDefinition* mapDefinition)
 //-----------------------------------------------------------------------------------------------
 // Attempts to spawn the entity in the given spawn area, returning true on success
 //
-bool World::FindSpawnLocation(const EntitySpawnArea_t& spawnArea, IntAABB2& out_spawnedArea, 
+bool World::FindSpawnLocation(const MapAreaSpawn_t& spawnArea, IntAABB2& out_spawnedArea, 
 	const std::vector<IntAABB2>& areaOccupiedAreas, std::vector<IntAABB2>& globalOccupiedAreas)
 {
 	for (int attemptIndex = 0; attemptIndex < MAX_SPAWN_ATTEMPTS_PER_AREA; ++attemptIndex)

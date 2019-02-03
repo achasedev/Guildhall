@@ -71,7 +71,12 @@ bool GameState_Playing::Enter()
 
 	Game::GetCampaignManager()->Initialize("Data/Spawning.xml");
 	Game::GetWorld()->InititalizeForStage(Game::GetCampaignManager()->GetNextStage());
-	Game::GetCampaignManager()->StartNextStage();
+
+	// Reset current game score
+	Game::ResetScore();
+
+	// Start the music
+	Game::PlayBGM();
 
 	TransitionToPlayState(new PlayState_Rest());
 

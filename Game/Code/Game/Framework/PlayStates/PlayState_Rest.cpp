@@ -274,7 +274,7 @@ PlayState_Rest::PlayState_Rest()
 	: PlayState(REST_TRANSITION_IN_TIME, REST_TRANSITION_OUT_TIME)
 {
 	// Get the next stage and initialize the next world to enter
-	CampaignStage* nextStage = Game::GetCampaignManager()->GetNextStage();
+	CampaignStageData* nextStage = Game::GetCampaignManager()->GetNextStage();
 	m_worldToTransitionTo = new World();
 	m_worldToTransitionTo->InititalizeForStage(nextStage);
 	m_edgeToEnter = m_worldToTransitionTo->GetDirectionToEnter();

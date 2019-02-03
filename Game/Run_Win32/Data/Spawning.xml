@@ -1,4 +1,4 @@
-<Campaign music="Data/Audio/Music/Boss Battle #4 V1.wav">
+<Campaign name="Desert" music="Data/Audio/Music/Boss Battle #4 V1.wav" character_select_map="Desert1">
 
 	<SpawnPoints>
 

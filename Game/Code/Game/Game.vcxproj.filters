@@ -115,9 +115,6 @@
     <ClCompile Include="Animation\VoxelEmitter.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Framework\CampaignStage.cpp">
-      <Filter>Architecture</Filter>
-    </ClCompile>
     <ClCompile Include="Framework\PlayStates\PlayState_Stage.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
@@ -164,6 +161,12 @@
       <Filter>Architecture</Filter>
     </ClCompile>
     <ClCompile Include="Framework\VoxelTerrain.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\CampaignDefinition.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\CampaignStageData.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
   </ItemGroup>
@@ -218,7 +221,6 @@
     <ClInclude Include="Framework\VoxelFont.hpp" />
     <ClInclude Include="Framework\VoxelGrid.hpp" />
     <ClInclude Include="Animation\VoxelEmitter.hpp" />
-    <ClInclude Include="Framework\CampaignStage.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Stage.hpp" />
     <ClInclude Include="Framework\CampaignManager.hpp" />
     <ClInclude Include="Entity\Weapon.hpp" />
@@ -236,5 +238,7 @@
     <ClInclude Include="Framework\VoxelMap.hpp" />
     <ClInclude Include="Framework\VoxelTerrain.hpp" />
     <ClInclude Include="Framework\MapDefinition.hpp" />
+    <ClInclude Include="Framework\CampaignDefinition.hpp" />
+    <ClInclude Include="Framework\CampaignStageData.hpp" />
   </ItemGroup>
 </Project>

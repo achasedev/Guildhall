@@ -11,7 +11,7 @@
 #include "Game/Entity/Entity.hpp"
 #include "Game/Entity/EntitySpawn.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
-#include "Game/Framework/CampaignStage.hpp"
+#include "Game/Framework/CampaignStageData.hpp"
 
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Math/IntRange.hpp"
@@ -28,7 +28,7 @@ class VoxelSprite;
 class Particle;
 class VoxelMap;
 class VoxelFont;
-class CampaignStage;
+class CampaignStageData;
 class MapDefinition;
 
 struct HeatMapSet_t
@@ -56,7 +56,7 @@ public:
 	~World();
 
 	void InitializeForMenu();
-	void InititalizeForStage(CampaignStage* stage);
+	void InititalizeForStage(CampaignStageData* stage);
 	void CleanUp();
 
 	void Update();
@@ -98,7 +98,7 @@ private:
 
 	void IntializeMap(const MapDefinition* mapDefinition);
 	void SpawnMapEntities(const MapDefinition* mapDefinition);
-		bool FindSpawnLocation(const EntitySpawnArea_t& spawnArea, IntAABB2& out_spawnedArea, 
+		bool FindSpawnLocation(const MapAreaSpawn_t& spawnArea, IntAABB2& out_spawnedArea, 
 			const std::vector<IntAABB2>& areaOccupiedAreas, std::vector<IntAABB2>& globalOccupiedAreas);
 
 	void UpdateEntities();
