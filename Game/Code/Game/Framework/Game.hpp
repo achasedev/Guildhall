@@ -8,27 +8,18 @@
 #pragma once
 #include <vector>
 #include "Engine/Math/Vector2.hpp"
+#include "Engine/Math/Transform.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
+#include "Engine/Rendering/Core/Renderable.hpp"
 
 class Clock;
 class Camera;
-class GameState;
-
-enum eGameStateState
-{
-	GAME_STATE_TRANSITIONING_IN,
-	GAME_STATE_UPDATING,
-	GAME_STATE_TRANSITIONING_OUT
-};
 
 class Game
 {
 	
 public:
-	friend class GameState_Playing;
-	friend class GameState_Loading;
-
 	//-----Public Methods-----
 
 	static void Initialize();
@@ -38,10 +29,7 @@ public:
 	void Update();						// Updates all game object states, called each frame
 	void Render() const;				// Renders all game objects to screen, called each frame
 
-	GameState*					GetGameState() const;
-
 	static Game*				GetInstance();
-	static void					TransitionToGameState(GameState* newState);
 
 	static Clock*				GetGameClock();
 	static Camera*				GetGameCamera();
@@ -59,14 +47,12 @@ private:
 private:
 	//-----Private Data-----
 
-	bool			m_doneLoading = false;
-	GameState*		m_currentState = nullptr;
-	GameState*		m_transitionState = nullptr;
-	eGameStateState m_gameStateState = GAME_STATE_TRANSITIONING_IN;
+	mutable Renderable renderable;
+	mutable Transform m_parent;
+	mutable Transform m_child;
 
-	Camera*			m_gameCamera = nullptr;
-
-	Clock*				m_gameClock = nullptr;
+	Camera*	m_gameCamera = nullptr;
+	Clock*	m_gameClock = nullptr;
 
 	static Game* s_instance;			// The singleton Game instance
 

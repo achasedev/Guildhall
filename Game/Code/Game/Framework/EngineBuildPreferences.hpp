@@ -10,5 +10,9 @@
 
 //#define ENGINE_DISABLE_AUDIO	// (If uncommented) Disables AudioSystem code and fmod linkage.
 
+// Coordinate systems
+//#define COORDINATE_SYSTEM_LEFT_HAND_Y_UP
+#define COORDINATE_SYSTEM_RIGHT_HAND_Z_UP
+
 // Enables the profiler
 //#define PROFILING_ENABLED

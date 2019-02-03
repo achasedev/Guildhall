@@ -6,16 +6,11 @@
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/GameCommon.hpp"
-#include "Game/GameStates/GameState_Loading.hpp"
-#include "Engine/Core/File.hpp"
-#include "Engine/Math/MathUtils.hpp"
-#include "Engine/Core/LogSystem.hpp"
+#include "Engine/Core/Window.hpp"
 #include "Engine/Core/Time/Clock.hpp"
+#include "Engine/Input/InputSystem.hpp"
 #include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
-#include "Engine/Core/Utility/XmlUtilities.hpp"
-#include "Engine/Rendering/Core/RenderScene.hpp"
-#include "Engine/Core/DeveloperConsole/Command.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 // The singleton instance
@@ -25,7 +20,6 @@ Game* Game::s_instance = nullptr;
 // Default constructor, initialize any game members here (private)
 //
 Game::Game()
-	: m_currentState(new GameState_Loading())
 {
 	// Clock
 	m_gameClock = new Clock(Clock::GetMasterClock());
@@ -37,9 +31,11 @@ Game::Game()
 	m_gameCamera->SetColorTarget(renderer->GetDefaultColorTarget());
 	m_gameCamera->SetDepthTarget(renderer->GetDefaultDepthTarget());
 	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 1000.f);
-	m_gameCamera->LookAt(Vector3(0.f, 5.0, -5.f), Vector3::ZERO);
+	m_gameCamera->LookAt(Vector3(10.f, 10.f, 10.f), Vector3::ZERO, Vector3::Z_AXIS);
 
 	DebugRenderSystem::SetWorldCamera(m_gameCamera);
+
+	m_child.SetParentTransform(&m_parent);
 }
 
 
@@ -70,6 +66,8 @@ void Game::Initialize()
 	mouse.ShowMouseCursor(false);
 	mouse.LockCursorToClient(true);
 	mouse.SetCursorMode(CURSORMODE_RELATIVE);
+
+	DebugRenderSystem::DrawBasis(Vector3::ZERO, Vector3::ZERO, 999.f, 2.f);
 }
 
 
@@ -88,99 +86,94 @@ void Game::ShutDown()
 //
 void Game::ProcessInput()
 {
-	if (m_currentState != nullptr)
+	InputSystem* input = InputSystem::GetInstance();
+	Mouse& mouse = InputSystem::GetMouse();
+
+	float deltaTime = Game::GetDeltaTime();
+	IntVector2 delta = mouse.GetMouseDelta();
+
+	// Translating the camera
+	Vector3 translationOffset = Vector3::ZERO;
+	if (input->IsKeyPressed('W')) { translationOffset.x += 1.f; }		// Forward
+	if (input->IsKeyPressed('A')) { translationOffset.y += 1.f; }		// Left
+	if (input->IsKeyPressed('S')) { translationOffset.x -= 1.f; }		// Back
+	if (input->IsKeyPressed('D')) { translationOffset.y -= 1.f; }		// Right
+	if (input->IsKeyPressed(InputSystem::KEYBOARD_SPACEBAR)) { translationOffset.z += 1.f; }		// Up
+	if (input->IsKeyPressed('X')) { translationOffset.z -= 1.f; }		// Down
+
+	if (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT))
 	{
-		m_currentState->ProcessInput();
+		translationOffset *= 50.f;
 	}
+
+	translationOffset *= CAMERA_TRANSLATION_SPEED * deltaTime;
+
+	m_gameCamera->TranslateLocal(translationOffset);
+
+	Vector2 rotationOffset = Vector2((float)delta.y, (float)delta.x) * 0.12f;
+	Vector3 rotation = Vector3(0.f, rotationOffset.x * CAMERA_ROTATION_SPEED * deltaTime, -1.0f * rotationOffset.y * CAMERA_ROTATION_SPEED * deltaTime);
+
+	m_gameCamera->Rotate(rotation);
 }
 
-
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+#include "Engine/Math/MathUtils.hpp"
 //-----------------------------------------------------------------------------------------------
 // Update the movement variables of every entity in the world, as well as update the game state
 // based on the input this frame
 //
 void Game::Update()
 {
-	if (m_gameStateState == GAME_STATE_TRANSITIONING_OUT)
-	{
-		// Update on leave of the current state
-		if (m_currentState != nullptr)
-		{
-			bool leaveFinished = m_currentState->Leave();
+	float time = Game::GetGameClock()->GetTotalSeconds();
+	m_parent.SetPosition(10.f * Vector3(CosDegrees(30.f * time), SinDegrees(30.f * time), 0.f));
+	m_parent.SetRotation(Vector3(0.f, 0.f, Atan2Degrees(m_parent.position.y, m_parent.position.x)));
 
-			if (leaveFinished)
-			{
-				delete m_currentState;
-				m_currentState = m_transitionState;
-				m_transitionState = nullptr;
-
-				m_currentState->StartEnterTimer();
-				m_gameStateState = GAME_STATE_TRANSITIONING_IN;
-			}
-		}
-	}
-	
-	if (m_gameStateState == GAME_STATE_TRANSITIONING_IN) // Update on enter of the transition state
-	{
-		bool enterFinished = m_currentState->Enter();
-
-		if (enterFinished)
-		{
-			m_gameStateState = GAME_STATE_UPDATING;
-		}
-	}
-	
-	if (m_gameStateState == GAME_STATE_UPDATING)
-	{
-		m_currentState->Update();
-	}
+	m_child.SetPosition(3.f * Vector3(0.f, CosDegrees(30.f * time), SinDegrees(30.f * time)));
+	m_child.SetRotation(Vector3(Atan2Degrees(m_child.position.z, m_child.position.y), 0.f, 0.f));
 }
 
-
+#include "Engine/Assets/AssetDB.hpp"
+#include "Engine/Rendering/Materials/MaterialInstance.hpp"
 //-----------------------------------------------------------------------------------------------
 // Draws to screen
 //
 void Game::Render() const
 {
-	switch (m_gameStateState)
-	{
-	case GAME_STATE_TRANSITIONING_IN:
-		m_currentState->Render_Enter();
-		break;
-	case GAME_STATE_UPDATING:
-		m_currentState->Render();
-		break;
-	case GAME_STATE_TRANSITIONING_OUT:
-		m_currentState->Render_Leave();
-		break;
-	default:
-		break;
-	}
-}
+	Window* window = Window::GetInstance();
+	AABB2 bounds = window->GetWindowBounds();
+	
+	Vector3 position = m_gameCamera->GetPosition();
+	Vector3 rotation = m_gameCamera->GetRotation();
 
+	std::string text = Stringf("Camera Pos : (%.2f, %.2f, %.2f)\nCamera Rot : (%.2f, %.2f, %.2f)",
+		position.x, position.y, position.z, rotation.x, rotation.y, rotation.z);
 
-//-----------------------------------------------------------------------------------------------
-// Returns the game state of the Game instance
-//
-GameState* Game::GetGameState() const
-{
-	return m_currentState;
-}
+	DebugRenderSystem::Draw2DText(text, bounds, 0.f);
+	
+	renderable.ClearAll();
+	renderable.AddInstanceMatrix(Matrix44::IDENTITY);
 
+	RenderableDraw_t draw;
+	draw.drawMatrix = m_parent.GetWorldMatrix();
+	draw.mesh = AssetDB::CreateOrGetMesh("Cube");
+	draw.materialInstance = AssetDB::CreateMaterialInstance("Default_Opaque");
+	draw.materialInstance->SetDiffuse(AssetDB::CreateOrGetTexture("Data/Images/Debug/Debug.png"));
+	Shader* shader = draw.materialInstance->GetEditableShader();
+	//shader->SetCullMode(CULL_MODE_NONE);
+	//shader->SetWindOrder(WIND_CLOCKWISE);
 
-//-----------------------------------------------------------------------------------------------
-// Sets the pending state flag to the one given, so the next frame the game will switch to the
-// given state
-//
-void Game::TransitionToGameState(GameState* newState)
-{
-	s_instance->m_transitionState = newState;
-	s_instance->m_gameStateState = GAME_STATE_TRANSITIONING_OUT;
+	renderable.AddDraw(draw);
+	
+	draw.drawMatrix = m_child.GetWorldMatrix();
+	draw.materialInstance = AssetDB::CreateMaterialInstance("Default_Opaque");
+	draw.materialInstance->SetDiffuse(AssetDB::CreateOrGetTexture("Data/Images/Debug/Debug.png"));
+	Shader* shader2 = draw.materialInstance->GetEditableShader();
 
-	if (s_instance->m_currentState != nullptr)
-	{
-		s_instance->m_currentState->StartLeaveTimer();
-	}
+	renderable.AddDraw(draw);
+
+	Renderer* renderer = Renderer::GetInstance();
+	renderer->SetCurrentCamera(m_gameCamera);
+	renderer->DrawRenderable(&renderable);
 }
 
 
