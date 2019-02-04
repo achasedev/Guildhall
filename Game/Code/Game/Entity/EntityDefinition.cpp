@@ -69,6 +69,26 @@ eCorrectionResponse ConvertCollisionResponseFromString(const std::string& respon
 }
 
 
+//---C FUNCTION----------------------------------------------------------------------------------
+// Returns the enumeration for the entity class used to construct this entity
+// Only used for entity types specified in data
+//
+eEntityClass GetEntityClassForString(const std::string& text)
+{
+	if (text == "player")			{ return ENTITY_CLASS_PLAYER; }
+	else if (text == "ai")			{ return ENTITY_CLASS_AI; }
+	else if (text == "item")		{ return ENTITY_CLASS_ITEM; }
+	else if (text == "projectile")	{ return ENTITY_CLASS_PROJECTILE; }
+	else if (text == "weapon")		{ return ENTITY_CLASS_WEAPON; }
+	else if (text == "static")		{ return ENTITY_CLASS_STATIC; }
+	else if (text == "particle")	{ return ENTITY_CLASS_PARTICLE; }
+	else
+	{
+		return ENTITY_CLASS_UNASSIGNED;
+	}
+}
+
+
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
@@ -78,10 +98,12 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 	m_name = ParseXmlAttribute(entityElement, "name");
 	ASSERT_OR_DIE(m_name.size() > 0, "Error: EntityDefinition lacks a name");
 
-	m_id = ParseXmlAttribute(entityElement, "id", m_id);
-	ASSERT_OR_DIE(m_id >= 0, "Error: EntityDefinition lacks an ID");
+	// Entity Class
+	std::string classText = ParseXmlAttribute(entityElement, "class", "");
+	GUARANTEE_RECOVERABLE(!IsStringNullOrEmpty(classText), Stringf("No class specified for entity \"%s\"", m_name.c_str()));
 
-	m_isPlayerDef = ParseXmlAttribute(entityElement, "is_player", false);
+	m_entityClass = GetEntityClassForString(classText);
+	GUARANTEE_RECOVERABLE(m_entityClass != ENTITY_CLASS_UNASSIGNED, "Entity \"%s\" has invalid class specified in data: \"%s\"", m_name.c_str(), classText.c_str());
 
 	m_initialHealth = ParseXmlAttribute(entityElement, "initial_health", m_initialHealth);
 	m_pointValue = ParseXmlAttribute(entityElement, "points", m_pointValue);
@@ -114,6 +136,12 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 		m_isDestructible = ParseXmlAttribute(*visualElement, "destructible", false);
 
 		GUARANTEE_OR_DIE(!(m_isAnimated == true && m_isDestructible == true), Stringf("Error: Entity \"%s\" is destructible and animated, not allowed!", m_name.c_str()));
+
+		if (m_isDestructible)
+		{
+			GUARANTEE_OR_DIE(m_entityClass == ENTITY_CLASS_STATIC, "Entity \"%s\" is specified as destructible but not static; Only destructible statics supported");
+		}
+
 		GUARANTEE_OR_DIE(m_defaultSprite != nullptr, Stringf("Error: Default sprite not found for entity \"%s\"", m_name.c_str()));
 	}
 
@@ -171,14 +199,6 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 		m_fireSpread = ParseXmlAttribute(*weaponElement, "fire_spread", m_fireSpread);
 		m_projectilesFiredPerShot = ParseXmlAttribute(*weaponElement, "count_per_shot", m_projectilesFiredPerShot);
 		m_initialAmmoCount = ParseXmlAttribute(*weaponElement, "initial_ammo", m_initialAmmoCount);
-	}
-
-	// Character Select Hack
-	const XMLElement* characterElement = entityElement.FirstChildElement("CharacterSelect");
-	if (characterElement != nullptr)
-	{
-		std::string playerDefName = ParseXmlAttribute(*characterElement, "player_definition", "");
-		m_playerCharacterDefinition = EntityDefinition::GetDefinition(playerDefName);
 	}
 }
 
@@ -317,6 +337,9 @@ void EntityDefinition::LoadDefinitions(const std::string& filename)
 		const EntityDefinition* newDefinition = new EntityDefinition(*defElement);
 		s_definitions[newDefinition->m_name] = newDefinition;
 
+		todo need to make a character select volume for each Player loaded
+
+			also need to update spawners to only spawn enemies and only spawn aientities (rename ai class)
 		defElement = defElement->NextSiblingElement();
 	}
 }

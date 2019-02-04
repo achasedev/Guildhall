@@ -95,7 +95,7 @@ void CampaignManager::Update()
 	{
 		EntitySpawnEvent* currEvent = m_currentSpawnEvents[eventIndex];
 		
-		if (!currEvent->IsFinished())
+		if (!currEvent->IsFinishedSpawning() && currEvent->IsReadyForNextSpawn())
 		{
 			allEventsFinished = false;
 			
@@ -164,6 +164,24 @@ int CampaignManager::GetEnemyCountLeftInStage() const
 	}
 
 	return total;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the number of entities spawned in this stage so far
+//
+int CampaignManager::GetEntityCountSpawnedThisStageSoFar() const
+{
+	return m_totalSpawnedThisStage;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the number of seconds into the stage that have passed
+//
+float CampaignManager::GetTimeIntoStage() const
+{
+	return m_stageTimer.GetElapsedTime();
 }
 
 

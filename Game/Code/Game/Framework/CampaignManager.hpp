@@ -34,6 +34,8 @@ public:
 	bool						IsCurrentStageFinished() const;
 	const CampaignStageData*	GetNextStage() const;
 	int							GetEnemyCountLeftInStage() const;
+	int							GetEntityCountSpawnedThisStageSoFar() const;
+	float						GetTimeIntoStage() const;
 
 	// Mutators
 	void						StartNextStage();
@@ -42,7 +44,7 @@ public:
 private:
 	//-----Private Methods-----
 	
-	int		GetCurrentLiveEnemyCount() const;
+	int							GetCurrentLiveEnemyCount() const;
 
 
 private:

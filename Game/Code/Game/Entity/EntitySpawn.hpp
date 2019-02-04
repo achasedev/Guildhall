@@ -11,6 +11,7 @@
 #include "Engine/Math/IntRange.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 
+class Entity;
 class CampaignManager;
 class EntityDefinition;
 
@@ -56,6 +57,7 @@ struct InitialStageSpawn_t
 
 enum eSpawnEventType
 {
+	SPAWN_EVENT_DEFAULT,
 	SPAWN_EVENT_FALL,
 	SPAWN_EVENT_RISE,
 	SPAWN_EVENT_WALK_IN
@@ -66,37 +68,39 @@ class EntitySpawnEvent
 public:
 	//-----Public Methods
 
-	virtual int					RunSpawn();
-	virtual EntitySpawnEvent*	Clone(CampaignManager* manager) const;
+	virtual int					RunSpawn() = 0;
+	virtual EntitySpawnEvent*	Clone(CampaignManager* manager) const = 0;
 
 	// Helper functions during spawning
 	int							GetEntityCountLeftToSpawn() const;
 	int							GetEntityCountSpawnedSoFar() const;
 	int							GetLiveEntityCount() const;
-	bool						IsFinished() const;
+	bool						IsFinishedSpawning() const;
+	bool						IsReadyForNextSpawn() const;
 
 
 protected:
 	//-----Protected Methods-----
 
-	EntitySpawnEvent() {}
 	EntitySpawnEvent(const XMLElement& spawnElement);
+
+	void						SpawnEntity(const Vector3& position, float orientation);
 
 
 protected:
 	//-----Protected Data-----
 
 	// State
-	int						m_numberSpawnedSoFar = 0;
+	int						m_entityCountSpawnedSoFar = 0;
 	std::vector<Entity*>	m_entitiesCurrentAliveFromThisEvent;
 
 	// Data
 	CampaignManager*		m_manager = nullptr;
-	const EntityDefinition* definition = nullptr;	// What to spawn
-	int						totalToSpawn = 0;		// Total amount to spawn in this event
-	int						spawnRate = 1;			// The number of entities to spawn per spawn tick
-	int						spawnCountDelay = 0;	// How many entities should spawn in the stage before this event should start
-	float					spawnTimeDelay = 0.f;	// How long to wait in time before this event should start
-	eSpawnEventType			type;					// Subclass of this spawn event, determining how they spawn in
+	const EntityDefinition* m_definitionToSpawn = nullptr;		// What to spawn
+	int						m_totalToSpawn = 0;					// Total amount to spawn in this event
+	int						m_spawnRate = 1;					// The number of entities to spawn per spawn tick
+	int						m_spawnCountDelay = 0;				// How many entities should spawn in the stage before this event should start
+	float					m_spawnTimeDelay = 0.f;				// How long to wait in time before this event should start
+	eSpawnEventType			m_type;								// Subclass of this spawn event, determining how they spawn in
 
 };

@@ -13,6 +13,21 @@
 #include <string>
 #include <vector>
 
+// For determining what Entity subclass to use for this definition when constructing
+enum eEntityClass
+{
+	ENTITY_CLASS_UNASSIGNED,
+	ENTITY_CLASS_STATIC,
+	ENTITY_CLASS_AI,
+	ENTITY_CLASS_WEAPON,
+	ENTITY_CLASS_PROJECTILE,
+	ENTITY_CLASS_ITEM,
+
+	ENTITY_CLASS_PLAYER,
+	ENTITY_CLASS_PARTICLE,
+	ENTITY_CLASS_CHARACTERSELECTVOLUME
+};
+
 // Convenience type to know what kind of entity we are
 enum ePhysicsType
 {
@@ -105,12 +120,11 @@ public:
 	
 	// Entity Base class
 	std::string								m_name;
-	int										m_id = -1;
 	int										m_initialHealth = 99999;
 	ePhysicsType							m_physicsType = PHYSICS_TYPE_UNASSIGNED;
 	bool									m_affectedByGravity = true;
 	CollisionDefinition_t					m_collisionDef;
-	bool									m_isPlayerDef = false;
+	eEntityClass							m_entityClass = ENTITY_CLASS_UNASSIGNED;
 
 	// AnimatedEntity
 	float									m_maxMoveAcceleration = 300.f;

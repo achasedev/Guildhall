@@ -160,26 +160,7 @@ void World::InititalizeForStage(CampaignStageData* stage)
 	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
 	{
 		InitialStageSpawn_t& spawn = stage->m_initialStatics[entityIndex];
-
-		// Gross if statement - for Select volumes in the character select, needs
-		// to be spawned as the subclass	
-		bool isSelectVolume = spawn.definition->m_name.find("_SelectVolume") != std::string::npos;
-
-		Entity* entity = nullptr;
-
-		if (isSelectVolume)
-		{
-			entity = new CharacterSelectVolume(spawn.definition);
-		}
-		else
-		{
-			entity = new Entity(spawn.definition);
-		}
-
-		entity->SetPosition(spawn.position);
-		entity->SetOrientation(spawn.orientation);
-
-		AddEntity(entity);
+		SpawnEntity(spawn.definition, spawn.position, spawn.orientation);
 	}
 
 	// Add the players to the world
@@ -294,15 +275,56 @@ void World::DrawToGridWithOffset(const IntVector3& offset)
 
 
 //-----------------------------------------------------------------------------------------------
+// Spawns an entity of the given definition and places it in the world
+//
+void World::SpawnEntity(const EntityDefinition* definition, const Vector3& position, float orientation)
+{
+	Entity* spawnedEntity = nullptr;
+	// Get the subclass for the definition
+	switch (definition->m_entityClass)
+	{
+	case ENTITY_CLASS_STATIC:
+		spawnedEntity = new Entity(definition);
+		break;
+	case ENTITY_CLASS_WEAPON:
+		spawnedEntity = new Weapon(definition);
+		break;
+	case ENTITY_CLASS_PROJECTILE:
+		spawnedEntity = new Projectile(definition);
+		break;
+	case ENTITY_CLASS_CHARACTERSELECTVOLUME: 
+		spawnedEntity = new CharacterSelectVolume(definition);
+		break;
+	case ENTITY_CLASS_ITEM:
+		spawnedEntity = new Item(definition);
+		break;
+	case ENTITY_CLASS_AI: 
+		spawnedEntity = new AIEntity(definition);
+		break;
+	default:
+		ERROR_RECOVERABLE(("World::SpawnEntity() called on unsupported entity class for definition \"%s\"", definition->m_name.c_str()));
+		spawnedEntity = new Entity(definition);
+		break;
+	}
+
+	spawnedEntity->SetPosition(position);
+	spawnedEntity->SetOrientation(orientation);
+
+	AddEntity(spawnedEntity); // Checks for duplicates, calls OnSpawn()
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Adds the entity to the world, checking for duplicates
 //
-void World::AddEntity(Entity* entity)
+Entity* World::AddEntity(Entity* entity)
 {
 	// Check for duplicates
 	for (int i = 0; i < (int)m_entities.size(); ++i)
 	{
 		if (m_entities[i] == entity)
 		{
+			ERROR_RECOVERABLE(Stringf("Duplicate entity added to world; Definition name \"%s\"", entity->GetEntityDefinition()->m_name.c_str()));
 			return;
 		}
 	}
@@ -310,6 +332,8 @@ void World::AddEntity(Entity* entity)
 	// Safe to add
 	m_entities.push_back(entity);
 	entity->OnSpawn();
+
+	return entity;
 }
 
 

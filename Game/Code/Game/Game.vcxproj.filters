@@ -169,6 +169,12 @@
     <ClCompile Include="Framework\CampaignStageData.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\EntitySpawn.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\EntitySpawnEvent_Default.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -240,5 +246,6 @@
     <ClInclude Include="Framework\MapDefinition.hpp" />
     <ClInclude Include="Framework\CampaignDefinition.hpp" />
     <ClInclude Include="Framework\CampaignStageData.hpp" />
+    <ClInclude Include="Entity\EntitySpawnEvent_Default.hpp" />
   </ItemGroup>
 </Project>

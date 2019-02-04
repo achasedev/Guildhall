@@ -64,12 +64,13 @@ public:
 	void DrawToGridWithOffset(const IntVector3& offset);
 
 	// Mutators
-	void AddEntity(Entity* entity);
-	void RemoveEntity(Entity* entity);
-	void AddParticle(Particle* particle);
-	void ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage = 0, float radius = 0.f, float impulseMagnitude = 0.f, Entity* hitEntity = nullptr);
-	void AddVoxelTomap(const IntVector3& coord, const Rgba& color);
-	void SetBlockEdgeCollision(bool shouldBlock);
+	void	AddEntity(Entity* entity);
+	Entity* SpawnEntity(const EntityDefinition* definition, const Vector3& position, float orientation);
+	void	RemoveEntity(Entity* entity);
+	void	AddParticle(Particle* particle);
+	void	ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage = 0, float radius = 0.f, float impulseMagnitude = 0.f, Entity* hitEntity = nullptr);
+	void	AddVoxelTomap(const IntVector3& coord, const Rgba& color);
+	void	SetBlockEdgeCollision(bool shouldBlock);
 
 	// Accessors
 	IntVector3			GetDimensions() const;
