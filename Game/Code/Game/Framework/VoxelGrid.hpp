@@ -79,7 +79,7 @@ public:
 	void				ColorVoxelAtCoords(const IntVector3& coords, const Rgba& color);
 	void				DrawEntity(const Entity* entity, const IntVector3& offset, VoxelDrawOptions_t options = VoxelDrawOptions_t());
 	void				DrawEntityCollision(const Entity* entity, const IntVector3& offset);
-	void				Drawmap(VoxelMap* map, const IntVector3& offset);
+	void				DrawMap(VoxelMap* map, const IntVector3& offset);
 	void				Draw3DTexture(const VoxelSprite* texture, const IntVector3& startCoord, float orientation, VoxelDrawOptions_t options = VoxelDrawOptions_t());
 
 	void				DebugDrawEntityCollision(const Entity* entity, const IntVector3& offset);

@@ -1,6 +1,6 @@
 <Campaign name="Forest" music="Data/Audio/Music/Boss Battle #4 V1.wav" character_select_map="Forest1">
 
-	<Stage map="Forest1" enter="west">
+	<Stage map="Forest3" enter="west">
 		<SpawnEvent type="default" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="5"/>
 	</Stage> 
 

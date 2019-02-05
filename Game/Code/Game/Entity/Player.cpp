@@ -251,6 +251,8 @@ void Player::Respawn()
 	
 	m_physicsComponent->StopAllMovement();
 	m_respawnTimer.Reset();
+
+	OnSpawn();
 }
 
 

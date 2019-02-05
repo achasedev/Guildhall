@@ -214,6 +214,7 @@ void VoxelSprite::SetColorAtRelativeCoords(const IntVector3& relativeCoords, flo
 
 	if (!AreLocalCoordsValid(localCoords.x, localCoords.y, localCoords.z))
 	{
+		ERROR_AND_DIE("");
 		ConsoleErrorf("Invalid coords set for sprite");
 		return;
 	}

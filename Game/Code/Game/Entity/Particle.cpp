@@ -16,7 +16,7 @@
 //-----------------------------------------------------------------------------------------------
 // Constructor - assembles the texture 
 //
-Particle::Particle(const Rgba& color, float lifetime, const Vector3& position, const Vector3& initialVelocity, bool attachToGround /*= false*/)
+Particle::Particle(const Rgba& color, float lifetime, const Vector3& position, const Vector3& initialVelocity, bool attachToGround /*= false*/, bool fillsHoles /*= false*/)
 	: Entity(EntityDefinition::GetDefinition("Particle"))
 {
 	ASSERT_OR_DIE(m_defaultSprite == nullptr, "Error: Particle definition has a default texture!");
@@ -27,6 +27,7 @@ Particle::Particle(const Rgba& color, float lifetime, const Vector3& position, c
 	m_position = position;
 	m_lifetime = lifetime;
 	m_attachToGround = attachToGround;
+	m_fillsHoles = fillsHoles;
 
 	m_physicsComponent->SetVelocity(initialVelocity);
 	m_stopwatch.SetClock(Game::GetGameClock());
@@ -84,11 +85,21 @@ void Particle::OnGroundCollision()
 
 		// Ensure:
 		// Particle is within XZ bounds
+		bool isInMapBounds = world->IsEntityOnMap(this);
+		
 		// Particle is falling down
-		// Particle didn't fall into a hole
-		if (world->IsEntityOnMap(this) && yVelocity < 0.f && coordPosition.y > 0)
+		bool isFallingDown = yVelocity < 0.f;
+
+		// Particle didn't fall into a hole or can fill holes
+		int height = world->GetMapHeightForEntity(this);
+		bool isNotInHole = coordPosition.y > 0;
+
+		if (isInMapBounds && isFallingDown && (isNotInHole || m_fillsHoles))
 		{
-			world->AddVoxelTomap(coordPosition, m_defaultSprite->GetColorAtIndex(0));
+			// Clamp to zero height to avoid going below the world
+			coordPosition.y = ClampInt(coordPosition.y, 0, 256);
+
+			world->AddVoxelToMap(coordPosition, m_defaultSprite->GetColorAtIndex(0));
 			m_isMarkedForDelete = true;
 		}
 	}

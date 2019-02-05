@@ -223,7 +223,7 @@ void VoxelGrid::DrawEntityCollision(const Entity* entity, const IntVector3& offs
 //-----------------------------------------------------------------------------------------------
 // Draws the map to the grid with the given heightmap
 //
-void VoxelGrid::Drawmap(VoxelMap* map, const IntVector3& offset)
+void VoxelGrid::DrawMap(VoxelMap* map, const IntVector3& offset)
 {
 	PROFILE_LOG_SCOPE_FUNCTION();
 

@@ -15,7 +15,7 @@ class Particle : public Entity
 public:
 	//-----Public Methods-----
 
-	Particle(const Rgba& color, float lifetime, const Vector3& position, const Vector3& initialVelocity, bool attachToGround = false);
+	Particle(const Rgba& color, float lifetime, const Vector3& position, const Vector3& initialVelocity, bool attachToGround = false, bool fillsHoles = false);
 	~Particle();
 	
 	virtual void					Update() override;
@@ -30,6 +30,7 @@ private:
 	float m_lifetime = DEFAULT_LIFETIME;
 	float m_initialSpeed = DEFAULT_SPEED;
 	bool m_attachToGround = false;
+	bool m_fillsHoles = false;
 
 	static constexpr float DEFAULT_SPEED = 10.f;
 	static constexpr float DEFAULT_LIFETIME = 30.0f;

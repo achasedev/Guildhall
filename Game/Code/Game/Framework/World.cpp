@@ -265,7 +265,7 @@ void World::DrawToGridWithOffset(const IntVector3& offset)
 	// Color in the ground, if there is one
 	if (m_map != nullptr)
 	{
-		grid->Drawmap(m_map, offset);
+		grid->DrawMap(m_map, offset);
 	}
 
 	// Color in static geometry
@@ -437,7 +437,7 @@ void World::ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage
 //-----------------------------------------------------------------------------------------------
 // Sets the voxel at the given coord to the given color in the map
 //
-void World::AddVoxelTomap(const IntVector3& coord, const Rgba& color)
+void World::AddVoxelToMap(const IntVector3& coord, const Rgba& color)
 {
 	m_map->AddVoxel(coord, color);
 }
@@ -940,6 +940,26 @@ void World::CheckEntityForGroundCollision(Entity* entity)
 
 
 //-----------------------------------------------------------------------------------------------
+// Checks whether a particle is colliding with ground; Is a separate function for custom behavior
+// specific to particles
+//
+void World::CheckParticleForGroundCollision(Particle* particle)
+{
+	Vector3 position = particle->GetPosition();
+	IntVector3 coordPosition = particle->GetCoordinatePosition();
+
+	int mapHeight = GetMapHeightForEntity(particle);
+	bool touchingGround = (mapHeight >= position.y);
+
+	if (touchingGround)
+	{
+		// Call the event *before* we correct, to get the exact hit location
+		particle->OnGroundCollision();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Destroys the map at coord and within a given radius
 //
 void World::DestroyPartOfMap(const IntVector3& hitCoordinate, float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/)
@@ -951,48 +971,50 @@ void World::DestroyPartOfMap(const IntVector3& hitCoordinate, float radius /*= 0
 
 	// For the ground I hit, blow it away! (anything within radius)
 	int xStart = hitCoordinate.x - RoundToNearestInt(radius);
-	int yStart = hitCoordinate.y - RoundToNearestInt(radius);
 	int zStart = hitCoordinate.z - RoundToNearestInt(radius);
 
 	int xEnd = hitCoordinate.x + RoundToNearestInt(radius);
-	int yEnd = hitCoordinate.y + RoundToNearestInt(radius);
 	int zEnd = hitCoordinate.z + RoundToNearestInt(radius);
+
+	int minYInRadius = ClampInt(hitCoordinate.y - RoundToNearestInt(radius), 0, 256);
 
 	float radiusSquared = radius * radius;
 
-	for (int y = yStart; y < yEnd; ++y)
+	for (int z = zStart; z < zEnd; ++z)
 	{
-		for (int z = zStart; z < zEnd; ++z)
+		for (int x = xStart; x < xEnd; ++x)
 		{
-			for (int x = xStart; x < xEnd; ++x)
+			if (!AreCoordsInWorld(IntVector3(x, 0, z)))
+			{
+				continue;
+			}
+
+			int mapHeightAtCoord = m_map->GetHeightAtCoords(IntVector2(x, z));
+
+			for (int y = mapHeightAtCoord - 1; y >= minYInRadius; --y) // Iterate downward to avoid heightmap errors
 			{
 				IntVector3 currCoord = IntVector3(x, y, z);
-				if (!AreCoordsInWorld(currCoord))
-				{
-					continue;
-				}
 
 				float distanceSquared = (Vector3(hitCoordinate) - Vector3(currCoord)).GetLengthSquared();
-				int heightAtCurrCoord = m_map->GetHeightAtCoords(currCoord.xz());
 
-				if (distanceSquared <= radiusSquared)
+				if (distanceSquared > radiusSquared && y > hitCoordinate.y)
 				{
 					Rgba color = m_map->RemoveVoxel(currCoord);
 
-					if (CheckRandomChance(0.1f))
+					Particle* particle = new Particle(color, 5.0f, Vector3(currCoord), Vector3::ZERO, true, true);
+					AddParticle(particle);
+				}
+				else if (distanceSquared <= radiusSquared)
+				{
+					Rgba color = m_map->RemoveVoxel(currCoord);
+
+					if (CheckRandomChance(0.2f))
 					{
 						Vector3 velocity = impulseMagnitude * Vector3(GetRandomFloatInRange(-1.f, 1.f), 1.f, GetRandomFloatInRange(-1.f, 1.f));
 
-						Particle* particle = new Particle(color, 2.0f, Vector3(currCoord), velocity, false);
+						Particle* particle = new Particle(color, 5.0f, Vector3(currCoord), velocity, true);
 						AddParticle(particle);
 					}
-				}
-				else if (y > hitCoordinate.y && y < heightAtCurrCoord)
-				{
-					Rgba color = m_map->GetColorAtCoords(IntVector3(currCoord.x, y, currCoord.z));
-
-					Particle* particle = new Particle(color, 2.0f, Vector3(currCoord), Vector3::ZERO, false);
-					AddParticle(particle);
 				}
 			}
 		}
@@ -1076,7 +1098,7 @@ void World::CheckGroundCollisions()
 		// Don't bother with particles marked for delete
 		if (currParticle->IsMarkedForDelete()) { continue; }
 
-		CheckEntityForGroundCollision(currParticle);
+		CheckParticleForGroundCollision(currParticle);
 	}
 }
 

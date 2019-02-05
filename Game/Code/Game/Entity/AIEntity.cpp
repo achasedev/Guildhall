@@ -45,7 +45,7 @@ void AIEntity::OnDeath()
 	m_eventSpawnedFrom->StopTrackingEntity(this);
 	Game::GetWorld()->ParticalizeEntity(this);
 
-	if (CheckRandomChance(0.25f))
+	if (CheckRandomChance(1.f))
 	{
 		Weapon* drop = nullptr;
 
