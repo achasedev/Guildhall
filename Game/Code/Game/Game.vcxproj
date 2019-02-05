@@ -326,9 +326,8 @@
     <ClCompile Include="Framework\PlayStates\PlayState_Stage.cpp" />
     <ClCompile Include="Framework\VoxelFont.cpp" />
     <ClCompile Include="Framework\CampaignManager.cpp" />
-    <ClCompile Include="Framework\SpawnPoint.cpp" />
     <ClCompile Include="Framework\VoxelGrid.cpp" />
-    <ClCompile Include="Framework\CampaignStageData.cpp" />
+    <ClCompile Include="Framework\CampaignStage.cpp" />
     <ClCompile Include="Framework\VoxelMetaData.cpp" />
     <ClCompile Include="Framework\VoxelMap.cpp" />
     <ClCompile Include="Framework\VoxelTerrain.cpp" />
@@ -384,9 +383,8 @@
     <ClInclude Include="Framework\PlayStates\PlayState_Stage.hpp" />
     <ClInclude Include="Framework\VoxelFont.hpp" />
     <ClInclude Include="Framework\CampaignManager.hpp" />
-    <ClInclude Include="Framework\SpawnPoint.hpp" />
     <ClInclude Include="Framework\VoxelGrid.hpp" />
-    <ClInclude Include="Framework\CampaignStageData.hpp" />
+    <ClInclude Include="Framework\CampaignStage.hpp" />
     <ClInclude Include="Framework\VoxelMetaData.hpp" />
     <ClInclude Include="Framework\VoxelMap.hpp" />
     <ClInclude Include="Framework\VoxelTerrain.hpp" />

@@ -7,7 +7,7 @@
 #pragma once
 #include "Game/Entity/AnimatedEntity.hpp"
 
-class SpawnPoint;
+class EntitySpawnEvent;
 class BehaviorComponent;
 
 class AIEntity : public AnimatedEntity
@@ -21,13 +21,13 @@ public:
 	virtual void OnDeath() override;
 	virtual void OnEntityCollision(Entity* other) override;
 
-	void SetSpawnPoint(SpawnPoint* spawnPoint);
+	void SetSpawnEvent(EntitySpawnEvent* spawnEvent);
 
 
 private:
 	//-----Private Data-----
 	
-	SpawnPoint*			m_spawnPoint = nullptr;
+	EntitySpawnEvent*	m_eventSpawnedFrom = nullptr;
 	BehaviorComponent*	m_behaviorComponent = nullptr;
 
 };

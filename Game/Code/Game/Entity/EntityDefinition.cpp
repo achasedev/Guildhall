@@ -76,7 +76,7 @@ eCorrectionResponse ConvertCollisionResponseFromString(const std::string& respon
 eEntityClass GetEntityClassForString(const std::string& text)
 {
 	if (text == "player")			{ return ENTITY_CLASS_PLAYER; }
-	else if (text == "ai")			{ return ENTITY_CLASS_AI; }
+	else if (text == "AI")			{ return ENTITY_CLASS_AI; }
 	else if (text == "item")		{ return ENTITY_CLASS_ITEM; }
 	else if (text == "projectile")	{ return ENTITY_CLASS_PROJECTILE; }
 	else if (text == "weapon")		{ return ENTITY_CLASS_WEAPON; }
@@ -92,18 +92,14 @@ eEntityClass GetEntityClassForString(const std::string& text)
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
-EntityDefinition::EntityDefinition(const XMLElement& entityElement)
+EntityDefinition::EntityDefinition(const XMLElement& entityElement, eEntityClass entityClass)
 {
+	// Entity Class
+	m_entityClass = entityClass;
+
 	// Name
 	m_name = ParseXmlAttribute(entityElement, "name");
 	ASSERT_OR_DIE(m_name.size() > 0, "Error: EntityDefinition lacks a name");
-
-	// Entity Class
-	std::string classText = ParseXmlAttribute(entityElement, "class", "");
-	GUARANTEE_RECOVERABLE(!IsStringNullOrEmpty(classText), Stringf("No class specified for entity \"%s\"", m_name.c_str()));
-
-	m_entityClass = GetEntityClassForString(classText);
-	GUARANTEE_RECOVERABLE(m_entityClass != ENTITY_CLASS_UNASSIGNED, "Entity \"%s\" has invalid class specified in data: \"%s\"", m_name.c_str(), classText.c_str());
 
 	m_initialHealth = ParseXmlAttribute(entityElement, "initial_health", m_initialHealth);
 	m_pointValue = ParseXmlAttribute(entityElement, "points", m_pointValue);
@@ -135,13 +131,12 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement)
 
 		m_isDestructible = ParseXmlAttribute(*visualElement, "destructible", false);
 
-		GUARANTEE_OR_DIE(!(m_isAnimated == true && m_isDestructible == true), Stringf("Error: Entity \"%s\" is destructible and animated, not allowed!", m_name.c_str()));
-
 		if (m_isDestructible)
 		{
-			GUARANTEE_OR_DIE(m_entityClass == ENTITY_CLASS_STATIC, "Entity \"%s\" is specified as destructible but not static; Only destructible statics supported");
+			GUARANTEE_OR_DIE(m_entityClass == ENTITY_CLASS_STATIC, Stringf("Entity \"%s\" is specified as destructible but not static; Only destructible statics supported", m_name.c_str()).c_str());
 		}
 
+		GUARANTEE_OR_DIE(!(m_isAnimated == true && m_isDestructible == true), Stringf("Error: Entity \"%s\" is destructible and animated, not allowed!", m_name.c_str()));
 		GUARANTEE_OR_DIE(m_defaultSprite != nullptr, Stringf("Error: Default sprite not found for entity \"%s\"", m_name.c_str()));
 	}
 
@@ -330,16 +325,39 @@ void EntityDefinition::LoadDefinitions(const std::string& filename)
 	const XMLElement* rootElement = document.RootElement();
 	ASSERT_OR_DIE(rootElement != nullptr, Stringf("Error: EntityDefinition::LoadDefinitions() loaded file with no root element, file: %s", filename.c_str()).c_str());
 
+	// Entity Class for all definitions in this file
+	std::string classText = ParseXmlAttribute(*rootElement, "class", "");
+	GUARANTEE_OR_DIE(!IsStringNullOrEmpty(classText), Stringf("No class specified for EntityDefinition file \"%s\"", filename.c_str()));
+
+	eEntityClass entityClass = GetEntityClassForString(classText);
+	GUARANTEE_OR_DIE(entityClass != ENTITY_CLASS_UNASSIGNED, Stringf("EntityDefinition file \"%s\" has invalid class specified in data: \"%s\"", filename.c_str(), classText.c_str()));
+
 	const XMLElement* defElement = rootElement->FirstChildElement();
 
 	while (defElement != nullptr)
 	{
-		const EntityDefinition* newDefinition = new EntityDefinition(*defElement);
+		EntityDefinition* newDefinition = new EntityDefinition(*defElement, entityClass);
 		s_definitions[newDefinition->m_name] = newDefinition;
 
-		todo need to make a character select volume for each Player loaded
+		// If we are loading players, we need to make a character select volume definition for each
 
-			also need to update spawners to only spawn enemies and only spawn aientities (rename ai class)
+		if (entityClass == ENTITY_CLASS_PLAYER)
+		{
+			// No volume created yet for this character, so create one now (prevents needed to define one in data)
+			EntityDefinition* volumeDefinitionTemp = new EntityDefinition();
+
+			std::string volumeName = newDefinition->m_name + "_SelectVolume";
+			volumeDefinitionTemp->m_name = volumeName;
+			volumeDefinitionTemp->m_collisionDef.layer = COLLISION_LAYER_WORLD;
+			volumeDefinitionTemp->m_collisionDef.m_response = COLLISION_RESPONSE_IGNORE_CORRECTION;
+			volumeDefinitionTemp->m_physicsType = PHYSICS_TYPE_STATIC;
+			volumeDefinitionTemp->m_entityClass = ENTITY_CLASS_CHARACTERSELECTVOLUME;
+			volumeDefinitionTemp->m_playerCharacterDefinition = newDefinition;
+			volumeDefinitionTemp->m_defaultSprite = newDefinition->m_defaultSprite;
+
+			EntityDefinition::AddDefinition(volumeDefinitionTemp);
+		}
+
 		defElement = defElement->NextSiblingElement();
 	}
 }
@@ -362,25 +380,6 @@ const EntityDefinition* EntityDefinition::GetDefinition(const std::string& defNa
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the entity definition with the given ID, nullptr if it doesn't exist
-//
-const EntityDefinition* EntityDefinition::GetDefinition(int id)
-{
-	std::map<std::string, const EntityDefinition*>::const_iterator itr = s_definitions.begin();
-
-	for (itr; itr != s_definitions.end(); ++itr)
-	{
-		if (itr->second->m_id == id)
-		{
-			return itr->second;
-		}
-	}
-
-	return nullptr;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Returns a random definition that can be used to initialize a player
 //
 const EntityDefinition* EntityDefinition::GetRandomPlayerDefinition()
@@ -393,7 +392,7 @@ const EntityDefinition* EntityDefinition::GetRandomPlayerDefinition()
 
 	for (itr; itr != s_definitions.end(); itr++)
 	{
-		if (itr->second->m_isPlayerDef)
+		if (itr->second->m_entityClass == ENTITY_CLASS_PLAYER)
 		{
 			playerDefs.push_back(itr->second);
 		}
@@ -415,4 +414,23 @@ void EntityDefinition::AddDefinition(const EntityDefinition* definition)
 	GUARANTEE_OR_DIE(!alreadyExists, Stringf("Error: Duplicate definition added: \"%s\"", definition->m_name.c_str()));
 
 	s_definitions[definition->m_name] = definition;
+}
+
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+//-----------------------------------------------------------------------------------------------
+// Returns all Character select volume definitions loaded (should be at most 16)
+//
+void EntityDefinition::GetAllCharacterSelectVolumeDefinitions(std::vector<const EntityDefinition*>& out_definitions)
+{
+	out_definitions.clear();
+
+	std::map<std::string, const EntityDefinition*>::const_iterator itr = s_definitions.begin();
+
+	for (itr; itr != s_definitions.end(); itr++)
+	{
+		if (itr->second->m_entityClass == ENTITY_CLASS_CHARACTERSELECTVOLUME)
+		{
+			out_definitions.push_back(itr->second);
+		}
+	}
 }

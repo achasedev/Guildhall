@@ -9,7 +9,6 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Entity/AIEntity.hpp"
 #include "Game/Framework/World.hpp"
-#include "Game/Framework/SpawnPoint.hpp"
 #include "Game/Entity/Components/BehaviorComponent.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
@@ -43,7 +42,7 @@ void AIEntity::OnDeath()
 {
 	AnimatedEntity::OnDeath();
 
-	m_spawnPoint->StopTrackingEntity(this);
+	m_eventSpawnedFrom->StopTrackingEntity(this);
 	Game::GetWorld()->ParticalizeEntity(this);
 
 	if (CheckRandomChance(0.25f))
@@ -52,7 +51,7 @@ void AIEntity::OnDeath()
 
 		float roll = GetRandomFloatZeroToOne();
 
-		if (roll > 0.9f)
+		if (roll > 0.2f)
 		{
 			drop = new Weapon(EntityDefinition::GetDefinition("MissileLauncher"));
 		}
@@ -88,9 +87,9 @@ void AIEntity::OnEntityCollision(Entity* other)
 
 
 //-----------------------------------------------------------------------------------------------
-// Sets the spawn point of this entity to the one given
+// Sets the spawn event that this entity spawned from
 //
-void AIEntity::SetSpawnPoint(SpawnPoint* spawnPoint)
+void AIEntity::SetSpawnEvent(EntitySpawnEvent* spawnEvent)
 {
-	m_spawnPoint = spawnPoint;
+	m_eventSpawnedFrom = spawnEvent;
 }

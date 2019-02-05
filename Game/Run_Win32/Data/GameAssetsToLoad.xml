@@ -69,7 +69,15 @@
 
 	</VoxelAnimations>
 
-	<EntityDefinitions file="Data/EntityDefinitions/EntityDefinitions.xml"/>
+	<EntityDefinitions>
+
+		<EntityDefinition file="Data/EntityDefinitions/PlayerDefinitions.xml"/>
+		<EntityDefinition file="Data/EntityDefinitions/ProjectileDefinitions.xml"/>
+		<EntityDefinition file="Data/EntityDefinitions/WeaponDefinitions.xml"/>
+		<EntityDefinition file="Data/EntityDefinitions/EnemyDefinitions.xml"/>
+		<EntityDefinition file="Data/EntityDefinitions/StaticDefinitions.xml"/>
+
+	</EntityDefinitions>
 
 	<!-- END ENTITIES -->
 
@@ -84,11 +92,16 @@
 		<Map file="Data/Maps/Forest1.map"/>
 		<Map file="Data/Maps/Forest2.map"/>
 		<Map file="Data/Maps/Forest3.map"/>
-
-		<!-- Need to internalize this map (?) -->
-		<Map file="Data/Maps/CharacterSelect.map"/>
 	</Maps>
 
 	<!-- END MAPS -->
+
+	<!-- CAMPAIGNS -->
+ 
+	<Campaigns>
+		<Campaign file="Data/Campaigns/Forest.campaign"/>
+	</Campaigns>
+
+	<!-- END CAMPAIGNS -->
 
 </Assets>

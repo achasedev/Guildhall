@@ -1,9 +1,12 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
+#include "Game/Entity/AIEntity.hpp"
 #include "Game/Entity/EntitySpawn.hpp"
 #include "Game/Framework/CampaignManager.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
+#include "Game/Entity/EntitySpawnEvent_Default.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
+
 
 //---C FUNCTION----------------------------------------------------------------------------------
 // Returns the enumeration for the spawn type given by the text
@@ -73,6 +76,48 @@ bool EntitySpawnEvent::IsReadyForNextSpawn() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Stops tracking the given entity by removing it from its tracking list
+//
+void EntitySpawnEvent::StopTrackingEntity(AIEntity* entity)
+{
+	int numEntities = (int)m_entitiesCurrentAliveFromThisEvent.size();
+	bool found = false;
+
+	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
+	{
+		if (m_entitiesCurrentAliveFromThisEvent[entityIndex] == entity)
+		{
+			m_entitiesCurrentAliveFromThisEvent.erase(m_entitiesCurrentAliveFromThisEvent.begin() + entityIndex);
+			found = true;
+		}
+	}
+
+	ASSERT_OR_DIE(found, "Event asked to stop tracking entity when it wasn't being tracked");
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Creates a spawn event prototype of the correct subclass given the type
+//
+EntitySpawnEvent* EntitySpawnEvent::CreateSpawnEventForElement(const XMLElement& element)
+{
+	// Type subclass
+	std::string typeText = ParseXmlAttribute(element, "type", "default");
+	eSpawnEventType type = GetSpawnTypeFromString(typeText);
+
+	switch (type)
+	{
+	case SPAWN_EVENT_DEFAULT:
+		return new EntitySpawnEvent_Default(element);
+		break;
+	default:
+		ERROR_AND_DIE(Stringf("Unsupported spawn event type attempted to be created: \"%s\"", typeText.c_str()).c_str());
+		break;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Constructor from an XML Element
 //
 EntitySpawnEvent::EntitySpawnEvent(const XMLElement& spawnElement)
@@ -85,6 +130,9 @@ EntitySpawnEvent::EntitySpawnEvent(const XMLElement& spawnElement)
 	std::string entityDefName = ParseXmlAttribute(spawnElement, "entity", "");
 	GUARANTEE_OR_DIE(!IsStringNullOrEmpty(entityDefName), "No entity specified in spawn event element");
 
+	m_definitionToSpawn = EntityDefinition::GetDefinition(entityDefName);
+	GUARANTEE_OR_DIE(m_definitionToSpawn->m_entityClass == ENTITY_CLASS_AI, Stringf("Spawn Event initialized by non-AI definition \"%s\"", m_definitionToSpawn->m_name.c_str()).c_str());
+
 	// Spawn details
 	m_spawnRate = ParseXmlAttribute(spawnElement, "spawn_rate", m_spawnRate);
 	m_spawnCountDelay = ParseXmlAttribute(spawnElement, "spawn_count_delay", m_spawnCountDelay);
@@ -96,16 +144,22 @@ EntitySpawnEvent::EntitySpawnEvent(const XMLElement& spawnElement)
 //-----------------------------------------------------------------------------------------------
 // Spawns this event's entity, and updates the state tracking information
 //
-void EntitySpawnEvent::SpawnEntity(const Vector3& position, float orientation)
+AIEntity* EntitySpawnEvent::SpawnEntity(const Vector3& position, float orientation)
 {
 	// Spawn the entity
 	World* world = Game::GetWorld();
 
-	just spawn as ai entity
-	Entity* entity = world->SpawnEntity(m_definitionToSpawn, position, orientation);
+	AIEntity* entity = new AIEntity(m_definitionToSpawn);
+	entity->SetPosition(position);
+	entity->SetOrientation(orientation);
+	entity->SetSpawnEvent(this);
+	entity->SetTeam(ENTITY_TEAM_ENEMY);
+
+	world->AddEntity(entity);
 
 	// Update state tracking
 	m_entitiesCurrentAliveFromThisEvent.push_back(entity);
-	fdsafdasjklfajlkfdlj; kfasd;ljkasfd
-}
+	m_entityCountSpawnedSoFar++;
 
+	return entity;
+}

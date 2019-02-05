@@ -4,15 +4,19 @@
 /* Date: September 15th, 2018
 /* Description: Implementation of the world class
 /************************************************************************/
+#include "Game/Entity/Item.hpp"
+#include "Game/Entity/Weapon.hpp"
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Entity/Particle.hpp"
+#include "Game/Entity/AIEntity.hpp"
 #include "Game/Framework/World.hpp"
+#include "Game/Entity/Projectile.hpp"
+#include "Game/Framework/VoxelMap.hpp"
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/GameCamera.hpp"
-#include "Game/Framework/VoxelMap.hpp"
-#include "Game/Framework/CampaignStageData.hpp"
+#include "Game/Framework/CampaignStage.hpp"
 #include "Game/Framework/MapDefinition.hpp"
 #include "Game/Entity/CharacterSelectVolume.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
@@ -125,7 +129,7 @@ void World::InitializeForMenu()
 //-----------------------------------------------------------------------------------------------
 // Initializes the grid and any other setup
 //
-void World::InititalizeForStage(CampaignStageData* stage)
+void World::InititalizeForStage(const CampaignStage* stage)
 {
 	if (m_map != nullptr)
 	{
@@ -155,12 +159,13 @@ void World::InititalizeForStage(CampaignStageData* stage)
 	IntializeMap(stage->m_mapDefinition);
 	
 	// Add in the entities from the stage
-	int numEntities = (int) stage->m_initialStatics.size();
+	int numEntities = (int) stage->m_initialSpawns.size();
 
 	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
 	{
-		InitialStageSpawn_t& spawn = stage->m_initialStatics[entityIndex];
+		const InitialStageSpawn_t& spawn = stage->m_initialSpawns[entityIndex];
 		SpawnEntity(spawn.definition, spawn.position, spawn.orientation);
+		ConsolePrintf("Spawned entity %s", spawn.definition->m_name.c_str());
 	}
 
 	// Add the players to the world
@@ -277,7 +282,7 @@ void World::DrawToGridWithOffset(const IntVector3& offset)
 //-----------------------------------------------------------------------------------------------
 // Spawns an entity of the given definition and places it in the world
 //
-void World::SpawnEntity(const EntityDefinition* definition, const Vector3& position, float orientation)
+Entity* World::SpawnEntity(const EntityDefinition* definition, const Vector2& mapPosition, float orientation)
 {
 	Entity* spawnedEntity = nullptr;
 	// Get the subclass for the definition
@@ -290,7 +295,7 @@ void World::SpawnEntity(const EntityDefinition* definition, const Vector3& posit
 		spawnedEntity = new Weapon(definition);
 		break;
 	case ENTITY_CLASS_PROJECTILE:
-		spawnedEntity = new Projectile(definition);
+		spawnedEntity = new Projectile(definition, ENTITY_TEAM_UNASSIGNED); // Make sure we assign a team afterward if fired here
 		break;
 	case ENTITY_CLASS_CHARACTERSELECTVOLUME: 
 		spawnedEntity = new CharacterSelectVolume(definition);
@@ -307,17 +312,28 @@ void World::SpawnEntity(const EntityDefinition* definition, const Vector3& posit
 		break;
 	}
 
-	spawnedEntity->SetPosition(position);
+	ASSERT_OR_DIE(m_map != nullptr, Stringf("Entity attempted to be spawned when the map was still nullptr, entity was %s", definition->m_name.c_str()).c_str());
+
 	spawnedEntity->SetOrientation(orientation);
 
+	IntVector3 spawnCoord = GetCoordsForPosition(Vector3(mapPosition.x, 0.f, mapPosition.y));
+	IntVector3 bottomLeftCoord = spawnCoord - (spawnedEntity->GetOrientedDimensions() / 2);
+
+	int height = GetMapHeightForBounds(bottomLeftCoord, spawnedEntity->GetOrientedDimensions().xz());
+
+	Vector3 position = Vector3(mapPosition.x, (float) height, mapPosition.y);
+	spawnedEntity->SetPosition(position);
+
 	AddEntity(spawnedEntity); // Checks for duplicates, calls OnSpawn()
+
+	return spawnedEntity;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Adds the entity to the world, checking for duplicates
 //
-Entity* World::AddEntity(Entity* entity)
+void World::AddEntity(Entity* entity)
 {
 	// Check for duplicates
 	for (int i = 0; i < (int)m_entities.size(); ++i)
@@ -332,8 +348,6 @@ Entity* World::AddEntity(Entity* entity)
 	// Safe to add
 	m_entities.push_back(entity);
 	entity->OnSpawn();
-
-	return entity;
 }
 
 

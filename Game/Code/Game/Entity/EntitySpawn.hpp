@@ -6,12 +6,14 @@
 /************************************************************************/
 #pragma once
 #include <vector>
+#include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/IntAABB2.hpp"
 #include "Engine/Math/IntRange.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 
 class Entity;
+class AIEntity;
 class CampaignManager;
 class EntityDefinition;
 
@@ -46,13 +48,13 @@ public:
 struct InitialStageSpawn_t
 {
 	const EntityDefinition* definition = nullptr;
-	Vector3 position;
+	Vector2 position; // Map XZ only, will determine the height when spawned
 	float orientation;
 };
 
 
 //-----------------------------------------------------------------------------------------------
-// For Spawning during a playing stage for waves
+// For Spawning AI enemies (and other teams?) during a playing stage for waves
 //
 
 enum eSpawnEventType
@@ -68,6 +70,7 @@ class EntitySpawnEvent
 public:
 	//-----Public Methods
 
+	virtual void				Update() = 0;
 	virtual int					RunSpawn() = 0;
 	virtual EntitySpawnEvent*	Clone(CampaignManager* manager) const = 0;
 
@@ -78,13 +81,17 @@ public:
 	bool						IsFinishedSpawning() const;
 	bool						IsReadyForNextSpawn() const;
 
+	void						StopTrackingEntity(AIEntity* entity);
+
+	static EntitySpawnEvent*	CreateSpawnEventForElement(const XMLElement& element);
+
 
 protected:
 	//-----Protected Methods-----
 
 	EntitySpawnEvent(const XMLElement& spawnElement);
 
-	void						SpawnEntity(const Vector3& position, float orientation);
+	AIEntity*					SpawnEntity(const Vector3& position, float orientation);
 
 
 protected:
@@ -92,7 +99,7 @@ protected:
 
 	// State
 	int						m_entityCountSpawnedSoFar = 0;
-	std::vector<Entity*>	m_entitiesCurrentAliveFromThisEvent;
+	std::vector<AIEntity*>	m_entitiesCurrentAliveFromThisEvent;
 
 	// Data
 	CampaignManager*		m_manager = nullptr;

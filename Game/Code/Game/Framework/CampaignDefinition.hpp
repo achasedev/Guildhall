@@ -8,27 +8,31 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "Game/Framework/CampaignStageData.hpp"
+#include "Game/Framework/CampaignStage.hpp"
 
 class CampaignDefinition
 {
 public:
 	//-----Public Methods-----
 
+	static void LoadCampaign(const std::string filePath);
+	static const CampaignDefinition* GetDefinitionByName(const std::string& name);
+
 
 private:
 	//-----Private Methods-----
 
-	CampaignDefinition() {};
-	CampaignDefinition(const std::string& filePath);
+	CampaignDefinition() {}
 
+	static void AddDefinitionToRegistry(const CampaignDefinition* definition);
+	
 
 public:
 	//-----Public Data-----
 
-	std::string						m_name;
-	std::string						m_backgroundMusicTrack;
-	std::vector<CampaignStageData>	m_stages;
+	std::string					m_name;
+	std::string					m_backgroundMusicTrack;
+	std::vector<CampaignStage*>	m_stages;
 
 	static std::map<std::string, const CampaignDefinition*>  s_campaignDefinitions;
 

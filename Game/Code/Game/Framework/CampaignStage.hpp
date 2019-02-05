@@ -24,31 +24,26 @@ enum eTransitionEdge
 	EDGE_WEST
 };
 
-class CampaignStageData
+class CampaignStage
 {
 public:
-	friend class World;
-	friend class CampaignManager;
-
 	//-----Public Methods-----
 	
-	CampaignStageData() {}
-	CampaignStageData(const XMLElement& element);
-	~CampaignStageData();
+	CampaignStage() {}
+	CampaignStage(const XMLElement& element);
+	~CampaignStage();
 
 	// Creates a copy of all spawn event prototypes for use in the manager
 	void CloneAllEventPrototypes(CampaignManager* manager, std::vector<EntitySpawnEvent*>& out_spawnEventClones) const;
 	
-	void AddInitialSpawn(const EntityDefinition* definition, const Vector3& position, float orientation);
 
-
-private:
-	//-----Private Data-----
+public:
+	//-----Public Data-----
 	
 	const MapDefinition*					m_mapDefinition = nullptr;
 	eTransitionEdge							m_edgeToEnter;
 
-	std::vector<InitialStageSpawn_t>		m_initialStatics;
+	std::vector<InitialStageSpawn_t>		m_initialSpawns;
 	std::vector<const EntitySpawnEvent*>	m_eventPrototypes;
 	
 };

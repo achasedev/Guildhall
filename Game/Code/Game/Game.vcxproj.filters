@@ -85,9 +85,6 @@
     <ClCompile Include="Entity\Components\BehaviorComponent_PursueJump.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Framework\SpawnPoint.cpp">
-      <Filter>Architecture</Filter>
-    </ClCompile>
     <ClCompile Include="Framework\PlayStates\PlayState.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
@@ -166,13 +163,13 @@
     <ClCompile Include="Framework\CampaignDefinition.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Framework\CampaignStageData.cpp">
-      <Filter>Architecture</Filter>
-    </ClCompile>
     <ClCompile Include="Entity\EntitySpawn.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
     <ClCompile Include="Entity\EntitySpawnEvent_Default.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\CampaignStage.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
   </ItemGroup>
@@ -217,7 +214,6 @@
     <ClInclude Include="Entity\Components\PhysicsComponent.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_PursueDirect.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_PursueJump.hpp" />
-    <ClInclude Include="Framework\SpawnPoint.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Rest.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Victory.hpp" />
@@ -245,7 +241,7 @@
     <ClInclude Include="Framework\VoxelTerrain.hpp" />
     <ClInclude Include="Framework\MapDefinition.hpp" />
     <ClInclude Include="Framework\CampaignDefinition.hpp" />
-    <ClInclude Include="Framework\CampaignStageData.hpp" />
     <ClInclude Include="Entity\EntitySpawnEvent_Default.hpp" />
+    <ClInclude Include="Framework\CampaignStage.hpp" />
   </ItemGroup>
 </Project>

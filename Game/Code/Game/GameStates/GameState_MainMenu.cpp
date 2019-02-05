@@ -15,9 +15,9 @@
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Animation/VoxelEmitter.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
+#include "Game/Framework/CampaignDefinition.hpp"
 #include "Game/GameStates/GameState_MainMenu.hpp"
 #include "Engine/Input/InputSystem.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Default constructor
@@ -203,7 +203,7 @@ void LoadSubMenu(GameState_MainMenu* mainMenu, const std::string& args)
 	}
 	else if (args == "Episodes")
 	{
-		mainMenu->MoveToSubMenu(SUB_MENU_EPISODES);
+		mainMenu->MoveToSubMenu(SUB_MENU_CAMPAIGNS);
 	}
 }
 
@@ -211,12 +211,11 @@ void LoadSubMenu(GameState_MainMenu* mainMenu, const std::string& args)
 //- C FUNCTION ----------------------------------------------------------------------------------
 // Callback for starting an episode campaign from the main menu
 //
-void StartEpisode(GameState_MainMenu* mainMenu, const std::string& args)
+void StartCampaign(GameState_MainMenu* mainMenu, const std::string& campaignName)
 {
-	UNUSED(args);
 	UNUSED(mainMenu);
 
-	Game::TransitionToGameState(new GameState_Playing());
+	Game::TransitionToGameState(new GameState_Playing(campaignName));
 }
 
 
@@ -252,14 +251,19 @@ void GameState_MainMenu::MoveToSubMenu(eSubMenu subMenu)
 		m_currentMenu->AddOption("Leaderboard", true, LoadSubMenu, "Leaderboard_1");
 		m_currentMenu->AddOption("Quit",		true, QuitSelection, "");
 		break;
-	case SUB_MENU_EPISODES:
-		m_currentMenu->AddOption("Episode 1",	true, StartEpisode, "Episode 1");
-		m_currentMenu->AddOption("Episode 2",	true, StartEpisode, "Episode 2");
-		m_currentMenu->AddOption("Episode 3",	true, StartEpisode, "Episode 3");
-		m_currentMenu->AddOption("Episode 4",	true, StartEpisode, "Episode 4");
-		m_currentMenu->AddOption("Episode 5",	true, StartEpisode, "Episode 5");
-		m_currentMenu->AddOption("Back",		true, LoadSubMenu, "Main");
+	case SUB_MENU_CAMPAIGNS:
+	{
+		// Push every campaign we have
+		std::map<std::string, const CampaignDefinition*>::const_iterator itr = CampaignDefinition::s_campaignDefinitions.begin();
+
+		for (itr; itr != CampaignDefinition::s_campaignDefinitions.end(); itr++)
+		{
+			const CampaignDefinition* def = itr->second;
+			m_currentMenu->AddOption(def->m_name, true, StartCampaign, def->m_name);
+		}
+		m_currentMenu->AddOption("Back", true, LoadSubMenu, "Main");
 		break;
+	}
 	case SUB_MENU_LEADERBOARD_1:
 	{
 		const Leaderboard* boards = Game::GetLeaderboards();

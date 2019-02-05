@@ -21,17 +21,15 @@ enum ePlayState
 };
 
 
-class World;
 class PlayState;
-class VoxelFont;
-class CampaignManager;
+class CampaignDefinition;
 
 class GameState_Playing : public GameState
 {
 public:
 	//-----Public Methods-----
 
-	GameState_Playing();
+	GameState_Playing(const std::string& campaignName);
 	~GameState_Playing();
 
 	virtual void ProcessInput() override;
@@ -54,6 +52,8 @@ public:
 
 private:
 	//-----Private Data-----
+
+	const CampaignDefinition* m_campaignBeingPlayed = nullptr;
 
 	PlayState* m_overrideState = nullptr;
 	bool m_overrideEntered = false;

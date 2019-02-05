@@ -15,6 +15,7 @@
 #include "Game/Animation/VoxelAnimation.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
 #include "Game/GameStates/GameState_Loading.hpp"
+#include "Game/Framework/CampaignDefinition.hpp"
 #include "Game/GameStates/GameState_MainMenu.hpp"
 
 #include "Engine/Core/Window.hpp"
@@ -194,11 +195,23 @@ void GameState_Loading::LoadVoxelResources() const
 
 	// Entity Definitions
 	{
-		const XMLElement* defElement = rootElement->FirstChildElement("EntityDefinitions");
-		if (defElement != nullptr)
+		const XMLElement* defsElement = rootElement->FirstChildElement("EntityDefinitions");
+		GUARANTEE_OR_DIE(defsElement != nullptr, "No EntityDefinitions group element in GameAssetsToLoad.xml");
+
+		if (defsElement != nullptr)
 		{
-			std::string defFilename = ParseXmlAttribute(*defElement, "file", "");
-			EntityDefinition::LoadDefinitions(defFilename);
+			const XMLElement* defElement = defsElement->FirstChildElement("EntityDefinition");
+			GUARANTEE_OR_DIE(defElement != nullptr, "No EntityDefinition Element in GameAssetsToLoad.xml");
+
+			while (defElement != nullptr)
+			{
+				std::string defFilename = ParseXmlAttribute(*defElement, "file", "");
+				GUARANTEE_OR_DIE(!IsStringNullOrEmpty(defFilename), "EntityDefinition element has no file specified in GameAssetsToLoad.xml");
+
+				EntityDefinition::LoadDefinitions(defFilename);
+
+				defElement = defElement->NextSiblingElement("EntityDefinition");
+			}	
 		}
 	}
 
@@ -234,6 +247,23 @@ void GameState_Loading::LoadVoxelResources() const
 			MapDefinition::LoadMap(mapFilePath);
 
 			mapElement = mapElement->NextSiblingElement("Map");
+		}
+	}
+
+	// Campaigns
+	{
+		const XMLElement* campaignsElement = rootElement->FirstChildElement("Campaigns");
+		ASSERT_OR_DIE(campaignsElement != nullptr, "Error: GameAssetsToLoad.xml has no Campaigns group element");
+
+		const XMLElement* campaignElement = campaignsElement->FirstChildElement("Campaign");
+		ASSERT_OR_DIE(campaignElement != nullptr, "Error: GameAssetsToLoad.xml has no Campaigns specified");
+
+		while (campaignElement != nullptr)
+		{
+			std::string campaignFilePath = ParseXmlAttribute(*campaignElement, "file", "");
+			CampaignDefinition::LoadCampaign(campaignFilePath);
+
+			campaignElement = campaignElement->NextSiblingElement("Map");
 		}
 	}
 }

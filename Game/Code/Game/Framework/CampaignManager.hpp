@@ -10,7 +10,7 @@
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 #include <vector>
 
-class CampaignStageData;
+class CampaignStage;
 class EntityDefinition;
 class CampaignDefinition;
 
@@ -32,7 +32,8 @@ public:
 	bool						IsCurrentStageFinal() const;
 	int							GetCurrentStageNumber() const;
 	bool						IsCurrentStageFinished() const;
-	const CampaignStageData*	GetNextStage() const;
+	const CampaignStage*		GetCurrentStage() const;
+	const CampaignStage*		GetNextStage() const;
 	int							GetEnemyCountLeftInStage() const;
 	int							GetEntityCountSpawnedThisStageSoFar() const;
 	float						GetTimeIntoStage() const;

@@ -1,5 +1,3 @@
-<Map name="Forest1" terrain_type="Grass">
-
-	<Spawn definition="Tree1" count="5~15" spawn_start="20, 20" spawn_range="216, 216" overlap_type="area" orientation="-1.0"/>
+<Map name="Forest1" terrain="Grass1">
 
 </Map>

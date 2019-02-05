@@ -12,6 +12,9 @@ class EntitySpawnEvent_Default : public EntitySpawnEvent
 public:
 	//-----Public Methods-----
 
+	EntitySpawnEvent_Default(const XMLElement& spawnElement);
+
+	virtual void Update() override;
 	virtual int RunSpawn() override;
 	virtual EntitySpawnEvent* Clone(CampaignManager* manager) const override;
 

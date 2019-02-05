@@ -1,0 +1,37 @@
+<EntityDefinitions class="weapon">
+
+	<!-- Weapons (LOAD AFTER PROJECTILES) -->
+
+	<EntityDefinition name="Pistol">
+		<Visuals default_sprite="Pistol"/>
+		<Physics physics_type="dynamic">
+			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
+		</Physics>
+		<Weapon fire_rate="4.0" fire_spread="0.0" projectile="Bullet" count_per_shot="1"/>
+	</EntityDefinition>
+
+	<EntityDefinition name="Shotgun">
+		<Visuals default_sprite="Shotgun"/>
+		<Physics physics_type="dynamic">
+			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
+		</Physics>
+		<Weapon fire_rate="2.0" fire_spread="0.4" projectile="Shell" count_per_shot="6" initial_ammo="60"/>
+	</EntityDefinition>
+
+	<EntityDefinition name="Flamethrower">
+		<Visuals default_sprite="Flamethrower"/>
+		<Physics physics_type="dynamic">
+			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
+		</Physics>
+		<Weapon fire_rate="15.0" fire_spread="0.2" projectile="Flame" count_per_shot="15" initial_ammo="600"/>
+	</EntityDefinition>
+
+	<EntityDefinition name="MissileLauncher">
+		<Visuals default_sprite="MissileLauncher"/>
+		<Physics physics_type="dynamic">
+			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
+		</Physics>
+		<Weapon fire_rate="2.0" fire_spread="0.0" projectile="Missile" count_per_shot="1" initial_ammo="5"/>
+	</EntityDefinition>
+
+</EntityDefinitions>

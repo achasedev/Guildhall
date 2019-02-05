@@ -11,7 +11,7 @@
 #include "Game/Entity/Entity.hpp"
 #include "Game/Entity/EntitySpawn.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
-#include "Game/Framework/CampaignStageData.hpp"
+#include "Game/Framework/CampaignStage.hpp"
 
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Math/IntRange.hpp"
@@ -28,7 +28,7 @@ class VoxelSprite;
 class Particle;
 class VoxelMap;
 class VoxelFont;
-class CampaignStageData;
+class CampaignStage;
 class MapDefinition;
 
 struct HeatMapSet_t
@@ -56,7 +56,7 @@ public:
 	~World();
 
 	void InitializeForMenu();
-	void InititalizeForStage(CampaignStageData* stage);
+	void InititalizeForStage(const CampaignStage* stage);
 	void CleanUp();
 
 	void Update();
@@ -65,7 +65,7 @@ public:
 
 	// Mutators
 	void	AddEntity(Entity* entity);
-	Entity* SpawnEntity(const EntityDefinition* definition, const Vector3& position, float orientation);
+	Entity* SpawnEntity(const EntityDefinition* definition, const Vector2& mapPosition, float orientation);
 	void	RemoveEntity(Entity* entity);
 	void	AddParticle(Particle* particle);
 	void	ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage = 0, float radius = 0.f, float impulseMagnitude = 0.f, Entity* hitEntity = nullptr);

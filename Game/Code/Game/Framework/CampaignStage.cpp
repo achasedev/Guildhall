@@ -4,7 +4,7 @@
 /* Date: October 20th 2018
 /* Description: Implementation of the CampaignStage class
 /************************************************************************/
-#include "Game/Framework/CampaignStageData.hpp"
+#include "Game/Framework/CampaignStage.hpp"
 #include "Game/Framework/MapDefinition.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -26,31 +26,25 @@ eTransitionEdge GetEdgeForString(const std::string& text)
 }
 
 
+//---C FUNCTION----------------------------------------------------------------------------------
+// Returns the correct subclass of spawn event to create based on the type
+//
+
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
-CampaignStageData::CampaignStageData(const XMLElement& element)
+CampaignStage::CampaignStage(const XMLElement& element)
 {
 	// Spawn info
-	const XMLElement* spawnElement = element.FirstChildElement();
+	const XMLElement* spawnEventElement = element.FirstChildElement();
 
-	while (spawnElement != nullptr)
+	while (spawnEventElement != nullptr)
 	{
-		EntitySpawnEvent_t info;
+		EntitySpawnEvent* spawnEvent = EntitySpawnEvent::CreateSpawnEventForElement(*spawnEventElement);
 
-		info.spawnCountDelay	= ParseXmlAttribute(*spawnElement,	"spawn_count_delay",	info.spawnCountDelay);
-		info.spawnTimeDelay		= ParseXmlAttribute(*spawnElement,	"spawn_time_delay",		info.spawnTimeDelay);
-		info.totalToSpawn		= ParseXmlAttribute(*spawnElement,	"total_to_spawn",		info.totalToSpawn);
-		info.spawnRate			= ParseXmlAttribute(*spawnElement,	"spawn_rate",			info.spawnRate);
-		info.spawnPointID		= ParseXmlAttribute(*spawnElement,	"spawn_point",			info.spawnPointID);
+		m_eventPrototypes.push_back(spawnEvent);
 
-		std::string typeName = ParseXmlAttribute(*spawnElement, "entity", "");
-		GUARANTEE_OR_DIE(typeName != "", "Error: Missing entity type in stage definition");
-		info.definition = EntityDefinition::GetDefinition(typeName);
-
-		m_eventPrototypes.push_back(info);
-
-		spawnElement = spawnElement->NextSiblingElement();
+		spawnEventElement = spawnEventElement->NextSiblingElement("SpawnEvent");
 	}
 
 	std::string mapName = ParseXmlAttribute(element, "map", "");
@@ -67,7 +61,7 @@ CampaignStageData::CampaignStageData(const XMLElement& element)
 //-----------------------------------------------------------------------------------------------
 // Destructor
 //
-CampaignStageData::~CampaignStageData()
+CampaignStage::~CampaignStage()
 {
 }
 
@@ -75,7 +69,7 @@ CampaignStageData::~CampaignStageData()
 //-----------------------------------------------------------------------------------------------
 // Clones all entity spawn events as part of this stage to be updated by the CampaignManager
 //
-void CampaignStageData::CloneAllEventPrototypes(CampaignManager* manager, std::vector<EntitySpawnEvent*>& out_spawnEventClones) const
+void CampaignStage::CloneAllEventPrototypes(CampaignManager* manager, std::vector<EntitySpawnEvent*>& out_spawnEventClones) const
 {
 	// Safety check to ensure it's empty
 	for (int i = 0; i < (int)out_spawnEventClones.size(); ++i)
@@ -91,18 +85,4 @@ void CampaignStageData::CloneAllEventPrototypes(CampaignManager* manager, std::v
 		EntitySpawnEvent* clone = m_eventPrototypes[eventIndex]->Clone(manager);
 		out_spawnEventClones.push_back(clone);
 	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Adds the static spawn to the stage
-//
-void CampaignStageData::AddInitialSpawn(const EntityDefinition* definition, const Vector3& position, float orientation)
-{
-	InitialStageSpawn_t spawn;
-	spawn.definition = definition;
-	spawn.position = position;
-	spawn.orientation = orientation;
-
-	m_initialStatics.push_back(spawn);
 }

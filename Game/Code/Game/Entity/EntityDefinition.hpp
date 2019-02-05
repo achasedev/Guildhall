@@ -96,7 +96,7 @@ public:
 	//-----Public Methods-----
 
 	EntityDefinition() {} // Only to be used by Campaign manager for character select!
-	EntityDefinition(const XMLElement& entityElement);
+	EntityDefinition(const XMLElement& entityElement, eEntityClass entityClass);
 
 	BehaviorComponent* ConstructBehaviorPrototype(const XMLElement& behaviorElement);
 	
@@ -110,9 +110,9 @@ public:
 
 	static void						LoadDefinitions(const std::string& filename);
 	static const EntityDefinition*	GetDefinition(const std::string& defName);
-	static const EntityDefinition*	GetDefinition(int id);
 	static const EntityDefinition*	GetRandomPlayerDefinition();
 	static void						AddDefinition(const EntityDefinition* definition);
+	static void						GetAllCharacterSelectVolumeDefinitions(std::vector<const EntityDefinition*>& out_definitions);
 
 
 public:

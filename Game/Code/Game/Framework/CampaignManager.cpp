@@ -6,9 +6,8 @@
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
-#include "Game/Framework/SpawnPoint.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
-#include "Game/Framework/CampaignStageData.hpp"
+#include "Game/Framework/CampaignStage.hpp"
 #include "Game/Framework/CampaignDefinition.hpp"
 #include "Game/Framework/MapDefinition.hpp"
 #include "Game/Framework/CampaignManager.hpp"
@@ -25,6 +24,7 @@ CampaignManager::CampaignManager()
 	, m_stageTimer(Stopwatch(&m_spawnClock))
 	, m_spawnTick(Stopwatch(&m_spawnClock))
 {
+	m_spawnTick.SetInterval(1.0f);
 }
 
 
@@ -49,7 +49,7 @@ void CampaignManager::Initialize(const CampaignDefinition* definition)
 	m_campaignDefinition = definition;
 
 	// We don't need to clone the spawn events for the first stage, as it should be the
-	// character select, which has none
+	// character select, which has none...and if it does ignore it
 }
 
 
@@ -59,7 +59,7 @@ void CampaignManager::Initialize(const CampaignDefinition* definition)
 void CampaignManager::CleanUp()
 {
 	// Basic state
-	m_spawnTick.Reset();
+	m_spawnTick.SetInterval(1.0f);
 	m_currStageFinished = false;
 	m_currStageIndex = 0;
 	m_totalSpawnedThisStage = 0;
@@ -82,26 +82,32 @@ void CampaignManager::CleanUp()
 void CampaignManager::Update()
 {
 	// Check for spawn tick
-	if (m_spawnTick.DecrementByIntervalAll() == 0)
-	{
-		return;
-	}
+	bool spawnTicked = (m_spawnTick.DecrementByIntervalAll() > 0);
 
-	// Have all events run a spawn tick if they aren't finished
-	int numEvents = (int) m_currentSpawnEvents.size();
+	int numEvents = (int)m_currentSpawnEvents.size();
 	bool allEventsFinished = true;
 
+	// Have all events run a spawn tick if they aren't finished
 	for (int eventIndex = 0; eventIndex < numEvents; ++eventIndex)
 	{
 		EntitySpawnEvent* currEvent = m_currentSpawnEvents[eventIndex];
-		
-		if (!currEvent->IsFinishedSpawning() && currEvent->IsReadyForNextSpawn())
+
+		if (!currEvent->IsFinishedSpawning())
 		{
 			allEventsFinished = false;
-			
-			int enemiesSpawned = currEvent->RunSpawn();
-			m_totalSpawnedThisStage += enemiesSpawned;
+
+			if (spawnTicked && currEvent->IsReadyForNextSpawn())
+			{
+				int enemiesSpawned = currEvent->RunSpawn();
+				m_totalSpawnedThisStage += enemiesSpawned;
+			}
 		}
+	}
+
+	// Update for custom behavior
+	for (int eventIndex = 0; eventIndex < numEvents; ++eventIndex)
+	{
+		m_currentSpawnEvents[eventIndex]->Update();	
 	}
 
 	// End of stage check - all enemies dead
@@ -121,6 +127,7 @@ void CampaignManager::StartNextStage()
 	m_currStageFinished = false;
 	m_totalSpawnedThisStage = 0;
 
+	m_campaignDefinition->m_stages[m_currStageIndex]->CloneAllEventPrototypes(this, m_currentSpawnEvents);
 	m_stageTimer.Reset();
 }
 
@@ -135,16 +142,25 @@ bool CampaignManager::IsCurrentStageFinished() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the current stage of this campaign that players are on
+//
+const CampaignStage* CampaignManager::GetCurrentStage() const
+{
+	return m_campaignDefinition->m_stages[m_currStageIndex];
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the next stage of the manager, for transitions
 //
-const CampaignStageData* CampaignManager::GetNextStage() const
+const CampaignStage* CampaignManager::GetNextStage() const
 {
 	if (IsCurrentStageFinal())
 	{
 		return nullptr;
 	}
 
-	return &m_campaignDefinition->m_stages[m_currStageIndex + 1];
+	return m_campaignDefinition->m_stages[m_currStageIndex + 1];
 }
 
 

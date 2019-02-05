@@ -69,10 +69,7 @@ void Weapon::OnUnequip()
 //
 void Weapon::Shoot()
 {
-	if (m_entityEquippedTo == nullptr)
-	{
-		return;
-	}
+	ASSERT_OR_DIE(m_entityEquippedTo != nullptr, "Weapon fired when it doesn't have an entity owning it");
 
 	// Check the shoot timer
 	if (m_shootTimer.DecrementByIntervalAll() == 0)

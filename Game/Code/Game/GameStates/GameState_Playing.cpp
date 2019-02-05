@@ -13,6 +13,7 @@
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/CampaignManager.hpp"
+#include "Game/Framework/CampaignDefinition.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 #include "Game/Framework/PlayStates/PlayState.hpp"
 #include "Game/Framework/PlayStates/PlayState_Rest.hpp"
@@ -30,9 +31,11 @@
 //-----------------------------------------------------------------------------------------------
 // Base constructor
 //
-GameState_Playing::GameState_Playing()
+GameState_Playing::GameState_Playing(const std::string& campaignName)
 	: GameState(0.f, 0.f)
 {
+	m_campaignBeingPlayed = CampaignDefinition::GetDefinitionByName(campaignName);
+	GUARANTEE_OR_DIE(m_campaignBeingPlayed != nullptr, Stringf("GameState_Playing entered with missing campaign \"%s\"", campaignName.c_str()).c_str());
 }
 
 
@@ -69,14 +72,15 @@ bool GameState_Playing::Enter()
 	// Player 1 started this transition, so we know their controller is connected
 	Game::GetPlayers()[0] = new Player(0);
 
-	Game::GetCampaignManager()->Initialize("Data/Spawning.xml");
-	Game::GetWorld()->InititalizeForStage(Game::GetCampaignManager()->GetNextStage());
+	CampaignManager* manager = Game::GetCampaignManager();
+	manager->Initialize(m_campaignBeingPlayed);
+	Game::GetWorld()->InititalizeForStage(manager->GetCurrentStage());
 
 	// Reset current game score
 	Game::ResetScore();
 
 	// Start the music
-	Game::PlayBGM();
+	Game::PlayBGM(m_campaignBeingPlayed->m_backgroundMusicTrack);
 
 	TransitionToPlayState(new PlayState_Rest());
 

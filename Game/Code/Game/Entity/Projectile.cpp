@@ -63,7 +63,7 @@ const VoxelSprite* Projectile::GetVoxelSprite() const
 //
 void Projectile::OnEntityCollision(Entity* other)
 {
-	if (other->GetTeam() != m_entityTeam)
+	if (other->GetTeam() != m_entityTeam && !other->IsMarkedForDelete())
 	{
 		Entity::OnEntityCollision(other);
 		Vector3 direction = (other->GetCenterPosition() - GetCenterPosition()).GetNormalized();
