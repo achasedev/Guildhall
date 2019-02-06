@@ -1,0 +1,5 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Log" file="Data/VoxelModels/Environment/Log.qef"/>
+
+</VoxelSprites>

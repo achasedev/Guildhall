@@ -17,7 +17,15 @@
 		<VoxelSprite file="Data/VoxelSprites/MissileLauncher.sprite"/>
 
 		<!-- Environment -->
-		<VoxelSprite file="Data/VoxelSprites/Environment/Tree1.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Environment/Forest/Tree1.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Environment/Forest/Tree2.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Environment/Forest/Tree3.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Environment/Forest/Tree4.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Environment/Forest/Rock1.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Environment/Forest/Rock2.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Environment/Forest/Rock3.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Environment/Forest/Log.sprite"/>
+
 		<VoxelSprite file="Data/VoxelSprites/Environment/House.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Environment/TestCube.sprite"/>
 
@@ -89,9 +97,12 @@
 	</VoxelTerrains>
 
 	<Maps>
+		<Map file="Data/Maps/Forest0.map"/>
 		<Map file="Data/Maps/Forest1.map"/>
 		<Map file="Data/Maps/Forest2.map"/>
 		<Map file="Data/Maps/Forest3.map"/>
+		<Map file="Data/Maps/Forest4.map"/>
+		<Map file="Data/Maps/Forest5.map"/>
 	</Maps>
 
 	<!-- END MAPS -->

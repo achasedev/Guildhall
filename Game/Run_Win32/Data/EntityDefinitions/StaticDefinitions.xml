@@ -16,6 +16,55 @@
 		</Physics>	
 	</EntityDefinition>
 
+	<EntityDefinition name="Tree2">
+		<Visuals default_sprite="Tree2" destructible="true"/>
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>	
+	</EntityDefinition>
+
+	<EntityDefinition name="Tree3">
+		<Visuals default_sprite="Tree3" destructible="true"/>
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>	
+	</EntityDefinition>
+
+	<EntityDefinition name="Tree4">
+		<Visuals default_sprite="Tree4" destructible="true"/>
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>	
+	</EntityDefinition>
+
+	<EntityDefinition name="Rock1">
+		<Visuals default_sprite="Rock1" destructible="true"/>
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>	
+	</EntityDefinition>
+
+	<EntityDefinition name="Rock2">
+		<Visuals default_sprite="Rock2" destructible="true"/>
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>	
+	</EntityDefinition>
+
+	<EntityDefinition name="Rock3">
+		<Visuals default_sprite="Rock3" destructible="true"/>
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>	
+	</EntityDefinition>
+
+	<EntityDefinition name="Log">
+		<Visuals default_sprite="Log" destructible="true"/>
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>	
+	</EntityDefinition>
+
 	<EntityDefinition name="House">
 		<Visuals default_sprite="House" destructible="true"/>
 		<Physics physics_type="static">

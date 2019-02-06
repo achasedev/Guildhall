@@ -3,5 +3,7 @@
 	<VoxelTerrain name="Grass1" file="Data/VoxelModels/Terrains/Grass/Grass1.qef"/>
 	<VoxelTerrain name="Grass2" file="Data/VoxelModels/Terrains/Grass/Grass2.qef"/>
 	<VoxelTerrain name="Grass3" file="Data/VoxelModels/Terrains/Grass/Grass3.qef"/>
+	<VoxelTerrain name="Grass4" file="Data/VoxelModels/Terrains/Grass/Grass3.qef"/>
+	<VoxelTerrain name="Grass5" file="Data/VoxelModels/Terrains/Grass/Grass3.qef"/>
 
 </VoxelTerrains>

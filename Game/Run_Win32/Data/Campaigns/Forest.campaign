@@ -1,14 +1,23 @@
-<Campaign name="Forest" music="Data/Audio/Music/Boss Battle #4 V1.wav" character_select_map="Forest1">
+<Campaign name="Forest" music="Data/Audio/Music/Boss Battle #4 V1.wav" character_select_map="Forest0">
 
 	<Stage map="Forest3" enter="west">
-		<SpawnEvent type="default" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="5"/>
+		<SpawnEvent type="default" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
 	</Stage> 
 
 	<Stage map="Forest2" enter="west">
 		<SpawnEvent entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
 	</Stage>
 
-	<Stage map="Forest3" enter="north">
+	<Stage map="Forest3" enter="south">
+		<SpawnEvent entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+	</Stage>
+
+	<Stage map="Forest4" enter="east">
+		<SpawnEvent entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+	</Stage>
+
+
+	<Stage map="Forest5" enter="south">
 		<SpawnEvent entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
 	</Stage>
 

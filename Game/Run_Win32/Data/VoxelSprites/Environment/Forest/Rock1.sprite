@@ -1,0 +1,5 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Rock1" file="Data/VoxelModels/Environment/Rock1.qef"/>
+
+</VoxelSprites>
