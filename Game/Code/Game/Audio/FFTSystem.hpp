@@ -7,6 +7,7 @@
 #pragma once
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/IntVector2.hpp"
+#include "Engine/Math/FloatRange.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Rendering/Meshes/Mesh.hpp"
 
@@ -21,6 +22,8 @@ public:
 	virtual void	BeginFrame() override;
 	void			ProcessInput();
 	void			Render() const;
+
+	void			PlayMusicTrackForFFT(SoundID soundID, float volume = 1.f);
 
 	// FFT Mutators
 	void						SetFFTGraphMaxXValue(float maxXValue);
@@ -50,19 +53,24 @@ private:
 	// FFT Data
 	FMOD::DSP*							m_fftDSP = nullptr;
 	FMOD_DSP_PARAMETER_FFT*				m_spectrumData = nullptr;
-	const float							m_sampleRate = 48000.f; // TODO: Find out how to get FMOD to tell me the sample rate
+	float								m_sampleRate = -1.0f;
 	const float							m_nyquistFreq = m_sampleRate * 0.5f;
+	FMOD::Channel*						m_musicChannel = nullptr;
 
 	// FFT Settings
-	unsigned int						m_fftWindowSize = 4096;
+	unsigned int						m_fftWindowSize = 1024;
 
 	// FFT Calculated Data
 	float								m_maxValueLastFrame = 0.f;
 
+	// Beat Detection
+	FloatRange							m_beatFrequencyRange = FloatRange(40.f, 80.f);
+	std::vector<float>					m_oneSecondAverageHistory;
+
 	// Rendering
 	bool								m_renderFFTGraph = true;
 	float								m_fftMaxYAxis = 1.0f;
-	unsigned int						m_binsToDisplay = 512;
+	unsigned int						m_binsToDisplay = 128;
 	mutable Mesh						m_barMesh;
 	mutable Mesh						m_gridMesh;
 

@@ -198,6 +198,23 @@ void FFTSystem::Render() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Plays the music track on the system for FFT analysis
+//
+void FFTSystem::PlayMusicTrackForFFT(SoundID soundID, float volume /*= 1.f*/)
+{
+	if (m_musicChannel != nullptr)
+	{
+		AudioSystem::StopSound((SoundPlaybackID)m_musicChannel);
+	}
+
+	m_musicChannel = (FMOD::Channel*) AudioSystem::PlaySound(soundID, true, volume);
+
+	// Update sample rate
+	m_musicChannel->getFrequency(&m_sampleRate);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Sets the max frequency value that is shown on the graph when rendererd (X-axis)
 //
 void FFTSystem::SetFFTGraphMaxXValue(float maxXValue)

@@ -39,13 +39,13 @@ Game::Game()
 	// FFT System
 	m_fftSystem = new FFTSystem();
 
-	SoundID sound = m_fftSystem->CreateOrGetSound("Data/Audio/Music/200hz.mp3");
+	SoundID sound = m_fftSystem->CreateOrGetSound("Data/Audio/Music/Test.mp3");
 // 	SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/50hz.mp3");
 // 	SoundID sound4 = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/200hz.mp3");
 // 	SoundID sound2 = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/1000hz.mp3");
 // 	SoundID sound3 = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/5000hz.mp3");
 
-	m_fftSystem->PlaySound(sound, true);
+	m_fftSystem->PlayMusicTrackForFFT(sound, 1.0f);
 // 	AudioSystem::GetInstance()->PlaySound(sound2, true);
 // 	AudioSystem::GetInstance()->PlaySound(sound3, true);
 // 	AudioSystem::GetInstance()->PlaySound(sound4, true);
