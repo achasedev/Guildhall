@@ -11,6 +11,8 @@
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Rendering/Meshes/Mesh.hpp"
 
+class Stopwatch;
+
 class FFTSystem : public AudioSystem
 {
 public:
@@ -42,9 +44,9 @@ private:
 	void SetupFFTGraphUI();
 	void CreateAndAddFFTDSPToMasterChannel();
 
-	bool CheckForNewSample();
+	void CheckForNewSample();
 	void UpdateBeatDetection();
-	bool CheckForBeat();
+	void CheckForBeat();
 	void UpdateOneSecondAverageHistory();
 	void UpdateLastFFTSample(float* newData);
 
@@ -57,7 +59,7 @@ private:
 
 	// FFT Data
 	FMOD::DSP*							m_fftDSP = nullptr;
-	FMOD_DSP_PARAMETER_FFT*				m_spectrumData = nullptr;
+	FMOD_DSP_PARAMETER_FFT*				m_fmodCurrentFFTData = nullptr;
 	float								m_sampleRate = -1.0f;
 	const float							m_nyquistFreq = m_sampleRate * 0.5f;
 	FMOD::Channel*						m_musicChannel = nullptr;
@@ -71,11 +73,15 @@ private:
 	float*								m_lastFFTSample = nullptr;
 
 	// Beat Detection
-	FloatRange							m_beatFrequencyRange = FloatRange(40.f, 80.f);
+	Stopwatch*							m_beatTimer = nullptr;
+	FloatRange							m_beatFrequencyRange = FloatRange(20.f, 60.f);
 	std::vector<float>					m_oneSecondBeatSampleAverageHistory;
 
-	float								m_oneSecondBeatSampleHistoryAverage;
-	float								m_oneSecondBeatSampleHistoryVariance;
+	float								m_binRangeAverage = 0.f;
+	float								m_historyAverage = -1.0f;
+	float								m_historyVariance = -1.0f;
+
+	bool								m_beatDetected = false;
 
 	// Rendering
 	bool								m_renderFFTGraph = true;

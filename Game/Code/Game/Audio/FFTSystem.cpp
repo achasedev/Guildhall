@@ -8,12 +8,12 @@
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Rendering/Meshes/MeshBuilder.hpp"
 #include "Engine/Rendering/Resources/BitmapFont.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -22,6 +22,9 @@ FFTSystem::FFTSystem()
 {
 	CreateAndAddFFTDSPToMasterChannel();
 	SetupFFTGraphUI();
+
+	m_beatTimer = new Stopwatch();
+	m_beatTimer->SetInterval(0.25f);
 }
 
 
@@ -32,7 +35,7 @@ FFTSystem::~FFTSystem()
 {
 	// Shouldn't have to delete these, as they're just convenience pointers
 	m_fftDSP = nullptr;
-	m_spectrumData = nullptr;
+	m_fmodCurrentFFTData = nullptr;
 }
 
 
@@ -46,8 +49,8 @@ void FFTSystem::BeginFrame()
 	// Check if the sample we received this frame is a new one
 	CheckForNewSample();
 
-	if (m_receivedNewSampleThisFrame)
-	{
+ 	if (m_receivedNewSampleThisFrame)
+ 	{
 		// Check for a beat
 		UpdateBeatDetection();
 
@@ -147,7 +150,7 @@ void FFTSystem::Render() const
 	renderer->DrawMeshWithMaterial(&m_gridMesh, AssetDB::GetSharedMaterial("UI"));
 	renderer->DrawMeshWithMaterial(&m_barMesh, AssetDB::GetSharedMaterial("Gradient"));
 
-	std::string text = Stringf("Number of Channels: %i\n", m_spectrumData->numchannels);
+	std::string text = Stringf("Number of Channels: %i\n", m_fmodCurrentFFTData->numchannels);
 	text += Stringf("Number of intervals displayed: %i (out of %i)\n", m_binsToDisplay, m_fftWindowSize);
 	text += Stringf("Frequency resolution: %f hz\n", m_sampleRate / (float)m_fftWindowSize);
 	text += Stringf("Sample Rate: %.0f hz\n", m_sampleRate);
@@ -160,6 +163,12 @@ void FFTSystem::Render() const
 	text += Stringf("[Left, Right] Window Type: %s", windowTypeText.c_str());
 
 	renderer->DrawTextInBox2D(text, m_headingBounds, Vector2::ZERO, m_fontHeight, TEXT_DRAW_SHRINK_TO_FIT, font, m_fontColor);
+
+	if (m_beatDetected)
+	{
+		text = "BEAT";
+		renderer->DrawTextInBox2D(text, m_headingBounds, Vector2(1.0f, 0.f), m_fontHeight, TEXT_DRAW_SHRINK_TO_FIT, font, m_fontColor);
+	}
 
 	// Draw x axis labels
 	float maxFrequencyOnGraph = m_sampleRate * ((float)m_binsToDisplay / (float)m_fftWindowSize);
@@ -344,7 +353,9 @@ void FFTSystem::CreateAndAddFFTDSPToMasterChannel()
 	// Get the fft data
 	void* spectrumData = nullptr;
 	m_fftDSP->getParameterData(FMOD_DSP_FFT_SPECTRUMDATA, (void**)&spectrumData, 0, 0, 0);
-	m_spectrumData = (FMOD_DSP_PARAMETER_FFT*)spectrumData;
+	m_fmodCurrentFFTData = (FMOD_DSP_PARAMETER_FFT*)spectrumData;
+
+	ASSERT_OR_DIE(m_fmodCurrentFFTData != nullptr, "No FFT data available");
 }
 
 
@@ -378,25 +389,26 @@ bool DoSamplesMatch(float* oldSample, float* newSample, int length)
 // Checks if the current sample in FMOD is a new sample to us, and updates members if so
 // Returns true if so, false otherwise
 //
-bool FFTSystem::CheckForNewSample()
+void FFTSystem::CheckForNewSample()
 {
 	// Check to see if there is a new sample this frame
-	float* thisFrameSample = (float*)malloc(sizeof(float) * m_spectrumData->length);
+	float* thisFrameSample = (float*)malloc(sizeof(float) * m_fmodCurrentFFTData->length);
+	memset(thisFrameSample, 0, sizeof(float) * m_fmodCurrentFFTData->length);
 
-	for (int binIndex = 0; binIndex < m_spectrumData->length; ++binIndex)
+	for (int binIndex = 0; binIndex < m_fmodCurrentFFTData->length; ++binIndex)
 	{
-		for (int channelIndex = 0; channelIndex < m_spectrumData->numchannels; ++channelIndex)
+		for (int channelIndex = 0; channelIndex < m_fmodCurrentFFTData->numchannels; ++channelIndex)
 		{
-			thisFrameSample[binIndex] += m_spectrumData->spectrum[channelIndex][binIndex];
+			thisFrameSample[binIndex] += m_fmodCurrentFFTData->spectrum[channelIndex][binIndex];
 		}
 
 		// If we want average of the channels...
-		//thisFrameSample[binIndex] /= (float)m_spectrumData->numchannels;
+		thisFrameSample[binIndex] /= (float)m_fmodCurrentFFTData->numchannels;
 	}
 
-	bool haveNewData = !DoSamplesMatch(m_lastFFTSample, thisFrameSample, m_spectrumData->length);
+	m_receivedNewSampleThisFrame = !DoSamplesMatch(m_lastFFTSample, thisFrameSample, m_fmodCurrentFFTData->length);
 
-	if (haveNewData)
+	if (m_receivedNewSampleThisFrame)
 	{
 		m_receivedNewSampleThisFrame = true;
 		UpdateLastFFTSample(thisFrameSample);
@@ -414,21 +426,33 @@ bool FFTSystem::CheckForNewSample()
 //
 void FFTSystem::UpdateBeatDetection()
 {
-	// Use the heuristics to check for a beat
-	CheckForBeat();
-
 	// Add this sample's average to the one-second history,
 	// regardless if a beat was this sample or not
 	UpdateOneSecondAverageHistory();
+
+	// Use the heuristics to check for a beat
+	if (m_beatTimer->HasIntervalElapsed())
+	{
+		CheckForBeat();
+	}
 }
 
-
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 //-----------------------------------------------------------------------------------------------
 // Checks for a beat in the last FFT sample using the heuristics
 //
-bool FFTSystem::CheckForBeat()
+void FFTSystem::CheckForBeat()
 {
+	float threshold = -15.f * m_historyVariance + 1.5f;
+	ConsolePrintf("%.8f", m_historyVariance);
+	float minValue = threshold * m_historyAverage;
 
+	m_beatDetected = m_binRangeAverage > minValue;
+
+	if (m_beatDetected)
+	{
+		m_beatTimer->SetInterval(0.3f);
+	}
 }
 
 
@@ -446,16 +470,16 @@ void FFTSystem::UpdateOneSecondAverageHistory()
 	int binCount = (maxBinIndex - minBinIndex + 1);
 
 	// Average these bins in this sample
-	float averageOfThisSample = 0.f;
+	m_binRangeAverage = 0.f;
 	for (int binIndex = minBinIndex; binIndex <= maxBinIndex; ++binIndex)
 	{
-		averageOfThisSample += m_lastFFTSample[binIndex];
+		m_binRangeAverage += m_lastFFTSample[binIndex];
 	}
 
-	averageOfThisSample /= (float)binCount;
+	m_binRangeAverage /= (float)binCount;
 
 	// Add the average to the history
-	m_oneSecondBeatSampleAverageHistory.push_back(averageOfThisSample);
+	m_oneSecondBeatSampleAverageHistory.push_back(m_binRangeAverage);
 
 	// Remove the oldest average if it's over one second of history
 	int samplesPerSecond = Ceiling(frequencyPerBin);
@@ -465,9 +489,31 @@ void FFTSystem::UpdateOneSecondAverageHistory()
 		m_oneSecondBeatSampleAverageHistory.erase(m_oneSecondBeatSampleAverageHistory.begin());
 	}
 
-	// Update the average
+	// Update the average and variance of the history if we have 1 second's worth
+	if ((int)m_oneSecondBeatSampleAverageHistory.size() == samplesPerSecond)
+	{
+		// Update the average of the history
+		m_historyAverage = 0.f;
+		for (int historyIndex = 0; historyIndex < samplesPerSecond; ++historyIndex)
+		{
+			m_historyAverage += m_oneSecondBeatSampleAverageHistory[historyIndex];
+		}
 
-	// Update the variance
+		m_historyAverage /= (float)samplesPerSecond;
+
+
+		// Update the variance of the history
+		m_historyVariance = 0.f;
+		for (int historyIndex = 0; historyIndex < samplesPerSecond; ++historyIndex)
+		{
+			float value = m_oneSecondBeatSampleAverageHistory[historyIndex] - m_historyAverage;
+			value *= value;
+
+			m_historyVariance += value;
+		}
+
+		m_historyVariance /= (float)samplesPerSecond;
+	}
 }
 
 
@@ -491,7 +537,7 @@ void FFTSystem::UpdateLastFFTSample(float* newData)
 //
 void FFTSystem::UpdateBarMesh()
 {
-	if (m_spectrumData != nullptr)
+	if (m_fmodCurrentFFTData != nullptr)
 	{
 		float boxWidth = m_graphBounds.GetDimensions().x / (float)m_binsToDisplay;
 		AABB2 baseBoxBounds = AABB2(m_graphBounds.mins, m_graphBounds.mins + Vector2(boxWidth, m_graphBounds.GetDimensions().y));
@@ -505,12 +551,8 @@ void FFTSystem::UpdateBarMesh()
 		for (unsigned int i = 0; i < m_binsToDisplay; ++i)
 		{
 			// Get the sum of all channels
-			float value = 0.f;
-			for (int j = 0; j < m_spectrumData->numchannels; ++j)
-			{
-				value += m_spectrumData->spectrum[j][i];
-			}
-
+			float value = m_lastFFTSample[i];
+			
 			m_maxValueLastFrame = MaxFloat(value, m_maxValueLastFrame);
 
 			AABB2 currBoxBounds = baseBoxBounds;
