@@ -42,7 +42,12 @@ private:
 	void SetupFFTGraphUI();
 	void CreateAndAddFFTDSPToMasterChannel();
 
-	void UpdateFFTData();
+	bool CheckForNewSample();
+	void UpdateBeatDetection();
+	bool CheckForBeat();
+	void UpdateOneSecondAverageHistory();
+	void UpdateLastFFTSample(float* newData);
+
 	void UpdateBarMesh();
 	void UpdateGridAndPanelMesh();
 
@@ -61,11 +66,16 @@ private:
 	unsigned int						m_fftWindowSize = 1024;
 
 	// FFT Calculated Data
+	bool								m_receivedNewSampleThisFrame = false;
 	float								m_maxValueLastFrame = 0.f;
+	float*								m_lastFFTSample = nullptr;
 
 	// Beat Detection
 	FloatRange							m_beatFrequencyRange = FloatRange(40.f, 80.f);
-	std::vector<float>					m_oneSecondAverageHistory;
+	std::vector<float>					m_oneSecondBeatSampleAverageHistory;
+
+	float								m_oneSecondBeatSampleHistoryAverage;
+	float								m_oneSecondBeatSampleHistoryVariance;
 
 	// Rendering
 	bool								m_renderFFTGraph = true;

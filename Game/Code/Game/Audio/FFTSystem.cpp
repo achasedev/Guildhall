@@ -43,14 +43,20 @@ void FFTSystem::BeginFrame()
 {
 	AudioSystem::BeginFrame();
 
-	// Analyze the FFT data for this frame
-	UpdateFFTData();
+	// Check if the sample we received this frame is a new one
+	CheckForNewSample();
 
-	// Update bar mesh if rendering
-	if (m_renderFFTGraph)
+	if (m_receivedNewSampleThisFrame)
 	{
-		UpdateBarMesh();
-		UpdateGridAndPanelMesh();
+		// Check for a beat
+		UpdateBeatDetection();
+
+		// Update bar mesh if rendering
+		if (m_renderFFTGraph)
+		{
+			UpdateBarMesh();
+			UpdateGridAndPanelMesh();
+		}
 	}
 }
 
@@ -334,21 +340,149 @@ void FFTSystem::CreateAndAddFFTDSPToMasterChannel()
 
 	result = masterChannelGroup->addDSP(FMOD_CHANNELCONTROL_DSP_HEAD, m_fftDSP);
 	ASSERT_OR_DIE(result == FMOD_OK, "Couldn't ADD the DSP to the master channel group");
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Grabs the last frame's FFT data and parses it
-//
-void FFTSystem::UpdateFFTData()
-{
-	FMOD::ChannelGroup* masterChannelGroup = nullptr;
-	m_fmodSystem->getMasterChannelGroup(&masterChannelGroup);
 
 	// Get the fft data
 	void* spectrumData = nullptr;
 	m_fftDSP->getParameterData(FMOD_DSP_FFT_SPECTRUMDATA, (void**)&spectrumData, 0, 0, 0);
 	m_spectrumData = (FMOD_DSP_PARAMETER_FFT*)spectrumData;
+}
+
+
+//---C FUNCTION----------------------------------------------------------------------------------
+// Checks to see if the two spectrums match or not
+//
+bool DoSamplesMatch(float* oldSample, float* newSample, int length)
+{
+	ASSERT_OR_DIE(newSample != nullptr, "New Data in spectrum match was null");
+
+	if (oldSample == nullptr)
+	{
+		return false;
+	}
+
+	bool match = true;
+	for (int i = 0; i < length; ++i)
+	{
+		if (oldSample[i] != newSample[i])
+		{
+			match = false;
+			break;
+		}
+	}
+
+	return match;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks if the current sample in FMOD is a new sample to us, and updates members if so
+// Returns true if so, false otherwise
+//
+bool FFTSystem::CheckForNewSample()
+{
+	// Check to see if there is a new sample this frame
+	float* thisFrameSample = (float*)malloc(sizeof(float) * m_spectrumData->length);
+
+	for (int binIndex = 0; binIndex < m_spectrumData->length; ++binIndex)
+	{
+		for (int channelIndex = 0; channelIndex < m_spectrumData->numchannels; ++channelIndex)
+		{
+			thisFrameSample[binIndex] += m_spectrumData->spectrum[channelIndex][binIndex];
+		}
+
+		// If we want average of the channels...
+		//thisFrameSample[binIndex] /= (float)m_spectrumData->numchannels;
+	}
+
+	bool haveNewData = !DoSamplesMatch(m_lastFFTSample, thisFrameSample, m_spectrumData->length);
+
+	if (haveNewData)
+	{
+		m_receivedNewSampleThisFrame = true;
+		UpdateLastFFTSample(thisFrameSample);
+	}
+	else
+	{
+		m_receivedNewSampleThisFrame = false;
+		free(thisFrameSample);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Updates the logic for detecting beats on the fft data
+//
+void FFTSystem::UpdateBeatDetection()
+{
+	// Use the heuristics to check for a beat
+	CheckForBeat();
+
+	// Add this sample's average to the one-second history,
+	// regardless if a beat was this sample or not
+	UpdateOneSecondAverageHistory();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks for a beat in the last FFT sample using the heuristics
+//
+bool FFTSystem::CheckForBeat()
+{
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Pushes this frame's sample average into our history, removing any samples outside the sample window
+//
+void FFTSystem::UpdateOneSecondAverageHistory()
+{
+	// Get the bin range for our beat detection
+	float frequencyPerBin = m_sampleRate / (float)m_fftWindowSize;
+
+	int minBinIndex = (int) (m_beatFrequencyRange.min / frequencyPerBin); // Cast as int to floor it, 0-based indexing
+	int maxBinIndex = (int) (m_beatFrequencyRange.max / frequencyPerBin);
+
+	int binCount = (maxBinIndex - minBinIndex + 1);
+
+	// Average these bins in this sample
+	float averageOfThisSample = 0.f;
+	for (int binIndex = minBinIndex; binIndex <= maxBinIndex; ++binIndex)
+	{
+		averageOfThisSample += m_lastFFTSample[binIndex];
+	}
+
+	averageOfThisSample /= (float)binCount;
+
+	// Add the average to the history
+	m_oneSecondBeatSampleAverageHistory.push_back(averageOfThisSample);
+
+	// Remove the oldest average if it's over one second of history
+	int samplesPerSecond = Ceiling(frequencyPerBin);
+
+	if ((int)m_oneSecondBeatSampleAverageHistory.size() > samplesPerSecond)
+	{
+		m_oneSecondBeatSampleAverageHistory.erase(m_oneSecondBeatSampleAverageHistory.begin());
+	}
+
+	// Update the average
+
+	// Update the variance
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Updates the sum of the spectrum bins for the last frame, for detecting when a new sample is
+// available
+//
+void FFTSystem::UpdateLastFFTSample(float* newData)
+{
+	if (m_lastFFTSample != nullptr)
+	{
+		free(m_lastFFTSample);
+	}
+
+	m_lastFFTSample = newData;
 }
 
 
