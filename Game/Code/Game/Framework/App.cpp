@@ -174,12 +174,6 @@ void App::Render() const
 	// Updating here in Render to ensure one-frame tasks are cleaned up this frame
 	DebugRenderSystem::GetInstance()->UpdateAndRender();
 
-	// Render the AudioSystem graph if enabled
-	if (AudioSystem::GetInstance()->ShouldRender())
-	{
-		AudioSystem::GetInstance()->RenderFFTGraph();
-	}
-
 	// Draw the Profiler if it is open
 	if (Profiler::IsProfilerOpen())
 	{
@@ -246,9 +240,6 @@ void App::ProcessInput()
 		}
 		else
 		{
-			// For FFT input during gameplay
-			AudioSystem::GetInstance()->ProcessInput();
-
 			Game::GetInstance()->ProcessInput();
 		}
 	}

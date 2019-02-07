@@ -286,24 +286,18 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Audio\FFTSystem.cpp" />
     <ClCompile Include="Framework\App.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
-    <ClCompile Include="GameStates\GameState.cpp" />
-    <ClCompile Include="GameStates\GameState_Loading.cpp" />
-    <ClCompile Include="GameStates\GameState_MainMenu.cpp" />
-    <ClCompile Include="GameStates\GameState_Playing.cpp" />
     <ClCompile Include="Framework\Main_Win32.cpp" />
     <ClCompile Include="Framework\Game.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Audio\FFTSystem.hpp" />
     <ClInclude Include="Framework\App.hpp" />
     <ClInclude Include="Framework\EngineBuildPreferences.hpp" />
     <ClInclude Include="Framework\Game.hpp" />
     <ClInclude Include="Framework\GameCommon.hpp" />
-    <ClInclude Include="GameStates\GameState.hpp" />
-    <ClInclude Include="GameStates\GameState_Loading.hpp" />
-    <ClInclude Include="GameStates\GameState_MainMenu.hpp" />
-    <ClInclude Include="GameStates\GameState_Playing.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Engine\Code\Engine\Engine.vcxproj">

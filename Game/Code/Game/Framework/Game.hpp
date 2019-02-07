@@ -14,7 +14,7 @@
 
 class Clock;
 class Camera;
-class GameState;
+class FFTSystem;
 
 enum eGameStateState
 {
@@ -39,19 +39,12 @@ public:
 	void Update();						// Updates all game object states, called each frame
 	void Render() const;				// Renders all game objects to screen, called each frame
 
-	// Audio
-	bool SetupDSPForTrack(const std::string& audioPath);
-
 
 	// Accessors
-	GameState*					GetGameState() const;
 	static Game*				GetInstance();
 	static Clock*				GetGameClock();
 	static Camera*				GetGameCamera();
 	static float				GetDeltaTime();
-
-	// Mutators
-	static void					TransitionToGameState(GameState* newState);
 
 
 private:
@@ -61,33 +54,15 @@ private:
 	~Game();
 	Game(const Game& copy) = delete;
 
-	void UpdateBarMesh();
-
 
 private:
 	//-----Private Data-----
 
-	bool			m_doneLoading = false;
-	GameState*		m_currentState = nullptr;
-	GameState*		m_transitionState = nullptr;
-	eGameStateState m_gameStateState = GAME_STATE_TRANSITIONING_IN;
-
 	Camera*			m_gameCamera = nullptr;
 	Clock*			m_gameClock = nullptr;
 
-	mutable Mesh			m_barMesh;
-
-	int m_numChannels = 2;
-	int m_numSegmentsTotal = 0;
-	int m_numSegmentsBeingAnalyzed = 0;
-	int m_zeroCount = 0;
-	float m_maxValue = 0.f;
-	float m_sumOfValues = 0.f;
-
-	static constexpr int FFT_WINDOW_SIZE = 4096;
-	static constexpr int FFT_WINDOW_FRACTION_DIVISOR = 8;
-
-	static constexpr float FONT_HEIGHT = 30.f;
+	FFTSystem*		m_fftSystem = nullptr;
+	
 	static Game* s_instance;			// The singleton Game instance
 
 };
