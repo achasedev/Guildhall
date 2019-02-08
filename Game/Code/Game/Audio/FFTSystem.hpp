@@ -9,10 +9,27 @@
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Math/FloatRange.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Rendering/Meshes/Mesh.hpp"
 
 class Stopwatch;
 
+struct ThresholdDetectData_t
+{
+	Stopwatch							delayTimer = nullptr;
+	float								delayInterval;
+
+	FloatRange							frequencyRange;
+	std::vector<float>					onceSecondSampleAverages;
+
+	float								lastSampleRangeAverage = 0.f;
+	float								historyAverage = -1.0f;
+	float								historyVariance = -1.0f;
+
+	bool								thresholdBrokenLastSample = false;
+
+};
+ 
 class FFTSystem : public AudioSystem
 {
 public:
@@ -43,11 +60,12 @@ private:
 
 	void SetupFFTGraphUI();
 	void CreateAndAddFFTDSPToMasterChannel();
+	void SetupThresholdDetectionSettings();
 
 	void CheckForNewSample();
-	void UpdateBeatDetection();
-	void CheckForBeat();
-	void UpdateOneSecondAverageHistory();
+	void UpdateThresholdData(ThresholdDetectData_t& data);
+	void CheckForBeat(ThresholdDetectData_t& data);
+	void UpdateOneSecondAverageHistory(ThresholdDetectData_t& data);
 	void UpdateLastFFTSample(float* newData);
 
 	void UpdateBarMesh();
@@ -72,16 +90,19 @@ private:
 	float								m_maxValueLastFrame = 0.f;
 	float*								m_lastFFTSample = nullptr;
 
+	ThresholdDetectData_t				m_bassDrumData;
+	ThresholdDetectData_t				m_snareDrumData;
+
 	// Beat Detection
-	Stopwatch*							m_beatTimer = nullptr;
-	FloatRange							m_beatFrequencyRange = FloatRange(20.f, 60.f);
-	std::vector<float>					m_oneSecondBeatSampleAverageHistory;
-
-	float								m_binRangeAverage = 0.f;
-	float								m_historyAverage = -1.0f;
-	float								m_historyVariance = -1.0f;
-
-	bool								m_beatDetected = false;
+// 	Stopwatch*							m_beatTimer = nullptr;
+// 	FloatRange							m_beatFrequencyRange = FloatRange(40.f, 70.f);
+// 	std::vector<float>					m_oneSecondBeatSampleAverageHistory;
+// 
+// 	float								m_currentBinRangeAverage = 0.f;
+// 	float								m_historyAverage = -1.0f;
+// 	float								m_historyVariance = -1.0f;
+// 
+// 	bool								m_beatDetected = false;
 
 	// Rendering
 	bool								m_renderFFTGraph = true;

@@ -39,7 +39,7 @@ Game::Game()
 	// FFT System
 	m_fftSystem = new FFTSystem();
 
-	SoundID sound = m_fftSystem->CreateOrGetSound("Data/Audio/Music/Test.mp3");
+	SoundID sound = m_fftSystem->CreateOrGetSound("Data/Audio/Music/DrumSet.mp3");
 // 	SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/50hz.mp3");
 // 	SoundID sound4 = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/200hz.mp3");
 // 	SoundID sound2 = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/1000hz.mp3");

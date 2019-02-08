@@ -22,9 +22,7 @@ FFTSystem::FFTSystem()
 {
 	CreateAndAddFFTDSPToMasterChannel();
 	SetupFFTGraphUI();
-
-	m_beatTimer = new Stopwatch();
-	m_beatTimer->SetInterval(0.25f);
+	SetupThresholdDetectionSettings();
 }
 
 
@@ -51,8 +49,11 @@ void FFTSystem::BeginFrame()
 
  	if (m_receivedNewSampleThisFrame)
  	{
-		// Check for a beat
-		UpdateBeatDetection();
+		// Check for a bass drum hit
+		UpdateThresholdData(m_bassDrumData);
+
+		// Check for a snare hit
+		UpdateThresholdData(m_snareDrumData);
 
 		// Update bar mesh if rendering
 		if (m_renderFFTGraph)
@@ -164,9 +165,19 @@ void FFTSystem::Render() const
 
 	renderer->DrawTextInBox2D(text, m_headingBounds, Vector2::ZERO, m_fontHeight, TEXT_DRAW_SHRINK_TO_FIT, font, m_fontColor);
 
-	if (m_beatDetected)
+	text.clear();
+	if (m_bassDrumData.thresholdBrokenLastSample)
 	{
-		text = "BEAT";
+		text = "BASS";
+	}
+
+	if (m_snareDrumData.thresholdBrokenLastSample)
+	{
+		text += " \nSNARE";
+	}
+
+	if (!IsStringNullOrEmpty(text))
+	{
 		renderer->DrawTextInBox2D(text, m_headingBounds, Vector2(1.0f, 0.f), m_fontHeight, TEXT_DRAW_SHRINK_TO_FIT, font, m_fontColor);
 	}
 
@@ -359,6 +370,19 @@ void FFTSystem::CreateAndAddFFTDSPToMasterChannel()
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Initializes the thresold data sets to begin detection
+//
+void FFTSystem::SetupThresholdDetectionSettings()
+{
+	m_bassDrumData.frequencyRange = FloatRange(40.f, 60.f);
+	m_bassDrumData.delayInterval = 0.25f;
+
+	m_snareDrumData.frequencyRange = FloatRange(260.f, 300.f);
+	m_snareDrumData.delayInterval = 0.25f;
+}
+
+
 //---C FUNCTION----------------------------------------------------------------------------------
 // Checks to see if the two spectrums match or not
 //
@@ -424,34 +448,33 @@ void FFTSystem::CheckForNewSample()
 //-----------------------------------------------------------------------------------------------
 // Updates the logic for detecting beats on the fft data
 //
-void FFTSystem::UpdateBeatDetection()
+void FFTSystem::UpdateThresholdData(ThresholdDetectData_t& data)
 {
 	// Add this sample's average to the one-second history,
 	// regardless if a beat was this sample or not
-	UpdateOneSecondAverageHistory();
+	UpdateOneSecondAverageHistory(data);
 
 	// Use the heuristics to check for a beat
-	if (m_beatTimer->HasIntervalElapsed())
+	if (data.delayTimer.HasIntervalElapsed())
 	{
-		CheckForBeat();
+		CheckForBeat(data);
 	}
 }
 
-#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // Checks for a beat in the last FFT sample using the heuristics
 //
-void FFTSystem::CheckForBeat()
+void FFTSystem::CheckForBeat(ThresholdDetectData_t& data)
 {
-	float threshold = -15.f * m_historyVariance + 1.5f;
-	ConsolePrintf("%.8f", m_historyVariance);
-	float minValue = threshold * m_historyAverage;
+	float threshold = -15.f * data.historyVariance + 1.55f;
+	float minValue = threshold * data.historyAverage;
 
-	m_beatDetected = m_binRangeAverage > minValue;
+	data.thresholdBrokenLastSample = data.lastSampleRangeAverage > minValue;
 
-	if (m_beatDetected)
+	if (data.thresholdBrokenLastSample)
 	{
-		m_beatTimer->SetInterval(0.3f);
+		data.delayTimer.SetInterval(data.delayInterval);
 	}
 }
 
@@ -459,60 +482,60 @@ void FFTSystem::CheckForBeat()
 //-----------------------------------------------------------------------------------------------
 // Pushes this frame's sample average into our history, removing any samples outside the sample window
 //
-void FFTSystem::UpdateOneSecondAverageHistory()
+void FFTSystem::UpdateOneSecondAverageHistory(ThresholdDetectData_t& data)
 {
 	// Get the bin range for our beat detection
 	float frequencyPerBin = m_sampleRate / (float)m_fftWindowSize;
 
-	int minBinIndex = (int) (m_beatFrequencyRange.min / frequencyPerBin); // Cast as int to floor it, 0-based indexing
-	int maxBinIndex = (int) (m_beatFrequencyRange.max / frequencyPerBin);
+	int minBinIndex = (int) (data.frequencyRange.min / frequencyPerBin); // Cast as int to floor it, 0-based indexing
+	int maxBinIndex = (int) (data.frequencyRange.max / frequencyPerBin);
 
 	int binCount = (maxBinIndex - minBinIndex + 1);
 
 	// Average these bins in this sample
-	m_binRangeAverage = 0.f;
+	data.lastSampleRangeAverage = 0.f;
 	for (int binIndex = minBinIndex; binIndex <= maxBinIndex; ++binIndex)
 	{
-		m_binRangeAverage += m_lastFFTSample[binIndex];
+		data.lastSampleRangeAverage += m_lastFFTSample[binIndex];
 	}
 
-	m_binRangeAverage /= (float)binCount;
+	data.lastSampleRangeAverage /= (float)binCount;
 
 	// Add the average to the history
-	m_oneSecondBeatSampleAverageHistory.push_back(m_binRangeAverage);
+	data.onceSecondSampleAverages.push_back(data.lastSampleRangeAverage);
 
 	// Remove the oldest average if it's over one second of history
 	int samplesPerSecond = Ceiling(frequencyPerBin);
 
-	if ((int)m_oneSecondBeatSampleAverageHistory.size() > samplesPerSecond)
+	if ((int)data.onceSecondSampleAverages.size() > samplesPerSecond)
 	{
-		m_oneSecondBeatSampleAverageHistory.erase(m_oneSecondBeatSampleAverageHistory.begin());
+		data.onceSecondSampleAverages.erase(data.onceSecondSampleAverages.begin());
 	}
 
 	// Update the average and variance of the history if we have 1 second's worth
-	if ((int)m_oneSecondBeatSampleAverageHistory.size() == samplesPerSecond)
+	if ((int)data.onceSecondSampleAverages.size() == samplesPerSecond)
 	{
 		// Update the average of the history
-		m_historyAverage = 0.f;
+		data.historyAverage = 0.f;
 		for (int historyIndex = 0; historyIndex < samplesPerSecond; ++historyIndex)
 		{
-			m_historyAverage += m_oneSecondBeatSampleAverageHistory[historyIndex];
+			data.historyAverage += data.onceSecondSampleAverages[historyIndex];
 		}
 
-		m_historyAverage /= (float)samplesPerSecond;
+		data.historyAverage /= (float)samplesPerSecond;
 
 
 		// Update the variance of the history
-		m_historyVariance = 0.f;
+		data.historyVariance = 0.f;
 		for (int historyIndex = 0; historyIndex < samplesPerSecond; ++historyIndex)
 		{
-			float value = m_oneSecondBeatSampleAverageHistory[historyIndex] - m_historyAverage;
+			float value = data.onceSecondSampleAverages[historyIndex] - data.historyAverage;
 			value *= value;
 
-			m_historyVariance += value;
+			data.historyVariance += value;
 		}
 
-		m_historyVariance /= (float)samplesPerSecond;
+		data.historyVariance /= (float)samplesPerSecond;
 	}
 }
 
