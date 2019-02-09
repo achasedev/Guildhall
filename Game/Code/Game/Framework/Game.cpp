@@ -7,6 +7,7 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Engine/Core/Window.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Rendering/Core/Camera.hpp"
@@ -34,8 +35,6 @@ Game::Game()
 	m_gameCamera->LookAt(Vector3(10.f, 10.f, 10.f), Vector3::ZERO, Vector3::Z_AXIS);
 
 	DebugRenderSystem::SetWorldCamera(m_gameCamera);
-
-	m_child.SetParentTransform(&m_parent);
 }
 
 
@@ -67,7 +66,11 @@ void Game::Initialize()
 	mouse.LockCursorToClient(true);
 	mouse.SetCursorMode(CURSORMODE_RELATIVE);
 
-	DebugRenderSystem::DrawBasis(Vector3::ZERO, Vector3::ZERO, 999.f, 2.f);
+	DebugRenderOptions options;
+	options.m_lifetime = 99999.f;
+	options.m_renderMode = DEBUG_RENDER_XRAY;
+
+	DebugRenderSystem::DrawBasis(Matrix44::IDENTITY, options);
 }
 
 
@@ -98,42 +101,53 @@ void Game::ProcessInput()
 	if (input->IsKeyPressed('A')) { translationOffset.y += 1.f; }		// Left
 	if (input->IsKeyPressed('S')) { translationOffset.x -= 1.f; }		// Back
 	if (input->IsKeyPressed('D')) { translationOffset.y -= 1.f; }		// Right
-	if (input->IsKeyPressed(InputSystem::KEYBOARD_SPACEBAR)) { translationOffset.z += 1.f; }		// Up
-	if (input->IsKeyPressed('X')) { translationOffset.z -= 1.f; }		// Down
+
+	translationOffset = m_gameCamera->GetCameraMatrix().TransformVector(translationOffset).xyz();
+	translationOffset.z = 0.f;
+	translationOffset.NormalizeAndGetLength();
+
+	if (input->IsKeyPressed('E')) { translationOffset.z += 1.f; }		// Up
+	if (input->IsKeyPressed('Q')) { translationOffset.z -= 1.f; }		// Down
 
 	if (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT))
 	{
-		translationOffset *= 50.f;
+		translationOffset *= 8.f;
 	}
+	else if (input->IsKeyPressed(InputSystem::KEYBOARD_SPACEBAR))
+	{
+		translationOffset *= 0.25f;
+	}
+
 
 	translationOffset *= CAMERA_TRANSLATION_SPEED * deltaTime;
 
-	m_gameCamera->TranslateLocal(translationOffset);
+	m_gameCamera->TranslateWorld(translationOffset);
 
 	Vector2 rotationOffset = Vector2((float)delta.y, (float)delta.x) * 0.12f;
 	Vector3 rotation = Vector3(0.f, rotationOffset.x * CAMERA_ROTATION_SPEED * deltaTime, -1.0f * rotationOffset.y * CAMERA_ROTATION_SPEED * deltaTime);
 
-	m_gameCamera->Rotate(rotation);
+	Vector3 cameraRotation = m_gameCamera->Rotate(rotation);
+
+	// Clamp to avoid going upside-down
+	cameraRotation.x = GetAngleBetweenMinusOneEightyAndOneEighty(cameraRotation.x);
+	cameraRotation.y = GetAngleBetweenMinusOneEightyAndOneEighty(cameraRotation.y);
+	cameraRotation.z = GetAngleBetweenMinusOneEightyAndOneEighty(cameraRotation.z);
+
+	cameraRotation.y = ClampFloat(cameraRotation.y, -85.f, 85.f);
+	m_gameCamera->SetRotation(cameraRotation);
 }
 
-#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
-#include "Engine/Math/MathUtils.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // Update the movement variables of every entity in the world, as well as update the game state
 // based on the input this frame
 //
 void Game::Update()
 {
-	float time = Game::GetGameClock()->GetTotalSeconds();
-	m_parent.SetPosition(10.f * Vector3(CosDegrees(30.f * time), SinDegrees(30.f * time), 0.f));
-	m_parent.SetRotation(Vector3(0.f, 0.f, Atan2Degrees(m_parent.position.y, m_parent.position.x)));
-
-	m_child.SetPosition(3.f * Vector3(0.f, CosDegrees(30.f * time), SinDegrees(30.f * time)));
-	m_child.SetRotation(Vector3(Atan2Degrees(m_child.position.z, m_child.position.y), 0.f, 0.f));
 }
 
-#include "Engine/Assets/AssetDB.hpp"
-#include "Engine/Rendering/Materials/MaterialInstance.hpp"
+
+
 //-----------------------------------------------------------------------------------------------
 // Draws to screen
 //
@@ -148,32 +162,7 @@ void Game::Render() const
 	std::string text = Stringf("Camera Pos : (%.2f, %.2f, %.2f)\nCamera Rot : (%.2f, %.2f, %.2f)",
 		position.x, position.y, position.z, rotation.x, rotation.y, rotation.z);
 
-	DebugRenderSystem::Draw2DText(text, bounds, 0.f);
-	
-	renderable.ClearAll();
-	renderable.AddInstanceMatrix(Matrix44::IDENTITY);
-
-	RenderableDraw_t draw;
-	draw.drawMatrix = m_parent.GetWorldMatrix();
-	draw.mesh = AssetDB::CreateOrGetMesh("Cube");
-	draw.materialInstance = AssetDB::CreateMaterialInstance("Default_Opaque");
-	draw.materialInstance->SetDiffuse(AssetDB::CreateOrGetTexture("Data/Images/Debug/Debug.png"));
-	Shader* shader = draw.materialInstance->GetEditableShader();
-	//shader->SetCullMode(CULL_MODE_NONE);
-	//shader->SetWindOrder(WIND_CLOCKWISE);
-
-	renderable.AddDraw(draw);
-	
-	draw.drawMatrix = m_child.GetWorldMatrix();
-	draw.materialInstance = AssetDB::CreateMaterialInstance("Default_Opaque");
-	draw.materialInstance->SetDiffuse(AssetDB::CreateOrGetTexture("Data/Images/Debug/Debug.png"));
-	Shader* shader2 = draw.materialInstance->GetEditableShader();
-
-	renderable.AddDraw(draw);
-
-	Renderer* renderer = Renderer::GetInstance();
-	renderer->SetCurrentCamera(m_gameCamera);
-	renderer->DrawRenderable(&renderable);
+	DebugRenderSystem::Draw2DText(text, bounds, 0.f, Rgba::DARK_GREEN, 20.f);
 }
 
 

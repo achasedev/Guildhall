@@ -47,10 +47,6 @@ private:
 private:
 	//-----Private Data-----
 
-	mutable Renderable renderable;
-	mutable Transform m_parent;
-	mutable Transform m_child;
-
 	Camera*	m_gameCamera = nullptr;
 	Clock*	m_gameClock = nullptr;
 
