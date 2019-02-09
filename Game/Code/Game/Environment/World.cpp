@@ -13,6 +13,31 @@
 
 
 //-----------------------------------------------------------------------------------------------
+// Constructor
+//
+World::World()
+{
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Destructor
+//
+World::~World()
+{
+	// Delete all active chunks
+	std::map<IntVector2, Chunk*>::iterator chunkItr = m_activeChunks.begin();
+
+	for (chunkItr; chunkItr != m_activeChunks.end(); chunkItr++)
+	{
+		delete chunkItr->second;
+	}
+
+	m_activeChunks.clear();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Updates all chunks in the world, as well as the camera
 //
 void World::Update()
@@ -33,7 +58,7 @@ void World::Update()
 //
 void World::Render() const
 {
-	std::map<IntVector2, Chunk*>::iterator chunkItr = m_activeChunks.begin();
+	std::map<IntVector2, Chunk*>::const_iterator chunkItr = m_activeChunks.begin();
 
 	for (chunkItr; chunkItr != m_activeChunks.end(); chunkItr++)
 	{
@@ -53,7 +78,7 @@ void World::ActivateChunk(const IntVector2& chunkCoords)
 
 	// Genarate with Perlin noise for now
 	Chunk* chunk = new Chunk(chunkCoords);
-	chunk->GenerateWithPerlinNoise(SEA_LEVEL, BASE_ELEVATION, NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION);
+	chunk->GenerateWithPerlinNoise(BASE_ELEVATION, NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION);
 
 	m_activeChunks[chunkCoords] = chunk;
 }

@@ -14,6 +14,7 @@
 #include "Engine/Rendering/Core/Renderable.hpp"
 
 class Clock;
+class World;
 class GameCamera;
 
 class Game
@@ -47,6 +48,7 @@ private:
 private:
 	//-----Private Data-----
 
+	World*		m_world = nullptr;
 	GameCamera*	m_gameCamera = nullptr;
 	Clock*		m_gameClock = nullptr;
 

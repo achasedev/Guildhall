@@ -27,10 +27,10 @@ public:
 private:
 	//-----Private Data-----
 	
-	static constexpr int SEA_LEVEL = 40;
-	static constexpr int BASE_ELEVATION = 64;
-	static constexpr int NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION = 10;
+	std::map<IntVector2, Chunk*> m_activeChunks;
 
-	static std::map<IntVector2, Chunk*> m_activeChunks;
+	static constexpr int SEA_LEVEL = 20;
+	static constexpr int BASE_ELEVATION = 30;
+	static constexpr int NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION = 10;
 
 };

@@ -12,8 +12,8 @@
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
 // Storage for types and spritesheet
-std::map<std::string, int> s_typeNames;
-const BlockType* s_types[MAX_BLOCK_TYPES];
+std::map<std::string, uint8_t> BlockType::s_typeNames;
+const BlockType* BlockType::s_types[MAX_BLOCK_TYPES];
 const SpriteSheet* BlockType::s_spriteSheet = nullptr;
 
 
@@ -22,9 +22,10 @@ const SpriteSheet* BlockType::s_spriteSheet = nullptr;
 //
 void BlockType::InitializeTypes()
 {
-	// Set up the sprite sheet
+	// Set up the sprite sheet and material
 	Texture* spriteTexture = AssetDB::CreateOrGetTexture("Data/Images/Terrain_32x32.png");
 	s_spriteSheet = new SpriteSheet(*spriteTexture, IntVector2(32, 32));
+	AssetDB::CreateOrGetSharedMaterial("Data/Materials/Block.xml");
 
 	// Air
 	BlockType* airType = new BlockType();
@@ -38,14 +39,22 @@ void BlockType::InitializeTypes()
 	BlockType* grassType = new BlockType();
 	grassType->m_name = "Grass";
 	grassType->m_typeIndex = 1;
-	grassType->m_topUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(1);
+	grassType->m_topUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(21);
 	grassType->m_sideUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(99);
 	grassType->m_bottomUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(100);
+
+	// Dirt
+	BlockType* dirtType = new BlockType();
+	dirtType->m_name = "Dirt";
+	dirtType->m_typeIndex = 2;
+	dirtType->m_topUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(100);
+	dirtType->m_sideUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(100);
+	dirtType->m_bottomUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(100);
 
 	// Stone
 	BlockType* stoneType = new BlockType();
 	stoneType->m_name = "Stone";
-	stoneType->m_typeIndex = 2;
+	stoneType->m_typeIndex = 3;
 	stoneType->m_topUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(84);
 	stoneType->m_sideUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(84);
 	stoneType->m_bottomUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(84);
@@ -53,10 +62,11 @@ void BlockType::InitializeTypes()
 	// Add them
 	AddBlockType(airType);
 	AddBlockType(grassType);
+	AddBlockType(dirtType);
 	AddBlockType(stoneType);
 
 	// Null out all types not filled in
-	for (int blockTypeIndex = 3; blockTypeIndex < MAX_BLOCK_TYPES; ++blockTypeIndex)
+	for (int blockTypeIndex = 4; blockTypeIndex < MAX_BLOCK_TYPES; ++blockTypeIndex)
 	{
 		s_types[blockTypeIndex] = nullptr;
 	}
@@ -82,7 +92,7 @@ const BlockType* BlockType::GetTypeByName(const std::string& name)
 	bool exists = s_typeNames.find(name) != s_typeNames.end();
 	ASSERT_OR_DIE(exists, Stringf("BlockType given by name \"%s\" doesn't exist", name.c_str()).c_str());
 
-	int index = s_typeNames.at(name);
+	uint8_t index = s_typeNames.at(name);
 	return GetTypeByIndex(index);
 }
 
@@ -99,7 +109,7 @@ void BlockType::AddBlockType(const BlockType* type)
 	GUARANTEE_OR_DIE(!typeAlreadyExists, Stringf("Duplicate BlockType index added: %i", type->m_typeIndex).c_str());
 
 	// Safety checks
-	GUARANTEE_OR_DIE(type->m_typeIndex > 0 && type->m_typeIndex < MAX_BLOCK_TYPES, 
+	GUARANTEE_OR_DIE(type->m_typeIndex >= 0 && type->m_typeIndex < MAX_BLOCK_TYPES, 
 		Stringf("Index for BlockType \"%s\" is out of bounds: %i", type->m_name.c_str(), type->m_typeIndex).c_str());
 	GUARANTEE_OR_DIE(!IsStringNullOrEmpty(type->m_name), "Attempted to add BlockType with no name");
 

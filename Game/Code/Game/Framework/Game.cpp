@@ -5,8 +5,10 @@
 /* Description: Game class for general gameplay management
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
+#include "Game/Environment/World.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Framework/GameCamera.hpp"
+#include "Game/Environment/BlockType.hpp"
 #include "Engine/Core/Window.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/Clock.hpp"
@@ -29,13 +31,26 @@ Game::Game()
 
 	// Camera
 	Renderer* renderer = Renderer::GetInstance();
-	m_gameCamera = new Camera();
+	m_gameCamera = new GameCamera();
 	m_gameCamera->SetColorTarget(renderer->GetDefaultColorTarget());
 	m_gameCamera->SetDepthTarget(renderer->GetDefaultDepthTarget());
 	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 1000.f);
-	m_gameCamera->LookAt(Vector3(10.f, 10.f, 10.f), Vector3::ZERO, Vector3::Z_AXIS);
+	m_gameCamera->LookAt(Vector3(-32.f, -16.f, 48.f), Vector3::ZERO, Vector3::Z_AXIS);
 
 	DebugRenderSystem::SetWorldCamera(m_gameCamera);
+
+	// World
+	m_world = new World();
+	
+	// Create the block types and load the texture
+	BlockType::InitializeTypes();
+
+	// For testing
+	m_world->ActivateChunk(IntVector2(0, 0));
+	m_world->ActivateChunk(IntVector2(-1, 2));
+	m_world->ActivateChunk(IntVector2(0, 2));
+	m_world->ActivateChunk(IntVector2(1, 2));
+	m_world->ActivateChunk(IntVector2(0, 3));
 }
 
 
@@ -44,6 +59,9 @@ Game::Game()
 //
 Game::~Game()
 {
+	delete m_world;
+	m_world = nullptr;
+
 	delete m_gameCamera;
 	m_gameCamera = nullptr;
 }
@@ -100,6 +118,7 @@ void Game::ProcessInput()
 //
 void Game::Update()
 {
+	m_world->Update();
 }
 
 
@@ -109,6 +128,11 @@ void Game::Update()
 //
 void Game::Render() const
 {
+	// Render the chunks
+	Renderer::GetInstance()->SetCurrentCamera(m_gameCamera);
+	m_world->Render();
+
+	// Debug draws for camera
 	Window* window = Window::GetInstance();
 	AABB2 bounds = window->GetWindowBounds();
 	

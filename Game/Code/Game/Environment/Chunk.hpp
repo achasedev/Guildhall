@@ -6,6 +6,7 @@
 /************************************************************************/
 #pragma once
 #include "Game/Environment/Block.hpp"
+#include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Rendering/Meshes/MeshBuilder.hpp"
 
@@ -18,7 +19,7 @@ public:
 	//-----Public Methods-----
 
 	Chunk(const IntVector2& chunkCoords);
-	void GenerateWithPerlinNoise(int seaLevel, int baseElevation, int maxDeviationFromBaseElevation);
+	void GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseElevation);
 
 	void Update();
 	void Render() const;
@@ -49,6 +50,7 @@ private:
 	//-----Private Data-----
 
 	IntVector2	m_chunkCoords;
+	AABB3		m_worldBounds;
 	Block		m_blocks[BLOCKS_PER_CHUNK]; // Blocks are index over x first, then y, then z
 	
 	Mesh*		m_mesh = nullptr;
