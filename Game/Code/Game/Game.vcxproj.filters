@@ -25,6 +25,21 @@
     <ClCompile Include="Framework\Main_Win32.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Environment\World.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Environment\Chunk.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Environment\Block.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Environment\BlockType.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\GameCamera.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -39,5 +54,10 @@
     <ClInclude Include="Framework\EngineBuildPreferences.hpp">
       <Filter>Architecture</Filter>
     </ClInclude>
+    <ClInclude Include="Environment\World.hpp" />
+    <ClInclude Include="Environment\Chunk.hpp" />
+    <ClInclude Include="Environment\Block.hpp" />
+    <ClInclude Include="Environment\BlockType.hpp" />
+    <ClInclude Include="Framework\GameCamera.hpp" />
   </ItemGroup>
 </Project>

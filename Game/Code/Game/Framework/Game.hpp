@@ -14,7 +14,7 @@
 #include "Engine/Rendering/Core/Renderable.hpp"
 
 class Clock;
-class Camera;
+class GameCamera;
 
 class Game
 {
@@ -32,7 +32,7 @@ public:
 	static Game*				GetInstance();
 
 	static Clock*				GetGameClock();
-	static Camera*				GetGameCamera();
+	static GameCamera*			GetGameCamera();
 	static float				GetDeltaTime();
 
 
@@ -47,8 +47,8 @@ private:
 private:
 	//-----Private Data-----
 
-	Camera*	m_gameCamera = nullptr;
-	Clock*	m_gameClock = nullptr;
+	GameCamera*	m_gameCamera = nullptr;
+	Clock*		m_gameClock = nullptr;
 
 	static Game* s_instance;			// The singleton Game instance
 

@@ -6,6 +6,7 @@
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/GameCommon.hpp"
+#include "Game/Framework/GameCamera.hpp"
 #include "Engine/Core/Window.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/Clock.hpp"
@@ -89,52 +90,7 @@ void Game::ShutDown()
 //
 void Game::ProcessInput()
 {
-	InputSystem* input = InputSystem::GetInstance();
-	Mouse& mouse = InputSystem::GetMouse();
-
-	float deltaTime = Game::GetDeltaTime();
-	IntVector2 delta = mouse.GetMouseDelta();
-
-	// Translating the camera
-	Vector3 translationOffset = Vector3::ZERO;
-	if (input->IsKeyPressed('W')) { translationOffset.x += 1.f; }		// Forward
-	if (input->IsKeyPressed('A')) { translationOffset.y += 1.f; }		// Left
-	if (input->IsKeyPressed('S')) { translationOffset.x -= 1.f; }		// Back
-	if (input->IsKeyPressed('D')) { translationOffset.y -= 1.f; }		// Right
-
-	translationOffset = m_gameCamera->GetCameraMatrix().TransformVector(translationOffset).xyz();
-	translationOffset.z = 0.f;
-	translationOffset.NormalizeAndGetLength();
-
-	if (input->IsKeyPressed('E')) { translationOffset.z += 1.f; }		// Up
-	if (input->IsKeyPressed('Q')) { translationOffset.z -= 1.f; }		// Down
-
-	if (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT))
-	{
-		translationOffset *= 8.f;
-	}
-	else if (input->IsKeyPressed(InputSystem::KEYBOARD_SPACEBAR))
-	{
-		translationOffset *= 0.25f;
-	}
-
-
-	translationOffset *= CAMERA_TRANSLATION_SPEED * deltaTime;
-
-	m_gameCamera->TranslateWorld(translationOffset);
-
-	Vector2 rotationOffset = Vector2((float)delta.y, (float)delta.x) * 0.12f;
-	Vector3 rotation = Vector3(0.f, rotationOffset.x * CAMERA_ROTATION_SPEED * deltaTime, -1.0f * rotationOffset.y * CAMERA_ROTATION_SPEED * deltaTime);
-
-	Vector3 cameraRotation = m_gameCamera->Rotate(rotation);
-
-	// Clamp to avoid going upside-down
-	cameraRotation.x = GetAngleBetweenMinusOneEightyAndOneEighty(cameraRotation.x);
-	cameraRotation.y = GetAngleBetweenMinusOneEightyAndOneEighty(cameraRotation.y);
-	cameraRotation.z = GetAngleBetweenMinusOneEightyAndOneEighty(cameraRotation.z);
-
-	cameraRotation.y = ClampFloat(cameraRotation.y, -85.f, 85.f);
-	m_gameCamera->SetRotation(cameraRotation);
+	m_gameCamera->ProcessInput();
 }
 
 
@@ -178,7 +134,7 @@ Clock* Game::GetGameClock()
 //-----------------------------------------------------------------------------------------------
 // Returns the camera used to render game elements
 //
-Camera* Game::GetGameCamera()
+GameCamera* Game::GetGameCamera()
 {
 	return s_instance->m_gameCamera;
 }

@@ -286,15 +286,25 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Environment\Block.cpp" />
+    <ClCompile Include="Environment\BlockType.cpp" />
+    <ClCompile Include="Environment\Chunk.cpp" />
+    <ClCompile Include="Environment\World.cpp" />
     <ClCompile Include="Framework\App.cpp" />
+    <ClCompile Include="Framework\GameCamera.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
     <ClCompile Include="Framework\Main_Win32.cpp" />
     <ClCompile Include="Framework\Game.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Environment\Block.hpp" />
+    <ClInclude Include="Environment\BlockType.hpp" />
+    <ClInclude Include="Environment\Chunk.hpp" />
+    <ClInclude Include="Environment\World.hpp" />
     <ClInclude Include="Framework\App.hpp" />
     <ClInclude Include="Framework\EngineBuildPreferences.hpp" />
     <ClInclude Include="Framework\Game.hpp" />
+    <ClInclude Include="Framework\GameCamera.hpp" />
     <ClInclude Include="Framework\GameCommon.hpp" />
   </ItemGroup>
   <ItemGroup>
