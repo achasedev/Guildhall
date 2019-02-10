@@ -111,7 +111,7 @@ void Game::ProcessInput()
 	m_gameCamera->ProcessInput();
 }
 
-
+#include "Game/Environment/Chunk.hpp"
 //-----------------------------------------------------------------------------------------------
 // Update the movement variables of every entity in the world, as well as update the game state
 // based on the input this frame

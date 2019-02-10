@@ -24,6 +24,9 @@ public:
 	void Update();
 	void Render() const;
 
+	static int			GetBlockIndexFromBlockCoords(const IntVector3& blockCoords);
+	static IntVector3	GetBlockCoordsFromBlockIndex(int blockIndex);
+
 
 public:
 	//-----Public Data-----

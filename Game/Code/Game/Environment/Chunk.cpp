@@ -107,6 +107,33 @@ void Chunk::Render() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the block index of the block given by blockCoords
+//
+int Chunk::GetBlockIndexFromBlockCoords(const IntVector3& blockCoords)
+{
+	int index = BLOCKS_PER_Z_LAYER * blockCoords.z + CHUNK_DIMENSIONS_X * blockCoords.y + blockCoords.x;
+	return index;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the block coords for the block given by blockIndex
+//
+IntVector3 Chunk::GetBlockCoordsFromBlockIndex(int blockIndex)
+{
+	int xMask = (CHUNK_DIMENSIONS_X - 1);
+	int yMask = (CHUNK_DIMENSIONS_Y - 1);
+	int zMask = (CHUNK_DIMENSIONS_Z - 1);
+
+	int xCoord = blockIndex & xMask;
+	int yCoord = (blockIndex >> CHUNK_BITS_X) & yMask;
+	int zCoord = (blockIndex >> (CHUNK_BITS_X + CHUNK_BITS_Y)) & zMask;
+
+	return IntVector3(xCoord, yCoord, zCoord);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Pushes the vertices (and indices) into the meshbuilder for the block at the given coords
 // PUSHES THE BLOCK VERTICES IN WORLD SPACE
 //
