@@ -305,6 +305,7 @@
     <ClCompile Include="Entity\EntitySpawn.cpp" />
     <ClCompile Include="Entity\EntitySpawnEvent_Default.cpp" />
     <ClCompile Include="Entity\EntitySpawnEvent_FromGround.cpp" />
+    <ClCompile Include="Entity\EntitySpawnEvent_Meteor.cpp" />
     <ClCompile Include="Entity\Item.cpp" />
     <ClCompile Include="Entity\Particle.cpp" />
     <ClCompile Include="Entity\Components\PhysicsComponent.cpp" />
@@ -361,6 +362,7 @@
     <ClInclude Include="Entity\EntitySpawn.hpp" />
     <ClInclude Include="Entity\EntitySpawnEvent_Default.hpp" />
     <ClInclude Include="Entity\EntitySpawnEvent_FromGround.hpp" />
+    <ClInclude Include="Entity\EntitySpawnEvent_Meteor.hpp" />
     <ClInclude Include="Entity\Item.hpp" />
     <ClInclude Include="Entity\Particle.hpp" />
     <ClInclude Include="Entity\Components\PhysicsComponent.hpp" />

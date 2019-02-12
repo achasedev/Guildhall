@@ -61,7 +61,7 @@ struct InitialStageSpawn_t
 enum eSpawnEventType
 {
 	SPAWN_EVENT_DEFAULT,
-	SPAWN_EVENT_FALL,
+	SPAWN_EVENT_METEOR,
 	SPAWN_EVENT_RISE,
 	SPAWN_EVENT_WALK_IN
 };

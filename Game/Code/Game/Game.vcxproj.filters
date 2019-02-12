@@ -175,6 +175,9 @@
     <ClCompile Include="Entity\EntitySpawnEvent_FromGround.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\EntitySpawnEvent_Meteor.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -247,5 +250,6 @@
     <ClInclude Include="Entity\EntitySpawnEvent_Default.hpp" />
     <ClInclude Include="Framework\CampaignStage.hpp" />
     <ClInclude Include="Entity\EntitySpawnEvent_FromGround.hpp" />
+    <ClInclude Include="Entity\EntitySpawnEvent_Meteor.hpp" />
   </ItemGroup>
 </Project>

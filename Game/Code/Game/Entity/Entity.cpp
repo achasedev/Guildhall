@@ -183,6 +183,15 @@ void Entity::SetShouldCheckForGroundCollisions(bool shouldCheck)
 
 
 //-----------------------------------------------------------------------------------------------
+// Sets whether this entity is marked for delete or not
+//
+void Entity::SetMarkedForDelete(bool isMarkedForDelete)
+{
+	m_isMarkedForDelete = isMarkedForDelete;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Subtracts the amount to the entity's health
 //
 void Entity::TakeDamage(int damageAmount, const Vector3& knockback /*=Vector3::ZERO*/)

@@ -42,6 +42,7 @@ public:
 	void							SetIsGrounded(bool isGrounded);
 	void							SetShouldUpdate(bool shouldUpdate);
 	void							SetShouldCheckForGroundCollisions(bool shouldSnapToGround);
+	void							SetMarkedForDelete(bool isMarkedForDelete);
 
 	void							TakeDamage(int damageAmount, const Vector3& knockback = Vector3::ZERO);
 
