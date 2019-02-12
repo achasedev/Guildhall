@@ -29,7 +29,21 @@ struct ThresholdDetectData_t
 	bool								thresholdBrokenLastSample = false;
 
 };
+
+struct FFTBinData_t
+{
+	float binAverageOfAllChannels = 0.f;
+	float isHigh = false;
+};
+
+struct FFTBinSpan_t
+{
+	FFTBinData_t*	binSpanData = nullptr;
+	FloatRange		frequencySpan;
+};
+
  
+
 class FFTSystem : public AudioSystem
 {
 public:
@@ -58,15 +72,19 @@ public:
 private:
 	//-----Private Methods-----
 
-	void SetupFFTGraphUI();
+	// Initialization
 	void CreateAndAddFFTDSPToMasterChannel();
-	void SetupThresholdDetectionSettings();
-
-	void CheckForNewSample();
-	void UpdateThresholdData(ThresholdDetectData_t& data);
-	void CheckForBeat(ThresholdDetectData_t& data);
-	void UpdateOneSecondAverageHistory(ThresholdDetectData_t& data);
+	void SetupFFTGraphUI();
+	
+	// Data collection
+	void StartFFTDataCollection(const char* songPath);
+	void SetupInitialFFTData();
+	
+	void UpdateFFTDataCollection();
+	bool CheckForNewFFTSample();
 	void UpdateLastFFTSample(float* newData);
+	
+	void CleanUpFFTData();
 
 	void UpdateBarMesh();
 	void UpdateGridAndPanelMesh();
@@ -86,23 +104,14 @@ private:
 	unsigned int						m_fftWindowSize = 1024;
 
 	// FFT Calculated Data
-	bool								m_receivedNewSampleThisFrame = false;
+	bool								m_collectingFFTData = false;
 	float								m_maxValueLastFrame = 0.f;
 	float*								m_lastFFTSample = nullptr;
 
 	ThresholdDetectData_t				m_bassDrumData;
 	ThresholdDetectData_t				m_snareDrumData;
 
-	// Beat Detection
-// 	Stopwatch*							m_beatTimer = nullptr;
-// 	FloatRange							m_beatFrequencyRange = FloatRange(40.f, 70.f);
-// 	std::vector<float>					m_oneSecondBeatSampleAverageHistory;
-// 
-// 	float								m_currentBinRangeAverage = 0.f;
-// 	float								m_historyAverage = -1.0f;
-// 	float								m_historyVariance = -1.0f;
-// 
-// 	bool								m_beatDetected = false;
+	FFTBinSpan_t*						m_FFTData = nullptr;
 
 	// Rendering
 	bool								m_renderFFTGraph = true;

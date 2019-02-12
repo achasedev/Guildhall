@@ -22,7 +22,6 @@ FFTSystem::FFTSystem()
 {
 	CreateAndAddFFTDSPToMasterChannel();
 	SetupFFTGraphUI();
-	SetupThresholdDetectionSettings();
 }
 
 
@@ -44,23 +43,9 @@ void FFTSystem::BeginFrame()
 {
 	AudioSystem::BeginFrame();
 
-	// Check if the sample we received this frame is a new one
-	CheckForNewSample();
-
- 	if (m_receivedNewSampleThisFrame)
- 	{
-		// Check for a bass drum hit
-		UpdateThresholdData(m_bassDrumData);
-
-		// Check for a snare hit
-		UpdateThresholdData(m_snareDrumData);
-
-		// Update bar mesh if rendering
-		if (m_renderFFTGraph)
-		{
-			UpdateBarMesh();
-			UpdateGridAndPanelMesh();
-		}
+	if (m_collectingFFTData)
+	{
+		UpdateFFTDataCollection();
 	}
 }
 
@@ -370,19 +355,6 @@ void FFTSystem::CreateAndAddFFTDSPToMasterChannel()
 }
 
 
-//-----------------------------------------------------------------------------------------------
-// Initializes the thresold data sets to begin detection
-//
-void FFTSystem::SetupThresholdDetectionSettings()
-{
-	m_bassDrumData.frequencyRange = FloatRange(40.f, 60.f);
-	m_bassDrumData.delayInterval = 0.25f;
-
-	m_snareDrumData.frequencyRange = FloatRange(260.f, 300.f);
-	m_snareDrumData.delayInterval = 0.25f;
-}
-
-
 //---C FUNCTION----------------------------------------------------------------------------------
 // Checks to see if the two spectrums match or not
 //
@@ -410,10 +382,40 @@ bool DoSamplesMatch(float* oldSample, float* newSample, int length)
 
 
 //-----------------------------------------------------------------------------------------------
+// Update for processing and storing FFT Data
+//
+void FFTSystem::UpdateFFTDataCollection()
+{
+	// Check if the sample we received this frame is a new one
+	bool receivedNewFFTSampleThisFrame = CheckForNewFFTSample();
+
+	if (receivedNewFFTSampleThisFrame)
+	{
+		// Add this frame's data to our master bin-span of data
+
+
+		// Update bar mesh if rendering
+		if (m_renderFFTGraph)
+		{
+			UpdateBarMesh();
+			UpdateGridAndPanelMesh();
+		}
+	}
+
+	if (IsSoundFinished((SoundPlaybackID)m_musicChannel))
+	{
+		// Write the data to a file
+
+		m_collectingFFTData = false;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Checks if the current sample in FMOD is a new sample to us, and updates members if so
 // Returns true if so, false otherwise
 //
-void FFTSystem::CheckForNewSample()
+bool FFTSystem::CheckForNewFFTSample()
 {
 	// Check to see if there is a new sample this frame
 	float* thisFrameSample = (float*)malloc(sizeof(float) * m_fmodCurrentFFTData->length);
@@ -430,112 +432,15 @@ void FFTSystem::CheckForNewSample()
 		thisFrameSample[binIndex] /= (float)m_fmodCurrentFFTData->numchannels;
 	}
 
-	m_receivedNewSampleThisFrame = !DoSamplesMatch(m_lastFFTSample, thisFrameSample, m_fmodCurrentFFTData->length);
+	bool receivedNewSampleThisFrame = !DoSamplesMatch(m_lastFFTSample, thisFrameSample, m_fmodCurrentFFTData->length);
 
-	if (m_receivedNewSampleThisFrame)
+	if (receivedNewSampleThisFrame)
 	{
-		m_receivedNewSampleThisFrame = true;
 		UpdateLastFFTSample(thisFrameSample);
 	}
 	else
 	{
-		m_receivedNewSampleThisFrame = false;
 		free(thisFrameSample);
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Updates the logic for detecting beats on the fft data
-//
-void FFTSystem::UpdateThresholdData(ThresholdDetectData_t& data)
-{
-	// Add this sample's average to the one-second history,
-	// regardless if a beat was this sample or not
-	UpdateOneSecondAverageHistory(data);
-
-	// Use the heuristics to check for a beat
-	if (data.delayTimer.HasIntervalElapsed())
-	{
-		CheckForBeat(data);
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Checks for a beat in the last FFT sample using the heuristics
-//
-void FFTSystem::CheckForBeat(ThresholdDetectData_t& data)
-{
-	float threshold = -15.f * data.historyVariance + 1.55f;
-	float minValue = threshold * data.historyAverage;
-
-	data.thresholdBrokenLastSample = data.lastSampleRangeAverage > minValue;
-
-	if (data.thresholdBrokenLastSample)
-	{
-		data.delayTimer.SetInterval(data.delayInterval);
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Pushes this frame's sample average into our history, removing any samples outside the sample window
-//
-void FFTSystem::UpdateOneSecondAverageHistory(ThresholdDetectData_t& data)
-{
-	// Get the bin range for our beat detection
-	float frequencyPerBin = m_sampleRate / (float)m_fftWindowSize;
-
-	int minBinIndex = (int) (data.frequencyRange.min / frequencyPerBin); // Cast as int to floor it, 0-based indexing
-	int maxBinIndex = (int) (data.frequencyRange.max / frequencyPerBin);
-
-	int binCount = (maxBinIndex - minBinIndex + 1);
-
-	// Average these bins in this sample
-	data.lastSampleRangeAverage = 0.f;
-	for (int binIndex = minBinIndex; binIndex <= maxBinIndex; ++binIndex)
-	{
-		data.lastSampleRangeAverage += m_lastFFTSample[binIndex];
-	}
-
-	data.lastSampleRangeAverage /= (float)binCount;
-
-	// Add the average to the history
-	data.onceSecondSampleAverages.push_back(data.lastSampleRangeAverage);
-
-	// Remove the oldest average if it's over one second of history
-	int samplesPerSecond = Ceiling(frequencyPerBin);
-
-	if ((int)data.onceSecondSampleAverages.size() > samplesPerSecond)
-	{
-		data.onceSecondSampleAverages.erase(data.onceSecondSampleAverages.begin());
-	}
-
-	// Update the average and variance of the history if we have 1 second's worth
-	if ((int)data.onceSecondSampleAverages.size() == samplesPerSecond)
-	{
-		// Update the average of the history
-		data.historyAverage = 0.f;
-		for (int historyIndex = 0; historyIndex < samplesPerSecond; ++historyIndex)
-		{
-			data.historyAverage += data.onceSecondSampleAverages[historyIndex];
-		}
-
-		data.historyAverage /= (float)samplesPerSecond;
-
-
-		// Update the variance of the history
-		data.historyVariance = 0.f;
-		for (int historyIndex = 0; historyIndex < samplesPerSecond; ++historyIndex)
-		{
-			float value = data.onceSecondSampleAverages[historyIndex] - data.historyAverage;
-			value *= value;
-
-			data.historyVariance += value;
-		}
-
-		data.historyVariance /= (float)samplesPerSecond;
 	}
 }
 
