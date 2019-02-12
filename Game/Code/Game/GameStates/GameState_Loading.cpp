@@ -263,7 +263,7 @@ void GameState_Loading::LoadVoxelResources() const
 			std::string campaignFilePath = ParseXmlAttribute(*campaignElement, "file", "");
 			CampaignDefinition::LoadCampaign(campaignFilePath);
 
-			campaignElement = campaignElement->NextSiblingElement("Map");
+			campaignElement = campaignElement->NextSiblingElement("Campaign");
 		}
 	}
 }

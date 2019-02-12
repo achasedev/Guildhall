@@ -1,0 +1,24 @@
+<Campaign name="Desert" music="Data/Audio/Music/Boss Battle #3 V1.wav" character_select_map="Desert0">
+
+	<Stage map="Desert1" enter="west">
+		<SpawnEvent type="default" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+	</Stage> 
+
+	<Stage map="Desert2" enter="west">
+		<SpawnEvent entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+	</Stage>
+
+	<Stage map="Desert3" enter="south">
+		<SpawnEvent entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+	</Stage>
+
+	<Stage map="Desert4" enter="east">
+		<SpawnEvent entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+	</Stage>
+
+
+	<Stage map="Desert5" enter="south">
+		<SpawnEvent entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+	</Stage>
+
+</Campaign>

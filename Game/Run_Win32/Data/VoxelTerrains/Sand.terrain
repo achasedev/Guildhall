@@ -1,0 +1,9 @@
+<VoxelTerrains type="Sand">
+
+	<VoxelTerrain name="Sand1" file="Data/VoxelModels/Terrains/Sand/Sand1.qef"/>
+	<VoxelTerrain name="Sand2" file="Data/VoxelModels/Terrains/Sand/Sand2.qef"/>
+	<VoxelTerrain name="Sand3" file="Data/VoxelModels/Terrains/Sand/Sand3.qef"/>
+	<VoxelTerrain name="Sand4" file="Data/VoxelModels/Terrains/Sand/Sand4.qef"/>
+	<VoxelTerrain name="Sand5" file="Data/VoxelModels/Terrains/Sand/Sand5.qef"/>
+
+</VoxelTerrains>

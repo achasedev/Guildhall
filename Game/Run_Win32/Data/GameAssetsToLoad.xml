@@ -94,15 +94,23 @@
 
 	<VoxelTerrains>
 		<VoxelTerrain file="Data/VoxelTerrains/Grass.terrain"/>
+		<VoxelTerrain file="Data/VoxelTerrains/Sand.terrain"/>
 	</VoxelTerrains>
 
 	<Maps>
-		<Map file="Data/Maps/Forest0.map"/>
-		<Map file="Data/Maps/Forest1.map"/>
-		<Map file="Data/Maps/Forest2.map"/>
-		<Map file="Data/Maps/Forest3.map"/>
-		<Map file="Data/Maps/Forest4.map"/>
-		<Map file="Data/Maps/Forest5.map"/>
+		<Map file="Data/Maps/Forest/Forest0.map"/>
+		<Map file="Data/Maps/Forest/Forest1.map"/>
+		<Map file="Data/Maps/Forest/Forest2.map"/>
+		<Map file="Data/Maps/Forest/Forest3.map"/>
+		<Map file="Data/Maps/Forest/Forest4.map"/>
+		<Map file="Data/Maps/Forest/Forest5.map"/>
+
+		<Map file="Data/Maps/Desert/Desert0.map"/>
+		<Map file="Data/Maps/Desert/Desert1.map"/>
+		<Map file="Data/Maps/Desert/Desert2.map"/>
+		<Map file="Data/Maps/Desert/Desert3.map"/>
+		<Map file="Data/Maps/Desert/Desert4.map"/>
+		<Map file="Data/Maps/Desert/Desert5.map"/>
 	</Maps>
 
 	<!-- END MAPS -->
@@ -111,6 +119,7 @@
  
 	<Campaigns>
 		<Campaign file="Data/Campaigns/Forest.campaign"/>
+		<Campaign file="Data/Campaigns/Desert.campaign"/>
 	</Campaigns>
 
 	<!-- END CAMPAIGNS -->
