@@ -91,7 +91,6 @@ void Particle::OnGroundCollision()
 		bool isFallingDown = yVelocity < 0.f;
 
 		// Particle didn't fall into a hole or can fill holes
-		int height = world->GetMapHeightForEntity(this);
 		bool isNotInHole = coordPosition.y > 0;
 
 		if (isInMapBounds && isFallingDown && (isNotInHole || m_fillsHoles))
