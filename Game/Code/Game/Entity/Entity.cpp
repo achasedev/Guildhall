@@ -165,6 +165,24 @@ void Entity::SetIsGrounded(bool isGrounded)
 
 
 //-----------------------------------------------------------------------------------------------
+// Sets whether this entity should update when the update loop occurs in World
+//
+void Entity::SetShouldUpdate(bool shouldUpdate)
+{
+	m_shouldUpdate = shouldUpdate;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets whether this entity should be snapped to the map height when below the terrain
+//
+void Entity::SetShouldCheckForGroundCollisions(bool shouldCheck)
+{
+	m_shouldCheckForGroundCollisions = shouldCheck;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Subtracts the amount to the entity's health
 //
 void Entity::TakeDamage(int damageAmount, const Vector3& knockback /*=Vector3::ZERO*/)
@@ -427,6 +445,24 @@ bool Entity::IsPlayer() const
 bool Entity::IsGrounded() const
 {
 	return m_isGrounded;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if this entity should update when the world updates
+//
+bool Entity::IsSetToUpdate() const
+{
+	return m_shouldUpdate;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if the entity should be checked for ground collisions
+//
+bool Entity::ShouldCheckForGroundCollisions() const
+{
+	return m_shouldCheckForGroundCollisions;
 }
 
 

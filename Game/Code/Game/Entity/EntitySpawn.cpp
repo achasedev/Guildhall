@@ -5,16 +5,16 @@
 #include "Game/Framework/CampaignManager.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Game/Entity/EntitySpawnEvent_Default.hpp"
+#include "Game/Entity/EntitySpawnEvent_FromGround.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
-
 
 //---C FUNCTION----------------------------------------------------------------------------------
 // Returns the enumeration for the spawn type given by the text
 //
 eSpawnEventType GetSpawnTypeFromString(const std::string& text)
 {
-	if (text == "fall")			{ return SPAWN_EVENT_FALL; }
-	else if (text == "rise")	{ return SPAWN_EVENT_RISE; }
+	if (text == "fall")				{ return SPAWN_EVENT_FALL; }
+	else if (text == "from_ground")	{ return SPAWN_EVENT_RISE; }
 	else
 	{
 		return SPAWN_EVENT_DEFAULT;
@@ -97,6 +97,25 @@ void EntitySpawnEvent::StopTrackingEntity(AIEntity* entity)
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns true if the given entity is in this event's tracking list
+//
+bool EntitySpawnEvent::IsEventTrackingThisEntity(AIEntity* entity)
+{
+	int numEntities = (int)m_entitiesCurrentAliveFromThisEvent.size();
+
+	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
+	{
+		if (m_entitiesCurrentAliveFromThisEvent[entityIndex] == entity)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Creates a spawn event prototype of the correct subclass given the type
 //
 EntitySpawnEvent* EntitySpawnEvent::CreateSpawnEventForElement(const XMLElement& element)
@@ -109,6 +128,9 @@ EntitySpawnEvent* EntitySpawnEvent::CreateSpawnEventForElement(const XMLElement&
 	{
 	case SPAWN_EVENT_DEFAULT:
 		return new EntitySpawnEvent_Default(element);
+		break;
+	case SPAWN_EVENT_RISE:
+		return new EntitySpawnEvent_FromGround(element);
 		break;
 	default:
 		ERROR_AND_DIE(Stringf("Unsupported spawn event type attempted to be created: \"%s\"", typeText.c_str()).c_str());
@@ -138,6 +160,9 @@ EntitySpawnEvent::EntitySpawnEvent(const XMLElement& spawnElement)
 	m_spawnCountDelay = ParseXmlAttribute(spawnElement, "spawn_count_delay", m_spawnCountDelay);
 	m_spawnTimeDelay = ParseXmlAttribute(spawnElement, "spawn_time_delay", m_spawnTimeDelay);
 	m_totalToSpawn = ParseXmlAttribute(spawnElement, "total_to_spawn", m_totalToSpawn);
+
+	m_areaToSpawnIn.mins = ParseXmlAttribute(spawnElement, "spawn_mins", m_areaToSpawnIn.mins);
+	m_areaToSpawnIn.maxs = ParseXmlAttribute(spawnElement, "spawn_maxs", m_areaToSpawnIn.maxs);
 }
 
 

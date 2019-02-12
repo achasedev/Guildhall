@@ -6,6 +6,7 @@
 /************************************************************************/
 #pragma once
 #include <vector>
+#include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/IntAABB2.hpp"
@@ -82,6 +83,7 @@ public:
 	bool						IsReadyForNextSpawn() const;
 
 	void						StopTrackingEntity(AIEntity* entity);
+	bool						IsEventTrackingThisEntity(AIEntity* entity);
 
 	static EntitySpawnEvent*	CreateSpawnEventForElement(const XMLElement& element);
 
@@ -109,5 +111,7 @@ protected:
 	int						m_spawnCountDelay = 0;				// How many entities should spawn in the stage before this event should start
 	float					m_spawnTimeDelay = 0.f;				// How long to wait in time before this event should start
 	eSpawnEventType			m_type;								// Subclass of this spawn event, determining how they spawn in
+
+	AABB2					m_areaToSpawnIn = AABB2(Vector2::ZERO, Vector2(256.f));		// The area that the entities should be spawned in
 
 };

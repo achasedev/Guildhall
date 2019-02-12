@@ -796,7 +796,7 @@ void World::UpdateEntities()
 
 	for (int i = 0; i < numEntities; ++i)
 	{
-		if (!m_entities[i]->IsMarkedForDelete())
+		if (!m_entities[i]->IsMarkedForDelete() && m_entities[i]->IsSetToUpdate())
 		{
 			m_entities[i]->Update();
 		}
@@ -1082,7 +1082,7 @@ void World::CheckGroundCollisions()
 		Entity* dynamicEntity = m_entities[i];
 
 		// Find an entity that is dynamic and not marked for delete
-		if (!dynamicEntity->IsDynamic() || dynamicEntity->IsMarkedForDelete())
+		if (!dynamicEntity->IsDynamic() || dynamicEntity->IsMarkedForDelete() || !dynamicEntity->ShouldCheckForGroundCollisions())
 		{
 			continue;
 		}

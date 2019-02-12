@@ -40,6 +40,8 @@ public:
 	void							SetOrientation(float orientation);
 	void							SetTeam(eEntityTeam team);
 	void							SetIsGrounded(bool isGrounded);
+	void							SetShouldUpdate(bool shouldUpdate);
+	void							SetShouldCheckForGroundCollisions(bool shouldSnapToGround);
 
 	void							TakeDamage(int damageAmount, const Vector3& knockback = Vector3::ZERO);
 
@@ -66,6 +68,8 @@ public:
 
 	bool							IsPlayer() const;
 	bool							IsGrounded() const;
+	bool							IsSetToUpdate() const;
+	bool							ShouldCheckForGroundCollisions() const;
 
 	// Producers
 	bool							IsMarkedForDelete() const;
@@ -102,6 +106,8 @@ protected:
 	int						m_health = 0;
 	eEntityTeam				m_entityTeam = ENTITY_TEAM_UNASSIGNED;
 	bool					m_isGrounded = true;
+	bool					m_shouldUpdate = true;
+	bool					m_shouldCheckForGroundCollisions = true;
 
 	// Physics
 	float					m_mass = DEFAULT_MASS;					// Mass of the Entity
