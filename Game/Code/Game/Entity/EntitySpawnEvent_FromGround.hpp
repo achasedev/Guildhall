@@ -32,6 +32,7 @@ private:
 	//-----Private Data-----
 
 	float m_riseTime = 1.0f;
+
 	std::vector<RisingEntity_t> m_entitiesRisingFromGround;
 
 };

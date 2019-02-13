@@ -862,7 +862,7 @@ bool Game::AreAllPlayersInitialized()
 //-----------------------------------------------------------------------------------------------
 // Plays the given background music
 //
-void Game::PlayBGM(const std::string filename, bool fadeIn /*= true*/)
+void Game::PlayBGM(const std::string filename, bool fadeIn /*= true*/, bool loop /*= true*/)
 {
 	AudioSystem* audio = AudioSystem::GetInstance();
 
@@ -879,7 +879,7 @@ void Game::PlayBGM(const std::string filename, bool fadeIn /*= true*/)
 		s_instance->m_tendingZeroCurrentVolume = s_instance->m_tendingTargetCurrentVolume;
 
 		s_instance->m_tendingTargetCurrentVolume = 0.f;
-		s_instance->m_trackTendingToTarget = audio->PlaySound(nextSong, true, s_instance->m_tendingTargetCurrentVolume);
+		s_instance->m_trackTendingToTarget = audio->PlaySound(nextSong, loop, s_instance->m_tendingTargetCurrentVolume);
 	}
 	else
 	{
@@ -896,7 +896,7 @@ void Game::PlayBGM(const std::string filename, bool fadeIn /*= true*/)
 		}
 
 		s_instance->m_tendingTargetCurrentVolume = s_instance->m_targetMusicVolume;
-		s_instance->m_trackTendingToTarget = audio->PlaySound(nextSong, true, s_instance->m_tendingTargetCurrentVolume);
+		s_instance->m_trackTendingToTarget = audio->PlaySound(nextSong, loop, s_instance->m_tendingTargetCurrentVolume);
 	}
 
 

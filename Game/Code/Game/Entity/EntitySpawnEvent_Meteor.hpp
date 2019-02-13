@@ -28,8 +28,8 @@ private:
 	const EntityDefinition* m_definitionOfMeteorEntity = nullptr;
 	Entity* m_meteorEntity = nullptr;
 
-	Vector3 m_meteorStartPosition = Vector3(128.f, 64.f, 128.f);
-	Vector3 m_meteorTargetPosition = Vector3(128.f, 0.f, 128.f);
+	Vector3 m_meteorStartPosition;
+	Vector3 m_meteorTargetPosition;
 
 	float m_meteorFallDuration = 1.0f;
 	Stopwatch m_fallTimer;

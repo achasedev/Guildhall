@@ -196,14 +196,17 @@ void Entity::SetMarkedForDelete(bool isMarkedForDelete)
 //
 void Entity::TakeDamage(int damageAmount, const Vector3& knockback /*=Vector3::ZERO*/)
 {
-	// Apply damage
-	m_health -= damageAmount;
-	OnDamageTaken(damageAmount);
-
-	// Apply knockback if the entity is dynamic
-	if (m_physicsComponent != nullptr)
+	// Apply damage if not dead
+	if (!m_isMarkedForDelete)
 	{
-		m_physicsComponent->AddImpulse(knockback);
+		m_health -= damageAmount;
+		OnDamageTaken(damageAmount);
+
+		// Apply knockback if the entity is dynamic
+		if (m_physicsComponent != nullptr)
+		{
+			m_physicsComponent->AddImpulse(knockback);
+		}
 	}
 }
 

@@ -8,8 +8,8 @@
 #include "Game/Framework/World.hpp"
 #include "Game/Entity/AIEntity.hpp"
 #include "Game/Entity/EntitySpawnEvent_FromGround.hpp"
+#include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Engine/Math/MathUtils.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor from an XML element
@@ -44,6 +44,7 @@ void EntitySpawnEvent_FromGround::Update()
 		{
 			risingEntity.entity->SetShouldUpdate(true);
 			risingEntity.entity->SetShouldCheckForGroundCollisions(true);
+			risingEntity.entity->GetPhysicsComponent()->SetGravity(true);
 
 			m_entitiesRisingFromGround.erase(m_entitiesRisingFromGround.begin() + riseIndex);
 		}
@@ -85,6 +86,7 @@ int EntitySpawnEvent_FromGround::RunSpawn()
 
 		entity->SetShouldCheckForGroundCollisions(false);
 		entity->SetShouldUpdate(false);
+		entity->GetPhysicsComponent()->SetGravity(false);
 
 		RisingEntity_t risingEntity;
 		risingEntity.entity = entity;

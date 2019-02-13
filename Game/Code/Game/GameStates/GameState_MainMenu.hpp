@@ -66,6 +66,4 @@ private:
 
 	VoxelEmitter* m_emitters[2];
 
-	// Audio
-	Stopwatch m_introTimer;
 };

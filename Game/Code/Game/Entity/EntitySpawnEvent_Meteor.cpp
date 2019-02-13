@@ -34,18 +34,26 @@ void EntitySpawnEvent_Meteor::Update()
 {
 	if (!m_meteorFinished)
 	{
-		if (m_meteorEntity == nullptr)
+		if (m_meteorEntity == nullptr && IsReadyForNextSpawn())
 		{
+			// Allow the full sky to be a start position for the meteor
+			m_meteorStartPosition = Vector3(GetRandomFloatInRange(0.f, 256.f), 64.f, GetRandomFloatInRange(0.f, 256.f));
+			Vector2 targetXZ = m_areaToSpawnIn.GetRandomPointInside();
+
+			m_meteorTargetPosition = Vector3(targetXZ.x, 0.f, targetXZ.y);
+
 			m_fallTimer.SetInterval(m_meteorFallDuration);
 
 			m_meteorEntity = new Entity(m_definitionOfMeteorEntity);
 			m_meteorEntity->SetPosition(m_meteorStartPosition);
 			m_meteorEntity->SetShouldUpdate(false);
 			m_meteorEntity->SetShouldCheckForGroundCollisions(false);
+			m_meteorEntity->GetPhysicsComponent()->SetGravity(false);
 
 			Game::GetWorld()->AddEntity(m_meteorEntity);
 		}
-		else if (IsReadyForNextSpawn()) // Checks if we passed the spawn count and time delay
+
+		if (m_meteorEntity != nullptr)
 		{
 			Vector3 newPosition = Interpolate(m_meteorStartPosition, m_meteorTargetPosition, m_fallTimer.GetElapsedTimeNormalized());
 
@@ -58,14 +66,14 @@ void EntitySpawnEvent_Meteor::Update()
 				Game::GetWorld()->ParticalizeEntity(m_meteorEntity);
 
 				IntVector3 coordPos = IntVector3(RoundToNearestInt(newPosition.x), RoundToNearestInt(newPosition.y), RoundToNearestInt(newPosition.z));
-				Game::GetWorld()->ApplyExplosion(coordPos, ENTITY_TEAM_ENEMY, 5, (float)m_meteorEntity->GetOrientedDimensions().x, 5.f, nullptr);
+				Game::GetWorld()->ApplyExplosion(coordPos, ENTITY_TEAM_ENEMY, 5, 1.5f * (float)m_meteorEntity->GetOrientedDimensions().x, 5.f, nullptr);
 
 				// Spawn the entities
 				for (int i = 0; i < m_totalToSpawn; ++i)
 				{
 					AIEntity* entity = SpawnEntity(newPosition + Vector3(0.f, 20.f, 0.f), GetRandomFloatInRange(0.f, 360.f));
 
-					Vector3 velocity = 100.f * Vector3(GetRandomFloatInRange(-1.f, 1.f), 1.f, GetRandomFloatInRange(-1.f, 1.f));
+					Vector3 velocity = 75.f * Vector3(GetRandomFloatInRange(-1.5f, 1.5f), 1.f, GetRandomFloatInRange(-1.5f, 1.5f));
 					entity->GetPhysicsComponent()->SetVelocity(velocity);
 				}
 
@@ -79,7 +87,7 @@ void EntitySpawnEvent_Meteor::Update()
 
 
 //-----------------------------------------------------------------------------------------------
-// Not used - this event spawns inside of it's update
+// Not used - this event spawns inside of its update
 //
 int EntitySpawnEvent_Meteor::RunSpawn()
 {

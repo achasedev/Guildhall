@@ -39,6 +39,7 @@ class Game
 public:
 	friend class GameState_Playing;
 	friend class GameState_Loading;
+	friend class GameState_MainMenu;
 
 	//-----Public Methods-----
 
@@ -79,7 +80,7 @@ public:
 
 	static bool					AreAllPlayersInitialized();
 
-	static void					PlayBGM(const std::string filename, bool fadeIn = true);
+	static void					PlayBGM(const std::string filename, bool fadeIn = true, bool loop = true);
 	static void					SetBGMVolume(float newVolume, bool transitionTo = true);
 
 

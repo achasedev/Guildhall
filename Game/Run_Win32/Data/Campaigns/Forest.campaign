@@ -1,7 +1,14 @@
 <Campaign name="Forest" music="Data/Audio/Music/Boss Battle #4 V1.wav" character_select_map="Forest0">
 
 	<Stage map="Forest1" enter="west">
-		<SpawnEvent type="meteor" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="20"/>
+
+		<!-- <SpawnEvent type="meteor" meteor_entity="Meteor" meteor_fall_mins="64, 64" meteor_fall_maxs="192, 192" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="0.5" total_to_spawn="5"/> Here total_to_spawn is the entities from one meteor, NOT the number of meteors!-->
+
+		<!-- <SpawnEvent type="default" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="0.5" total_to_spawn="5"/> -->
+
+		<!-- <SpawnEvent type="from_ground" spawn_area_mins="64, 64" spawn_area_maxs="192, 192" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="0.5" total_to_spawn="5"/>
+-->
+		<SpawnEvent type="meteor" meteor_fall_mins="64, 64" meteor_fall_maxs="192, 192" entity="Tank" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="0.5" total_to_spawn="5"/>
 	</Stage> 
 
 	<Stage map="Forest2" enter="west">
