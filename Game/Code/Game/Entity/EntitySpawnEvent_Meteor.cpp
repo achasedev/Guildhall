@@ -26,7 +26,7 @@ EntitySpawnEvent_Meteor::EntitySpawnEvent_Meteor(const XMLElement& element)
 	GUARANTEE_OR_DIE(m_definitionOfMeteorEntity != nullptr, Stringf("Meteor entity \"%s\" for spawn event doesn't exist", meteorDefName.c_str()).c_str());
 }
 
-
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 //-----------------------------------------------------------------------------------------------
 // Updates by moving the meteor down, then spawning entities when it hits
 //
@@ -48,13 +48,13 @@ void EntitySpawnEvent_Meteor::Update()
 			m_meteorEntity->SetPosition(m_meteorStartPosition);
 			m_meteorEntity->SetShouldUpdate(false);
 			m_meteorEntity->SetShouldCheckForGroundCollisions(false);
-			m_meteorEntity->GetPhysicsComponent()->SetGravity(false);
 
 			Game::GetWorld()->AddEntity(m_meteorEntity);
 		}
 
 		if (m_meteorEntity != nullptr)
 		{
+			ConsolePrintf(Rgba::YELLOW, "Position is (%.2f, %.2f, %.2f)", m_meteorEntity->GetPosition().x, m_meteorEntity->GetPosition().y, m_meteorEntity->GetPosition().z);
 			Vector3 newPosition = Interpolate(m_meteorStartPosition, m_meteorTargetPosition, m_fallTimer.GetElapsedTimeNormalized());
 
 			m_meteorEntity->SetPosition(newPosition);

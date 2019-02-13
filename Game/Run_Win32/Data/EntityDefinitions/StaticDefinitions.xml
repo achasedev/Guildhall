@@ -123,4 +123,11 @@
 		</Physics>		
 	</EntityDefinition>
 
+	<EntityDefinition name="Meteor" initial_health="0">
+		<Visuals default_sprite="Default"/>
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>
+	</EntityDefinition>
+
 </EntityDefinitions>

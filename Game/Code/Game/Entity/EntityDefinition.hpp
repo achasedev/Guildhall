@@ -121,7 +121,7 @@ public:
 	// Entity Base class
 	std::string								m_name;
 	int										m_initialHealth = 99999;
-	ePhysicsType							m_physicsType = PHYSICS_TYPE_UNASSIGNED;
+	ePhysicsType							m_physicsType = PHYSICS_TYPE_STATIC;
 	bool									m_affectedByGravity = true;
 	CollisionDefinition_t					m_collisionDef;
 	eEntityClass							m_entityClass = ENTITY_CLASS_UNASSIGNED;
