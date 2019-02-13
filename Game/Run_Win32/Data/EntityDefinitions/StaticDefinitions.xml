@@ -9,6 +9,9 @@
 		</Physics>
 	</EntityDefinition>
 
+
+	<!-- Forest Assets -->
+
 	<EntityDefinition name="Tree1">
 		<Visuals default_sprite="Tree1" destructible="true"/>
 		<Physics physics_type="static">
@@ -71,6 +74,47 @@
 			<CollisionDefinition response="no_correction" layer="world"/>
 		</Physics>		
 	</EntityDefinition>
+
+
+	<!-- Desert Assets -->
+
+	<EntityDefinition name="Tree5">
+		<Visuals default_sprite="Tree5" destructible="true"/>
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>	
+	</EntityDefinition>
+
+	<EntityDefinition name="Shrub1">
+		<Visuals default_sprite="Shrub1" destructible="true"/>
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>	
+	</EntityDefinition>
+
+	<EntityDefinition name="Cactus1">
+		<Visuals default_sprite="Cactus1" destructible="true"/>
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>	
+	</EntityDefinition>
+
+	<EntityDefinition name="Cactus2">
+		<Visuals default_sprite="Cactus2" destructible="true"/>
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>	
+	</EntityDefinition>
+
+	<EntityDefinition name="Cactus3">
+		<Visuals default_sprite="Cactus3" destructible="true"/>
+		<Physics physics_type="static">
+			<CollisionDefinition response="no_correction" layer="world"/>
+		</Physics>	
+	</EntityDefinition>
+
+
+	<!-- Misc -->
 
 	<EntityDefinition name="TestCube">
 		<Visuals default_sprite="TestCube" destructible="true"/>

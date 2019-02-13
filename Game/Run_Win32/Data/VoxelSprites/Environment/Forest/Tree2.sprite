@@ -1,5 +1,5 @@
 <VoxelSprites>
 
-	<VoxelSprite name="Tree2" file="Data/VoxelModels/Environment/Tree2.qef"/>
+	<VoxelSprite name="Tree2" file="Data/VoxelModels/Environment/Forest/Tree2.qef"/>
 
 </VoxelSprites>
