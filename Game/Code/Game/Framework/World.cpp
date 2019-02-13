@@ -444,16 +444,6 @@ void World::AddVoxelToMap(const IntVector3& coord, const Rgba& color)
 
 
 //-----------------------------------------------------------------------------------------------
-// Sets whether the world should block edge collisions; used to turn off edge collisions during
-// transitions, then to re-enable for normal play
-//
-void World::SetBlockEdgeCollision(bool shouldBlock)
-{
-	m_blockEdgeCollisions = shouldBlock;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Blows up the given entity
 //
 void World::ParticalizeAllEntities()
@@ -926,7 +916,7 @@ void World::CheckEntityForGroundCollision(Entity* entity)
 				comp->ZeroYVelocity();
 			}
 		}
-		else
+		else if (IsEntityOnMap(entity)) // This prevents entities from falling to their death if they're off the map
 		{
 			// Fell in a pit - let them fall until they're hidden, then kill them
 			IntVector3 dimensions = entity->GetOrientedDimensions();
@@ -1063,11 +1053,7 @@ void World::CheckStaticEntityCollisions()
 void World::CheckMapCollisions()
 {
 	CheckGroundCollisions();
-	
-	if (m_blockEdgeCollisions)
-	{
-		CheckEdgeCollisions();
-	}
+	CheckEdgeCollisions();
 }
 
 
@@ -1111,6 +1097,11 @@ void World::CheckEdgeCollisions()
 	for (int entityIndex = 0; entityIndex < (int)m_entities.size(); ++entityIndex)
 	{
 		Entity* entity = m_entities[entityIndex];
+
+		if (!entity->ShouldCheckForEdgeCollisions())
+		{
+			continue;
+		}
 
 		AABB3 worldBounds = entity->GetWorldBounds();
 		Vector3 bottomLeft = worldBounds.mins;

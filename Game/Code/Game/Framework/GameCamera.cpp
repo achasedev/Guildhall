@@ -48,7 +48,7 @@ void GameCamera::UpdatePositionBasedOnPlayers()
 	bool foundPlayer = false;
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
-		if (Game::IsPlayerAlive(i))
+		if (players[i] != nullptr && !players[i]->IsRespawning())
 		{
 			foundPlayer = true;
 			playerDimensions = players[i]->GetOrientedDimensions();

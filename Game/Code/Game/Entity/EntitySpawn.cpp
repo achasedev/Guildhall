@@ -3,20 +3,21 @@
 #include "Game/Entity/AIEntity.hpp"
 #include "Game/Entity/EntitySpawn.hpp"
 #include "Game/Framework/CampaignManager.hpp"
-#include "Engine/Core/Utility/StringUtils.hpp"
 #include "Game/Entity/EntitySpawnEvent_Meteor.hpp"
 #include "Game/Entity/EntitySpawnEvent_Default.hpp"
-#include "Engine/Core/Utility/ErrorWarningAssert.hpp"
+#include "Game/Entity/EntitySpawnEvent_OffScreen.hpp"
 #include "Game/Entity/EntitySpawnEvent_FromGround.hpp"
-
+#include "Engine/Core/Utility/StringUtils.hpp"
+#include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
 //---C FUNCTION----------------------------------------------------------------------------------
 // Returns the enumeration for the spawn type given by the text
 //
 eSpawnEventType GetSpawnTypeFromString(const std::string& text)
 {
-	if (text == "meteor")			{ return SPAWN_EVENT_METEOR; }
-	else if (text == "from_ground")	{ return SPAWN_EVENT_RISE; }
+	if		(text == "meteor")		{ return SPAWN_EVENT_METEOR; }
+	else if (text == "from_ground")	{ return SPAWN_EVENT_FROM_GROUND; }
+	else if (text == "off_screen")	{ return SPAWN_EVENT_OFF_SCREEN; }
 	else
 	{
 		return SPAWN_EVENT_DEFAULT;
@@ -131,11 +132,14 @@ EntitySpawnEvent* EntitySpawnEvent::CreateSpawnEventForElement(const XMLElement&
 	case SPAWN_EVENT_DEFAULT:
 		return new EntitySpawnEvent_Default(element);
 		break;
-	case SPAWN_EVENT_RISE:
+	case SPAWN_EVENT_FROM_GROUND:
 		return new EntitySpawnEvent_FromGround(element);
 		break;
 	case SPAWN_EVENT_METEOR:
 		return new EntitySpawnEvent_Meteor(element);
+		break;
+	case SPAWN_EVENT_OFF_SCREEN:
+		return new EntitySpawnEvent_OffScreen(element);
 		break;
 	default:
 		ERROR_AND_DIE(Stringf("Unsupported spawn event type attempted to be created: \"%s\"", typeText.c_str()).c_str());

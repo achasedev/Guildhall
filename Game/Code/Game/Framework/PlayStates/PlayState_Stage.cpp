@@ -53,7 +53,7 @@ void PlayState_Stage::ProcessInput()
 
 		for (int i = 0; i < MAX_PLAYERS; ++i)
 		{
-			if (Game::IsPlayerAlive(i))
+			if (players[i] != nullptr && !players[i]->IsRespawning())
 			{
 				players[i]->ProcessGameplayInput();
 			}

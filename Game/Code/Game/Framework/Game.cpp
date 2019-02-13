@@ -546,21 +546,6 @@ CampaignManager* Game::GetCampaignManager()
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns whether the player at the given index exists and is not marked for delete (dead)
-//
-bool Game::IsPlayerAlive(unsigned int index)
-{
-	if (index >= MAX_PLAYERS)
-	{
-		return false;
-	}
-
-	Player* player = s_instance->m_players[index];
-	return (player != nullptr && !player->IsMarkedForDelete());
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Resets the score back to 0
 //
 void Game::ResetScore()

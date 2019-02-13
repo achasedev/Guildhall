@@ -192,6 +192,15 @@ void Entity::SetMarkedForDelete(bool isMarkedForDelete)
 
 
 //-----------------------------------------------------------------------------------------------
+// Sets whether this entity should be checked for collisions with the map edges
+//
+void Entity::SetShouldCheckForEdgeCollisions(bool shouldCheck)
+{
+	m_shouldCheckForEdgeCollisions = shouldCheck;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Subtracts the amount to the entity's health
 //
 void Entity::TakeDamage(int damageAmount, const Vector3& knockback /*=Vector3::ZERO*/)
@@ -447,7 +456,7 @@ float Entity::GetInverseMass() const
 //
 bool Entity::IsPlayer() const
 {
-	return m_isPlayer;
+	return m_definition->m_entityClass == ENTITY_CLASS_PLAYER;
 }
 
 
@@ -475,6 +484,15 @@ bool Entity::IsSetToUpdate() const
 bool Entity::ShouldCheckForGroundCollisions() const
 {
 	return m_shouldCheckForGroundCollisions;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if this entity should be checked for edge collisions
+//
+bool Entity::ShouldCheckForEdgeCollisions() const
+{
+	return m_shouldCheckForEdgeCollisions;
 }
 
 

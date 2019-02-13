@@ -41,8 +41,9 @@ public:
 	void							SetTeam(eEntityTeam team);
 	void							SetIsGrounded(bool isGrounded);
 	void							SetShouldUpdate(bool shouldUpdate);
-	void							SetShouldCheckForGroundCollisions(bool shouldSnapToGround);
+	void							SetShouldCheckForGroundCollisions(bool shouldCheck);
 	void							SetMarkedForDelete(bool isMarkedForDelete);
+	void							SetShouldCheckForEdgeCollisions(bool shouldCheck);
 
 	void							TakeDamage(int damageAmount, const Vector3& knockback = Vector3::ZERO);
 
@@ -71,6 +72,7 @@ public:
 	bool							IsGrounded() const;
 	bool							IsSetToUpdate() const;
 	bool							ShouldCheckForGroundCollisions() const;
+	bool							ShouldCheckForEdgeCollisions() const;
 
 	// Producers
 	bool							IsMarkedForDelete() const;
@@ -109,6 +111,7 @@ protected:
 	bool					m_isGrounded = true;
 	bool					m_shouldUpdate = true;
 	bool					m_shouldCheckForGroundCollisions = true;
+	bool					m_shouldCheckForEdgeCollisions = true;
 
 	// Physics
 	float					m_mass = DEFAULT_MASS;					// Mass of the Entity
@@ -120,8 +123,6 @@ protected:
 
 	bool					m_useCollisionLayerOverride = false;
 	eCollisionLayer			m_collisionLayerOverride = COLLISION_LAYER_WORLD;
-
-	bool					m_isPlayer = false;
 
 	VoxelSprite*			m_defaultSprite = nullptr;
 

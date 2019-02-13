@@ -67,8 +67,6 @@ public:
 	static const Leaderboard*	GetLeaderboards();
 	static CampaignManager*		GetCampaignManager();
 
-	static bool					IsPlayerAlive(unsigned int index);
-
 	static void					ResetScore();
 	static void					AddPointsToScore(int pointsToAdd);
 	static void					UpdateLeaderboardWithCurrentScore();

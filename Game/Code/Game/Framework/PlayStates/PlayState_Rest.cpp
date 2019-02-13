@@ -119,6 +119,11 @@ bool AreAllPlayersInExitEdge(eTransitionEdge edge)
 	{
 		if (players[i] != nullptr)
 		{
+			if (players[i]->IsRespawning())
+			{
+				return false;
+			}
+
 			Vector3 position = players[i]->GetPosition();
 			
 			if (!IsPositionInEdge(position, edge))
@@ -310,7 +315,7 @@ void PlayState_Rest::ProcessInput()
 
 			for (int i = 0; i < MAX_PLAYERS; ++i)
 			{
-				if (Game::IsPlayerAlive(i))
+				if (players[i] != nullptr && !players[i]->IsRespawning())
 				{
 					players[i]->ProcessGameplayInput();
 				}
@@ -354,12 +359,22 @@ void PlayState_Rest::Update()
 	// Check the controllers
 	m_gameState->PerformControllerCheck();
 
+
 	// Check if the players are near the move location
 	bool playersReady = AreAllPlayersInExitEdge(m_edgeToExit) && Game::AreAllPlayersInitialized();
 
 	if (playersReady)
 	{
-		Game::GetWorld()->SetBlockEdgeCollision(false);
+		Player** players = Game::GetPlayers();
+
+		for (int i = 0; i < MAX_PLAYERS; ++i)
+		{
+			if (players[i] != nullptr)
+			{
+				players[i]->SetShouldCheckForEdgeCollisions(false);
+			}
+		}
+
 		m_gameState->TransitionToPlayState(new PlayState_Stage());
 	}
 	else
@@ -409,7 +424,6 @@ bool PlayState_Rest::Leave()
 
 	if (m_transitionTimer.HasIntervalElapsed())
 	{
-		Game::GetWorld()->SetBlockEdgeCollision(true); // World gets deleted anyways...
 		Game::SetWorld(m_worldToTransitionTo);
 		Vector3 worldDimensions = Vector3(Game::GetWorld()->GetDimensions());
 
@@ -420,6 +434,7 @@ bool PlayState_Rest::Leave()
 			{
 				players[i]->SetPosition(GetTransitionPosition(players[i], m_edgeToEnter));
 				players[i]->GetPhysicsComponent()->SetGravity(true);
+				players[i]->SetShouldCheckForEdgeCollisions(true);
 			}
 		}
 

@@ -70,7 +70,7 @@ Player* BehaviorComponent::GetClosestPlayer() const
 
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
-		if (Game::IsPlayerAlive(i))
+		if (players[i] != nullptr && !players[i]->IsRespawning())
 		{
 			Vector3 playerPosition = players[i]->GetPosition();
 			float currDistance = (playerPosition - currentPosition).GetLengthSquared();

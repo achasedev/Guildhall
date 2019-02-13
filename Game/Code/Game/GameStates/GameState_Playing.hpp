@@ -46,7 +46,6 @@ public:
 	void PushOverrideState(PlayState* overrideState);
 	void PopOverrideState();
 
-	bool AreAllPlayersDead() const;
 	void PerformControllerCheck();
 
 

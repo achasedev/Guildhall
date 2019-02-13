@@ -163,26 +163,6 @@ void GameState_Playing::PopOverrideState()
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns true if all current players are dead
-//
-bool GameState_Playing::AreAllPlayersDead() const
-{
-	bool allDead = true;
-
-	for (int i = 0; i < MAX_PLAYERS; ++i)
-	{
-		if (Game::IsPlayerAlive(i))
-		{
-			allDead = false;
-			break;
-		}
-	}
-
-	return allDead;
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Checks for controller activity, in case one disconnects or is connected
 //
 void GameState_Playing::PerformControllerCheck()

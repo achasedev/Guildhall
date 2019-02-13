@@ -53,7 +53,6 @@ Player::Player(const EntityDefinition* definition, int playerID)
 	// Assign color based on its ID
 	m_color = GetColorForPlayerID(m_playerID);
 
-	m_isPlayer = true;
 	m_health = m_definition->GetInitialHealth();
 	m_entityTeam = ENTITY_TEAM_PLAYER;
 

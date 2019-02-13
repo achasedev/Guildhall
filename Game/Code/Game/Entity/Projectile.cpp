@@ -32,6 +32,7 @@ Projectile::Projectile(const EntityDefinition* definition, eEntityTeam team)
 	m_useCollisionLayerOverride = true;
 
 	m_stopwatch = new Stopwatch(Game::GetGameClock());
+	m_shouldCheckForEdgeCollisions = false;
 }
 
 
