@@ -94,6 +94,8 @@ private:
 	float*								m_lastFFTSampleChannelAverages = nullptr;
 
 	// FFT Bin Collection
+	const float							m_maxFrequencyToSaveUpTo = 6000.f;
+	int									m_numBinsToSaveUpTo = -1;
 	std::vector<FFTBinSpan_t>			m_FFTBinSpans;
 
 	// Rendering

@@ -389,12 +389,13 @@ void FFTSystem::SetupForFFTPlayback()
 {
 	// Update sample rate
 	m_musicChannel->getFrequency(&m_sampleRate);
+	m_numBinsToSaveUpTo = Ceiling((float)m_fftWindowSize * (m_maxFrequencyToSaveUpTo / m_sampleRate));
 
-	// #TODO: Only store up to a max frequency, instead of the whole spectrum
 	float freqSpanPerBin = m_sampleRate / m_fftWindowSize;
-	m_FFTBinSpans.reserve(m_fftWindowSize + 1);
 
-	for (unsigned int binIndex = 0; binIndex < m_fftWindowSize; ++binIndex)
+	m_FFTBinSpans.reserve(m_numBinsToSaveUpTo);
+
+	for (int binIndex = 0; binIndex < m_numBinsToSaveUpTo; ++binIndex)
 	{
 		FFTBinSpan_t spanData;
 		spanData.frequencyInterval = FloatRange(binIndex * freqSpanPerBin, (binIndex + 1) * freqSpanPerBin);
@@ -528,9 +529,7 @@ void FFTSystem::UpdateLastFFTSample(float* newData)
 //
 void FFTSystem::AddCurrentFFTSampleToBinData()
 {
-	int numBins = m_fftWindowSize;
-
-	for (int binIndex = 0; binIndex < numBins; ++binIndex)
+	for (int binIndex = 0; binIndex < m_numBinsToSaveUpTo; ++binIndex)
 	{
 		FFTBinData_t binData;
 		binData.binAverageOfAllChannels = m_lastFFTSampleChannelAverages[binIndex];
@@ -557,24 +556,25 @@ void FFTSystem::WriteFFTBinDataToFile()
 
 	ASSERT_OR_DIE(opened, "Error: Couldn't open FFT file for write");
 
-	int numBins = m_fftWindowSize;
-
 	std::string headingLine = Stringf("Song File: %s\n", m_musicTitleBeingPlayed.c_str()).c_str();
 	file.Write(headingLine.c_str(), headingLine.size());
 
 	headingLine = Stringf("Duration: %.3f seconds\n", m_songLength).c_str();
 	file.Write(headingLine.c_str(), headingLine.size());
 
-	headingLine = Stringf("Sample Rate: %.2f\n", m_sampleRate).c_str();
+	headingLine = Stringf("Sample Rate: %.2fhz\n", m_sampleRate).c_str();
 	file.Write(headingLine.c_str(), headingLine.size());
 
-	headingLine = Stringf("Number of Bins: %i\n", numBins).c_str();
+	headingLine = Stringf("Max Frequency Analyzed: %.2f\n", m_maxFrequencyToSaveUpTo).c_str();
+	file.Write(headingLine.c_str(), headingLine.size());
+
+	headingLine = Stringf("Number of Bins: %i\n", m_numBinsToSaveUpTo).c_str();
 	file.Write(headingLine.c_str(), headingLine.size());
 
 	headingLine = Stringf("Number of Samples per bin: %i\n", m_FFTBinSpans[0].fftBinSamples.size()).c_str();
 	file.Write(headingLine.c_str(), headingLine.size());
 
-	for (int spanIndex = 0; spanIndex < numBins; ++spanIndex)
+	for (int spanIndex = 0; spanIndex < m_numBinsToSaveUpTo; ++spanIndex)
 	{
 		FFTBinSpan_t& currentBinSpan = m_FFTBinSpans[spanIndex];
 
@@ -617,6 +617,7 @@ void FFTSystem::CleanUp()
 
 	m_musicChannel = nullptr;
 	m_songLength = 0.f;
+	m_numBinsToSaveUpTo = -1;
 
 	delete m_barMesh;
 	m_barMesh = new Mesh();
