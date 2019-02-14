@@ -107,6 +107,31 @@ void Chunk::Render() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the XY center position of the chunk
+//
+Vector2 Chunk::GetWorldXYCenter() const
+{
+	float x = 0.5f * (m_worldBounds.mins.x + m_worldBounds.maxs.x);
+	float y = 0.5f * (m_worldBounds.mins.y + m_worldBounds.maxs.y);
+
+	return Vector2(x, y);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the XY bounds of the chunk
+//
+AABB2 Chunk::GetXYBounds() const
+{
+	AABB2 xyBounds;
+	xyBounds.mins = m_worldBounds.mins.xy();
+	xyBounds.maxs = m_worldBounds.maxs.xy();
+
+	return xyBounds;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the block index of the block given by blockCoords
 //
 int Chunk::GetBlockIndexFromBlockCoords(const IntVector3& blockCoords)

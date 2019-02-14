@@ -24,6 +24,13 @@ public:
 	void Update();
 	void Render() const;
 
+	// Producers
+	Vector2 GetWorldXYCenter() const;
+	AABB2	GetXYBounds() const;
+
+	// Mutators
+
+	// Statics
 	static int			GetBlockIndexFromBlockCoords(const IntVector3& blockCoords);
 	static IntVector3	GetBlockCoordsFromBlockIndex(int blockIndex);
 

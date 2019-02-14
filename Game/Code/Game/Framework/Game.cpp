@@ -44,13 +44,6 @@ Game::Game()
 	
 	// Create the block types and load the texture
 	BlockType::InitializeTypes();
-
-	// For testing
-	m_world->ActivateChunk(IntVector2(0, 0));
-	m_world->ActivateChunk(IntVector2(-1, 2));
-	m_world->ActivateChunk(IntVector2(0, 2));
-	m_world->ActivateChunk(IntVector2(1, 2));
-	m_world->ActivateChunk(IntVector2(0, 3));
 }
 
 
@@ -138,9 +131,10 @@ void Game::Render() const
 	
 	Vector3 position = m_gameCamera->GetPosition();
 	Vector3 rotation = m_gameCamera->GetRotation();
+	IntVector2 chunkContainingCamera = m_world->GetChunkCoordsForChunkThatContainsPosition(position);
 
-	std::string text = Stringf("Camera Pos : (%.2f, %.2f, %.2f)\nCamera Rot : (%.2f, %.2f, %.2f)",
-		position.x, position.y, position.z, rotation.x, rotation.y, rotation.z);
+	std::string text = Stringf("Camera Pos : (%.2f, %.2f, %.2f)\nCamera Rot : (%.2f, %.2f, %.2f)\nChunk Containing : (%i, %i)",
+		position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, chunkContainingCamera.x, chunkContainingCamera.y);
 
 	DebugRenderSystem::Draw2DText(text, bounds, 0.f, Rgba::DARK_GREEN, 20.f);
 }
@@ -170,6 +164,15 @@ GameCamera* Game::GetGameCamera()
 float Game::GetDeltaTime()
 {
 	return s_instance->m_gameClock->GetDeltaTime();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the world
+//
+World* Game::GetWorld()
+{
+	return s_instance->m_world;
 }
 
 

@@ -35,6 +35,7 @@ public:
 	static Clock*				GetGameClock();
 	static GameCamera*			GetGameCamera();
 	static float				GetDeltaTime();
+	static World*				GetWorld();
 
 
 private:
