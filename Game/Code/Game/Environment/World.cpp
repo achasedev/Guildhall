@@ -49,6 +49,7 @@ void World::Update()
 
 	// Activate chunks within the range
 	CheckToActivateChunks();
+	CheckToDeactivateChunks();
 
 	std::map<IntVector2, Chunk*>::iterator chunkItr = m_activeChunks.begin();
 
@@ -112,6 +113,21 @@ void World::ActivateChunk(const IntVector2& chunkCoords)
 
 
 //-----------------------------------------------------------------------------------------------
+// Removes the chunk given by the chunk coords, and writes to file if it has been modified
+//
+void World::DeactivateChunk(const IntVector2& chunkCoords)
+{
+	//  #TODO: Write to file
+	bool chunkIsActive = m_activeChunks.find(chunkCoords) != m_activeChunks.end();
+	ASSERT_OR_DIE(chunkIsActive, "World tried to deactivate a chunk that doesn't exist");
+
+	Chunk* chunk = m_activeChunks[chunkCoords];
+	delete chunk;
+	m_activeChunks.erase(chunkCoords);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Checks if there is an inactive chunk within the activation range, and returns true if there exists
 // one, returning the closest one
 //
@@ -165,6 +181,41 @@ bool World::GetClosestInactiveChunkToPlayerWithinActivationRange(IntVector2& out
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns true if it finds an active chunk outside the deactivation range, and returns the coords
+// of the closest one
+//
+bool World::GetFarthestActiveChunkToPlayerOutsideDeactivationRange(IntVector2& out_closestActiveChunkCoords) const
+{
+	std::map<IntVector2, Chunk*>::const_iterator itr = m_activeChunks.begin();
+
+	Vector2 cameraXYPosition = Game::GetGameCamera()->GetPosition().xy();
+
+	float deactivationRangeSquared = CHUNK_DEACTIVATION_RANGE * CHUNK_DEACTIVATION_RANGE;
+	float maxDistance = 0.f;
+	bool foundChunkToDeactivate = false;
+
+	for (itr; itr != m_activeChunks.end(); itr++)
+	{
+		Chunk* currChunk = itr->second;
+
+		Vector2 chunkXYCenter = currChunk->GetWorldXYCenter();
+		
+		Vector2 vectorToChunk = (chunkXYCenter - cameraXYPosition);
+		float distanceSquared = vectorToChunk.GetLengthSquared();
+
+		if (distanceSquared > deactivationRangeSquared && distanceSquared > maxDistance)
+		{
+			maxDistance = distanceSquared;
+			out_closestActiveChunkCoords = currChunk->GetChunkCoords();
+			foundChunkToDeactivate = true;
+		}
+	}
+
+	return foundChunkToDeactivate;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Checks if there is a chunk within the activation range that is inactive, and activates it
 //
 void World::CheckToActivateChunks()
@@ -176,5 +227,21 @@ void World::CheckToActivateChunks()
 	{
 		ConsolePrintf("Activating Chunk (%i, %i)", closestInactiveChunkCoords.x, closestInactiveChunkCoords.y);
 		ActivateChunk(closestInactiveChunkCoords);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks if any active chunks are outside the deactivation range, and if so removes them
+//
+void World::CheckToDeactivateChunks()
+{
+	IntVector2 closestActiveChunkCoords;
+	bool foundActiveChunkToDeactivate = GetFarthestActiveChunkToPlayerOutsideDeactivationRange(closestActiveChunkCoords);
+
+	if (foundActiveChunkToDeactivate)
+	{
+		ConsolePrintf(Rgba::ORANGE, "Deactivating Chunk (%i, %i)", closestActiveChunkCoords.x, closestActiveChunkCoords.y);
+		DeactivateChunk(closestActiveChunkCoords);
 	}
 }

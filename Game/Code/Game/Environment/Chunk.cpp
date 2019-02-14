@@ -21,8 +21,21 @@ Chunk::Chunk(const IntVector2& chunkCoords)
 	: m_chunkCoords(chunkCoords)
 {
 	// Set the world bounds
-	m_worldBounds.mins = Vector3(chunkCoords.x, chunkCoords.y, 0);
+	m_worldBounds.mins = Vector3(chunkCoords.x * CHUNK_DIMENSIONS_X, chunkCoords.y * CHUNK_DIMENSIONS_Y, 0);
 	m_worldBounds.maxs = m_worldBounds.mins + Vector3(CHUNK_DIMENSIONS_X, CHUNK_DIMENSIONS_Y, CHUNK_DIMENSIONS_Z);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Destructor
+//
+Chunk::~Chunk()
+{
+	if (m_mesh != nullptr)
+	{
+		delete m_mesh;
+		m_mesh = nullptr;
+	}
 }
 
 
@@ -121,13 +134,22 @@ Vector2 Chunk::GetWorldXYCenter() const
 //-----------------------------------------------------------------------------------------------
 // Returns the XY bounds of the chunk
 //
-AABB2 Chunk::GetXYBounds() const
+AABB2 Chunk::GetWorldXYBounds() const
 {
 	AABB2 xyBounds;
 	xyBounds.mins = m_worldBounds.mins.xy();
 	xyBounds.maxs = m_worldBounds.maxs.xy();
 
 	return xyBounds;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the chunk coordinates of this chunk
+//
+IntVector2 Chunk::GetChunkCoords() const
+{
+	return m_chunkCoords;
 }
 
 

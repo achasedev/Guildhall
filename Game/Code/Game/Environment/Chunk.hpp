@@ -19,6 +19,8 @@ public:
 	//-----Public Methods-----
 
 	Chunk(const IntVector2& chunkCoords);
+	~Chunk();
+
 	void GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseElevation);
 
 	void Update();
@@ -26,7 +28,10 @@ public:
 
 	// Producers
 	Vector2 GetWorldXYCenter() const;
-	AABB2	GetXYBounds() const;
+	AABB2	GetWorldXYBounds() const;
+
+	// Accessors
+	IntVector2 GetChunkCoords() const;
 
 	// Mutators
 

@@ -24,16 +24,18 @@ public:
 	IntVector2 GetChunkCoordsForChunkThatContainsPosition(const Vector2& position) const;
 	IntVector2 GetChunkCoordsForChunkThatContainsPosition(const Vector3& position) const;
 
-	void ActivateChunk(const IntVector2& chunkCoords);
-
 
 private:
 	//-----Private Methods-----
 
 	bool GetClosestInactiveChunkToPlayerWithinActivationRange(IntVector2& out_closestInactiveChunkCoords) const;
+	bool GetFarthestActiveChunkToPlayerOutsideDeactivationRange(IntVector2& out_closestActiveChunkCoords) const;
 
 	void CheckToActivateChunks();
 	void CheckToDeactivateChunks();
+
+	void ActivateChunk(const IntVector2& chunkCoords);
+	void DeactivateChunk(const IntVector2& chunkCoords);
 
 
 private:
