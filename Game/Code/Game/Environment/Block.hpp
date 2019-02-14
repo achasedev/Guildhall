@@ -14,6 +14,9 @@ public:
 
 	Block() {}
 
+	uint8_t GetType() const;
+	void	SetType(uint8_t blockType);
+
 
 private:
 	//-----Private Data-----

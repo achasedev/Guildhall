@@ -7,12 +7,32 @@
 #include "Game/Environment/Chunk.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Environment/BlockType.hpp"
+#include "Engine/Core/File.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/IntVector3.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/Utility/SmoothNoise.hpp"
+#include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Rendering/Meshes/MeshBuilder.hpp"
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+
+
+struct ChunkFileHeader_t
+{
+	uint8_t fourDigitCharacterCode[4] = { 'S', 'M', 'C', 'D' };
+
+	uint8_t version = 1;
+	uint8_t chunkBitX = Chunk::CHUNK_BITS_X;
+	uint8_t chunkBitY = Chunk::CHUNK_BITS_Y;
+	uint8_t chunkBitZ = Chunk::CHUNK_BITS_Z;
+
+	uint8_t unusedByteOne = 0;
+	uint8_t unusedByteTwo = 0;
+	uint8_t unusedByteThree = 0;
+	uint8_t format = 'R'; // R stands for RLE-Compression
+};
+
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -82,6 +102,9 @@ void Chunk::GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseE
 				}
 
 				PushVerticesForBlock(blockCoords, typeToUse);
+
+				int blockIndex = GetBlockIndexFromBlockCoords(blockCoords);
+				m_blocks[blockIndex].SetType(typeToUse->m_typeIndex);
 			}
 		}
 	}
@@ -145,11 +168,101 @@ AABB2 Chunk::GetWorldXYBounds() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Writes the chunk to file
+//
+void Chunk::WriteToFile() const
+{
+	// Create the directory if it doesn't exist
+	CreateDirectoryA("Data/Saves", NULL);
+
+	std::string fileName = Stringf("Data/Saves/Chunk_%i_%i.chunk", m_chunkCoords.x, m_chunkCoords.y);
+	File file;
+	bool opened = file.Open(fileName.c_str(), "w+");
+
+	if (!opened)
+	{
+		ConsoleErrorf("Couldn't open chunk file %s for write", fileName.c_str());
+		return;
+	}
+
+	
+	// Write the header
+	ChunkFileHeader_t header;
+
+	std::vector<uint8_t> buffer;
+	buffer.reserve(65536);
+	buffer.resize(sizeof(header));
+
+	memcpy(buffer.data(), &header, sizeof(header));
+
+	// TODO: Update to check the format before writing
+
+	// Iterate across the blocks
+	uint8_t rollingCount = 0;
+	uint8_t rollingType = m_blocks[0].GetType();
+	int total = 0;
+	bool justStarted = true;
+
+	for (int blockIndex = 0; blockIndex < BLOCKS_PER_CHUNK; ++blockIndex)
+	{
+		uint8_t currType = m_blocks[blockIndex].GetType();
+
+		// If it doesn't match
+		if (currType != rollingType)
+		{
+			buffer.push_back(rollingType);
+			buffer.push_back(rollingCount);
+			total += rollingCount;
+
+			rollingType = currType;
+			rollingCount = 1;
+		}
+		else
+		{
+			if (rollingCount == 0xFF) // If we hit RLE limit
+			{
+				buffer.push_back(rollingType);
+				buffer.push_back(rollingCount);
+				total += rollingCount;
+
+				rollingCount = 0;
+			}
+
+			rollingCount++;
+		}
+	}
+
+	// Push the last bit
+	buffer.push_back(rollingType);
+	buffer.push_back(rollingCount);
+	total += rollingCount;
+
+	ASSERT_OR_DIE(total == 65536, "Blocks didn't add up");
+
+	// Write to file
+	file.Write((const char*)buffer.data(), buffer.size());
+
+	file.Close();
+
+	ConsolePrintf(Rgba::GREEN, "Wrote chunk (%i, %i) to file", m_chunkCoords.x, m_chunkCoords.y);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the chunk coordinates of this chunk
 //
 IntVector2 Chunk::GetChunkCoords() const
 {
 	return m_chunkCoords;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether this chunk needs to be written to file when deactivated
+//
+bool Chunk::ShouldWriteToFile() const
+{
+	return m_shouldWriteToFile;
 }
 
 

@@ -28,14 +28,15 @@ public:
 private:
 	//-----Private Methods-----
 
-	bool GetClosestInactiveChunkToPlayerWithinActivationRange(IntVector2& out_closestInactiveChunkCoords) const;
-	bool GetFarthestActiveChunkToPlayerOutsideDeactivationRange(IntVector2& out_closestActiveChunkCoords) const;
-
+	// Chunk Activation
 	void CheckToActivateChunks();
-	void CheckToDeactivateChunks();
-
 	void ActivateChunk(const IntVector2& chunkCoords);
+	bool GetClosestInactiveChunkToPlayerWithinActivationRange(IntVector2& out_closestInactiveChunkCoords) const;
+
+	// Chunk Deactivation
+	void CheckToDeactivateChunks();
 	void DeactivateChunk(const IntVector2& chunkCoords);
+	bool GetFarthestActiveChunkToPlayerOutsideDeactivationRange(IntVector2& out_closestActiveChunkCoords) const;
 
 
 private:

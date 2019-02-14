@@ -10,6 +10,7 @@
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Rendering/Meshes/MeshBuilder.hpp"
 
+
 class Mesh;
 class BlockType;
 
@@ -29,9 +30,12 @@ public:
 	// Producers
 	Vector2 GetWorldXYCenter() const;
 	AABB2	GetWorldXYBounds() const;
+	
+	void	WriteToFile() const;
 
 	// Accessors
-	IntVector2 GetChunkCoords() const;
+	IntVector2	GetChunkCoords() const;
+	bool		ShouldWriteToFile() const;
 
 	// Mutators
 
@@ -43,9 +47,9 @@ public:
 public:
 	//-----Public Data-----
 
-	static constexpr int CHUNK_BITS_X = 4; // Number of bits in the Block Index to represent the x index
-	static constexpr int CHUNK_BITS_Y = 4; // Number of bits in the Block Index to represent the y index
-	static constexpr int CHUNK_BITS_Z = 8; // Number of bits in the Block Index to represent the z index
+	static constexpr uint8_t CHUNK_BITS_X = 4; // Number of bits in the Block Index to represent the x index
+	static constexpr uint8_t CHUNK_BITS_Y = 4; // Number of bits in the Block Index to represent the y index
+	static constexpr uint8_t CHUNK_BITS_Z = 8; // Number of bits in the Block Index to represent the z index
 
 	static constexpr int CHUNK_DIMENSIONS_X = (1 << CHUNK_BITS_X);
 	static constexpr int CHUNK_DIMENSIONS_Y = (1 << CHUNK_BITS_Y);
@@ -70,5 +74,7 @@ private:
 	
 	Mesh*		m_mesh = nullptr;
 	MeshBuilder m_meshBuilder;
+
+	bool		m_shouldWriteToFile = true;
 
 };
