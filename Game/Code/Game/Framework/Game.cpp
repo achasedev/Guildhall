@@ -11,10 +11,36 @@
 #include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
+#include "Engine/Core/DeveloperConsole/Command.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 // The singleton instance
 Game* Game::s_instance = nullptr;
+
+void Command_PlaySongForFFTAnalysis(Command& cmd)
+{
+	std::string filepath;
+	bool specified = cmd.GetParam("f", filepath);
+
+	if (specified)
+	{
+		FFTSystem* fftSystem = Game::GetFFTSystem();
+		SoundID songID = fftSystem->CreateOrGetSound(filepath);
+
+		if (songID == MISSING_SOUND_ID)
+		{
+			ConsoleErrorf("Couldn't find song %s", filepath.c_str());
+			return;
+		}
+
+		fftSystem->PlaySongAndCollectFFTData(filepath.c_str());
+		ConsolePrintf(Rgba::GREEN, "Starting FFT Bin Collection on %s...please wait for playback to finish", filepath.c_str());
+	}
+	else
+	{
+		ConsoleErrorf("No file specified, use -f op");
+	}
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -39,13 +65,13 @@ Game::Game()
 	// FFT System
 	m_fftSystem = new FFTSystem();
 
-	SoundID sound = m_fftSystem->CreateOrGetSound("Data/Audio/Music/DrumSet.mp3");
+	//SoundID sound = m_fftSystem->CreateOrGetSound("Data/Audio/Music/DrumSet.mp3");
 // 	SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/50hz.mp3");
 // 	SoundID sound4 = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/200hz.mp3");
 // 	SoundID sound2 = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/1000hz.mp3");
 // 	SoundID sound3 = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/5000hz.mp3");
 
-	m_fftSystem->PlayMusicTrackForFFT(sound, 1.0f);
+	//m_fftSystem->PlayMusicTrackForFFT(sound, 1.0f);
 // 	AudioSystem::GetInstance()->PlaySound(sound2, true);
 // 	AudioSystem::GetInstance()->PlaySound(sound3, true);
 // 	AudioSystem::GetInstance()->PlaySound(sound4, true);
@@ -85,6 +111,8 @@ void Game::Initialize()
 	mouse.ShowMouseCursor(false);
 	mouse.LockCursorToClient(true);
 	mouse.SetCursorMode(CURSORMODE_RELATIVE);
+
+	Command::Register("fft_collect", "Collects FFT Data given the song by -f", Command_PlaySongForFFTAnalysis);
 }
 
 
@@ -153,6 +181,15 @@ Camera* Game::GetGameCamera()
 float Game::GetDeltaTime()
 {
 	return s_instance->m_gameClock->GetDeltaTime();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the FFT system of the game
+//
+FFTSystem* Game::GetFFTSystem()
+{
+	return s_instance->m_fftSystem;
 }
 
 

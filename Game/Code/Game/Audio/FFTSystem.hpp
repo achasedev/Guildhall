@@ -12,37 +12,19 @@
 #include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Rendering/Meshes/Mesh.hpp"
 
-class Stopwatch;
-
-struct ThresholdDetectData_t
-{
-	Stopwatch							delayTimer = nullptr;
-	float								delayInterval;
-
-	FloatRange							frequencyRange;
-	std::vector<float>					onceSecondSampleAverages;
-
-	float								lastSampleRangeAverage = 0.f;
-	float								historyAverage = -1.0f;
-	float								historyVariance = -1.0f;
-
-	bool								thresholdBrokenLastSample = false;
-
-};
-
 struct FFTBinData_t
 {
 	float binAverageOfAllChannels = 0.f;
 	float isHigh = false;
+	float timeIntoSong = 0.f;
 };
 
 struct FFTBinSpan_t
 {
-	FFTBinData_t*	binSpanData = nullptr;
-	FloatRange		frequencySpan;
+	std::vector<FFTBinData_t>	fftBinSamples;
+	FloatRange					frequencyInterval;
 };
 
- 
 
 class FFTSystem : public AudioSystem
 {
@@ -56,17 +38,17 @@ public:
 	void			ProcessInput();
 	void			Render() const;
 
-	void			PlayMusicTrackForFFT(SoundID soundID, float volume = 1.f);
+	void						PlaySongAndCollectFFTData(const char* songPath);
 
 	// FFT Mutators
 	void						SetFFTGraphMaxXValue(float maxXValue);
 	void						SetFFTGraphMaxYValue(float maxYValue);
-	void						SetFFTWindowSize(int windowSize);
 	void						SetFFTWindowType(FMOD_DSP_FFT_WINDOW windowType);
 	void						SetShouldRenderFFTGraph(bool shouldRender);
 
 	// FFT Accessors
 	bool						IsSetToRenderGraph();
+	bool						IsPlaying() const;
 
 
 private:
@@ -76,18 +58,20 @@ private:
 	void CreateAndAddFFTDSPToMasterChannel();
 	void SetupFFTGraphUI();
 	
-	// Data collection
-	void StartFFTDataCollection(const char* songPath);
-	void SetupInitialFFTData();
-	
-	void UpdateFFTDataCollection();
+	// FFT Data
 	bool CheckForNewFFTSample();
 	void UpdateLastFFTSample(float* newData);
-	
-	void CleanUpFFTData();
-
 	void UpdateBarMesh();
 	void UpdateGridAndPanelMesh();
+
+	// Bin Data Collection
+	void SetupForFFTPlayback();
+	
+	void AddCurrentFFTSampleToBinData();
+	
+	void WriteFFTBinDataToFile();
+	void CleanUp();
+
 
 
 private:
@@ -95,30 +79,29 @@ private:
 
 	// FFT Data
 	FMOD::DSP*							m_fftDSP = nullptr;
-	FMOD_DSP_PARAMETER_FFT*				m_fmodCurrentFFTData = nullptr;
+	FMOD_DSP_PARAMETER_FFT*				m_pointerToFMODFFTSpectrum = nullptr;
 	float								m_sampleRate = -1.0f;
-	const float							m_nyquistFreq = m_sampleRate * 0.5f;
 	FMOD::Channel*						m_musicChannel = nullptr;
+	std::string							m_musicTitleBeingPlayed;
+	Stopwatch*							m_playBackTimer = nullptr;
+	float								m_songLength = 0.f;
 
 	// FFT Settings
-	unsigned int						m_fftWindowSize = 1024;
+	const unsigned int					m_fftWindowSize = 1024;
 
-	// FFT Calculated Data
-	bool								m_collectingFFTData = false;
+	// FFT Data
 	float								m_maxValueLastFrame = 0.f;
-	float*								m_lastFFTSample = nullptr;
+	float*								m_lastFFTSampleChannelAverages = nullptr;
 
-	ThresholdDetectData_t				m_bassDrumData;
-	ThresholdDetectData_t				m_snareDrumData;
-
-	FFTBinSpan_t*						m_FFTData = nullptr;
+	// FFT Bin Collection
+	std::vector<FFTBinSpan_t>			m_FFTBinSpans;
 
 	// Rendering
 	bool								m_renderFFTGraph = true;
 	float								m_fftMaxYAxis = 1.0f;
 	unsigned int						m_binsToDisplay = 128;
-	mutable Mesh						m_barMesh;
-	mutable Mesh						m_gridMesh;
+	Mesh*								m_barMesh = nullptr;
+	Mesh*								m_gridMesh = nullptr;
 
 	// UI Settings
 	const float							m_graphHeight = 800.f;

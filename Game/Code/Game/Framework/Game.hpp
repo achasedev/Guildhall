@@ -45,6 +45,7 @@ public:
 	static Clock*				GetGameClock();
 	static Camera*				GetGameCamera();
 	static float				GetDeltaTime();
+	static FFTSystem*			GetFFTSystem();
 
 
 private:

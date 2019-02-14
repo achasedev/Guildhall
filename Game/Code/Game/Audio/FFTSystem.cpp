@@ -5,6 +5,7 @@
 /* Description: Implementation of the FFTSystem class
 /************************************************************************/
 #include "Game/Audio/FFTSystem.hpp"
+#include "Engine/Core/File.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
@@ -14,6 +15,8 @@
 #include "Engine/Rendering/Meshes/MeshBuilder.hpp"
 #include "Engine/Rendering/Resources/BitmapFont.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -21,6 +24,10 @@
 FFTSystem::FFTSystem()
 {
 	CreateAndAddFFTDSPToMasterChannel();
+
+	m_barMesh = new Mesh();
+	m_gridMesh = new Mesh();
+
 	SetupFFTGraphUI();
 }
 
@@ -32,7 +39,7 @@ FFTSystem::~FFTSystem()
 {
 	// Shouldn't have to delete these, as they're just convenience pointers
 	m_fftDSP = nullptr;
-	m_fmodCurrentFFTData = nullptr;
+	m_pointerToFMODFFTSpectrum = nullptr;
 }
 
 
@@ -43,9 +50,45 @@ void FFTSystem::BeginFrame()
 {
 	AudioSystem::BeginFrame();
 
-	if (m_collectingFFTData)
+	// Need to ensure we don't sample on the first frame, to avoid any lag from loading
+	// the song from disk
+	static bool firstFrame = true;
+	
+	if (!IsPlaying())
 	{
-		UpdateFFTDataCollection();
+		firstFrame = true;
+		return;
+	}
+	
+	if (firstFrame)
+	{
+		firstFrame = false;
+		return;
+	}
+
+	// Checks and updates the last sample from FMOD if it's new
+	bool newSample = CheckForNewFFTSample();
+
+	if (newSample)
+	{
+		// Start the timer here to avoid delays from when the song starts
+		if (m_playBackTimer == nullptr)
+		{
+			m_playBackTimer = new Stopwatch();
+		}
+
+		AddCurrentFFTSampleToBinData();
+
+		UpdateBarMesh();
+		UpdateGridAndPanelMesh();
+	}
+
+	if (IsSoundFinished((SoundPlaybackID)m_musicChannel))
+	{
+		ConsolePrintf(Rgba::PURPLE, "Playback for song %s finished", m_musicTitleBeingPlayed.c_str());
+
+		WriteFFTBinDataToFile();
+		CleanUp();
 	}
 }
 
@@ -133,10 +176,10 @@ void FFTSystem::Render() const
 	AABB2 bounds = renderer->GetUIBounds();
 	BitmapFont* font = AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png");
 
-	renderer->DrawMeshWithMaterial(&m_gridMesh, AssetDB::GetSharedMaterial("UI"));
-	renderer->DrawMeshWithMaterial(&m_barMesh, AssetDB::GetSharedMaterial("Gradient"));
+	renderer->DrawMeshWithMaterial(m_gridMesh, AssetDB::GetSharedMaterial("UI"));
+	renderer->DrawMeshWithMaterial(m_barMesh, AssetDB::GetSharedMaterial("Gradient"));
 
-	std::string text = Stringf("Number of Channels: %i\n", m_fmodCurrentFFTData->numchannels);
+	std::string text = Stringf("Number of Channels: %i\n", m_pointerToFMODFFTSpectrum->numchannels);
 	text += Stringf("Number of intervals displayed: %i (out of %i)\n", m_binsToDisplay, m_fftWindowSize);
 	text += Stringf("Frequency resolution: %f hz\n", m_sampleRate / (float)m_fftWindowSize);
 	text += Stringf("Sample Rate: %.0f hz\n", m_sampleRate);
@@ -149,22 +192,6 @@ void FFTSystem::Render() const
 	text += Stringf("[Left, Right] Window Type: %s", windowTypeText.c_str());
 
 	renderer->DrawTextInBox2D(text, m_headingBounds, Vector2::ZERO, m_fontHeight, TEXT_DRAW_SHRINK_TO_FIT, font, m_fontColor);
-
-	text.clear();
-	if (m_bassDrumData.thresholdBrokenLastSample)
-	{
-		text = "BASS";
-	}
-
-	if (m_snareDrumData.thresholdBrokenLastSample)
-	{
-		text += " \nSNARE";
-	}
-
-	if (!IsStringNullOrEmpty(text))
-	{
-		renderer->DrawTextInBox2D(text, m_headingBounds, Vector2(1.0f, 0.f), m_fontHeight, TEXT_DRAW_SHRINK_TO_FIT, font, m_fontColor);
-	}
 
 	// Draw x axis labels
 	float maxFrequencyOnGraph = m_sampleRate * ((float)m_binsToDisplay / (float)m_fftWindowSize);
@@ -209,28 +236,11 @@ void FFTSystem::Render() const
 
 
 //-----------------------------------------------------------------------------------------------
-// Plays the music track on the system for FFT analysis
-//
-void FFTSystem::PlayMusicTrackForFFT(SoundID soundID, float volume /*= 1.f*/)
-{
-	if (m_musicChannel != nullptr)
-	{
-		AudioSystem::StopSound((SoundPlaybackID)m_musicChannel);
-	}
-
-	m_musicChannel = (FMOD::Channel*) AudioSystem::PlaySound(soundID, true, volume);
-
-	// Update sample rate
-	m_musicChannel->getFrequency(&m_sampleRate);
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Sets the max frequency value that is shown on the graph when rendererd (X-axis)
 //
 void FFTSystem::SetFFTGraphMaxXValue(float maxXValue)
 {
-	float frequencyPerSegment = m_nyquistFreq / (float)(m_fftWindowSize / 2);
+	float frequencyPerSegment = m_sampleRate / (float)(m_fftWindowSize);
 	m_binsToDisplay = Ceiling(maxXValue / frequencyPerSegment);
 
 	SetupFFTGraphUI(); // Reset the graph info based on the changed window size
@@ -245,18 +255,6 @@ void FFTSystem::SetFFTGraphMaxYValue(float maxYValue)
 	m_fftMaxYAxis = maxYValue;
 
 	SetupFFTGraphUI(); // Reset the graph info based on the changed window size
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Sets the FFT window size
-//
-void FFTSystem::SetFFTWindowSize(int windowSize)
-{
-	m_fftWindowSize = windowSize;
-
-	FMOD_RESULT result = m_fftDSP->setParameterInt(FMOD_DSP_FFT_WINDOWSIZE, m_fftWindowSize);
-	ASSERT_OR_DIE(result == FMOD_OK, "Couldn't assign window size parameter");
 }
 
 
@@ -285,6 +283,15 @@ void FFTSystem::SetShouldRenderFFTGraph(bool shouldRender)
 bool FFTSystem::IsSetToRenderGraph()
 {
 	return m_renderFFTGraph;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether a song is currently being played (and analyzed)
+//
+bool FFTSystem::IsPlaying() const
+{
+	return (m_musicChannel != nullptr);
 }
 
 
@@ -325,6 +332,76 @@ void FFTSystem::SetupFFTGraphUI()
 	// Right Side Panel
 	m_rightSidePanel.mins = m_xAxisBounds.GetBottomRight();
 	m_rightSidePanel.maxs = m_totalBounds.GetTopRight();
+
+	UpdateGridAndPanelMesh();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Starts playing a song and analying FFT data from it
+//
+void FFTSystem::PlaySongAndCollectFFTData(const char* songPath)
+{
+	if (IsPlaying())
+	{
+		ConsoleWarningf("Had to stop previous playback to start new FFT Bin analysis");
+		WriteFFTBinDataToFile();
+		CleanUp();
+	}
+
+	SoundID sound = MISSING_SOUND_ID;
+
+	FMOD::Sound* newSound = nullptr;
+	m_fmodSystem->createSound(songPath, FMOD_DEFAULT, nullptr, &newSound);
+	if (newSound)
+	{
+		std::string soundFilePath = songPath;
+		SoundID newSoundID = m_registeredSounds.size();
+		m_registeredSoundIDs[soundFilePath] = newSoundID;
+		m_registeredSounds.push_back(newSound);
+		sound = newSoundID;
+	}
+
+	GUARANTEE_OR_DIE(sound != MISSING_SOUND_ID, Stringf("Error: FFTSystem couldn't find song file %s", songPath).c_str());
+
+	m_musicChannel = (FMOD::Channel*) AudioSystem::PlaySound(sound, false, 1.0f);
+
+	unsigned int millisecondLength;
+	newSound->getLength(&millisecondLength, FMOD_TIMEUNIT_MS);
+
+	m_songLength = ((float) millisecondLength / 1000.f);
+
+	std::vector<std::string> tokens = Tokenize(songPath, '/');
+	std::string songNameWithExt = tokens[tokens.size() - 1];
+
+	std::string songName = std::string(songNameWithExt, 0, songNameWithExt.find_first_of('.'));
+	m_musicTitleBeingPlayed = songName;
+
+	SetupForFFTPlayback();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets all member data that can be immediately determined from the currently playing song,
+// and sets up the initial state for FFT bin data analysis for updating as the song is playing
+//
+void FFTSystem::SetupForFFTPlayback()
+{
+	// Update sample rate
+	m_musicChannel->getFrequency(&m_sampleRate);
+
+	// #TODO: Only store up to a max frequency, instead of the whole spectrum
+	float freqSpanPerBin = m_sampleRate / m_fftWindowSize;
+	m_FFTBinSpans.reserve(m_fftWindowSize + 1);
+
+	for (unsigned int binIndex = 0; binIndex < m_fftWindowSize; ++binIndex)
+	{
+		FFTBinSpan_t spanData;
+		spanData.frequencyInterval = FloatRange(binIndex * freqSpanPerBin, (binIndex + 1) * freqSpanPerBin);
+
+		m_FFTBinSpans.push_back(spanData);
+		m_FFTBinSpans.back().fftBinSamples.reserve(10000);
+	}
 }
 
 
@@ -341,7 +418,9 @@ void FFTSystem::CreateAndAddFFTDSPToMasterChannel()
 	ASSERT_OR_DIE(result == FMOD_OK, "Couldn't create the DSP");
 
 	SetFFTWindowType(FMOD_DSP_FFT_WINDOW_BLACKMANHARRIS);
-	SetFFTWindowSize(m_fftWindowSize);
+
+	result = m_fftDSP->setParameterInt(FMOD_DSP_FFT_WINDOWSIZE, m_fftWindowSize);
+	ASSERT_OR_DIE(result == FMOD_OK, "Couldn't assign window size parameter");
 
 	result = masterChannelGroup->addDSP(FMOD_CHANNELCONTROL_DSP_HEAD, m_fftDSP);
 	ASSERT_OR_DIE(result == FMOD_OK, "Couldn't ADD the DSP to the master channel group");
@@ -349,9 +428,9 @@ void FFTSystem::CreateAndAddFFTDSPToMasterChannel()
 	// Get the fft data
 	void* spectrumData = nullptr;
 	m_fftDSP->getParameterData(FMOD_DSP_FFT_SPECTRUMDATA, (void**)&spectrumData, 0, 0, 0);
-	m_fmodCurrentFFTData = (FMOD_DSP_PARAMETER_FFT*)spectrumData;
+	m_pointerToFMODFFTSpectrum = (FMOD_DSP_PARAMETER_FFT*)spectrumData;
 
-	ASSERT_OR_DIE(m_fmodCurrentFFTData != nullptr, "No FFT data available");
+	ASSERT_OR_DIE(m_pointerToFMODFFTSpectrum != nullptr, "No FFT data available");
 }
 
 
@@ -382,57 +461,39 @@ bool DoSamplesMatch(float* oldSample, float* newSample, int length)
 
 
 //-----------------------------------------------------------------------------------------------
-// Update for processing and storing FFT Data
-//
-void FFTSystem::UpdateFFTDataCollection()
-{
-	// Check if the sample we received this frame is a new one
-	bool receivedNewFFTSampleThisFrame = CheckForNewFFTSample();
-
-	if (receivedNewFFTSampleThisFrame)
-	{
-		// Add this frame's data to our master bin-span of data
-
-
-		// Update bar mesh if rendering
-		if (m_renderFFTGraph)
-		{
-			UpdateBarMesh();
-			UpdateGridAndPanelMesh();
-		}
-	}
-
-	if (IsSoundFinished((SoundPlaybackID)m_musicChannel))
-	{
-		// Write the data to a file
-
-		m_collectingFFTData = false;
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Checks if the current sample in FMOD is a new sample to us, and updates members if so
 // Returns true if so, false otherwise
 //
 bool FFTSystem::CheckForNewFFTSample()
 {
-	// Check to see if there is a new sample this frame
-	float* thisFrameSample = (float*)malloc(sizeof(float) * m_fmodCurrentFFTData->length);
-	memset(thisFrameSample, 0, sizeof(float) * m_fmodCurrentFFTData->length);
-
-	for (int binIndex = 0; binIndex < m_fmodCurrentFFTData->length; ++binIndex)
+	// If there's no song playing then there's no new sample
+	if (!IsPlaying())
 	{
-		for (int channelIndex = 0; channelIndex < m_fmodCurrentFFTData->numchannels; ++channelIndex)
+		return false;
+	}
+
+	// FMOD hasn't processed any data yet
+	if (m_pointerToFMODFFTSpectrum->length == 0)
+	{
+		return false;
+	}
+
+	// Check to see if there is a new sample this frame
+	float* thisFrameSample = (float*)malloc(sizeof(float) * m_pointerToFMODFFTSpectrum->length);
+	memset(thisFrameSample, 0, sizeof(float) * m_pointerToFMODFFTSpectrum->length);
+
+	for (int binIndex = 0; binIndex < m_pointerToFMODFFTSpectrum->length; ++binIndex)
+	{
+		for (int channelIndex = 0; channelIndex < m_pointerToFMODFFTSpectrum->numchannels; ++channelIndex)
 		{
-			thisFrameSample[binIndex] += m_fmodCurrentFFTData->spectrum[channelIndex][binIndex];
+			thisFrameSample[binIndex] += m_pointerToFMODFFTSpectrum->spectrum[channelIndex][binIndex];
 		}
 
 		// If we want average of the channels...
-		thisFrameSample[binIndex] /= (float)m_fmodCurrentFFTData->numchannels;
+		thisFrameSample[binIndex] /= (float)m_pointerToFMODFFTSpectrum->numchannels;
 	}
 
-	bool receivedNewSampleThisFrame = !DoSamplesMatch(m_lastFFTSample, thisFrameSample, m_fmodCurrentFFTData->length);
+	bool receivedNewSampleThisFrame = !DoSamplesMatch(m_lastFFTSampleChannelAverages, thisFrameSample, m_pointerToFMODFFTSpectrum->length);
 
 	if (receivedNewSampleThisFrame)
 	{
@@ -442,6 +503,8 @@ bool FFTSystem::CheckForNewFFTSample()
 	{
 		free(thisFrameSample);
 	}
+
+	return receivedNewSampleThisFrame;
 }
 
 
@@ -451,12 +514,119 @@ bool FFTSystem::CheckForNewFFTSample()
 //
 void FFTSystem::UpdateLastFFTSample(float* newData)
 {
-	if (m_lastFFTSample != nullptr)
+	if (m_lastFFTSampleChannelAverages != nullptr)
 	{
-		free(m_lastFFTSample);
+		free(m_lastFFTSampleChannelAverages);
 	}
 
-	m_lastFFTSample = newData;
+	m_lastFFTSampleChannelAverages = newData;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Takes the current bin data sample from the FFT and adds it into the bin history
+//
+void FFTSystem::AddCurrentFFTSampleToBinData()
+{
+	int numBins = m_fftWindowSize;
+
+	for (int binIndex = 0; binIndex < numBins; ++binIndex)
+	{
+		FFTBinData_t binData;
+		binData.binAverageOfAllChannels = m_lastFFTSampleChannelAverages[binIndex];
+		binData.isHigh = false; // #TODO: Detect if it is a high
+		binData.timeIntoSong = m_playBackTimer->GetElapsedTime();
+
+		m_FFTBinSpans[binIndex].fftBinSamples.push_back(binData);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Writes the bin data history to a text file
+//
+void FFTSystem::WriteFFTBinDataToFile()
+{
+	CreateDirectoryA("Data/FFTLogs", NULL);
+
+	std::string binDataFilePath = Stringf("Data/FFTLogs/FFTLog_%s.fftlog", m_musicTitleBeingPlayed.c_str());
+
+	ConsolePrintf("Writing Bin Data to file %s...", binDataFilePath.c_str());
+	File file;
+	bool opened = file.Open(binDataFilePath.c_str(), "w+");
+
+	ASSERT_OR_DIE(opened, "Error: Couldn't open FFT file for write");
+
+	int numBins = m_fftWindowSize;
+
+	std::string headingLine = Stringf("Song File: %s\n", m_musicTitleBeingPlayed.c_str()).c_str();
+	file.Write(headingLine.c_str(), headingLine.size());
+
+	headingLine = Stringf("Duration: %.3f seconds\n", m_songLength).c_str();
+	file.Write(headingLine.c_str(), headingLine.size());
+
+	headingLine = Stringf("Sample Rate: %.2f\n", m_sampleRate).c_str();
+	file.Write(headingLine.c_str(), headingLine.size());
+
+	headingLine = Stringf("Number of Bins: %i\n", numBins).c_str();
+	file.Write(headingLine.c_str(), headingLine.size());
+
+	headingLine = Stringf("Number of Samples per bin: %i\n", m_FFTBinSpans[0].fftBinSamples.size()).c_str();
+	file.Write(headingLine.c_str(), headingLine.size());
+
+	for (int spanIndex = 0; spanIndex < numBins; ++spanIndex)
+	{
+		FFTBinSpan_t& currentBinSpan = m_FFTBinSpans[spanIndex];
+
+		std::string currLine = Stringf("----------BIN %i - Frequency Range: [%.2fhz, %.2fhz)----------\n", spanIndex, currentBinSpan.frequencyInterval.min, currentBinSpan.frequencyInterval.max);
+
+		file.Write(currLine.c_str(), currLine.size());
+
+		int numFFTSamplesInSpan = (int)currentBinSpan.fftBinSamples.size();
+
+		for (int sampleIndex = 0; sampleIndex < numFFTSamplesInSpan; ++sampleIndex)
+		{
+			currLine = Stringf("Time: %.4f - Value: %.8f\n", currentBinSpan.fftBinSamples[sampleIndex].timeIntoSong, currentBinSpan.fftBinSamples[sampleIndex].binAverageOfAllChannels);
+
+			file.Write(currLine.c_str(), currLine.size());
+		}
+	}
+
+	file.Close();
+
+	ConsolePrintf(Rgba::GREEN, "Write Finished");
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Deletes any FFT bin data leftover from the last data collection
+//
+void FFTSystem::CleanUp()
+{
+	m_FFTBinSpans.clear();
+	m_musicTitleBeingPlayed.clear();
+
+	if (m_lastFFTSampleChannelAverages)
+	{
+		free(m_lastFFTSampleChannelAverages);
+	}
+
+	m_lastFFTSampleChannelAverages = nullptr;
+	m_maxValueLastFrame = 0.f;
+	m_sampleRate = -1.f;
+
+	m_musicChannel = nullptr;
+	m_songLength = 0.f;
+
+	delete m_barMesh;
+	m_barMesh = new Mesh();
+
+	delete m_gridMesh;
+	m_gridMesh = new Mesh();
+	UpdateGridAndPanelMesh();
+
+	delete m_playBackTimer;
+	m_playBackTimer = nullptr;
 }
 
 
@@ -465,7 +635,7 @@ void FFTSystem::UpdateLastFFTSample(float* newData)
 //
 void FFTSystem::UpdateBarMesh()
 {
-	if (m_fmodCurrentFFTData != nullptr)
+	if (m_pointerToFMODFFTSpectrum != nullptr)
 	{
 		float boxWidth = m_graphBounds.GetDimensions().x / (float)m_binsToDisplay;
 		AABB2 baseBoxBounds = AABB2(m_graphBounds.mins, m_graphBounds.mins + Vector2(boxWidth, m_graphBounds.GetDimensions().y));
@@ -479,7 +649,7 @@ void FFTSystem::UpdateBarMesh()
 		for (unsigned int i = 0; i < m_binsToDisplay; ++i)
 		{
 			// Get the sum of all channels
-			float value = m_lastFFTSample[i];
+			float value = m_lastFFTSampleChannelAverages[i];
 			
 			m_maxValueLastFrame = MaxFloat(value, m_maxValueLastFrame);
 
@@ -497,7 +667,7 @@ void FFTSystem::UpdateBarMesh()
 		}
 
 		mb.FinishBuilding();
-		mb.UpdateMesh(m_barMesh);
+		mb.UpdateMesh(*m_barMesh);
 	}
 }
 
@@ -573,5 +743,5 @@ void FFTSystem::UpdateGridAndPanelMesh()
 	mb.Push2DQuad(m_rightSidePanel, AABB2::UNIT_SQUARE_OFFCENTER, m_lineAndPanelColor);
 
 	mb.FinishBuilding();
-	mb.UpdateMesh(m_gridMesh);
+	mb.UpdateMesh(*m_gridMesh);
 }
