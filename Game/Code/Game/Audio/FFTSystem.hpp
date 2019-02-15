@@ -23,8 +23,13 @@ struct FFTBinSpan_t
 {
 	std::vector<FFTBinData_t>	fftBinSamples;
 	FloatRange					frequencyInterval;
+
+	float						predictedPeriodDuration;
+	float						predictedPeriodVariance;
+	float						predictedPeriodPhase;
 };
 
+class File;
 
 class FFTSystem : public AudioSystem
 {
@@ -50,6 +55,10 @@ public:
 	bool						IsSetToRenderGraph();
 	bool						IsPlaying() const;
 
+	// FFT Data File Processing
+	void PeformBeatDetectionAnalysis(const std::string& filename, float beatWindowDuration, float beatThresholdScalar, float delayAfterBeatDetected);
+	File* LoadFFTDataFile(const std::string& filename) const;
+	
 
 private:
 	//-----Private Methods-----
@@ -66,12 +75,14 @@ private:
 
 	// Bin Data Collection
 	void SetupForFFTPlayback();
-	
 	void AddCurrentFFTSampleToBinData();
 	
 	void WriteFFTBinDataToFile();
 	void CleanUp();
 
+	// Bin Data Analysis
+	void SetupForFFTBeatAnalysis(File* file);
+	void WriteFFTBeatAnalysisToFile();
 
 
 private:

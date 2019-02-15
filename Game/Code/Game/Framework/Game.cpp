@@ -42,6 +42,34 @@ void Command_PlaySongForFFTAnalysis(Command& cmd)
 	}
 }
 
+void Command_PerformBeatAnalysis(Command& cmd)
+{
+	std::string filepath;
+	bool specified = cmd.GetParam("f", filepath);
+
+	float beatWindowDuration = 1.0f;
+	cmd.GetParam("w", beatWindowDuration, &beatWindowDuration);
+
+	float delayOnDetect = 0.25f;
+	cmd.GetParam("d", delayOnDetect, &delayOnDetect);
+
+	float beatThresholdScalar = 1.5;
+	cmd.GetParam("t", beatThresholdScalar, &beatThresholdScalar);
+
+	if (specified)
+	{
+		FFTSystem* fftSystem = Game::GetFFTSystem();
+
+		fftSystem->PeformBeatDetectionAnalysis(filepath, beatWindowDuration, beatThresholdScalar, delayOnDetect);
+
+		ConsolePrintf(Rgba::GREEN, "Starting FFT Beat analysis on %s...", filepath.c_str());
+	}
+	else
+	{
+		ConsoleErrorf("No file specified, use -f op");
+	}
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // Default constructor, initialize any game members here (private)
@@ -113,6 +141,7 @@ void Game::Initialize()
 	mouse.SetCursorMode(CURSORMODE_RELATIVE);
 
 	Command::Register("fft_collect", "Collects FFT Data given the song by -f", Command_PlaySongForFFTAnalysis);
+	Command::Register("fft_analyze_beat", "Analyzed beats in fft data file given in -f", Command_PerformBeatAnalysis);
 }
 
 

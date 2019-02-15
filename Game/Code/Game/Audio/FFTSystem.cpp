@@ -296,6 +296,236 @@ bool FFTSystem::IsPlaying() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Loads and parses an FFT Data file and performs a beat analysis on the data
+//
+void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float beatWindowDuration, float beatThresholdScalar, float delayAfterDetected)
+{
+	if (IsPlaying())
+	{
+		ConsoleErrorf("Cannot perform analysis while a song is playing");
+		return;
+	}
+
+	File* dataFile = LoadFFTDataFile(filename);
+	
+	if (dataFile == nullptr)
+	{
+		return;
+	}
+
+	dataFile->LoadFileToMemory();
+
+	SetupForFFTBeatAnalysis(dataFile);
+
+
+	int numBins = (int) m_FFTBinSpans.size();
+	std::vector<FFTBinData_t> rollingWindow;
+
+	for (int binIndex = 0; binIndex < numBins; ++binIndex)
+	{
+		rollingWindow.clear();
+
+		FFTBinSpan_t& binSpan = m_FFTBinSpans[binIndex];
+
+		int numSamplesInBinSpan = (int) binSpan.fftBinSamples.size();
+
+		// Setup initial history, cannot check for beats yet without one
+		int sampleIndex = 0;
+
+		for (sampleIndex = 0; sampleIndex < numSamplesInBinSpan; ++sampleIndex)
+		{
+			rollingWindow.push_back(binSpan.fftBinSamples[sampleIndex]);
+			float durationStored = rollingWindow.back().timeIntoSong - rollingWindow.front().timeIntoSong;
+
+			if (durationStored >= beatWindowDuration)
+			{
+				sampleIndex++;
+				break;
+			}
+		}
+
+		// We now have beatWindowDuration in our rolling window, begin checking for highs
+
+		for (sampleIndex; sampleIndex < numSamplesInBinSpan; ++sampleIndex)
+		{
+			float windowAverage = 0.f;
+			int samplesInHistory = (int)rollingWindow.size();
+
+			for (int historyIndex = 0; historyIndex < samplesInHistory; ++historyIndex)
+			{
+				windowAverage += rollingWindow[historyIndex].binAverageOfAllChannels;
+			}
+
+			windowAverage /= (float)samplesInHistory;
+
+			// If the current is beatThresholdScalar times bigger than the average, it's a beat
+			if (beatThresholdScalar * binSpan.fftBinSamples[sampleIndex].binAverageOfAllChannels > windowAverage)
+			{
+				binSpan.fftBinSamples[sampleIndex].isHigh = true;
+
+				// Update the window to be a delay past the beat to avoid multiple hits
+				float totalDurationAdvanced = 0.f;
+				while (totalDurationAdvanced < delayAfterDetected)
+				{
+					rollingWindow.push_back(binSpan.fftBinSamples[sampleIndex]);
+
+					float amountAdvancedFromThisSample = binSpan.fftBinSamples[sampleIndex].timeIntoSong - binSpan.fftBinSamples[sampleIndex - 1].timeIntoSong;
+					totalDurationAdvanced += amountAdvancedFromThisSample;
+					sampleIndex++;
+
+					if (sampleIndex == (int)binSpan.fftBinSamples.size())
+					{
+						break;
+					}
+				}
+
+				// Remove excess, not going under the window
+				float durationStored = rollingWindow.back().timeIntoSong - rollingWindow.front().timeIntoSong;
+				while ((durationStored > beatWindowDuration) && ((rollingWindow.size() > 1 && rollingWindow.back().timeIntoSong - rollingWindow[1].timeIntoSong > beatWindowDuration)))
+				{
+					rollingWindow.erase(rollingWindow.begin());
+					durationStored = rollingWindow.back().timeIntoSong - rollingWindow.front().timeIntoSong;
+				}
+			}
+			else
+			{
+				// Else just advance the window forward one sample, removing enough to keep us just over the window duration
+				rollingWindow.push_back(binSpan.fftBinSamples[sampleIndex]);
+				sampleIndex++;
+
+				// Remove excess, not going under the window
+				float durationStored = rollingWindow.back().timeIntoSong - rollingWindow.front().timeIntoSong;
+				while ((durationStored > beatWindowDuration) && ((rollingWindow.size() > 1 && rollingWindow.back().timeIntoSong - rollingWindow[1].timeIntoSong > beatWindowDuration)))
+				{
+					rollingWindow.erase(rollingWindow.begin());
+					durationStored = rollingWindow.back().timeIntoSong - rollingWindow.front().timeIntoSong;
+				}
+			}
+		}
+
+		// We now have all highs for this bin, so we can determine beat period, phase, and confidence
+		float intervalStartTimeIntoSong = 0.f;
+		float intervalEndTimeIntoSong = 0.f;
+		std::vector<float> periodIntervals;
+		float timeStartForFirstInterval = -1.0f;
+
+		// Setup time start at the first high
+		for (sampleIndex = 0; sampleIndex < numSamplesInBinSpan; ++sampleIndex)
+		{
+			if (binSpan.fftBinSamples[sampleIndex].isHigh)
+			{
+				timeStartForFirstInterval = binSpan.fftBinSamples[sampleIndex].timeIntoSong;
+				sampleIndex++;
+				break;
+			}
+		}
+
+		// Starting from the first high
+		bool onBeatInterval = true;
+		for (sampleIndex; sampleIndex < numSamplesInBinSpan; ++sampleIndex)
+		{
+			if (onBeatInterval)
+			{
+				intervalEndTimeIntoSong = binSpan.fftBinSamples[sampleIndex].timeIntoSong;
+
+				float currentIntervalDuration = intervalEndTimeIntoSong - intervalStartTimeIntoSong;
+
+				// Set a limit to a beat we detect, so if we go over it then just throw it out (prevents outliers)
+				if (currentIntervalDuration > 2.0f)
+				{
+					onBeatInterval = false;
+				}
+				else if (binSpan.fftBinSamples[sampleIndex].isHigh) // We should already have a lower limit from the beat delay above, so no worry about small intervals
+				{
+					periodIntervals.push_back(currentIntervalDuration);
+					intervalStartTimeIntoSong = intervalEndTimeIntoSong;
+				}
+
+				// Else do nothing in search of the end of the interval
+			}	
+			else
+			{
+				// We're looking for the start interval of the beat
+				if (binSpan.fftBinSamples[sampleIndex].isHigh)
+				{
+					intervalStartTimeIntoSong = binSpan.fftBinSamples[sampleIndex].timeIntoSong;
+					onBeatInterval = true;
+
+					// If we don't have an interval yet, update where we believe the beat starts in the song
+					if (periodIntervals.size() == 0)
+					{
+						timeStartForFirstInterval = intervalStartTimeIntoSong;
+					}
+				}
+			}
+		}
+
+		// We have all the intervals - find the average
+		float intervalAverage = 0.f;
+		for (int periodIndex = 0; periodIndex < (int)periodIntervals.size(); ++periodIndex)
+		{
+			intervalAverage += periodIntervals[periodIndex];
+		}
+
+		intervalAverage /= (float)periodIntervals.size();
+
+		binSpan.predictedPeriodDuration = intervalAverage;
+
+		// Calculate the variance
+		float intervalVariance = 0.f;
+		for (int periodIndex = 0; periodIndex < (int)periodIntervals.size(); ++periodIndex)
+		{
+			float currVariance = (periodIntervals[periodIndex] - intervalAverage);
+			currVariance *= currVariance;
+
+			intervalVariance += currVariance;
+		}
+
+		intervalVariance /= (float)periodIntervals.size();
+
+		binSpan.predictedPeriodVariance = intervalVariance;
+
+		// Calculate the phase
+
+		float predictedPhase = timeStartForFirstInterval;
+		while (predictedPhase - intervalAverage > 0.f)
+		{
+			predictedPhase -= intervalAverage;
+		}
+
+		binSpan.predictedPeriodPhase = predictedPhase;
+	}
+
+	// Done! Now write to file
+	WriteFFTBeatAnalysisToFile();
+
+	CleanUp();
+	
+	dataFile->Close();
+	delete dataFile;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Loads the FFT Data file by the given filename and returns it
+//
+File* FFTSystem::LoadFFTDataFile(const std::string& filename) const
+{
+	File* file = new File();
+	bool opened = file->Open(filename.c_str(), "r");
+
+	if (!opened)
+	{
+		ConsoleErrorf("Couldn't open file %s", filename.c_str());
+		delete file;
+		return nullptr;
+	}
+
+	return file;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Sets the UI parameters for rendering the graph
 //
 void FFTSystem::SetupFFTGraphUI()
@@ -578,7 +808,7 @@ void FFTSystem::WriteFFTBinDataToFile()
 	{
 		FFTBinSpan_t& currentBinSpan = m_FFTBinSpans[spanIndex];
 
-		std::string currLine = Stringf("----------BIN %i - Frequency Range: [%.2fhz, %.2fhz)----------\n", spanIndex, currentBinSpan.frequencyInterval.min, currentBinSpan.frequencyInterval.max);
+		std::string currLine = Stringf("BIN %i Frequency: %.2f %.2f (hertz)\n", spanIndex, currentBinSpan.frequencyInterval.min, currentBinSpan.frequencyInterval.max);
 
 		file.Write(currLine.c_str(), currLine.size());
 
@@ -628,6 +858,123 @@ void FFTSystem::CleanUp()
 
 	delete m_playBackTimer;
 	m_playBackTimer = nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Initializes the FFT Bin data from the file given
+//
+void FFTSystem::SetupForFFTBeatAnalysis(File* file)
+{
+	std::string currLine;
+
+	// Song name
+	file->GetNextLine(currLine);
+	m_musicTitleBeingPlayed = Tokenize(currLine, ' ')[2];
+
+	// Duration
+	file->GetNextLine(currLine);
+	m_songLength = StringToFloat(Tokenize(currLine, ' ')[1]);
+
+	// Sample Rate
+	file->GetNextLine(currLine);
+	m_sampleRate = StringToFloat(Tokenize(currLine, ' ')[1]);
+
+	// Max Frequency Analyzed
+	file->GetNextLine(currLine);
+
+	// Bin Count
+	file->GetNextLine(currLine);
+	
+	// Samples per bin
+	file->GetNextLine(currLine);
+	
+	// Bin information
+	file->GetNextLine(currLine);
+	while (!IsStringNullOrEmpty(currLine))
+	{
+		std::vector<std::string> lineTokens = Tokenize(currLine, ' ');
+		
+		// Start of a new bin
+		if (lineTokens[0] == "BIN")
+		{
+			FFTBinSpan_t span;
+			span.frequencyInterval.min = StringToFloat(lineTokens[3]);
+			span.frequencyInterval.max = StringToFloat(lineTokens[4]);
+
+			m_FFTBinSpans.push_back(span);
+		}
+		else
+		{
+			// Is a bin sample line
+			FFTBinData_t data;
+			data.timeIntoSong = StringToFloat(lineTokens[1]);
+			data.binAverageOfAllChannels = StringToFloat(lineTokens[4]);
+
+			m_FFTBinSpans.back().fftBinSamples.push_back(data);
+		}
+
+		file->GetNextLine(currLine);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Writes the beat analysis data to a beat data file
+//
+void FFTSystem::WriteFFTBeatAnalysisToFile()
+{
+	CreateDirectoryA("Data/FFTBeatAnalyses", NULL);
+
+	std::string filePath = Stringf("Data/FFTBeatAnalyses/%s.fftbeat", m_musicTitleBeingPlayed.c_str());
+	File file;
+	bool success = file.Open(filePath.c_str(), "w+");
+
+	if (!success)
+	{
+		ConsoleErrorf("Couldn't open beat data file %s for write", filePath.c_str());
+		return;
+	}
+
+	std::string headingLine = Stringf("Song File: %s\n", m_musicTitleBeingPlayed.c_str()).c_str();
+	file.Write(headingLine.c_str(), headingLine.size());
+
+	headingLine = Stringf("Duration: %.3f seconds\n", m_songLength).c_str();
+	file.Write(headingLine.c_str(), headingLine.size());
+
+	headingLine = Stringf("Sample Rate: %.2fhz\n", m_sampleRate).c_str();
+	file.Write(headingLine.c_str(), headingLine.size());
+
+	int binCount = (int) m_FFTBinSpans.size();
+	headingLine = Stringf("Number of Bins: %i\n", binCount).c_str();
+	file.Write(headingLine.c_str(), headingLine.size());
+
+	int numSamples = (int) m_FFTBinSpans[0].fftBinSamples.size();
+	headingLine = Stringf("Number of Samples per bin: %i\n", numSamples).c_str();
+	file.Write(headingLine.c_str(), headingLine.size());
+
+	// For each bin
+	for (int spanIndex = 0; spanIndex < binCount; ++spanIndex)
+	{
+		FFTBinSpan_t& currentBinSpan = m_FFTBinSpans[spanIndex];
+
+		std::string currLine = Stringf("BIN %i Frequency: %.2f %.2f (hertz)\n", spanIndex, currentBinSpan.frequencyInterval.min, currentBinSpan.frequencyInterval.max);
+		file.Write(currLine.c_str(), currLine.size());
+
+		currLine = Stringf("Span Period: %.2f\nPeriod Variance: %.2f\nPeriod Phase: %.2f\n", currentBinSpan.predictedPeriodDuration, currentBinSpan.predictedPeriodVariance, currentBinSpan.predictedPeriodPhase);
+		file.Write(currLine.c_str(), currLine.size());
+
+		for (int sampleIndex = 0; sampleIndex < numSamples; ++sampleIndex)
+		{
+			if (currentBinSpan.fftBinSamples[sampleIndex].isHigh)
+			{
+				currLine = Stringf("TIME: %.4f - Value: %.8f\n", currentBinSpan.fftBinSamples[sampleIndex].timeIntoSong, currentBinSpan.fftBinSamples[sampleIndex].binAverageOfAllChannels);
+				file.Write(currLine.c_str(), currLine.size());
+			}
+		}
+	}
+
+	file.Close();
 }
 
 
