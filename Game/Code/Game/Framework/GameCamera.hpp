@@ -5,6 +5,7 @@
 /* Description: Class to represent the single game camera
 /************************************************************************/
 #pragma once
+#include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Rendering/Core/Camera.hpp"
 
 class GameCamera : public Camera
@@ -23,6 +24,8 @@ public:
 	void SetEjected(bool newState);
 	bool IsEjected() const;
 
+	void AddScreenShake(float addedScreenShakeMagnitude);
+
 
 private:
 	//-----Private Data-----
@@ -31,6 +34,8 @@ private:
 	Vector3 m_offsetDirection;
 
 	bool						m_cameraEjected = false;
+
+	Stopwatch					m_screenShakeInterval;
 
 	static constexpr float		CAMERA_ROTATION_SPEED = 45.f;
 	static constexpr float		CAMERA_TRANSLATION_SPEED = 10.f;

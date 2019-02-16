@@ -63,6 +63,8 @@ private:
 	Weapon* m_currWeapon = nullptr;
 
 	static constexpr float RESPAWN_INTERVAL = 5.0f;
+	static constexpr float SCREENSHAKE_ADDED_ON_DEATH = 1.5f;
+
 	static Rgba s_playerColors[4];
 
 };

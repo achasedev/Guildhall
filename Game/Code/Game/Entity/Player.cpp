@@ -11,6 +11,7 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Entity/Projectile.hpp"
+#include "Game/Framework/GameCamera.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Animation/VoxelAnimator.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
@@ -201,6 +202,7 @@ void Player::OnDeath()
 	Game::AddPointsToScore(PLAYER_DEATH_SCORE_PENALTY);
 
 	Game::PlaySystemSound("Player_death");
+	Game::GetGameCamera()->AddScreenShake(SCREENSHAKE_ADDED_ON_DEATH);
 
 	// Start the respawn process
 	m_respawnTimer.SetInterval(RESPAWN_INTERVAL);

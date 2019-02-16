@@ -17,6 +17,7 @@ GameCamera::GameCamera()
 	: m_offsetDirection(Vector3(0.f, 1.f, -1.3f).GetNormalized())
 	, m_offsetDistance(220.f)
 {
+	m_screenShakeInterval.Reset();
 }
 
 
@@ -122,9 +123,16 @@ void GameCamera::UpdatePositionOnInput()
 //
 void GameCamera::LookAtGridCenter()
 {
+	
 	Vector3 target = Vector3(128.f, 0.f, 120.f);
 	Vector3 newPos = Vector3(128.f, 185.f, -90.f);
 	LookAt(newPos, target);
+
+	// Apply screenshake
+	float magnitude = m_screenShakeInterval.GetTimeUntilIntervalEnds();
+	Vector3 localDirection = magnitude * Vector3(GetRandomFloatZeroToOne(), GetRandomFloatZeroToOne(), 0.f);
+
+	TranslateLocal(localDirection);
 }
 
 
@@ -152,4 +160,15 @@ void GameCamera::SetEjected(bool newState)
 bool GameCamera::IsEjected() const
 {
 	return m_cameraEjected;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the given screenshake magnitude to the current running amount
+//
+void GameCamera::AddScreenShake(float addedScreenShakeMagnitude)
+{
+	float currentIntervalRemaining = m_screenShakeInterval.GetTimeUntilIntervalEnds();
+	float newInterval = currentIntervalRemaining + addedScreenShakeMagnitude;
+	m_screenShakeInterval.SetInterval(newInterval);
 }
