@@ -137,6 +137,18 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement, eEntityClass
 		{
 			m_onDeathSound = audio->CreateOrGetSound(onDeathSoundPath);
 		}
+
+		std::string onShootSoundPath = ParseXmlAttribute(*audioElement, "on_shoot", "");
+		if (!IsStringNullOrEmpty(onShootSoundPath))
+		{
+			m_onShootSound = audio->CreateOrGetSound(onShootSoundPath);
+		}
+
+		std::string onPickupSoundPath = ParseXmlAttribute(*audioElement, "on_pickup", "");
+		if (!IsStringNullOrEmpty(onPickupSoundPath))
+		{
+			m_onPickupSound = audio->CreateOrGetSound(onPickupSoundPath);
+		}
 	}
 
 	// Visuals

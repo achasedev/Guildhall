@@ -8,6 +8,7 @@
 			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
 		</Physics>
 		<Weapon fire_rate="4.0" fire_spread="0.0" projectile="Bullet" count_per_shot="1"/>
+		<Audio on_shoot="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Weapons\Single Shot Sounds\sfx_weapon_singleshot3.wav" on_pickup="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Interactions\sfx_sounds_interaction1.wav"/>
 	</EntityDefinition>
 
 	<EntityDefinition name="Shotgun">
@@ -16,6 +17,7 @@
 			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
 		</Physics>
 		<Weapon fire_rate="2.0" fire_spread="0.4" projectile="Shell" count_per_shot="6" initial_ammo="60"/>
+		<Audio on_shoot="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Weapons\Shotgun\sfx_weapon_shotgun1.wav" on_pickup="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Interactions\sfx_sounds_interaction1.wav"/>
 	</EntityDefinition>
 
 	<EntityDefinition name="Flamethrower">
@@ -24,6 +26,7 @@
 			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
 		</Physics>
 		<Weapon fire_rate="15.0" fire_spread="0.2" projectile="Flame" count_per_shot="15" initial_ammo="600"/>
+		<Audio on_shoot="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Weapons\Single Shot Sounds\sfx_weapon_singleshot21.wav" on_pickup="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Interactions\sfx_sounds_interaction1.wav"/>
 	</EntityDefinition>
 
 	<EntityDefinition name="MissileLauncher">
@@ -32,6 +35,7 @@
 			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
 		</Physics>
 		<Weapon fire_rate="2.0" fire_spread="0.0" projectile="Missile" count_per_shot="1" initial_ammo="5"/>
+		<Audio on_shoot="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Weapons\Grenade Whistles\sfx_wpn_missilelaunch.wav" on_pickup="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Interactions\sfx_sounds_interaction1.wav"/>
 	</EntityDefinition>
 
 </EntityDefinitions>

@@ -168,9 +168,9 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, Voxel
 			if (weaponTexture != nullptr)
 			{
 				IntVector3 weaponPosition = position + IntVector3(0, 12, 0);
-				
+
 				// Don't let the weapons cast or receive shadows, so pass default param for options
-				Draw3DTexture(weaponTexture, weaponPosition, 0.f, options);
+				Draw3DTexture(weaponTexture, weaponPosition, 0.f);
 			}
 		}
 	}

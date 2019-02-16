@@ -69,7 +69,7 @@ enum eCollisionLayer : uint8_t
 	COLLISION_LAYER_ENEMY = (COLLISION_LAYER_BIT_WORLD | COLLISION_LAYER_BIT_PLAYER | COLLISION_LAYER_BIT_ENEMY | COLLISION_LAYER_BIT_PLAYER_BULLET),
 	COLLISION_LAYER_PLAYER_BULLET = (COLLISION_LAYER_BIT_WORLD | COLLISION_LAYER_BIT_ENEMY),
 	COLLISION_LAYER_ENEMY_BULLET = (COLLISION_LAYER_BIT_WORLD | COLLISION_LAYER_BIT_PLAYER),
-	COLLISION_LAYER_ITEM = (COLLISION_LAYER_BIT_WORLD | COLLISION_LAYER_BIT_PLAYER)
+	COLLISION_LAYER_ITEM = (COLLISION_LAYER_BIT_PLAYER)
 };
 
 
@@ -130,7 +130,7 @@ public:
 	SoundID									m_onSpawnSound = MISSING_SOUND_ID;
 	SoundID									m_onDeathSound = MISSING_SOUND_ID;
 	SoundID									m_onDamageTakenSound = MISSING_SOUND_ID;
-
+	
 	// AnimatedEntity
 	float									m_maxMoveAcceleration = 300.f;
 	float									m_maxMoveSpeed = 40.f;
@@ -152,6 +152,9 @@ public:
 	float									m_fireSpread = 0.f;
 	int										m_projectilesFiredPerShot = 1;
 	int										m_initialAmmoCount = 1;
+
+	SoundID									m_onPickupSound = MISSING_SOUND_ID;
+	SoundID									m_onShootSound = MISSING_SOUND_ID;
 
 	// Projectiles
 	float									m_projectileSpeed = 100.f;

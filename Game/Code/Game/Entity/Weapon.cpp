@@ -39,6 +39,12 @@ void Weapon::OnEntityCollision(Entity* other)
 		Player* player = dynamic_cast<Player*>(other);
 		player->EquipWeapon(this);
 
+		if (m_definition->m_onPickupSound != MISSING_SOUND_ID)
+		{
+			AudioSystem* audio = AudioSystem::GetInstance();
+			audio->PlaySound(m_definition->m_onPickupSound);
+		}
+
 		Game::GetWorld()->RemoveEntity(this);
 	}
 }
@@ -75,6 +81,12 @@ void Weapon::Shoot()
 	if (m_shootTimer.DecrementByIntervalAll() == 0)
 	{
 		return;
+	}
+
+	if (m_definition->m_onShootSound != MISSING_SOUND_ID)
+	{
+		AudioSystem* audio = AudioSystem::GetInstance();
+		audio->PlaySound(m_definition->m_onShootSound);
 	}
 
 	Vector3 baseDirection = m_entityEquippedTo->GetForwardVector();
