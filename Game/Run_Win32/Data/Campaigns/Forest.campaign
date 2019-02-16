@@ -10,10 +10,7 @@
 
 		<!-- <SpawnEvent type="from_ground" spawn_mins="64, 64" spawn_maxs="192, 192" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="0.5" total_to_spawn="5"/> -->
 
-		<SpawnEvent type="from_ground" spawn_mins="0, 192" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="10"/>
-		<SpawnEvent type="from_ground" spawn_mins="0, 192" spawn_maxs="256, 256" entity="Tank" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="2"/>
-		<SpawnEvent type="from_ground" spawn_mins="0, 192" spawn_maxs="256, 256" entity="Soldier" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="5"/>
-		<SpawnEvent type="from_ground" spawn_mins="0, 192" spawn_maxs="256, 256" entity="Dog" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="3"/>
+		<SpawnEvent type="from_ground" spawn_mins="0, 192" spawn_maxs="256, 256" entity="Tank" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
 
 	</Stage> 
 

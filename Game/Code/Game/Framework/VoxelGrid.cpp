@@ -291,7 +291,7 @@ void VoxelGrid::DrawMap(VoxelMap* map, const IntVector3& offset)
 	}
 }
 
-
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 //-----------------------------------------------------------------------------------------------
 // Draws the 3D texture to the grid
 //
@@ -317,8 +317,12 @@ void VoxelGrid::Draw3DTexture(const VoxelSprite* texture, const IntVector3& star
 
 					if (colorToRender.a != 0)
 					{
-						// Allow white to be replaced, for player shirt colors
-						if (colorToRender == Rgba::WHITE)
+						if (options.hasColorOverride) // For damage flashes
+						{
+							ConsolePrintf(Rgba::YELLOW, "Rendered with override");
+							colorToRender = options.colorOverride;
+						}
+						else if (colorToRender == Rgba::WHITE)	// Allow white to be replaced, for player shirt colors
 						{
 							colorToRender = options.whiteReplacement;
 						}

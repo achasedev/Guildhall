@@ -121,10 +121,11 @@ void BehaviorComponent_Charge::OnEntityCollision(Entity* other)
 	}
 	else
 	{
-		// No knockback, and the touch damage
+		// Hard coded knockback, and the touch damage
 		if (other->GetTeam() != m_owningEntity->GetTeam())
 		{
-			other->TakeDamage(m_damageOnTouch);
+			Vector3 direction = (other->GetPosition() - m_owningEntity->GetPosition()).GetNormalized();
+			other->TakeDamage(m_damageOnTouch, 20.f * direction);
 		}
 	}
 }

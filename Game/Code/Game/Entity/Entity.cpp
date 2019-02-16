@@ -228,12 +228,14 @@ int Entity::GetHealth() const
 	return m_health;
 }
 
-
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 //-----------------------------------------------------------------------------------------------
 // Called when the entity takes damage, for custom behavior
 //
 void Entity::OnDamageTaken(int damageAmount)
 {
+	ConsolePrintf(Rgba::MAGENTA, "Entity::OnDamageTaken()");
+
 	UNUSED(damageAmount);
 
 	if (m_health <= 0)
@@ -512,6 +514,22 @@ bool Entity::ShouldCheckForGroundCollisions() const
 bool Entity::ShouldCheckForEdgeCollisions() const
 {
 	return m_shouldCheckForEdgeCollisions;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if the entity just took damage and needs to render a white silouette the next frame
+// Sets the value to false if it is true to avoid rendering the flash for more than a frame
+//
+bool Entity::ShouldRenderDamageFlash()
+{
+	if (m_renderDamageFlashNextFrame)
+	{
+		m_renderDamageFlashNextFrame = false;
+		return true;
+	}
+
+	return false;
 }
 
 

@@ -73,6 +73,8 @@ public:
 	bool							IsSetToUpdate() const;
 	bool							ShouldCheckForGroundCollisions() const;
 	bool							ShouldCheckForEdgeCollisions() const;
+	
+	bool							ShouldRenderDamageFlash();
 
 	// Producers
 	bool							IsMarkedForDelete() const;
@@ -112,6 +114,8 @@ protected:
 	bool					m_shouldUpdate = true;
 	bool					m_shouldCheckForGroundCollisions = true;
 	bool					m_shouldCheckForEdgeCollisions = true;
+
+	bool					m_renderDamageFlashNextFrame = false;
 
 	// Physics
 	float					m_mass = DEFAULT_MASS;					// Mass of the Entity

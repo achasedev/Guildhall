@@ -77,13 +77,16 @@ void AnimatedEntity::OnEntityCollision(Entity* other)
 	Entity::OnEntityCollision(other);
 }
 
-
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 //-----------------------------------------------------------------------------------------------
 // Damage event
 //
 void AnimatedEntity::OnDamageTaken(int damageAmount)
 {
+	ConsolePrintf(Rgba::PURPLE, "AnimatedEntity::OnDamageTaken()");
+
 	Entity::OnDamageTaken(damageAmount);
+	m_renderDamageFlashNextFrame = true;
 }
 
 

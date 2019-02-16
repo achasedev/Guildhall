@@ -165,7 +165,6 @@ void World::InititalizeForStage(const CampaignStage* stage)
 	{
 		const InitialStageSpawn_t& spawn = stage->m_initialSpawns[entityIndex];
 		SpawnEntity(spawn.definition, spawn.position, spawn.orientation);
-		ConsolePrintf("Spawned entity %s", spawn.definition->m_name.c_str());
 	}
 
 	// Add the players to the world
@@ -698,11 +697,9 @@ void World::SpawnMapEntities(const MapDefinition* mapDefinition)
 
 				entity->SetPosition(Vector3(spawnResultArea.mins.x, height, spawnResultArea.mins.y));
 				AddEntity(entity);
-				ConsolePrintf("Added Entity");
 			}
 			else
 			{
-				ConsoleErrorf("Failed to spawn entity %s", area.m_definitionToSpawn->m_name.c_str());
 				break; // Don't attempt anymore spawn counts if we couldn't spawn this one
 			}
 		}
@@ -1365,6 +1362,7 @@ void World::DrawStaticEntitiesToGrid(const IntVector3& offset)
 				VoxelDrawOptions_t options;
 				options.castsShadows = true;
 				options.receivesShadows = true;
+				options.hasColorOverride = m_entities[entityIndex]->ShouldRenderDamageFlash();
 
 				grid->DrawEntity(m_entities[entityIndex], offset, options);
 			}
@@ -1405,6 +1403,7 @@ void World::DrawDynamicEntitiesToGrid(const IntVector3& offset)
 				options.castsShadows = true;
 				options.receivesShadows = true;
 				options.whiteReplacement = whiteReplacement;
+				options.hasColorOverride = m_entities[entityIndex]->ShouldRenderDamageFlash();
 
 				grid->DrawEntity(m_entities[entityIndex], offset, options);
 			}

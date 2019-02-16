@@ -58,6 +58,9 @@ struct VoxelDrawOptions_t
 	bool receivesShadows = false;
 	bool castsShadows = false;
 	Rgba whiteReplacement = Rgba::WHITE;
+	
+	bool hasColorOverride = false;
+	Rgba colorOverride = Rgba::WHITE;
 };
 
 
