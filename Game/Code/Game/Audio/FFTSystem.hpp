@@ -25,8 +25,14 @@ struct FFTBinSpan_t
 	FloatRange					frequencyInterval;
 
 	float						predictedPeriodDuration;
-	float						predictedPeriodVariance;
+	int							totalBeatsDetected;
+	int							numBeatsWithinAgreementThreshold;
+	float						periodMediumThreshold;
+
 	float						predictedPeriodPhase;
+	int							phasesWithinThreshold;
+	int							totalPhases;
+	float						phaseMediumThreshold;
 };
 
 class File;
@@ -56,7 +62,7 @@ public:
 	bool						IsPlaying() const;
 
 	// FFT Data File Processing
-	void PeformBeatDetectionAnalysis(const std::string& filename, float beatWindowDuration, float beatThresholdScalar, float delayAfterBeatDetected);
+	void PeformBeatDetectionAnalysis(const std::string& filename, float beatWindowDuration, float beatThresholdScalar, float delayAfterBeatDetected, float periodMedianThreshold, float phaseMedianThreshold);
 	File* LoadFFTDataFile(const std::string& filename) const;
 	
 
@@ -135,6 +141,5 @@ private:
 	Rgba m_lineAndPanelColor	= Rgba(15, 60, 120, 200);
 	Rgba m_backgroundColor		= Rgba(0, 0, 0, 100);
 	Rgba m_fontColor			= Rgba(200, 200, 200, 200);
-
 
 };

@@ -298,7 +298,8 @@ bool FFTSystem::IsPlaying() const
 //-----------------------------------------------------------------------------------------------
 // Loads and parses an FFT Data file and performs a beat analysis on the data
 //
-void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float beatWindowDuration, float beatThresholdScalar, float delayAfterDetected)
+void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float beatWindowDuration, 
+	float beatThresholdScalar, float delayAfterDetected, float periodMedianThreshold, float phaseMedianThreshold)
 {
 	if (IsPlaying())
 	{
@@ -359,7 +360,7 @@ void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float b
 			windowAverage /= (float)samplesInHistory;
 
 			// If the current is beatThresholdScalar times bigger than the average, it's a beat
-			if (beatThresholdScalar * binSpan.fftBinSamples[sampleIndex].binAverageOfAllChannels > windowAverage)
+			if (binSpan.fftBinSamples[sampleIndex].binAverageOfAllChannels > (windowAverage * beatThresholdScalar))
 			{
 				binSpan.fftBinSamples[sampleIndex].isHigh = true;
 
@@ -422,6 +423,7 @@ void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float b
 
 		// Starting from the first high
 		bool onBeatInterval = true;
+		std::vector<float> beats;
 		for (sampleIndex; sampleIndex < numSamplesInBinSpan; ++sampleIndex)
 		{
 			if (onBeatInterval)
@@ -437,6 +439,8 @@ void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float b
 				}
 				else if (binSpan.fftBinSamples[sampleIndex].isHigh) // We should already have a lower limit from the beat delay above, so no worry about small intervals
 				{
+					beats.push_back(intervalStartTimeIntoSong);
+
 					periodIntervals.push_back(currentIntervalDuration);
 					intervalStartTimeIntoSong = intervalEndTimeIntoSong;
 				}
@@ -460,40 +464,71 @@ void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float b
 			}
 		}
 
-		// We have all the intervals - find the average
-		float intervalAverage = 0.f;
+		// We have all the intervals - find the median
+		std::sort(periodIntervals.begin(), periodIntervals.end());
+		int medianIndex = (int)(periodIntervals.size() / 2);
+
+		float intervalMedian = periodIntervals[medianIndex];
+
+		binSpan.predictedPeriodDuration = intervalMedian;
+
+		// Calculate the confidence 5%
+		binSpan.totalBeatsDetected = (int)beats.size();
+		binSpan.periodMediumThreshold = periodMedianThreshold;
+		int beatsAgreeingWithMedianWithinThreshold = 0;
+
+		float maxErrorFromPeriodMedian = periodMedianThreshold * intervalMedian;
+
 		for (int periodIndex = 0; periodIndex < (int)periodIntervals.size(); ++periodIndex)
 		{
-			intervalAverage += periodIntervals[periodIndex];
+			float diff = AbsoluteValue(periodIntervals[periodIndex] - intervalMedian);
+
+			if (diff <= maxErrorFromPeriodMedian)
+			{
+				beatsAgreeingWithMedianWithinThreshold++;
+			}
 		}
 
-		intervalAverage /= (float)periodIntervals.size();
-
-		binSpan.predictedPeriodDuration = intervalAverage;
-
-		// Calculate the variance
-		float intervalVariance = 0.f;
-		for (int periodIndex = 0; periodIndex < (int)periodIntervals.size(); ++periodIndex)
-		{
-			float currVariance = (periodIntervals[periodIndex] - intervalAverage);
-			currVariance *= currVariance;
-
-			intervalVariance += currVariance;
-		}
-
-		intervalVariance /= (float)periodIntervals.size();
-
-		binSpan.predictedPeriodVariance = intervalVariance;
+		binSpan.numBeatsWithinAgreementThreshold = beatsAgreeingWithMedianWithinThreshold;
 
 		// Calculate the phase
-
-		float predictedPhase = timeStartForFirstInterval;
-		while (predictedPhase - intervalAverage > 0.f)
+		binSpan.phaseMediumThreshold = phaseMedianThreshold;
+		std::vector<float> beatPhases;
+		
+		for (int beatPhaseIndex = 0; beatPhaseIndex < (int)beats.size(); ++beatPhaseIndex)
 		{
-			predictedPhase -= intervalAverage;
+			float currPhase = beats[beatPhaseIndex];
+
+			while (currPhase - intervalMedian > 0.f)
+			{
+				currPhase -= intervalMedian;
+			}
+
+			beatPhases.push_back(currPhase);
 		}
 
-		binSpan.predictedPeriodPhase = predictedPhase;
+		binSpan.totalPhases = (int) beatPhases.size();
+
+		// Take the median of the phases
+		std::sort(beatPhases.begin(), beatPhases.end());
+		int phaseMedianIndex = (int)(beatPhases.size() / 2);
+
+		binSpan.predictedPeriodPhase = beatPhases[phaseMedianIndex];
+
+		// Confidence in the phase
+		int phasesAgreeingWithMedian = 0;
+		float maxErrorFromPhaseMedian = binSpan.predictedPeriodPhase * phaseMedianThreshold;
+		for (int beatPhaseIndex = 0; beatPhaseIndex < (int)beatPhases.size(); ++beatPhaseIndex)
+		{
+			float diff = AbsoluteValue(beatPhases[beatPhaseIndex] - binSpan.predictedPeriodPhase);
+
+			if (diff <= maxErrorFromPhaseMedian)
+			{
+				phasesAgreeingWithMedian++;
+			}
+		}
+
+		binSpan.phasesWithinThreshold = phasesAgreeingWithMedian;
 	}
 
 	// Done! Now write to file
@@ -878,7 +913,7 @@ void FFTSystem::SetupForFFTBeatAnalysis(File* file)
 
 	// Sample Rate
 	file->GetNextLine(currLine);
-	m_sampleRate = StringToFloat(Tokenize(currLine, ' ')[1]);
+	m_sampleRate = StringToFloat(Tokenize(currLine, ' ')[2]);
 
 	// Max Frequency Analyzed
 	file->GetNextLine(currLine);
@@ -961,7 +996,7 @@ void FFTSystem::WriteFFTBeatAnalysisToFile()
 		std::string currLine = Stringf("BIN %i Frequency: %.2f %.2f (hertz)\n", spanIndex, currentBinSpan.frequencyInterval.min, currentBinSpan.frequencyInterval.max);
 		file.Write(currLine.c_str(), currLine.size());
 
-		currLine = Stringf("Span Period: %.2f\nPeriod Variance: %.2f\nPeriod Phase: %.2f\n", currentBinSpan.predictedPeriodDuration, currentBinSpan.predictedPeriodVariance, currentBinSpan.predictedPeriodPhase);
+		currLine = Stringf("Span Period: %.2f\nBeats Within Threshold: %i\nTotal Beats: %i\nPeriod Phase: %.2f seconds\n", currentBinSpan.predictedPeriodDuration, currentBinSpan.numBeatsWithinAgreementThreshold, currentBinSpan.totalBeatsDetected, currentBinSpan.predictedPeriodPhase);
 		file.Write(currLine.c_str(), currLine.size());
 
 		for (int sampleIndex = 0; sampleIndex < numSamples; ++sampleIndex)
