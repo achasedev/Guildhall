@@ -76,7 +76,7 @@ void Projectile::OnEntityCollision(Entity* other)
 		}
 		
 		// Projectiles are only good for one collision
-		m_isMarkedForDelete = true;
+		OnDeath();
 	}
 }
 
