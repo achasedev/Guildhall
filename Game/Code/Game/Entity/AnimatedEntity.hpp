@@ -18,6 +18,8 @@ public:
 	virtual void Update() override;
 	virtual const VoxelSprite* GetVoxelSprite() const override;
 
+	VoxelAnimator* GetAnimator() const;
+
 	// Events
 	virtual void	OnEntityCollision(Entity* other) override;
 	virtual void	OnDamageTaken(int damageAmount) override;

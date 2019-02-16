@@ -6,10 +6,10 @@
 /************************************************************************/
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
+#include "Game/Animation/VoxelAnimator.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Charge.hpp"
 #include "Engine/Math/MathUtils.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -40,6 +40,7 @@ void BehaviorComponent_Charge::Update()
 		m_owningEntity->SetOrientation(m_chargeDirection.GetOrientationDegrees());
 		m_owningEntity->Jump();
 		m_state = STATE_JUMP;
+		m_owningEntity->GetAnimator()->Play("idle");
 		break;
 	case STATE_JUMP:
 		// Check for landing
@@ -105,6 +106,7 @@ void BehaviorComponent_Charge::OnEntityCollision(Entity* other)
 		{
 			m_owningEntity->GetPhysicsComponent()->StopAllMovement();
 			m_state = STATE_KNOCKBACK;
+			m_owningEntity->GetAnimator()->Play("idle");
 
 			Vector2 selfKnockbackDirection = -1.f * m_chargeDirection;
 			m_owningEntity->GetPhysicsComponent()->AddImpulse(m_knockbackMagnitude * Vector3(selfKnockbackDirection.x, 1.f, selfKnockbackDirection.y));
@@ -141,6 +143,7 @@ void BehaviorComponent_Charge::ContinueCharge()
 		m_owningEntity->GetPhysicsComponent()->StopAllMovement();
 		m_state = STATE_REST;
 		m_stateTimer.SetInterval(m_restDuration);
+		m_owningEntity->GetAnimator()->Play("idle");
 	}
 	else // Continue charge
 	{

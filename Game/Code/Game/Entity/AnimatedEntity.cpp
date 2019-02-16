@@ -61,6 +61,15 @@ const VoxelSprite* AnimatedEntity::GetVoxelSprite() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the animator of the entity
+//
+VoxelAnimator* AnimatedEntity::GetAnimator() const
+{
+	return m_animator;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Collision event
 //
 void AnimatedEntity::OnEntityCollision(Entity* other)

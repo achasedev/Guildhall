@@ -4,7 +4,7 @@
 		<VoxelAnimation name="Dog_idle"/>
 	</Alias>
 
-	<Alias alias="charge">
+	<Alias alias="move">
 		<VoxelAnimation name="Dog_charge"/>
 	</Alias>
 
