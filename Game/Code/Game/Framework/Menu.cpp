@@ -58,11 +58,15 @@ void Menu::SetRightOption(MenuOption_cb callback, const std::string& args)
 //
 void Menu::ProcessInput()
 {
+	XboxController& cont = InputSystem::GetPlayerOneController();
 	InputSystem* input = InputSystem::GetInstance();
 
 	// Moving down
 	bool keyPressedDown = input->WasKeyJustPressed(InputSystem::KEYBOARD_DOWN_ARROW);
-	if (keyPressedDown)
+	bool contPressedDown = cont.WasStickJustPressed(XBOX_STICK_LEFT) && cont.GetCorrectedStickPosition(XBOX_STICK_LEFT).y < 0.f;
+	contPressedDown = contPressedDown || cont.WasButtonJustPressed(XBOX_BUTTON_DPAD_DOWN);
+
+	if (keyPressedDown || contPressedDown)
 	{
 		bool done = false;
 		int oldPosition = m_cursorPosition;
@@ -90,7 +94,10 @@ void Menu::ProcessInput()
 
 	// Moving up
 	bool keyPressedUp = input->WasKeyJustPressed(InputSystem::KEYBOARD_UP_ARROW);
-	if (keyPressedUp)
+	bool contPressedUp = cont.WasStickJustPressed(XBOX_STICK_LEFT) && cont.GetCorrectedStickPosition(XBOX_STICK_LEFT).y > 0.f;
+	contPressedUp = contPressedUp || cont.WasButtonJustPressed(XBOX_BUTTON_DPAD_UP);
+
+	if (keyPressedUp || contPressedUp)
 	{
 		bool done = false;
 		int oldPosition = m_cursorPosition;
@@ -118,20 +125,26 @@ void Menu::ProcessInput()
 
 	// Moving left
 	bool keyPressedLeft = input->WasKeyJustPressed(InputSystem::KEYBOARD_LEFT_ARROW);
-	if (keyPressedLeft && m_leftOption.callback != nullptr)
+	bool contPressedLeft = cont.WasStickJustPressed(XBOX_STICK_LEFT) && cont.GetCorrectedStickPosition(XBOX_STICK_LEFT).x < 0.f;
+	contPressedLeft = contPressedLeft || cont.WasButtonJustPressed(XBOX_BUTTON_DPAD_LEFT);
+
+	if ((keyPressedLeft || contPressedLeft) && m_leftOption.callback != nullptr)
 	{
 		m_leftOption.callback(m_mainMenu, m_leftOption.args);
 	}
 
 	// Moving right
 	bool keyPressedRight = input->WasKeyJustPressed(InputSystem::KEYBOARD_RIGHT_ARROW);
-	if (keyPressedRight && m_rightOption.callback != nullptr)
+	bool contPressedRight = cont.WasStickJustPressed(XBOX_STICK_LEFT) && cont.GetCorrectedStickPosition(XBOX_STICK_LEFT).x > 0.f;
+	contPressedRight = contPressedRight || cont.WasButtonJustPressed(XBOX_BUTTON_DPAD_RIGHT);
+
+	if ((keyPressedRight || contPressedRight) && m_rightOption.callback != nullptr)
 	{
 		m_rightOption.callback(m_mainMenu, m_rightOption.args);
 	}
 
 	// Selection
-	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_SPACEBAR))
+	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_SPACEBAR) || cont.WasButtonJustPressed(XBOX_BUTTON_START) || cont.WasButtonJustPressed(XBOX_BUTTON_A))
 	{
 		Game::PlaySystemSound("Menu_confirm");
 

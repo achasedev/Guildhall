@@ -54,10 +54,10 @@ void PlayState_Pause::ProcessInput()
 	else
 	{
 		bool upPressed = input->WasKeyJustPressed(InputSystem::KEYBOARD_UP_ARROW) || controller.WasButtonJustPressed(XBOX_BUTTON_DPAD_UP) ||
-			(controller.WasStickJustPressed(XBOX_STICK_LEFT) && controller.GetCorrectedStickPosition(XBOX_STICK_LEFT).y > 0.5f);
+			(controller.WasStickJustPressed(XBOX_STICK_LEFT) && controller.GetCorrectedStickPosition(XBOX_STICK_LEFT).y > 0.f);
 
 		bool downPressed = input->WasKeyJustPressed(InputSystem::KEYBOARD_DOWN_ARROW) || controller.WasButtonJustPressed(XBOX_BUTTON_DPAD_DOWN) ||
-			(controller.WasStickJustPressed(XBOX_STICK_LEFT) && controller.GetCorrectedStickPosition(XBOX_STICK_LEFT).y < 0.5f);
+			(controller.WasStickJustPressed(XBOX_STICK_LEFT) && controller.GetCorrectedStickPosition(XBOX_STICK_LEFT).y < 0.f);
 
 		if (upPressed)
 		{
