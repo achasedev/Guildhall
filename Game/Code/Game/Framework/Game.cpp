@@ -799,7 +799,26 @@ void Game::DrawPlayerHUD()
 //
 void Game::DrawScore()
 {
-	DrawHeading(Stringf("Score: %i", s_instance->m_score));
+	DrawHeading(Stringf("Score: %i", s_instance->m_score), IntVector3(128, 56, 252), Vector3(0.5f, 0.f, 0.f));
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Draws the text showing the number of enemies left in the stage
+//
+void Game::DrawEnemyCountRemaining()
+{
+	DrawHeading(Stringf("Left: %i", s_instance->m_campaignManager->GetEnemyCountLeftInStage()), IntVector3(0, 56, 252), Vector3::ZERO);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Draws the text for the stage number and max stage on the UI
+//
+void Game::DrawStageNumber()
+{
+	int currStage = s_instance->m_campaignManager->GetCurrentStageNumber(); // Don't +1 here since 0th stage is character select
+	DrawHeading(Stringf("Stage: %i", currStage), IntVector3(255, 56, 252), Vector3(1.0f, 0.f, 0.f));
 }
 
 
@@ -807,7 +826,7 @@ void Game::DrawScore()
 // Draws a heading at the top of the screen
 // Used for drawing the score and character select title
 //
-void Game::DrawHeading(const std::string& headingText)
+void Game::DrawHeading(const std::string& headingText, const IntVector3& drawCoords, const Vector3& alignment)
 {
 	VoxelFontDraw_t options;
 	options.mode = VOXEL_FONT_FILL_NONE;
@@ -815,10 +834,10 @@ void Game::DrawHeading(const std::string& headingText)
 	options.font = s_instance->m_hudFont;
 	options.scale = IntVector3(1, 1, 4);
 	options.borderThickness = 0;
-	options.alignment = Vector3(0.5f, 0.f, 0.f);
+	options.alignment = alignment;
 
 	VoxelGrid* grid = s_instance->m_voxelGrid;
-	grid->DrawVoxelText(headingText, IntVector3(128, 56, 252), options);
+	grid->DrawVoxelText(headingText, drawCoords, options);
 }
 
 

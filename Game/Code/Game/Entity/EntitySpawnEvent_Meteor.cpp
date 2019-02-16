@@ -54,7 +54,6 @@ void EntitySpawnEvent_Meteor::Update()
 
 		if (m_meteorEntity != nullptr)
 		{
-			ConsolePrintf(Rgba::YELLOW, "Position is (%.2f, %.2f, %.2f)", m_meteorEntity->GetPosition().x, m_meteorEntity->GetPosition().y, m_meteorEntity->GetPosition().z);
 			Vector3 newPosition = Interpolate(m_meteorStartPosition, m_meteorTargetPosition, m_fallTimer.GetElapsedTimeNormalized());
 
 			m_meteorEntity->SetPosition(newPosition);

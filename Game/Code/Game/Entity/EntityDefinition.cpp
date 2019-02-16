@@ -429,7 +429,7 @@ const EntityDefinition* EntityDefinition::GetRandomPlayerDefinition()
 
 	for (itr; itr != s_definitions.end(); itr++)
 	{
-		if (itr->second->m_entityClass == ENTITY_CLASS_PLAYER)
+		if (itr->second->m_entityClass == ENTITY_CLASS_PLAYER && itr->second->m_name != "PlayerUninitialized")
 		{
 			playerDefs.push_back(itr->second);
 		}

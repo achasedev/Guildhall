@@ -73,8 +73,11 @@ public:
 	static int					GetScore();
 
 	static void					DrawPlayerHUD();
+	static void					DrawHeading(const std::string& headingText, const IntVector3& drawCoords, const Vector3& alignment);
+
 	static void					DrawScore();
-	static void					DrawHeading(const std::string& headingText);
+	static void					DrawEnemyCountRemaining();
+	static void					DrawStageNumber();
 
 	static bool					AreAllPlayersInitialized();
 

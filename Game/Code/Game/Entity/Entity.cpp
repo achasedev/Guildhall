@@ -228,14 +228,12 @@ int Entity::GetHealth() const
 	return m_health;
 }
 
-#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // Called when the entity takes damage, for custom behavior
 //
 void Entity::OnDamageTaken(int damageAmount)
 {
-	ConsolePrintf(Rgba::MAGENTA, "Entity::OnDamageTaken()");
-
 	UNUSED(damageAmount);
 
 	if (m_health <= 0)

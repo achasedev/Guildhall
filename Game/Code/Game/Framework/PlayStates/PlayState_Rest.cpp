@@ -242,7 +242,7 @@ void UpdatePlayerHeightForTransition(Player* player, World* transitionWorld, eTr
 //- C FUNCTION ----------------------------------------------------------------------------------
 // Returns the offsets used to render each map's map within the single grid
 //
-void GetmapOffsets(IntVector3& out_currOffset, IntVector3& out_transitionOffset, float normalizedTime, eTransitionEdge enterEdge)
+void GetMapOffsets(IntVector3& out_currOffset, IntVector3& out_transitionOffset, float normalizedTime, eTransitionEdge enterEdge)
 {
 	IntVector3 worldDimensions = Game::GetWorld()->GetDimensions();
 
@@ -636,7 +636,7 @@ void PlayState_Rest::Render_Leave() const
 	IntVector3 currOffset;
 	IntVector3 transitionOffset;
 
-	GetmapOffsets(currOffset, transitionOffset, m_transitionTimer.GetElapsedTimeNormalized(), m_edgeToEnter);
+	GetMapOffsets(currOffset, transitionOffset, m_transitionTimer.GetElapsedTimeNormalized(), m_edgeToEnter);
 
 	Game::GetWorld()->DrawToGridWithOffset(currOffset);
 	m_worldToTransitionTo->DrawToGridWithOffset(transitionOffset);

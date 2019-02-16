@@ -353,7 +353,13 @@ void GameState_Playing::Render() const
 	}
 	else
 	{
-		Game::DrawHeading("CHOOSE YOUR CHARACTER");
+		Game::DrawHeading("CHOOSE YOUR CHARACTER", IntVector3(128, 56, 252), Vector3(0.5f, 0.f, 0.f));
+	}
+
+	if (Game::GetCampaignManager()->GetCurrentStageNumber() > 0)
+	{
+		Game::DrawEnemyCountRemaining();
+		Game::DrawStageNumber();
 	}
 }
 
