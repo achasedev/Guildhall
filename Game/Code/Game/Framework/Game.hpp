@@ -78,8 +78,9 @@ public:
 
 	static bool					AreAllPlayersInitialized();
 
-	static void					PlayBGM(const std::string filename, bool fadeIn = true, bool loop = true);
+	static void					PlayBGM(const std::string& filename, bool fadeIn = true, bool loop = true);
 	static void					SetBGMVolume(float newVolume, bool transitionTo = true);
+	static void					PlaySystemSound(const std::string& systemSoundName);
 
 
 private:
@@ -131,6 +132,8 @@ private:
 	float				m_tendingZeroCurrentVolume = 0.f;
 
 	static constexpr float MUSIC_CROSSFADE_DURATION = 1.0f;
+
+	std::map<std::string, SoundID> m_systemSounds;
 
 	static Game* s_instance;			// The singleton Game instance
 

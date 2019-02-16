@@ -847,7 +847,7 @@ bool Game::AreAllPlayersInitialized()
 //-----------------------------------------------------------------------------------------------
 // Plays the given background music
 //
-void Game::PlayBGM(const std::string filename, bool fadeIn /*= true*/, bool loop /*= true*/)
+void Game::PlayBGM(const std::string& filename, bool fadeIn /*= true*/, bool loop /*= true*/)
 {
 	AudioSystem* audio = AudioSystem::GetInstance();
 
@@ -883,56 +883,6 @@ void Game::PlayBGM(const std::string filename, bool fadeIn /*= true*/, bool loop
 		s_instance->m_tendingTargetCurrentVolume = s_instance->m_targetMusicVolume;
 		s_instance->m_trackTendingToTarget = audio->PlaySound(nextSong, loop, s_instance->m_tendingTargetCurrentVolume);
 	}
-
-
-
-// 	Stopwatch* crossfadeTimer = &s_instance->m_musicCrossfadeTimer;
-// 
-// 	// Don't do any transitioning if no sound is currently playing
-// 	if (!fadeIn)
-// 	{
-// 		SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound(filename);
-// 
-// 		if (sound != MISSING_SOUND_ID)
-// 		{
-// 			if (s_instance->m_trackTendingToTarget != MISSING_SOUND_ID)
-// 			{
-// 				audio->StopSound(s_instance->m_trackTendingToTarget);
-// 			}
-// 
-// 			s_instance->m_trackTendingToTarget = audio->PlaySound(sound, true, 1.f);
-// 		}
-// 
-// 		s_instance->m_trackTendingToZero = MISSING_SOUND_ID;
-// 		crossfadeTimer->Reset();
-// 	}
-// 	else
-// 	{
-// 		// If we currently were transitioning, just set the other to be full volume
-// 		if (s_instance->m_musicCrossfading)
-// 		{
-// 			audio->StopSound(s_instance->m_trackTendingToTarget);
-// 
-// 			if (s_instance->m_trackTendingToZero != MISSING_SOUND_ID)
-// 			{
-// 				s_instance->m_trackTendingToTarget = s_instance->m_trackTendingToZero;
-// 				audio->SetSoundPlaybackVolume(s_instance->m_trackTendingToTarget, s_instance->m_targetMusicVolume);
-// 
-// 				s_instance->m_trackTendingToZero = MISSING_SOUND_ID;
-// 			}
-// 		}
-// 
-// 		SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound(filename);
-// 
-// 		if (sound != MISSING_SOUND_ID)
-// 		{
-// 			s_instance->m_trackTendingToZero = audio->PlaySound(sound, true, 0.f);
-// 		}
-// 
-// 		crossfadeTimer->SetInterval(MUSIC_CROSSFADE_DURATION);
-// 	}
-// 
-// 	s_instance->m_musicCrossfading = fadeIn;
 }
 
 
@@ -948,6 +898,21 @@ void Game::SetBGMVolume(float newVolume, bool transitionTo /*= true*/)
 	{
 		s_instance->m_tendingTargetCurrentVolume = newVolume;
 		AudioSystem::GetInstance()->SetSoundPlaybackVolume(s_instance->m_trackTendingToTarget, s_instance->m_targetMusicVolume);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Plays the system sound given by the systemSoundName
+//
+void Game::PlaySystemSound(const std::string& systemSoundName)
+{
+	bool soundExists = s_instance->m_systemSounds.find(systemSoundName) != s_instance->m_systemSounds.end();
+
+	if (soundExists)
+	{
+		AudioSystem* audio = AudioSystem::GetInstance();
+		audio->PlaySound(s_instance->m_systemSounds[systemSoundName]);
 	}
 }
 

@@ -1,0 +1,9 @@
+<SystemSounds>
+
+	<Sound name="Menu_confirm" file="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Negative Sounds\sfx_sounds_damage3.wav"/>
+	<Sound name="Menu_cursor" file="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Interactions\sfx_sounds_interaction7.wav"/>
+
+	<Sound name="Pause_enter" file="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Pause Sounds\sfx_sounds_pause2_in.wav"/>
+	<Sound name="Pause_leave" file="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Pause Sounds\sfx_sounds_pause2_out.wav"/>
+
+</SystemSounds>

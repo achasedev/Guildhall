@@ -15,12 +15,6 @@
 Menu::Menu(GameState_MainMenu* mainMenu)
 	: m_mainMenu(mainMenu)
 {
-	// Get sounds
-	AudioSystem* audio = AudioSystem::GetInstance();
-
-	m_cursorSound = audio->CreateOrGetSound("Data/Audio/SFX/Menu/sfx_sounds_interaction7.wav");
-	m_confirmSound = audio->CreateOrGetSound("Data/Audio/SFX/Menu/sfx_sounds_damage3.wav");
-	m_returnSound = audio->CreateOrGetSound("Data/Audio/SFX/Menu/sfx_sounds_damage3.wav");
 }
 
 
@@ -90,7 +84,7 @@ void Menu::ProcessInput()
 
 		if (oldPosition != m_cursorPosition)
 		{
-			AudioSystem::GetInstance()->PlaySound(m_cursorSound, false, 0.2f);
+			Game::PlaySystemSound("Menu_cursor");
 		}
 	}
 
@@ -118,7 +112,7 @@ void Menu::ProcessInput()
 
 		if (oldPosition != m_cursorPosition)
 		{
-			AudioSystem::GetInstance()->PlaySound(m_cursorSound, false, 0.2f);
+			Game::PlaySystemSound("Menu_cursor");
 		}
 	}
 
@@ -139,7 +133,7 @@ void Menu::ProcessInput()
 	// Selection
 	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_SPACEBAR))
 	{
-		AudioSystem::GetInstance()->PlaySound(m_confirmSound);
+		Game::PlaySystemSound("Menu_confirm");
 
 		ProcessCurrentMenuSelection();
 	}

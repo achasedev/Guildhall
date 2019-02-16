@@ -58,8 +58,4 @@ private:
 	// Additional menu traversal
 	MenuOption_t m_leftOption;
 	MenuOption_t m_rightOption;
-
-	SoundID m_cursorSound;
-	SoundID m_confirmSound;
-	SoundID m_returnSound;
 };

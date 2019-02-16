@@ -122,6 +122,35 @@ void GameState_Loading::Render_Enter() const
 void GameState_Loading::LoadResources() const
 {
 	LoadVoxelResources();
+
+	// Sounds
+	XMLDocument soundDocument;
+	XMLError error = soundDocument.LoadFile("Data/Audio/SystemSounds.xml");
+	ASSERT_OR_DIE(error == tinyxml2::XML_SUCCESS, "Error: Couldn't open SystemSounds.xml file");
+
+	const XMLElement* rootElement = soundDocument.RootElement();
+
+	if (rootElement != nullptr)
+	{
+		const XMLElement* soundElement = rootElement->FirstChildElement("Sound");
+		AudioSystem* audio = AudioSystem::GetInstance();
+
+		while (soundElement != nullptr)
+		{
+			std::string soundName = ParseXmlAttribute(*soundElement, "name", "");
+			GUARANTEE_OR_DIE(!IsStringNullOrEmpty(soundName), "No name specified for system sound element");
+
+			std::string soundFilePath = ParseXmlAttribute(*soundElement, "file", "");
+			GUARANTEE_OR_DIE(!IsStringNullOrEmpty(soundFilePath), Stringf("No file specified for system sound \"%s\"", soundName.c_str()).c_str());
+
+			SoundID soundID = audio->CreateOrGetSound(soundFilePath);
+			GUARANTEE_OR_DIE(soundID != MISSING_SOUND_ID, Stringf("Couldn't find sound file %s", soundFilePath.c_str()).c_str());
+
+			Game::s_instance->m_systemSounds[soundName] = soundID;
+
+			soundElement = soundElement->NextSiblingElement("Sound");
+		}
+	}
 }
 
 
