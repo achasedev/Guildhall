@@ -10,6 +10,7 @@
 		</Physics>
 		<!--AI behavior="charge" damage_on_touch="1" damage_on_charge="2" charge_speed="100.0" knockback="30.0" charge_duration="1.0" rest_duration="1.0"/>-->
 		<AI behavior="pursue_direct"/>
+		<Audio on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Death Screams\Human\sfx_deathscream_human6.wav"/>
 	</EntityDefinition>
 
 	<EntityDefinition name="Tank" initial_health="10">
@@ -19,6 +20,7 @@
 			<CollisionDefinition response="share_correction" layer="enemy"/>
 		</Physics>
 		<AI behavior="pursue_direct"/>
+		<Audio on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Death Screams\Human\sfx_deathscream_human4.wav" on_damage_taken="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Death Screams\Human\sfx_deathscream_human5.wav"/>
 	</EntityDefinition>
 
 	<EntityDefinition name="Dog" initial_health="1">
@@ -28,6 +30,7 @@
 			<CollisionDefinition response="share_correction" layer="enemy"/>
 		</Physics>
 		<AI behavior="charge" damage_on_touch="1" damage_on_charge="2" charge_speed="50.0" knockback="30.0" charge_duration="1.0" rest_duration="1.0"/>
+		<Audio on_death="Data\Audio\SFX\dog\dog-snarl.flac"/>
 	</EntityDefinition>
 
 	<EntityDefinition name="Soldier" initial_health="1">
@@ -38,6 +41,7 @@
 			<CollisionDefinition response="share_correction" layer="enemy"/>
 		</Physics>
 		<AI behavior="shoot_circle" weapon="Pistol" shoot_range="100.0"/>
+		<Audio on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Death Screams\Human\sfx_deathscream_human6.wav"/>
 	</EntityDefinition>
 
 </EntityDefinitions>

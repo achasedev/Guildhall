@@ -200,6 +200,8 @@ void Player::OnDeath()
 	Game::GetWorld()->ParticalizeEntity(this);
 	Game::AddPointsToScore(PLAYER_DEATH_SCORE_PENALTY);
 
+	Game::PlaySystemSound("Player_death");
+
 	// Start the respawn process
 	m_respawnTimer.SetInterval(RESPAWN_INTERVAL);
 }
@@ -216,6 +218,8 @@ void Player::OnSpawn()
 	{
 		EquipWeapon(new Weapon(EntityDefinition::GetDefinition("Pistol")));
 	}
+
+	Game::PlaySystemSound("Player_respawn");
 }
 
 

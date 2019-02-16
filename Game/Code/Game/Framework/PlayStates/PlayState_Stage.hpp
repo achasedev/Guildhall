@@ -30,6 +30,6 @@ private:
 	//-----Private Data-----
 	
 	static constexpr float STAGE_TRANSITION_IN_TIME = 1.0f;
-	static constexpr float STAGE_TRANSITION_OUT_TIME = 1.0f;
+	static constexpr float STAGE_TRANSITION_OUT_TIME = 0.5f;
 
 };

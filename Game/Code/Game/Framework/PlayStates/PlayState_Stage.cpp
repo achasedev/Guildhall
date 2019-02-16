@@ -102,6 +102,8 @@ bool PlayState_Stage::Enter()
 	// Do stuff
 	if (m_transitionTimer.HasIntervalElapsed())
 	{
+		Game::PlaySystemSound("Stage_start");
+
 		Game::GetCampaignManager()->StartNextStage();
 		return true;
 	}
@@ -116,25 +118,27 @@ bool PlayState_Stage::Enter()
 bool PlayState_Stage::Leave()
 {
 	// Cool effect - set the clock time scale
-	float timeScale = 1.0f;
-
-	if (m_transitionTimer.GetElapsedTimeNormalized() < 0.5f)
-	{
-		timeScale = ClampFloatZeroToOne(1.1f - GetFractionInRange(m_transitionTimer.GetElapsedTime(), 0.f, 0.5f * STAGE_TRANSITION_OUT_TIME));
-	}
-	else
-	{
-		timeScale = ClampFloatZeroToOne(GetFractionInRange(m_transitionTimer.GetElapsedTime(), 0.5f * STAGE_TRANSITION_OUT_TIME, STAGE_TRANSITION_OUT_TIME) + 0.1f);
-	}
-
-	Game::GetGameClock()->SetScale(timeScale);
+// 	float timeScale = 1.0f;
+// 
+// 	if (m_transitionTimer.GetElapsedTimeNormalized() < 0.5f)
+// 	{
+// 		timeScale = ClampFloatZeroToOne(1.1f - GetFractionInRange(m_transitionTimer.GetElapsedTime(), 0.f, 0.5f * STAGE_TRANSITION_OUT_TIME));
+// 	}
+// 	else
+// 	{
+// 		timeScale = ClampFloatZeroToOne(GetFractionInRange(m_transitionTimer.GetElapsedTime(), 0.5f * STAGE_TRANSITION_OUT_TIME, STAGE_TRANSITION_OUT_TIME) + 0.1f);
+// 	}
+// 
+// 	Game::GetGameClock()->SetScale(timeScale);
 
 	UpdateWorldAndCamera();
 
 	// Do stuff
 	if (m_transitionTimer.HasIntervalElapsed())
 	{
-		Game::GetGameClock()->SetScale(1.0f);
+		Game::PlaySystemSound("Stage_finish");
+
+		//Game::GetGameClock()->SetScale(1.0f);
 		return true;
 	}
 

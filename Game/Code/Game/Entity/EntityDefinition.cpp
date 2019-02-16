@@ -114,6 +114,31 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement, eEntityClass
 		m_jumpImpulse			= ParseXmlAttribute(*moveElement, "jump_impulse",		m_jumpImpulse);
 	}
 
+	// Audio
+	const XMLElement* audioElement = entityElement.FirstChildElement("Audio");
+	if (audioElement != nullptr)
+	{
+		AudioSystem* audio = AudioSystem::GetInstance();
+
+		std::string onSpawnSoundPath = ParseXmlAttribute(*audioElement, "on_spawn", "");
+		if (!IsStringNullOrEmpty(onSpawnSoundPath))
+		{
+			m_onSpawnSound = audio->CreateOrGetSound(onSpawnSoundPath);
+		}
+
+		std::string onDamageTakenSoundPath = ParseXmlAttribute(*audioElement, "on_damage_taken", "");
+		if (!IsStringNullOrEmpty(onDamageTakenSoundPath))
+		{
+			m_onDamageTakenSound = audio->CreateOrGetSound(onDamageTakenSoundPath);
+		}
+
+		std::string onDeathSoundPath = ParseXmlAttribute(*audioElement, "on_death", "");
+		if (!IsStringNullOrEmpty(onDeathSoundPath))
+		{
+			m_onDeathSound = audio->CreateOrGetSound(onDeathSoundPath);
+		}
+	}
+
 	// Visuals
 	const XMLElement* visualElement = entityElement.FirstChildElement("Visuals");
 	if (visualElement != nullptr)

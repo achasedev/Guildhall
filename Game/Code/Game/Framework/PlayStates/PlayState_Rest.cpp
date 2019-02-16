@@ -376,6 +376,8 @@ void PlayState_Rest::Update()
 		}
 
 		m_gameState->TransitionToPlayState(new PlayState_Stage());
+
+		Game::PlaySystemSound("Stage_transition");
 	}
 	else
 	{

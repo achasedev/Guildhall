@@ -6,4 +6,10 @@
 	<Sound name="Pause_enter" file="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Pause Sounds\sfx_sounds_pause2_in.wav"/>
 	<Sound name="Pause_leave" file="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Pause Sounds\sfx_sounds_pause2_out.wav"/>
 
+	<Sound name="Player_death" file="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Negative Sounds\sfx_sounds_negative1.wav"/>
+	<Sound name="Player_respawn" file="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Fanfares\sfx_sounds_fanfare1.wav"/>
+	<Sound name="Stage_finish" file="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Fanfares\sfx_sounds_fanfare2.wav"/>
+	<Sound name="Stage_start" file="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Fanfares\sfx_sounds_fanfare1.wav"/>
+	<Sound name="Stage_transition" file="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Fanfares\sfx_sounds_fanfare3.wav"/>
+
 </SystemSounds>

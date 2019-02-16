@@ -240,6 +240,14 @@ void Entity::OnDamageTaken(int damageAmount)
 	{
 		OnDeath();
 	}
+	else
+	{
+		if (m_definition->m_onDamageTakenSound != MISSING_SOUND_ID)
+		{
+			AudioSystem* audio = AudioSystem::GetInstance();
+			audio->PlaySound(m_definition->m_onDamageTakenSound);
+		}
+	}
 }
 
 
@@ -249,6 +257,12 @@ void Entity::OnDamageTaken(int damageAmount)
 void Entity::OnDeath()
 {
 	m_isMarkedForDelete = true;
+
+	if (m_definition->m_onDeathSound != MISSING_SOUND_ID)
+	{
+		AudioSystem* audio = AudioSystem::GetInstance();
+		audio->PlaySound(m_definition->m_onDeathSound);
+	}
 }
 
 
@@ -257,6 +271,11 @@ void Entity::OnDeath()
 //
 void Entity::OnSpawn()
 {
+	if (m_definition->m_onSpawnSound != MISSING_SOUND_ID)
+	{
+		AudioSystem* audio = AudioSystem::GetInstance();
+		audio->PlaySound(m_definition->m_onSpawnSound);
+	}
 }
 
 

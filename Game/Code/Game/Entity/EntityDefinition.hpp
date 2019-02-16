@@ -7,6 +7,7 @@
 #pragma once
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/IntVector3.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 
 #include <map>
@@ -125,6 +126,10 @@ public:
 	bool									m_affectedByGravity = true;
 	CollisionDefinition_t					m_collisionDef;
 	eEntityClass							m_entityClass = ENTITY_CLASS_UNASSIGNED;
+
+	SoundID									m_onSpawnSound = MISSING_SOUND_ID;
+	SoundID									m_onDeathSound = MISSING_SOUND_ID;
+	SoundID									m_onDamageTakenSound = MISSING_SOUND_ID;
 
 	// AnimatedEntity
 	float									m_maxMoveAcceleration = 300.f;
