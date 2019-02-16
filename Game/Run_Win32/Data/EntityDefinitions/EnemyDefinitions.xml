@@ -21,9 +21,9 @@
 		<AI behavior="pursue_direct"/>
 	</EntityDefinition>
 
-	<EntityDefinition name="Charger" initial_health="1">
+	<EntityDefinition name="Dog" initial_health="1">
 		<Movement max_acceleration="3000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="50.0"/>
-		<Visuals animation_set="Charger" default_sprite="Charger_idle_0"/>
+		<Visuals animation_set="Dog" default_sprite="Dog_idle_0"/>
 		<Physics physics_type="dynamic" has_gravity="true">
 			<CollisionDefinition response="share_correction" layer="enemy"/>
 		</Physics>

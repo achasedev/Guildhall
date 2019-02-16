@@ -31,14 +31,11 @@
 		<VoxelSprite file="Data/VoxelSprites/Environment/Desert/Cactus1.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Environment/Desert/Cactus2.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Environment/Desert/Cactus3.sprite"/>
-		
-		<VoxelSprite file="Data/VoxelSprites/Environment/House.sprite"/>
-		<VoxelSprite file="Data/VoxelSprites/Environment/TestCube.sprite"/>
 
 		<!-- Zombies -->
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Walker.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Tank.sprite"/>
-		<VoxelSprite file="Data/VoxelSprites/Zombies/Charger.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Zombies/Dog.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Soldier.sprite"/>
 
 		<!-- Players -->
@@ -56,7 +53,7 @@
 		<!-- Zombies -->
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Walker.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Tank.animset"/>
-		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Charger.animset"/>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Dog.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Soldier.animset"/>
 
 		<!-- Players -->
@@ -72,7 +69,7 @@
 		<!-- Zombies -->
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Walker.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Tank.animation"/>
-		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Charger.animation"/>
+		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Dog.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Soldier.animation"/>
 
 		<!-- Players -->

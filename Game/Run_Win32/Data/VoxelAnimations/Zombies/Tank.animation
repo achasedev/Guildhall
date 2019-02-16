@@ -2,7 +2,6 @@
 
 	<VoxelAnimation name="Tank_idle" playmode="loop">
 		<Frame voxelsprite="Tank_idle_0" duration="0.5"/>
-		<Frame voxelsprite="Tank_idle_1" duration="0.5"/>
 	</VoxelAnimation>
 
 	<VoxelAnimation name="Tank_walk" playmode="loop">

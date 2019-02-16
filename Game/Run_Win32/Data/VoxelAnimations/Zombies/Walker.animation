@@ -2,7 +2,6 @@
 
 	<VoxelAnimation name="Walker_idle" playmode="loop">
 		<Frame voxelsprite="Walker_idle_0" duration="0.5"/>
-		<Frame voxelsprite="Walker_idle_1" duration="0.5"/>
 	</VoxelAnimation>
 
 	<VoxelAnimation name="Walker_walk" playmode="loop">

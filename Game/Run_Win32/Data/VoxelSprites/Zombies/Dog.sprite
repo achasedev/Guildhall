@@ -1,0 +1,8 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Dog_idle_0" file="Data/VoxelModels/Zombies/Dog/Dog_idle_0.qef"/>
+
+	<VoxelSprite name="Dog_charge_0" file="Data/VoxelModels/Zombies/Dog/Dog_charge_0.qef"/>
+	<VoxelSprite name="Dog_charge_1" file="Data/VoxelModels/Zombies/Dog/Dog_charge_1.qef"/>
+
+</VoxelSprites>

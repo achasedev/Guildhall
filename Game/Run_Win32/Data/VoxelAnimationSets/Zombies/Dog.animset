@@ -1,0 +1,11 @@
+<VoxelAnimationSet name="Dog">
+
+	<Alias alias="idle">
+		<VoxelAnimation name="Dog_idle"/>
+	</Alias>
+
+	<Alias alias="charge">
+		<VoxelAnimation name="Dog_charge"/>
+	</Alias>
+
+</VoxelAnimationSet>
