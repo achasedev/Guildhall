@@ -14,5 +14,5 @@ constexpr float CAMERA_TRANSLATION_SPEED = 5.0f;
 constexpr float CAMERA_ROTATION_SPEED = 45.f;
 
 // World
-constexpr float CHUNK_ACTIVATION_RANGE = 200.f;
+constexpr float CHUNK_ACTIVATION_RANGE = 32.f;
 constexpr float CHUNK_DEACTIVATION_RANGE = CHUNK_ACTIVATION_RANGE + 16.f; // A chunk's worth

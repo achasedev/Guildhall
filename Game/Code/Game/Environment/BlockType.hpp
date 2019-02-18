@@ -27,17 +27,17 @@ public:
 private:
 	//-----Private Methods-----
 
-	static void AddBlockType(const BlockType* type);
+	static void AddBlockType(const BlockType& type);
 
 
 public:
 	//-----Public Member Data-----
 
-	std::string m_name;
-	uint8_t		m_typeIndex;
-	AABB2		m_topUVs;
-	AABB2		m_sideUVs;
-	AABB2		m_bottomUVs;
+	std::string m_name = "NOT USED";
+	uint8_t		m_typeIndex = MISSING_TYPE_INDEX;
+	AABB2		m_topUVs = AABB2::UNIT_SQUARE_OFFCENTER;
+	AABB2		m_sideUVs = AABB2::UNIT_SQUARE_OFFCENTER;
+	AABB2		m_bottomUVs = AABB2::UNIT_SQUARE_OFFCENTER;
 
 
 private:
@@ -45,7 +45,10 @@ private:
 
 	// Organizing Types
 	static std::map<std::string, uint8_t> s_typeNames;
-	static const BlockType* s_types[MAX_BLOCK_TYPES];
+	static BlockType s_types[MAX_BLOCK_TYPES];
+
+	static constexpr uint8_t AIR_TYPE_INDEX = 0;
+	static constexpr uint8_t MISSING_TYPE_INDEX = 1;
 
 	// Rendering
 	static const SpriteSheet* s_spriteSheet;
