@@ -117,7 +117,6 @@ void World::ActivateChunk(const IntVector2& chunkCoords)
 //
 void World::DeactivateChunk(const IntVector2& chunkCoords)
 {
-	//  #TODO: Write to file
 	bool chunkIsActive = m_activeChunks.find(chunkCoords) != m_activeChunks.end();
 	ASSERT_OR_DIE(chunkIsActive, "World tried to deactivate a chunk that doesn't exist");
 

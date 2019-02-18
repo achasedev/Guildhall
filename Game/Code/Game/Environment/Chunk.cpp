@@ -177,7 +177,7 @@ void Chunk::WriteToFile() const
 
 	std::string fileName = Stringf("Data/Saves/Chunk_%i_%i.chunk", m_chunkCoords.x, m_chunkCoords.y);
 	File file;
-	bool opened = file.Open(fileName.c_str(), "w+");
+	bool opened = file.Open(fileName.c_str(), "wb+");
 
 	if (!opened)
 	{
@@ -200,8 +200,6 @@ void Chunk::WriteToFile() const
 	// Iterate across the blocks
 	uint8_t rollingCount = 0;
 	uint8_t rollingType = m_blocks[0].GetType();
-	int total = 0;
-	bool justStarted = true;
 
 	for (int blockIndex = 0; blockIndex < BLOCKS_PER_CHUNK; ++blockIndex)
 	{
@@ -212,7 +210,6 @@ void Chunk::WriteToFile() const
 		{
 			buffer.push_back(rollingType);
 			buffer.push_back(rollingCount);
-			total += rollingCount;
 
 			rollingType = currType;
 			rollingCount = 1;
@@ -223,7 +220,6 @@ void Chunk::WriteToFile() const
 			{
 				buffer.push_back(rollingType);
 				buffer.push_back(rollingCount);
-				total += rollingCount;
 
 				rollingCount = 0;
 			}
@@ -235,12 +231,9 @@ void Chunk::WriteToFile() const
 	// Push the last bit
 	buffer.push_back(rollingType);
 	buffer.push_back(rollingCount);
-	total += rollingCount;
-
-	ASSERT_OR_DIE(total == 65536, "Blocks didn't add up");
 
 	// Write to file
-	file.Write((const char*)buffer.data(), buffer.size());
+	file.Write(buffer.data(), buffer.size());
 
 	file.Close();
 
