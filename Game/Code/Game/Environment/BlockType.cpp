@@ -39,6 +39,9 @@ void BlockType::InitializeTypes()
 	BlockType missingType;
 	missingType.m_name = "MISSING";
 	missingType.m_typeIndex = MISSING_TYPE_INDEX;
+	missingType.m_topUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(65);
+	missingType.m_sideUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(65);
+	missingType.m_bottomUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(65);
 
 	// Grass
 	BlockType grassType;
