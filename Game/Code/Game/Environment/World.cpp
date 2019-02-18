@@ -9,11 +9,11 @@
 #include "Game/Environment/Chunk.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/GameCommon.hpp"
+#include "Engine/Core/File.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -106,7 +106,18 @@ void World::ActivateChunk(const IntVector2& chunkCoords)
 
 	// Generate with Perlin noise for now
 	Chunk* chunk = new Chunk(chunkCoords);
-	chunk->GenerateWithPerlinNoise(BASE_ELEVATION, NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION);
+
+	// If the file for a chunk exists, load it
+	std::string filename = Stringf("Data/Saves/Chunk_%i_%i.chunk", chunkCoords.x, chunkCoords.y);
+	bool fromFileSuccess = chunk->InitializeFromFile(filename);
+
+	if (!fromFileSuccess)
+	{
+		chunk->GenerateWithPerlinNoise(BASE_ELEVATION, NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION);
+	}
+
+	// Build the mesh immediately
+	chunk->BuildMesh();
 
 	m_activeChunks[chunkCoords] = chunk;
 }

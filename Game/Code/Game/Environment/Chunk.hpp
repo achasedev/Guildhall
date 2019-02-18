@@ -10,7 +10,7 @@
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Rendering/Meshes/MeshBuilder.hpp"
 
-
+class File;
 class Mesh;
 class BlockType;
 
@@ -22,7 +22,10 @@ public:
 	Chunk(const IntVector2& chunkCoords);
 	~Chunk();
 
+	bool InitializeFromFile(const std::string& filepath);
 	void GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseElevation);
+
+	void BuildMesh();
 
 	void Update();
 	void Render() const;
@@ -47,6 +50,7 @@ public:
 public:
 	//-----Public Data-----
 
+	static constexpr uint8_t CHUNK_VERSION = 1;
 	static constexpr uint8_t CHUNK_BITS_X = 4; // Number of bits in the Block Index to represent the x index
 	static constexpr uint8_t CHUNK_BITS_Y = 4; // Number of bits in the Block Index to represent the y index
 	static constexpr uint8_t CHUNK_BITS_Z = 8; // Number of bits in the Block Index to represent the z index
@@ -63,6 +67,7 @@ private:
 	//-----Private Methods------
 
 	void PushVerticesForBlock(const IntVector3& blockCoords, const BlockType* type);
+	void PushVerticesForBlock(int blockIndex, const BlockType* type);
 
 
 private:

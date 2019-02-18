@@ -22,7 +22,7 @@ struct ChunkFileHeader_t
 {
 	uint8_t fourDigitCharacterCode[4] = { 'S', 'M', 'C', 'D' };
 
-	uint8_t version = 1;
+	uint8_t version = Chunk::CHUNK_VERSION;
 	uint8_t chunkBitX = Chunk::CHUNK_BITS_X;
 	uint8_t chunkBitY = Chunk::CHUNK_BITS_Y;
 	uint8_t chunkBitZ = Chunk::CHUNK_BITS_Z;
@@ -59,6 +59,122 @@ Chunk::~Chunk()
 }
 
 
+bool VerifyChunkDataFromFile(File* file)
+{
+	file->LoadFileToMemory();
+	const char* data = file->GetData();
+
+	ChunkFileHeader_t header;
+	memcpy(&header, data, sizeof(header));
+
+	// Verify the header
+	std::string fourCharacterCode = std::string(data, 4);
+
+	// 4cc
+	if (fourCharacterCode != "SMCD")
+	{
+		ERROR_RECOVERABLE(Stringf("Error: File %s doesn't have four character code SMCD", file->GetFilePathOpened().c_str()).c_str());
+		return false;
+	}
+
+	// Version
+	if (header.version != Chunk::CHUNK_VERSION)
+	{
+		ERROR_RECOVERABLE(Stringf("Error: Chunk File %s is version %i, game is version %i", file->GetFilePathOpened().c_str(), header.version, Chunk::CHUNK_VERSION).c_str());
+		return false;
+	}
+	
+	// Chunk dimensions
+	if (header.chunkBitX != Chunk::CHUNK_BITS_X)
+	{
+		ERROR_RECOVERABLE(Stringf("Error: Chunk File %s has %i bits for X, game has %i bits for X", file->GetFilePathOpened().c_str(), header.chunkBitX, Chunk::CHUNK_BITS_X).c_str());
+		return false;
+	}
+
+	if (header.chunkBitY != Chunk::CHUNK_BITS_Y)
+	{
+		ERROR_RECOVERABLE(Stringf("Error: Chunk File %s has %i bits for Y, game has %i bits for Y", file->GetFilePathOpened().c_str(), header.chunkBitY, Chunk::CHUNK_BITS_Y).c_str());
+		return false;
+	}
+
+	if (header.chunkBitZ != Chunk::CHUNK_BITS_Z)
+	{
+		ERROR_RECOVERABLE(Stringf("Error: Chunk File %s has %i bits for Z, game has %i bits for Z", file->GetFilePathOpened().c_str(), header.chunkBitZ, Chunk::CHUNK_BITS_Z).c_str());
+		return false;
+	}
+
+	// Compression Format
+	// #TODO: Update to support other formats
+	if (header.format != 'R')
+	{
+		ERROR_RECOVERABLE(Stringf("Error: Chunk File %s has format %c specified, only format 'R' is supported", file->GetFilePathOpened().c_str(), header.format));
+		return false;
+	}
+
+	// Check run count
+	size_t fileSize = file->GetSize();
+	int totalBlocks = 0;
+	for (size_t byteIndex = sizeof(ChunkFileHeader_t); byteIndex < fileSize; byteIndex += 2)
+	{
+		uint8_t runCount = (uint8_t)data[byteIndex + 1];
+		totalBlocks += runCount;
+	}
+
+	int amountShouldTotal = Chunk::CHUNK_DIMENSIONS_X * Chunk::CHUNK_DIMENSIONS_Y * Chunk::CHUNK_DIMENSIONS_Z;
+	if (totalBlocks != amountShouldTotal)
+	{
+		ERROR_RECOVERABLE(Stringf("Error: Chunk File %s should specify %i blocks but only specifies %i", file->GetFilePathOpened().c_str(), amountShouldTotal, totalBlocks));
+		return false;
+	}
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Loads the file into memory and parses the data to initialize this chunk
+//
+bool Chunk::InitializeFromFile(const std::string& filepath)
+{
+	File file;
+	bool fileFound = file.Open(filepath.c_str(), "rb");
+
+	if (!fileFound)
+	{
+		return false;
+	}
+
+	bool dataGood = VerifyChunkDataFromFile(&file);
+
+	if (!dataGood)
+	{
+		return false;
+	}
+
+	// Load in the blocks
+	uint8_t* data = (uint8_t*)file.GetData();
+	size_t fileSize = file.GetSize();
+
+	// Start after the header
+	int blocksLoadedSoFar = 0;
+	for (size_t byteIndex = sizeof(ChunkFileHeader_t); byteIndex < fileSize; byteIndex += 2)
+	{
+		uint8_t runType = data[byteIndex];
+		uint8_t runCount = data[byteIndex + 1];
+
+		for (int blockIndex = blocksLoadedSoFar; blockIndex < blocksLoadedSoFar + (int) runCount; ++blockIndex)
+		{
+			m_blocks[blockIndex].SetType(runType);
+		}
+
+		blocksLoadedSoFar += runCount;
+	}
+	
+	ConsolePrintf(Rgba::GREEN, "Chunk (%i, %i) activated from file", m_chunkCoords.x, m_chunkCoords.y);
+	return true;
+}
+
+
 //-----------------------------------------------------------------------------------------------
 // Populates the chunk with blocks using Perlin Noise
 //
@@ -67,9 +183,6 @@ void Chunk::GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseE
 	const BlockType* grassType = BlockType::GetTypeByName("Grass");
 	const BlockType* dirtType = BlockType::GetTypeByName("Dirt");
 	const BlockType* stoneType = BlockType::GetTypeByName("Stone");
-
-	m_meshBuilder.Clear();
-	m_meshBuilder.BeginBuilding(PRIMITIVE_TRIANGLES, true);
 
 	for (int yIndex = 0; yIndex < CHUNK_DIMENSIONS_Y; ++yIndex)
 	{
@@ -85,8 +198,6 @@ void Chunk::GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseE
 
 			for (int zIndex = 0; zIndex < grassHeight; ++zIndex)
 			{
-				IntVector3 blockCoords = IntVector3(xIndex, yIndex, zIndex);
-
 				const BlockType* typeToUse = nullptr;
 				if (zIndex == grassHeight - 1)
 				{
@@ -101,12 +212,36 @@ void Chunk::GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseE
 					typeToUse = stoneType;
 				}
 
-				PushVerticesForBlock(blockCoords, typeToUse);
-
+				IntVector3 blockCoords = IntVector3(xIndex, yIndex, zIndex);
 				int blockIndex = GetBlockIndexFromBlockCoords(blockCoords);
+
 				m_blocks[blockIndex].SetType(typeToUse->m_typeIndex);
 			}
 		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Builds the mesh for the chunk using the block data it has already set
+//
+void Chunk::BuildMesh()
+{
+	m_meshBuilder.Clear();
+	m_meshBuilder.BeginBuilding(PRIMITIVE_TRIANGLES, true);
+
+	for (int blockIndex = 0; blockIndex < BLOCKS_PER_CHUNK; ++blockIndex)
+	{
+		Block& block = m_blocks[blockIndex];
+		uint8_t blockTypeIndex = block.GetType();
+
+		if (blockTypeIndex == 0)
+		{
+			continue;
+		}
+
+		const BlockType* typeToUse = BlockType::GetTypeByIndex(blockTypeIndex);
+		PushVerticesForBlock(blockIndex, typeToUse);
 	}
 
 	m_meshBuilder.FinishBuilding();
@@ -315,4 +450,14 @@ void Chunk::PushVerticesForBlock(const IntVector3& blockCoords, const BlockType*
 
 	// Bottom Face
 	m_meshBuilder.Push3DQuad(cubeBottomSouthWest, Vector2::ONES, type->m_bottomUVs, Rgba::WHITE, Vector3::MINUS_Y_AXIS, Vector3::MINUS_X_AXIS, Vector2::ONES);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Pushes the vertices for the given block into the chunk's mesh
+//
+void Chunk::PushVerticesForBlock(int blockIndex, const BlockType* type)
+{
+	IntVector3 blockCoords = GetBlockCoordsFromBlockIndex(blockIndex);
+	PushVerticesForBlock(blockCoords, type);
 }
