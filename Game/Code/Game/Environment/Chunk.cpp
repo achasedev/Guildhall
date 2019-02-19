@@ -59,6 +59,10 @@ Chunk::~Chunk()
 }
 
 
+//---C FUNCTION----------------------------------------------------------------------------------
+// Checks the contents of the file to see if it is a valid chunk file, and throws a recoverable
+// error if any issues are found
+//
 bool VerifyChunkDataFromFile(File* file)
 {
 	file->LoadFileToMemory();
@@ -170,7 +174,6 @@ bool Chunk::InitializeFromFile(const std::string& filepath)
 		blocksLoadedSoFar += runCount;
 	}
 	
-	ConsolePrintf(Rgba::GREEN, "Chunk (%i, %i) activated from file", m_chunkCoords.x, m_chunkCoords.y);
 	return true;
 }
 
@@ -377,6 +380,25 @@ void Chunk::WriteToFile() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns a reference to the block at the given index
+//
+Block& Chunk::GetBlock(int blockIndex)
+{
+	return m_blocks[blockIndex];
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns a reference to the block at the given coordinates
+//
+Block& Chunk::GetBlock(const IntVector3& blockCoords)
+{
+	int blockIndex = GetBlockIndexFromBlockCoords(blockCoords);
+	return GetBlock(blockIndex);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the chunk coordinates of this chunk
 //
 IntVector2 Chunk::GetChunkCoords() const
@@ -409,13 +431,9 @@ int Chunk::GetBlockIndexFromBlockCoords(const IntVector3& blockCoords)
 //
 IntVector3 Chunk::GetBlockCoordsFromBlockIndex(int blockIndex)
 {
-	int xMask = (CHUNK_DIMENSIONS_X - 1);
-	int yMask = (CHUNK_DIMENSIONS_Y - 1);
-	int zMask = (CHUNK_DIMENSIONS_Z - 1);
-
-	int xCoord = blockIndex & xMask;
-	int yCoord = (blockIndex >> CHUNK_BITS_X) & yMask;
-	int zCoord = (blockIndex >> (CHUNK_BITS_X + CHUNK_BITS_Y)) & zMask;
+	int xCoord = blockIndex & CHUNK_X_MASK;
+	int yCoord = blockIndex & CHUNK_Y_MASK;
+	int zCoord = blockIndex & CHUNK_Z_MASK;
 
 	return IntVector3(xCoord, yCoord, zCoord);
 }

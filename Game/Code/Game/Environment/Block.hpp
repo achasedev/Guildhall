@@ -13,10 +13,17 @@ public:
 	//-----Public Methods-----
 
 	Block() {}
+	Block(uint8_t type, uint8_t light, uint8_t flags);
 
 	uint8_t GetType() const;
 	void	SetType(uint8_t blockType);
 
+
+public:
+	//-----Public Data-----
+
+	static Block MISSING_BLOCK; // For references outside chunk space, etc.
+	
 
 private:
 	//-----Private Data-----

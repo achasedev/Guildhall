@@ -111,9 +111,14 @@ void World::ActivateChunk(const IntVector2& chunkCoords)
 	std::string filename = Stringf("Data/Saves/Chunk_%i_%i.chunk", chunkCoords.x, chunkCoords.y);
 	bool fromFileSuccess = chunk->InitializeFromFile(filename);
 
-	if (!fromFileSuccess)
+	if (fromFileSuccess)
+	{
+		ConsolePrintf(Rgba::GREEN, "Chunk (%i, %i) activated from file", chunkCoords.x, chunkCoords.y);
+	}
+	else
 	{
 		chunk->GenerateWithPerlinNoise(BASE_ELEVATION, NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION);
+		ConsolePrintf(Rgba::GREEN, "Chunk (%i, %i) gererated from noise", chunkCoords.x, chunkCoords.y);
 	}
 
 	// Build the mesh immediately
