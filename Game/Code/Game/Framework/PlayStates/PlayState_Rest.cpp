@@ -434,6 +434,7 @@ bool PlayState_Rest::Leave()
 		{
 			if (players[i] != nullptr)
 			{
+				m_worldToTransitionTo->AddEntity(players[i]);
 				players[i]->SetPosition(GetTransitionPosition(players[i], m_edgeToEnter));
 				players[i]->GetPhysicsComponent()->SetGravity(true);
 				players[i]->SetShouldCheckForEdgeCollisions(true);

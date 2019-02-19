@@ -61,8 +61,8 @@ protected:
 	//-----Protected Data-----
 
 	std::string m_name;
-	uint32_t*	m_collisionFlags = nullptr;
-	Rgba*		m_colorData = nullptr;
+	uint32_t*	m_collisionBitRows = nullptr;
+	Rgba*		m_voxelColors = nullptr;
 	IntVector3	m_dimensions;
 
 	static std::map<std::string, const VoxelSprite*> s_sprites;

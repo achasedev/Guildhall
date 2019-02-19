@@ -15,16 +15,16 @@ VoxelSprite::VoxelSprite()
 
 VoxelSprite::~VoxelSprite()
 {
-	if (m_colorData != nullptr)
+	if (m_voxelColors != nullptr)
 	{
-		free(m_colorData);
-		m_colorData = nullptr;
+		free(m_voxelColors);
+		m_voxelColors = nullptr;
 	}
 
-	if (m_collisionFlags != nullptr)
+	if (m_collisionBitRows != nullptr)
 	{
-		free(m_collisionFlags);
-		m_collisionFlags = nullptr;
+		free(m_collisionBitRows);
+		m_collisionBitRows = nullptr;
 	}
 }
 
@@ -85,21 +85,21 @@ bool VoxelSprite::CreateFromFile(const char* filename, bool createCollisionMatri
 	}
 
 	// Set up the texture colors
-	if (m_colorData != nullptr)
+	if (m_voxelColors != nullptr)
 	{
-		free(m_colorData);
+		free(m_voxelColors);
 	}
 
 	unsigned int voxelCount = m_dimensions.x * m_dimensions.y * m_dimensions.z;
-	m_colorData = (Rgba*)malloc(sizeof(Rgba) * voxelCount);
-	memset(m_colorData, 0, sizeof(Rgba) * voxelCount);
+	m_voxelColors = (Rgba*)malloc(sizeof(Rgba) * voxelCount);
+	memset(m_voxelColors, 0, sizeof(Rgba) * voxelCount);
 
 	// Set up the collision flags as well
 	if (createCollisionMatrix)
 	{
 		int amount = sizeof(uint32_t) * m_dimensions.y * m_dimensions.z;
-		m_collisionFlags = (uint32_t*)malloc(amount);
-		memset(m_collisionFlags, 0, amount);
+		m_collisionBitRows = (uint32_t*)malloc(amount);
+		memset(m_collisionBitRows, 0, amount);
 	}
 
 	// Now get all the voxel colors
@@ -127,12 +127,12 @@ bool VoxelSprite::CreateFromFile(const char* filename, bool createCollisionMatri
 
 		int colorIndex = StringToInt(voxelTokens[3]);
 
-		m_colorData[index] = colorPallette[colorIndex];
+		m_voxelColors[index] = colorPallette[colorIndex];
 
 		// Update the collision bit for this voxel
-		if (createCollisionMatrix && m_colorData[index].a != 0)
+		if (createCollisionMatrix && m_voxelColors[index].a != 0)
 		{
-			uint32_t& flags = m_collisionFlags[yCoord * m_dimensions.z + zCoord];
+			uint32_t& flags = m_collisionBitRows[yCoord * m_dimensions.z + zCoord];
 			flags |= (TEXTURE_LEFTMOST_COLLISION_BIT >> xCoord);
 		}
 	}
@@ -147,19 +147,19 @@ bool VoxelSprite::CreateFromColorStream(const Rgba* colors, const IntVector3& di
 {
 	m_dimensions = dimensions;
 
-	if (m_colorData != nullptr)
+	if (m_voxelColors != nullptr)
 	{
-		free(m_colorData);
+		free(m_voxelColors);
 	}
 
 	int numVoxels = dimensions.x * dimensions.y * dimensions.z;
 
-	m_colorData = (Rgba*)malloc(sizeof(Rgba) * numVoxels);
-	memcpy(m_colorData, colors, numVoxels * sizeof(Rgba));
+	m_voxelColors = (Rgba*)malloc(sizeof(Rgba) * numVoxels);
+	memcpy(m_voxelColors, colors, numVoxels * sizeof(Rgba));
 
 	if (createCollisionMatrix)
 	{
-		m_collisionFlags = (uint32_t*)malloc(sizeof(uint32_t) * dimensions.y * dimensions.z);
+		m_collisionBitRows = (uint32_t*)malloc(sizeof(uint32_t) * dimensions.y * dimensions.z);
 
 		for (int y = 0; y < m_dimensions.y; ++y)
 		{
@@ -175,7 +175,7 @@ bool VoxelSprite::CreateFromColorStream(const Rgba* colors, const IntVector3& di
 						int byteIndex = index / 8;
 						int bitOffset = 7 - (index % 8);
 
-						uint32_t& collisionByte = m_collisionFlags[byteIndex];
+						uint32_t& collisionByte = m_collisionBitRows[byteIndex];
 						collisionByte |= (1 << bitOffset);
 					}
 				}
@@ -194,15 +194,15 @@ VoxelSprite* VoxelSprite::Clone() const
 
 	int voxelCount = m_dimensions.x * m_dimensions.y * m_dimensions.z;
 	size_t byteSize = sizeof(Rgba) * voxelCount;
-	newSprite->m_colorData = (Rgba*)malloc(byteSize);
+	newSprite->m_voxelColors = (Rgba*)malloc(byteSize);
 
-	memcpy(newSprite->m_colorData, m_colorData, byteSize);
+	memcpy(newSprite->m_voxelColors, m_voxelColors, byteSize);
 
 	// Collision
-	if (m_collisionFlags != nullptr)
+	if (m_collisionBitRows != nullptr)
 	{
-		newSprite->m_collisionFlags = (uint32_t*)malloc(sizeof(uint32_t) * m_dimensions.y * m_dimensions.z);
-		memcpy(newSprite->m_collisionFlags, m_collisionFlags, sizeof(uint32_t) * m_dimensions.y * m_dimensions.z);
+		newSprite->m_collisionBitRows = (uint32_t*)malloc(sizeof(uint32_t) * m_dimensions.y * m_dimensions.z);
+		memcpy(newSprite->m_collisionBitRows, m_collisionBitRows, sizeof(uint32_t) * m_dimensions.y * m_dimensions.z);
 	}
 
 	return newSprite;
@@ -225,7 +225,7 @@ void VoxelSprite::SetColorAtRelativeCoords(const IntVector3& relativeCoords, flo
 
 void VoxelSprite::SetColorAtIndex(unsigned int index, const Rgba& color)
 {
-	m_colorData[index] = color;
+	m_voxelColors[index] = color;
 	
 	int yCoord = index / (m_dimensions.x * m_dimensions.z);
 	int leftOver = index % (m_dimensions.x * m_dimensions.z);
@@ -233,9 +233,9 @@ void VoxelSprite::SetColorAtIndex(unsigned int index, const Rgba& color)
 	int zCoord = leftOver / m_dimensions.x;
 	int xCoord = leftOver % m_dimensions.x;
 
-	if (m_collisionFlags != nullptr)
+	if (m_collisionBitRows != nullptr)
 	{
-		uint32_t& flags = m_collisionFlags[yCoord * m_dimensions.z + zCoord];
+		uint32_t& flags = m_collisionBitRows[yCoord * m_dimensions.z + zCoord];
 		int mask = TEXTURE_LEFTMOST_COLLISION_BIT >> xCoord;
 
 		if (color.a == 0)
@@ -253,19 +253,15 @@ void VoxelSprite::SetColorAtIndex(unsigned int index, const Rgba& color)
 Rgba VoxelSprite::GetColorAtRelativeCoords(const IntVector3& relativeCoords, float relativeOrientation) const
 {
 	IntVector3 localCoords = GetLocalCoordsFromRelativeCoords(relativeCoords, relativeOrientation);
-
-	if (!AreLocalCoordsValid(localCoords.x, localCoords.y, localCoords.z))
-	{
-		return Rgba(0, 0, 0, 0);
-	}
+	ASSERT_OR_DIE(AreLocalCoordsValid(localCoords.x, localCoords.y, localCoords.z), "Coordinates were not valid");
 
 	int index = localCoords.y * (m_dimensions.x * m_dimensions.z) + localCoords.z * m_dimensions.x + localCoords.x;
-	return m_colorData[index];
+	return m_voxelColors[index];
 }
 
 Rgba VoxelSprite::GetColorAtIndex(unsigned int index) const
 {
-	return m_colorData[index];
+	return m_voxelColors[index];
 }
 
 IntVector3 VoxelSprite::GetBaseDimensions() const
@@ -301,7 +297,7 @@ uint32_t VoxelSprite::GetCollisionByteForRow(int referenceY, int referenceZ, flo
 
 	ASSERT_OR_DIE(AreLocalCoordsValid(localCoords.x, localCoords.y, localCoords.z), "Voxel texture received bad coords");
 
-	if (m_collisionFlags == nullptr)
+	if (m_collisionBitRows == nullptr)
 	{
 		return 0;
 	}
@@ -316,14 +312,14 @@ uint32_t VoxelSprite::GetCollisionByteForRow(int referenceY, int referenceZ, flo
 		uint32_t mask = TEXTURE_LEFTMOST_COLLISION_BIT >> referenceZ;
 		for (int zIndex = m_dimensions.z - 1; zIndex >= 0; --zIndex)
 		{
-			uint32_t localRowFlags = m_collisionFlags[referenceY * m_dimensions.z + zIndex];
+			uint32_t localRowFlags = m_collisionBitRows[referenceY * m_dimensions.z + zIndex];
 			flags |= (((localRowFlags & mask) << referenceZ) >> (m_dimensions.z - zIndex - 1));
 		}
 	}
 	else if (cardinalAngle == 180.f) // Flip the Z
 	{
 		int invertedZ = m_dimensions.z - referenceZ - 1;
-		uint32_t backwardsFlags = m_collisionFlags[referenceY * m_dimensions.z + invertedZ];
+		uint32_t backwardsFlags = m_collisionBitRows[referenceY * m_dimensions.z + invertedZ];
 
 		flags = GetBitsReversed(backwardsFlags);
 		int diff = 32 - m_dimensions.x;
@@ -337,13 +333,13 @@ uint32_t VoxelSprite::GetCollisionByteForRow(int referenceY, int referenceZ, flo
 		uint32_t mask = TEXTURE_LEFTMOST_COLLISION_BIT >> (m_dimensions.x - referenceZ - 1);
 		for (int zIndex = 0; zIndex < m_dimensions.z; ++zIndex)
 		{
-			uint32_t localRowFlags = m_collisionFlags[referenceY * m_dimensions.z + zIndex];
+			uint32_t localRowFlags = m_collisionBitRows[referenceY * m_dimensions.z + zIndex];
 			flags |= (((localRowFlags & mask) << (m_dimensions.x - referenceZ - 1)) >> zIndex);
 		}
 	}
 	else // 0.f Degree case - Just return them as they are
 	{
-		flags = m_collisionFlags[referenceY * m_dimensions.z + referenceZ];
+		flags = m_collisionBitRows[referenceY * m_dimensions.z + referenceZ];
 	}
 
 	return flags;
@@ -351,14 +347,14 @@ uint32_t VoxelSprite::GetCollisionByteForRow(int referenceY, int referenceZ, flo
 
 bool VoxelSprite::DoLocalCoordsHaveCollision(const IntVector3& coords) const
 {
-	if (m_collisionFlags == nullptr)
+	if (m_collisionBitRows == nullptr)
 	{
 		return false;
 	}
 
 	int index = coords.y * m_dimensions.z + coords.z;
 	int bitOffset = MAX_TEXTURE_VOXEL_WIDTH - coords.x - 1;
-	uint32_t flags = m_collisionFlags[index];
+	uint32_t flags = m_collisionBitRows[index];
 
 	bool hasCollision = ((flags & (1 << bitOffset)) != 0);
 	return hasCollision;
@@ -443,7 +439,6 @@ void VoxelSprite::LoadSpriteFile(const std::string& filename)
 IntVector3 VoxelSprite::GetLocalCoordsFromRelativeCoords(const IntVector3& relativeCoords, float relativeOrientation) const
 {
 	float cardinalAngle = GetNearestCardinalAngle(relativeOrientation);
-
 	IntVector3 localCoords = relativeCoords;
 
 	if (cardinalAngle == 90.f)

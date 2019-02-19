@@ -152,7 +152,7 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, Voxel
 	IntVector3 position = entity->GetCoordinatePosition() + offset;
 	float orientation = entity->GetOrientation();
 
-	Draw3DTexture(texture, position, orientation, options);
+	DrawVoxelSprite(texture, position, orientation, options);
 
 	// Hack to render the player's weapon
 	if (entity->IsPlayer())
@@ -170,7 +170,7 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, Voxel
 				IntVector3 weaponPosition = position + IntVector3(0, 12, 0);
 
 				// Don't let the weapons cast or receive shadows, so pass default param for options
-				Draw3DTexture(weaponTexture, weaponPosition, 0.f);
+				DrawVoxelSprite(weaponTexture, weaponPosition, 0.f);
 			}
 		}
 	}
@@ -295,25 +295,23 @@ void VoxelGrid::DrawMap(VoxelMap* map, const IntVector3& offset)
 //-----------------------------------------------------------------------------------------------
 // Draws the 3D texture to the grid
 //
-void VoxelGrid::Draw3DTexture(const VoxelSprite* texture, const IntVector3& startCoord, float orientation, VoxelDrawOptions_t options /*= VoxelDrawOptions_t()*/)
+void VoxelGrid::DrawVoxelSprite(const VoxelSprite* voxelSprite, const IntVector3& startCoord, float orientation, VoxelDrawOptions_t options /*= VoxelDrawOptions_t()*/)
 {
-	IntVector3 dimensions = texture->GetOrientedDimensions(orientation);
+	IntVector3 dimensions = voxelSprite->GetOrientedDimensions(orientation);
 
-	for (int xOff = 0; xOff < dimensions.x; ++xOff)
+	for (int spriteYCoord = 0; spriteYCoord < dimensions.y; ++spriteYCoord)
 	{
-		for (int yOff = 0; yOff < dimensions.y; ++yOff)
+		for (int spriteZCoord = 0; spriteZCoord < dimensions.z; ++spriteZCoord)
 		{
-			for (int zOff = 0; zOff < dimensions.z; ++zOff)
+			for (int spriteXCoord = 0; spriteXCoord < dimensions.x; ++spriteXCoord)
 			{
-				IntVector3 localCoords = IntVector3(xOff, yOff, zOff);
+				IntVector3 spriteLocalCoords = IntVector3(spriteXCoord, spriteYCoord, spriteZCoord);
+				IntVector3 gridCoords = startCoord + spriteLocalCoords;
+				int gridIndex = GetIndexForCoords(gridCoords);
 
-				IntVector3 currCoords = startCoord + localCoords;
-
-				int index = GetIndexForCoords(currCoords);
-
-				if (index != -1)
+				if (gridIndex != -1)
 				{
-					Rgba colorToRender = texture->GetColorAtRelativeCoords(localCoords, orientation);
+					Rgba colorToRender = voxelSprite->GetColorAtRelativeCoords(spriteLocalCoords, orientation);
 
 					if (colorToRender.a != 0)
 					{
@@ -326,10 +324,10 @@ void VoxelGrid::Draw3DTexture(const VoxelSprite* texture, const IntVector3& star
 							colorToRender = options.whiteReplacement;
 						}
 
-						m_gridColors[index] = colorToRender;
+						m_gridColors[gridIndex] = colorToRender;
 
 						// Apply meta data
-						VoxelMetaData& data = m_metaData[index];
+						VoxelMetaData& data = m_metaData[gridIndex];
 						data.SetCastsShadows(options.castsShadows);
 						data.SetReceivesShadows(options.receivesShadows);
 					}
@@ -566,21 +564,6 @@ void VoxelGrid::DrawSolidBox(const IntVector3& startCoords, const IntVector3& di
 int VoxelGrid::GetVoxelCount() const
 {
 	return m_dimensions.x * m_dimensions.y * m_dimensions.z;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns the linear index for the voxel given by coords
-//
-int VoxelGrid::GetIndexForCoords(const IntVector3& coords) const
-{
-	// Check if it's in bounds first
-	if (coords.x >= m_dimensions.x || coords.x < 0 || coords.y >= m_dimensions.y || coords.y < 0 || coords.z >= m_dimensions.z || coords.z < 0)
-	{
-		return -1;
-	}
-
-	return coords.y * (m_dimensions.x * m_dimensions.z) + coords.z * m_dimensions.x + coords.x;
 }
 
 

@@ -83,7 +83,7 @@ public:
 	void				DrawEntity(const Entity* entity, const IntVector3& offset, VoxelDrawOptions_t options = VoxelDrawOptions_t());
 	void				DrawEntityCollision(const Entity* entity, const IntVector3& offset);
 	void				DrawMap(VoxelMap* map, const IntVector3& offset);
-	void				Draw3DTexture(const VoxelSprite* texture, const IntVector3& startCoord, float orientation, VoxelDrawOptions_t options = VoxelDrawOptions_t());
+	void				DrawVoxelSprite(const VoxelSprite* texture, const IntVector3& startCoord, float orientation, VoxelDrawOptions_t options = VoxelDrawOptions_t());
 
 	void				DebugDrawEntityCollision(const Entity* entity, const IntVector3& offset);
 
@@ -127,3 +127,18 @@ private:
 	ComputeShader*			m_computeShader = nullptr;
 
 };
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the linear index for the voxel given by coords
+//
+inline int VoxelGrid::GetIndexForCoords(const IntVector3& coords) const
+{
+	// Check if it's in bounds first
+	if (coords.x >= m_dimensions.x || coords.x < 0 || coords.y >= m_dimensions.y || coords.y < 0 || coords.z >= m_dimensions.z || coords.z < 0)
+	{
+		return -1;
+	}
+
+	return (coords.y * m_dimensions.x * m_dimensions.z) + (coords.z * m_dimensions.x) + coords.x;
+}

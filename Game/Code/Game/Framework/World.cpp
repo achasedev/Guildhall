@@ -167,16 +167,6 @@ void World::InititalizeForStage(const CampaignStage* stage)
 		SpawnEntity(spawn.definition, spawn.position, spawn.orientation);
 	}
 
-	// Add the players to the world
-	Player** players = Game::GetPlayers();
-	for (int i = 0; i < MAX_PLAYERS; ++i)
-	{
-		if (players[i] != nullptr)
-		{
-			AddEntity(players[i]);
-		}
-	}
-
 	// Set the transition edge
 	m_enterEdge = stage->m_edgeToEnter;
 }

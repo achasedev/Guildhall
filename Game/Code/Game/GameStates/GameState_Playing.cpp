@@ -76,6 +76,16 @@ bool GameState_Playing::Enter()
 	manager->Initialize(m_campaignBeingPlayed);
 	Game::GetWorld()->InititalizeForStage(manager->GetCurrentStage());
 
+	// Add the players to the world
+	Player** players = Game::GetPlayers();
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		if (players[i] != nullptr)
+		{
+			Game::GetWorld()->AddEntity(players[i]);
+		}
+	}
+
 	// Reset current game score
 	Game::ResetScore();
 

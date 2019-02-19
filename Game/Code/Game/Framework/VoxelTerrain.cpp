@@ -89,9 +89,9 @@ VoxelTerrain* VoxelTerrain::CreateVoxelTerrainCloneForName(const std::string& na
 
 	int voxelCount = terrain->m_dimensions.x * terrain->m_dimensions.y * terrain->m_dimensions.z;
 	size_t byteSize = sizeof(Rgba) * voxelCount;
-	terrain->m_colorData = (Rgba*)malloc(byteSize);
+	terrain->m_voxelColors = (Rgba*)malloc(byteSize);
 
-	memcpy(terrain->m_colorData, sprite->m_colorData, byteSize);
+	memcpy(terrain->m_voxelColors, sprite->m_voxelColors, byteSize);
 
 	// Get the type
 	terrain->m_terrainType = FindTypeForTerrain(terrain);
