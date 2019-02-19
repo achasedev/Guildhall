@@ -12,27 +12,30 @@
 #include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Rendering/Meshes/Mesh.hpp"
 
-struct FFTBinData_t
+struct FFTBin_t
 {
 	float binAverageOfAllChannels = 0.f;
 	float isHigh = false;
 	float timeIntoSong = 0.f;
 };
 
-struct FFTBinSpan_t
+struct FFTBinSet_t
 {
-	std::vector<FFTBinData_t>	fftBinSamples;
+	std::vector<FFTBin_t>		fftBinSamples;
 	FloatRange					frequencyInterval;
 
-	float						predictedPeriodDuration;
-	int							totalBeatsDetected;
-	int							numBeatsWithinAgreementThreshold;
-	float						periodMediumThreshold;
+	float						periodMedian;
+	float						periodMedianThreshold;
+	int							periodsWithinThreshold;
+	int							totalPeriods;
 
-	float						predictedPeriodPhase;
+	float						phaseMedian;
+	float						phaseMedianThreshold;
 	int							phasesWithinThreshold;
 	int							totalPhases;
-	float						phaseMediumThreshold;
+
+	float						averageBinExpressivity;
+	float						averageBinExpressivityNormalized;
 };
 
 class File;
@@ -82,7 +85,8 @@ private:
 	// Bin Data Collection
 	void SetupForFFTPlayback();
 	void AddCurrentFFTSampleToBinData();
-	
+	void FinalizeBinCollection();
+
 	void WriteFFTBinDataToFile();
 	void CleanUp();
 
@@ -110,10 +114,17 @@ private:
 	float								m_maxValueLastFrame = 0.f;
 	float*								m_lastFFTSampleChannelAverages = nullptr;
 
+	float								m_minBinExpressivityAverage = 10.f;
+	int									m_minBinAverageBinIndex = 0;
+	float								m_maxBinExpressivityAverage = -1;
+	int									m_maxBinAverageBinIndex = 0;
+
 	// FFT Bin Collection
 	const float							m_maxFrequencyToSaveUpTo = 6000.f;
 	int									m_numBinsToSaveUpTo = -1;
-	std::vector<FFTBinSpan_t>			m_FFTBinSpans;
+	std::vector<FFTBinSet_t>			m_FFTBinSets;
+
+	// Beat Detection
 
 	// Rendering
 	bool								m_renderFFTGraph = true;

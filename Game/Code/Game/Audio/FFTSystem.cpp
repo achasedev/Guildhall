@@ -87,6 +87,7 @@ void FFTSystem::BeginFrame()
 	{
 		ConsolePrintf(Rgba::PURPLE, "Playback for song %s finished", m_musicTitleBeingPlayed.c_str());
 
+		FinalizeBinCollection();
 		WriteFFTBinDataToFile();
 		CleanUp();
 	}
@@ -319,14 +320,14 @@ void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float b
 	SetupForFFTBeatAnalysis(dataFile);
 
 
-	int numBins = (int) m_FFTBinSpans.size();
-	std::vector<FFTBinData_t> rollingWindow;
+	int numBins = (int) m_FFTBinSets.size();
+	std::vector<FFTBin_t> rollingWindow;
 
 	for (int binIndex = 0; binIndex < numBins; ++binIndex)
 	{
 		rollingWindow.clear();
 
-		FFTBinSpan_t& binSpan = m_FFTBinSpans[binIndex];
+		FFTBinSet_t& binSpan = m_FFTBinSets[binIndex];
 
 		int numSamplesInBinSpan = (int) binSpan.fftBinSamples.size();
 
@@ -468,20 +469,20 @@ void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float b
 		std::sort(periodIntervals.begin(), periodIntervals.end());
 		int medianIndex = (int)(periodIntervals.size() / 2);
 
-		float intervalMedian = periodIntervals[medianIndex];
+		float periodMedian = periodIntervals[medianIndex];
 
-		binSpan.predictedPeriodDuration = intervalMedian;
+		binSpan.periodMedian = periodMedian;
 
 		// Calculate the confidence 5%
-		binSpan.totalBeatsDetected = (int)beats.size();
-		binSpan.periodMediumThreshold = periodMedianThreshold;
+		binSpan.totalPeriods = (int)beats.size();
+		binSpan.periodMedianThreshold = periodMedianThreshold;
 		int beatsAgreeingWithMedianWithinThreshold = 0;
 
-		float maxErrorFromPeriodMedian = periodMedianThreshold * intervalMedian;
+		float maxErrorFromPeriodMedian = periodMedianThreshold * periodMedian;
 
 		for (int periodIndex = 0; periodIndex < (int)periodIntervals.size(); ++periodIndex)
 		{
-			float diff = AbsoluteValue(periodIntervals[periodIndex] - intervalMedian);
+			float diff = AbsoluteValue(periodIntervals[periodIndex] - periodMedian);
 
 			if (diff <= maxErrorFromPeriodMedian)
 			{
@@ -489,19 +490,19 @@ void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float b
 			}
 		}
 
-		binSpan.numBeatsWithinAgreementThreshold = beatsAgreeingWithMedianWithinThreshold;
+		binSpan.periodsWithinThreshold = beatsAgreeingWithMedianWithinThreshold;
 
 		// Calculate the phase
-		binSpan.phaseMediumThreshold = phaseMedianThreshold;
+		binSpan.phaseMedianThreshold = phaseMedianThreshold;
 		std::vector<float> beatPhases;
 		
 		for (int beatPhaseIndex = 0; beatPhaseIndex < (int)beats.size(); ++beatPhaseIndex)
 		{
 			float currPhase = beats[beatPhaseIndex];
 
-			while (currPhase - intervalMedian > 0.f)
+			while (currPhase - periodMedian > 0.f)
 			{
-				currPhase -= intervalMedian;
+				currPhase -= periodMedian;
 			}
 
 			beatPhases.push_back(currPhase);
@@ -513,14 +514,14 @@ void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float b
 		std::sort(beatPhases.begin(), beatPhases.end());
 		int phaseMedianIndex = (int)(beatPhases.size() / 2);
 
-		binSpan.predictedPeriodPhase = beatPhases[phaseMedianIndex];
+		binSpan.phaseMedian = beatPhases[phaseMedianIndex];
 
 		// Confidence in the phase
 		int phasesAgreeingWithMedian = 0;
-		float maxErrorFromPhaseMedian = binSpan.predictedPeriodPhase * phaseMedianThreshold;
+		float maxErrorFromPhaseMedian = binSpan.phaseMedian * phaseMedianThreshold;
 		for (int beatPhaseIndex = 0; beatPhaseIndex < (int)beatPhases.size(); ++beatPhaseIndex)
 		{
-			float diff = AbsoluteValue(beatPhases[beatPhaseIndex] - binSpan.predictedPeriodPhase);
+			float diff = AbsoluteValue(beatPhases[beatPhaseIndex] - binSpan.phaseMedian);
 
 			if (diff <= maxErrorFromPhaseMedian)
 			{
@@ -658,15 +659,15 @@ void FFTSystem::SetupForFFTPlayback()
 
 	float freqSpanPerBin = m_sampleRate / m_fftWindowSize;
 
-	m_FFTBinSpans.reserve(m_numBinsToSaveUpTo);
+	m_FFTBinSets.reserve(m_numBinsToSaveUpTo);
 
 	for (int binIndex = 0; binIndex < m_numBinsToSaveUpTo; ++binIndex)
 	{
-		FFTBinSpan_t spanData;
+		FFTBinSet_t spanData;
 		spanData.frequencyInterval = FloatRange(binIndex * freqSpanPerBin, (binIndex + 1) * freqSpanPerBin);
 
-		m_FFTBinSpans.push_back(spanData);
-		m_FFTBinSpans.back().fftBinSamples.reserve(10000);
+		m_FFTBinSets.push_back(spanData);
+		m_FFTBinSets.back().fftBinSamples.reserve(10000);
 	}
 }
 
@@ -796,12 +797,57 @@ void FFTSystem::AddCurrentFFTSampleToBinData()
 {
 	for (int binIndex = 0; binIndex < m_numBinsToSaveUpTo; ++binIndex)
 	{
-		FFTBinData_t binData;
+		FFTBin_t binData;
 		binData.binAverageOfAllChannels = m_lastFFTSampleChannelAverages[binIndex];
-		binData.isHigh = false; // #TODO: Detect if it is a high
 		binData.timeIntoSong = m_playBackTimer->GetElapsedTime();
 
-		m_FFTBinSpans[binIndex].fftBinSamples.push_back(binData);
+		m_FFTBinSets[binIndex].fftBinSamples.push_back(binData);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Finishes FFT data collection by calculating data on the entire set
+//
+void FFTSystem::FinalizeBinCollection()
+{
+	// Average expressivity for this bin throughout the track
+	m_maxBinExpressivityAverage = -1.0f;
+	m_minBinExpressivityAverage = 10.f;
+
+	for (int binSetIndex = 0; binSetIndex < (int)m_FFTBinSets.size(); ++binSetIndex)
+	{
+		FFTBinSet_t& currSet = m_FFTBinSets[binSetIndex];
+
+		int numSamplesInSet = (int)currSet.fftBinSamples.size();
+		float averageExpressivity = 0.f;
+		for (int sampleIndex = 0; sampleIndex < numSamplesInSet; ++sampleIndex)
+		{
+			averageExpressivity += currSet.fftBinSamples[sampleIndex].binAverageOfAllChannels;
+		}
+
+		averageExpressivity /= (float)numSamplesInSet;
+		currSet.averageBinExpressivity = averageExpressivity;
+
+		// Update global extremes
+		if (averageExpressivity > m_maxBinExpressivityAverage)
+		{
+			m_maxBinExpressivityAverage = averageExpressivity;
+			m_maxBinAverageBinIndex = binSetIndex;
+		}
+
+		if (averageExpressivity < m_minBinExpressivityAverage)
+		{
+			m_minBinExpressivityAverage = averageExpressivity;
+			m_minBinAverageBinIndex = binSetIndex;
+		}
+	}
+
+	// Normalized values from the max
+	for (int binSetIndex = 0; binSetIndex < (int)m_FFTBinSets.size(); ++binSetIndex)
+	{
+		FFTBinSet_t& currSet = m_FFTBinSets[binSetIndex];
+		currSet.averageBinExpressivityNormalized = currSet.averageBinExpressivity / m_maxBinExpressivityAverage;
 	}
 }
 
@@ -813,7 +859,7 @@ void FFTSystem::WriteFFTBinDataToFile()
 {
 	CreateDirectoryA("Data/FFTLogs", NULL);
 
-	std::string binDataFilePath = Stringf("Data/FFTLogs/FFTLog_%s.fftlog", m_musicTitleBeingPlayed.c_str());
+	std::string binDataFilePath = Stringf("Data/FFTLogs/%s.fftlog", m_musicTitleBeingPlayed.c_str());
 
 	ConsolePrintf("Writing Bin Data to file %s...", binDataFilePath.c_str());
 	File file;
@@ -821,42 +867,38 @@ void FFTSystem::WriteFFTBinDataToFile()
 
 	ASSERT_OR_DIE(opened, "Error: Couldn't open FFT file for write");
 
-	std::string headingLine = Stringf("Song File: %s\n", m_musicTitleBeingPlayed.c_str()).c_str();
-	file.Write(headingLine.c_str(), headingLine.size());
+	std::string buffer = Stringf("Song File: %s\n", m_musicTitleBeingPlayed.c_str()).c_str();
 
-	headingLine = Stringf("Duration: %.3f seconds\n", m_songLength).c_str();
-	file.Write(headingLine.c_str(), headingLine.size());
+	buffer += Stringf("Duration: %.3f seconds\n", m_songLength).c_str();
 
-	headingLine = Stringf("Sample Rate: %.2fhz\n", m_sampleRate).c_str();
-	file.Write(headingLine.c_str(), headingLine.size());
+	buffer += Stringf("Sample Rate: %.2fhz\n", m_sampleRate).c_str();
 
-	headingLine = Stringf("Max Frequency Analyzed: %.2f\n", m_maxFrequencyToSaveUpTo).c_str();
-	file.Write(headingLine.c_str(), headingLine.size());
+	buffer += Stringf("Max Frequency Analyzed: %.2f\n", m_maxFrequencyToSaveUpTo).c_str();
 
-	headingLine = Stringf("Number of Bins: %i\n", m_numBinsToSaveUpTo).c_str();
-	file.Write(headingLine.c_str(), headingLine.size());
+	buffer += Stringf("Number of Bins: %i\n", m_numBinsToSaveUpTo).c_str();
 
-	headingLine = Stringf("Number of Samples per bin: %i\n", m_FFTBinSpans[0].fftBinSamples.size()).c_str();
-	file.Write(headingLine.c_str(), headingLine.size());
+	buffer += Stringf("Number of Samples per bin: %i\n", m_FFTBinSets[0].fftBinSamples.size()).c_str();
+
+	buffer += Stringf("Max Average Bin Expressivity: %.8f in Bin %i\n", m_maxBinExpressivityAverage, m_maxBinAverageBinIndex);
+	
+	buffer += Stringf("Min Average Bin Expressivity: %.8f in Bin %i\n", m_minBinExpressivityAverage, m_minBinAverageBinIndex);
 
 	for (int spanIndex = 0; spanIndex < m_numBinsToSaveUpTo; ++spanIndex)
 	{
-		FFTBinSpan_t& currentBinSpan = m_FFTBinSpans[spanIndex];
+		FFTBinSet_t& currentBinSpan = m_FFTBinSets[spanIndex];
 
-		std::string currLine = Stringf("BIN %i Frequency: %.2f %.2f (hertz)\n", spanIndex, currentBinSpan.frequencyInterval.min, currentBinSpan.frequencyInterval.max);
-
-		file.Write(currLine.c_str(), currLine.size());
+		buffer += Stringf("BIN %i Frequency: %.2f %.2f (hertz)\n", spanIndex, currentBinSpan.frequencyInterval.min, currentBinSpan.frequencyInterval.max);
+		buffer += Stringf("Average Expressivity: %.8f\nNormalized Expressivity: %.8f\n", currentBinSpan.averageBinExpressivity, currentBinSpan.averageBinExpressivityNormalized);
 
 		int numFFTSamplesInSpan = (int)currentBinSpan.fftBinSamples.size();
 
 		for (int sampleIndex = 0; sampleIndex < numFFTSamplesInSpan; ++sampleIndex)
 		{
-			currLine = Stringf("Time: %.4f - Value: %.8f\n", currentBinSpan.fftBinSamples[sampleIndex].timeIntoSong, currentBinSpan.fftBinSamples[sampleIndex].binAverageOfAllChannels);
-
-			file.Write(currLine.c_str(), currLine.size());
+			buffer += Stringf("Time: %.4f - Value: %.8f\n", currentBinSpan.fftBinSamples[sampleIndex].timeIntoSong, currentBinSpan.fftBinSamples[sampleIndex].binAverageOfAllChannels);
 		}
 	}
 
+	file.Write(buffer.data(), buffer.size());
 	file.Close();
 
 	ConsolePrintf(Rgba::GREEN, "Write Finished");
@@ -868,7 +910,7 @@ void FFTSystem::WriteFFTBinDataToFile()
 //
 void FFTSystem::CleanUp()
 {
-	m_FFTBinSpans.clear();
+	m_FFTBinSets.clear();
 	m_musicTitleBeingPlayed.clear();
 
 	if (m_lastFFTSampleChannelAverages)
@@ -924,6 +966,18 @@ void FFTSystem::SetupForFFTBeatAnalysis(File* file)
 	// Samples per bin
 	file->GetNextLine(currLine);
 	
+	// Max Expressivity
+	file->GetNextLine(currLine);
+	std::vector<std::string> maxTokens = Tokenize(currLine, ' ');
+	m_maxBinExpressivityAverage = StringToFloat(maxTokens[4]);
+	m_maxBinAverageBinIndex = StringToInt(maxTokens[7]);
+
+	// Min Expressivity
+	file->GetNextLine(currLine);
+	std::vector<std::string> minTokens = Tokenize(currLine, ' ');
+	m_minBinExpressivityAverage = StringToFloat(minTokens[4]);
+	m_minBinAverageBinIndex = StringToInt(minTokens[7]);
+
 	// Bin information
 	file->GetNextLine(currLine);
 	while (!IsStringNullOrEmpty(currLine))
@@ -933,20 +987,29 @@ void FFTSystem::SetupForFFTBeatAnalysis(File* file)
 		// Start of a new bin
 		if (lineTokens[0] == "BIN")
 		{
-			FFTBinSpan_t span;
+			FFTBinSet_t span;
 			span.frequencyInterval.min = StringToFloat(lineTokens[3]);
 			span.frequencyInterval.max = StringToFloat(lineTokens[4]);
 
-			m_FFTBinSpans.push_back(span);
+			// Get expressivities
+			file->GetNextLine(currLine);
+			std::vector<std::string> binAverageLine = Tokenize(currLine, ' ');
+			span.averageBinExpressivity = StringToFloat(binAverageLine[2]);
+
+			file->GetNextLine(currLine);
+			std::vector<std::string> binAverageLineNormalized = Tokenize(currLine, ' ');
+			span.averageBinExpressivityNormalized = StringToFloat(binAverageLineNormalized[2]);
+
+			m_FFTBinSets.push_back(span);
 		}
 		else
 		{
 			// Is a bin sample line
-			FFTBinData_t data;
+			FFTBin_t data;
 			data.timeIntoSong = StringToFloat(lineTokens[1]);
 			data.binAverageOfAllChannels = StringToFloat(lineTokens[4]);
 
-			m_FFTBinSpans.back().fftBinSamples.push_back(data);
+			m_FFTBinSets.back().fftBinSamples.push_back(data);
 		}
 
 		file->GetNextLine(currLine);
@@ -971,44 +1034,86 @@ void FFTSystem::WriteFFTBeatAnalysisToFile()
 		return;
 	}
 
-	std::string headingLine = Stringf("Song File: %s\n", m_musicTitleBeingPlayed.c_str()).c_str();
-	file.Write(headingLine.c_str(), headingLine.size());
+	// Song title
+	std::string buffer = Stringf("Song File: %s\n", m_musicTitleBeingPlayed.c_str()).c_str();
 
-	headingLine = Stringf("Duration: %.3f seconds\n", m_songLength).c_str();
-	file.Write(headingLine.c_str(), headingLine.size());
+	// Duration
+	buffer += Stringf("Duration: %.3f seconds\n", m_songLength).c_str();
 
-	headingLine = Stringf("Sample Rate: %.2fhz\n", m_sampleRate).c_str();
-	file.Write(headingLine.c_str(), headingLine.size());
+	// Sample Rate
+	buffer += Stringf("Sample Rate: %.2fhz\n", m_sampleRate).c_str();
 
-	int binCount = (int) m_FFTBinSpans.size();
-	headingLine = Stringf("Number of Bins: %i\n", binCount).c_str();
-	file.Write(headingLine.c_str(), headingLine.size());
+	// Bin Count
+	int binCount = (int) m_FFTBinSets.size();
+	buffer += Stringf("Number of Bins: %i\n", binCount).c_str();
 
-	int numSamples = (int) m_FFTBinSpans[0].fftBinSamples.size();
-	headingLine = Stringf("Number of Samples per bin: %i\n", numSamples).c_str();
-	file.Write(headingLine.c_str(), headingLine.size());
+	// Sample Count
+	int numSamples = (int) m_FFTBinSets[0].fftBinSamples.size();
+	buffer += Stringf("Number of Samples per bin: %i\n", numSamples).c_str();
+
+	// Max Expressivity
+	buffer += Stringf("Max Average Bin Expressivity: %.8f in Bin %i\n", m_maxBinExpressivityAverage, m_maxBinAverageBinIndex);
+
+	// Min Expressivity
+	buffer += Stringf("Min Average Bin Expressivity: %.8f in Bin %i\n", m_minBinExpressivityAverage, m_minBinAverageBinIndex);
 
 	// For each bin
 	for (int spanIndex = 0; spanIndex < binCount; ++spanIndex)
 	{
-		FFTBinSpan_t& currentBinSpan = m_FFTBinSpans[spanIndex];
+		FFTBinSet_t& currentBinSpan = m_FFTBinSets[spanIndex];
 
-		std::string currLine = Stringf("BIN %i Frequency: %.2f %.2f (hertz)\n", spanIndex, currentBinSpan.frequencyInterval.min, currentBinSpan.frequencyInterval.max);
-		file.Write(currLine.c_str(), currLine.size());
+		// Bin Header
+		buffer += Stringf("-----BIN %i | Frequency Range: [%.2f - %.2f) hertz-----\n", spanIndex, currentBinSpan.frequencyInterval.min, currentBinSpan.frequencyInterval.max);
 
-		currLine = Stringf("Span Period: %.2f\nBeats Within Threshold: %i\nTotal Beats: %i\nPeriod Phase: %.2f seconds\n", currentBinSpan.predictedPeriodDuration, currentBinSpan.numBeatsWithinAgreementThreshold, currentBinSpan.totalBeatsDetected, currentBinSpan.predictedPeriodPhase);
-		file.Write(currLine.c_str(), currLine.size());
+		// Period Median
+		buffer += Stringf("Period Median: %.4f seconds\n", currentBinSpan.periodMedian);
+
+		// Period Median Threshold
+		buffer += Stringf("Period Median Threshold: %.2f%%\n", currentBinSpan.periodMedianThreshold * 100.f);
+
+		// Periods Within Threshold
+		buffer += Stringf("Periods Within Median Threshold: %i\n", currentBinSpan.periodsWithinThreshold);
+
+		// Total Periods
+		buffer += Stringf("Total Periods: %i\n", currentBinSpan.totalPeriods);
+
+		// % Confidence in Period
+		float periodConfidence = (float)currentBinSpan.periodsWithinThreshold / (float)currentBinSpan.totalPeriods * 100.f;
+		buffer += Stringf("Period Confidence for this bin: %.2f%%\n", periodConfidence);
+
+		// Phase Median
+		buffer += Stringf("Phase Median: %.4f seconds\n", currentBinSpan.phaseMedian);
+
+		// Phase Median Threshold
+		buffer += Stringf("Phase Median Threshold: %.2f%%\n", currentBinSpan.phaseMedianThreshold * 100.f);
+
+		// Phases Within Threshold
+		buffer += Stringf("Phases Within Threshold: %i\n", currentBinSpan.phasesWithinThreshold);
+
+		// Total Phases
+		buffer += Stringf("Total Phases: %i\n", currentBinSpan.totalPhases);
+
+		// Phase confidence
+		float phaseConfidence = (float)currentBinSpan.phasesWithinThreshold / (float)currentBinSpan.totalPhases * 100.f;
+		buffer += Stringf("Phase Confidence for this Bin: %.2f%%\n", phaseConfidence);
+		
+		// Expressivities
+		buffer += Stringf("Bin Average Expressivity: %.8f\n", currentBinSpan.averageBinExpressivity);
+		buffer += Stringf("Bin Average Expressivity Normalized: %.8f\n", currentBinSpan.averageBinExpressivityNormalized);
+
+		// All the interval data
+		buffer += Stringf("---High Samples for this bin (Not guaranteed that all were used for period and phase calculation)---\n");
 
 		for (int sampleIndex = 0; sampleIndex < numSamples; ++sampleIndex)
 		{
 			if (currentBinSpan.fftBinSamples[sampleIndex].isHigh)
 			{
-				currLine = Stringf("TIME: %.4f - Value: %.8f\n", currentBinSpan.fftBinSamples[sampleIndex].timeIntoSong, currentBinSpan.fftBinSamples[sampleIndex].binAverageOfAllChannels);
-				file.Write(currLine.c_str(), currLine.size());
+				buffer += Stringf("Time: %.4f - Value: %.8f\n", currentBinSpan.fftBinSamples[sampleIndex].timeIntoSong, currentBinSpan.fftBinSamples[sampleIndex].binAverageOfAllChannels);
 			}
 		}
 	}
 
+	file.Write(buffer.c_str(), buffer.size());
 	file.Close();
 }
 

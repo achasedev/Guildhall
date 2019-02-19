@@ -54,13 +54,19 @@ void Command_PerformBeatAnalysis(Command& cmd)
 	cmd.GetParam("d", delayOnDetect, &delayOnDetect);
 
 	float beatThresholdScalar = 1.5;
-	cmd.GetParam("t", beatThresholdScalar, &beatThresholdScalar);
+	cmd.GetParam("bt", beatThresholdScalar, &beatThresholdScalar);
+	
+	float periodMedianThrehold = 0.1f;
+	cmd.GetParam("pet", periodMedianThrehold, &periodMedianThrehold);
+
+	float phaseMedianThreshold = 0.1f;
+	cmd.GetParam("pht", phaseMedianThreshold, &phaseMedianThreshold);
 
 	if (specified)
 	{
 		FFTSystem* fftSystem = Game::GetFFTSystem();
 
-		fftSystem->PeformBeatDetectionAnalysis(filepath, beatWindowDuration, beatThresholdScalar, delayOnDetect);
+		fftSystem->PeformBeatDetectionAnalysis(filepath, beatWindowDuration, beatThresholdScalar, delayOnDetect, periodMedianThrehold, phaseMedianThreshold);
 
 		ConsolePrintf(Rgba::GREEN, "Starting FFT Beat analysis on %s...", filepath.c_str());
 	}
