@@ -33,6 +33,12 @@ World::~World()
 
 	for (chunkItr; chunkItr != m_activeChunks.end(); chunkItr++)
 	{
+		Chunk* chunk = chunkItr->second;
+		if (chunk->ShouldWriteToFile())
+		{
+			chunk->WriteToFile();
+		}
+
 		delete chunkItr->second;
 	}
 
@@ -50,6 +56,7 @@ void World::Update()
 	// Activate chunks within the range
 	CheckToActivateChunks();
 	CheckToDeactivateChunks();
+	CheckToBuildChunkMesh();
 
 	std::map<IntVector2, Chunk*>::iterator chunkItr = m_activeChunks.begin();
 
@@ -121,10 +128,8 @@ void World::ActivateChunk(const IntVector2& chunkCoords)
 		ConsolePrintf(Rgba::GREEN, "Chunk (%i, %i) gererated from noise", chunkCoords.x, chunkCoords.y);
 	}
 
-	// Build the mesh immediately
-	chunk->BuildMesh();
-
-	m_activeChunks[chunkCoords] = chunk;
+	// Add the chunk to the active list; its mesh will be built later
+	AddChunkToActiveList(chunk);
 }
 
 
@@ -136,7 +141,7 @@ void World::DeactivateChunk(const IntVector2& chunkCoords)
 	bool chunkIsActive = m_activeChunks.find(chunkCoords) != m_activeChunks.end();
 	ASSERT_OR_DIE(chunkIsActive, "World tried to deactivate a chunk that doesn't exist");
 
-	Chunk* chunk = m_activeChunks[chunkCoords];
+	Chunk* chunk = RemoveChunkFromActiveList(chunkCoords);
 
 	// Write to file if needed
 	if (chunk->ShouldWriteToFile())
@@ -145,7 +150,6 @@ void World::DeactivateChunk(const IntVector2& chunkCoords)
 	}
 
 	delete chunk;
-	m_activeChunks.erase(chunkCoords);
 }
 
 
@@ -234,6 +238,166 @@ bool World::GetFarthestActiveChunkToPlayerOutsideDeactivationRange(IntVector2& o
 	}
 
 	return foundChunkToDeactivate;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks for a chunk that needs its mesh rebuilt, and rebuilds it if found
+//
+void World::CheckToBuildChunkMesh()
+{
+	IntVector2 closestDirtyCoords;
+	bool dirtyMeshFound = GetClosestActiveChunkToPlayerWithDirtyMesh(closestDirtyCoords);
+
+	if (dirtyMeshFound)
+	{
+		Chunk* dirtyMeshChunk = m_activeChunks[closestDirtyCoords];
+		dirtyMeshChunk->BuildMesh();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Searches for a chunk in the active list that has a dirty mesh, and returns the closest one
+//
+bool World::GetClosestActiveChunkToPlayerWithDirtyMesh(IntVector2& out_closestActiveDirtyCoords) const
+{
+	std::map<IntVector2, Chunk*>::const_iterator itr = m_activeChunks.begin();
+
+	Vector2 cameraXYPosition = Game::GetGameCamera()->GetPosition().xy();
+
+	float minDistance = 0.f;
+	bool foundDirtyChunk = false;
+
+	for (itr; itr != m_activeChunks.end(); itr++)
+	{
+		Chunk* currChunk = itr->second;
+
+		if (!currChunk->IsMeshDirty() || !currChunk->HasAllFourNeighbors())
+		{
+			continue;
+		}
+
+		// Get the distance to the dirty chunk
+		Vector2 chunkXYCenter = currChunk->GetWorldXYCenter();
+
+		Vector2 vectorToChunk = (chunkXYCenter - cameraXYPosition);
+		float distanceSquared = vectorToChunk.GetLengthSquared();
+
+		if (!foundDirtyChunk || distanceSquared < minDistance)
+		{
+			minDistance = distanceSquared;
+			out_closestActiveDirtyCoords = currChunk->GetChunkCoords();
+			foundDirtyChunk = true;
+		}
+	}
+
+	return foundDirtyChunk;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the chunk to the world map, and connects any references the chunk has to its neighbors
+//
+void World::AddChunkToActiveList(Chunk* chunk)
+{
+	// Check for duplicates
+	IntVector2 chunkCoords = chunk->GetChunkCoords();
+	bool alreadyExists = m_activeChunks.find(chunkCoords) != m_activeChunks.end();
+	ASSERT_OR_DIE(!alreadyExists, Stringf("World attempted to add duplicate chunk at coords (%i, %i)", chunkCoords.x, chunkCoords.y).c_str());
+
+	// Add it to the map
+	m_activeChunks[chunkCoords] = chunk;
+
+
+	// Hook up the references to the neighbors
+	IntVector2 eastCoords = chunkCoords + IntVector2(1, 0);
+	IntVector2 westCoords = chunkCoords + IntVector2(-1, 0);
+	IntVector2 northCoords = chunkCoords + IntVector2(0, 1);
+	IntVector2 southCoords = chunkCoords + IntVector2(0, -1);
+
+	bool eastExists = m_activeChunks.find(eastCoords) != m_activeChunks.end();
+	bool westExists = m_activeChunks.find(westCoords) != m_activeChunks.end();
+	bool northExists = m_activeChunks.find(northCoords) != m_activeChunks.end();
+	bool southExists = m_activeChunks.find(southCoords) != m_activeChunks.end();
+
+	if (eastExists)
+	{
+		Chunk* eastChunk = m_activeChunks[eastCoords];
+
+		chunk->SetEastNeighbor(eastChunk);
+		eastChunk->SetWestNeighbor(chunk);
+	}
+
+	if (westExists)
+	{
+		Chunk* westChunk = m_activeChunks[westCoords];
+
+		chunk->SetWestNeighbor(westChunk);
+		westChunk->SetEastNeighbor(chunk);
+	}
+
+	if (northExists)
+	{
+		Chunk* northChunk = m_activeChunks[northCoords];
+
+		chunk->SetNorthNeighbor(northChunk);
+		northChunk->SetSouthNeighbor(chunk);
+	}
+
+	if (southExists)
+	{
+		Chunk* southChunk = m_activeChunks[southCoords];
+
+		chunk->SetSouthNeighbor(southChunk);
+		southChunk->SetNorthNeighbor(chunk);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Removes this chunk from the active list in the world and unhooks any references to neighbors
+//
+Chunk* World::RemoveChunkFromActiveList(const IntVector2& chunkCoords)
+{
+	bool chunkExists = m_activeChunks.find(chunkCoords) != m_activeChunks.end();
+	ASSERT_OR_DIE(chunkExists, "World tried to remove chunk that doesn't exist");
+
+	Chunk* chunk = m_activeChunks[chunkCoords];
+	m_activeChunks.erase(chunkCoords);
+
+	// Remove the connections
+	Chunk* eastNeighbor = chunk->GetEastNeighbor();
+	Chunk* westNeighbor = chunk->GetWestNeighbor();
+	Chunk* northNeighbor = chunk->GetNorthNeighbor();
+	Chunk* southNeighbor = chunk->GetSouthNeighbor();
+
+	if (eastNeighbor != nullptr)
+	{
+		eastNeighbor->SetWestNeighbor(nullptr);
+	}
+
+	if (westNeighbor != nullptr)
+	{
+		westNeighbor->SetEastNeighbor(nullptr);
+	}
+
+	if (northNeighbor != nullptr)
+	{
+		northNeighbor->SetSouthNeighbor(nullptr);
+	}
+
+	if (southNeighbor != nullptr)
+	{
+		southNeighbor->SetNorthNeighbor(nullptr);
+	}
+
+	chunk->SetEastNeighbor(nullptr);
+	chunk->SetWestNeighbor(nullptr);
+	chunk->SetNorthNeighbor(nullptr);
+	chunk->SetSouthNeighbor(nullptr);
+
+	return chunk;
 }
 
 

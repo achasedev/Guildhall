@@ -287,7 +287,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Environment\Block.cpp" />
-    <ClCompile Include="Environment\BlockLocater.cpp" />
+    <ClCompile Include="Environment\BlockLocator.cpp" />
     <ClCompile Include="Environment\BlockType.cpp" />
     <ClCompile Include="Environment\Chunk.cpp" />
     <ClCompile Include="Environment\World.cpp" />
@@ -299,7 +299,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Environment\Block.hpp" />
-    <ClInclude Include="Environment\BlockLocater.hpp" />
+    <ClInclude Include="Environment\BlockLocator.hpp" />
     <ClInclude Include="Environment\BlockType.hpp" />
     <ClInclude Include="Environment\Chunk.hpp" />
     <ClInclude Include="Environment\World.hpp" />

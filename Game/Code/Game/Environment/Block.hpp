@@ -6,6 +6,7 @@
 /************************************************************************/
 #pragma once
 #include <stdint.h>
+#include "Game/Environment/BlockType.hpp"
 
 class Block
 {
@@ -15,8 +16,11 @@ public:
 	Block() {}
 	Block(uint8_t type, uint8_t light, uint8_t flags);
 
-	uint8_t GetType() const;
-	void	SetType(uint8_t blockType);
+	inline uint8_t	GetType() const;
+	inline void		SetType(uint8_t blockType);
+
+	// Accessors for the type
+	inline bool IsFullyOpaque() const;
 
 
 public:
@@ -33,3 +37,31 @@ private:
 	uint8_t m_flags = 0;
 
 };
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the type of the block
+//
+inline uint8_t Block::GetType() const
+{
+	return m_type;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the block's type to be the one given
+//
+inline void Block::SetType(uint8_t blockType)
+{
+	m_type = blockType;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if this block fully blocks light and vision
+//
+inline bool Block::IsFullyOpaque() const
+{
+	const BlockType* blockType = BlockType::GetTypeByIndex(m_type);
+	return blockType->m_isFullyOpaque;
+}

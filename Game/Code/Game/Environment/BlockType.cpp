@@ -34,6 +34,7 @@ void BlockType::InitializeTypes()
 	airType.m_topUVs = AABB2(Vector2::ZERO, Vector2::ZERO);
 	airType.m_sideUVs = AABB2(Vector2::ZERO, Vector2::ZERO);
 	airType.m_bottomUVs = AABB2(Vector2::ZERO, Vector2::ZERO);
+	airType.m_isFullyOpaque = false;
 
 	// Missing
 	BlockType missingType;
@@ -42,6 +43,7 @@ void BlockType::InitializeTypes()
 	missingType.m_topUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(65);
 	missingType.m_sideUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(65);
 	missingType.m_bottomUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(65);
+	missingType.m_isFullyOpaque = true;
 
 	// Grass
 	BlockType grassType;
@@ -50,6 +52,7 @@ void BlockType::InitializeTypes()
 	grassType.m_topUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(21);
 	grassType.m_sideUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(99);
 	grassType.m_bottomUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(100);
+	grassType.m_isFullyOpaque = true;
 
 	// Dirt
 	BlockType dirtType;
@@ -58,6 +61,7 @@ void BlockType::InitializeTypes()
 	dirtType.m_topUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(100);
 	dirtType.m_sideUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(100);
 	dirtType.m_bottomUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(100);
+	dirtType.m_isFullyOpaque = true;
 
 	// Stone
 	BlockType stoneType;
@@ -66,6 +70,7 @@ void BlockType::InitializeTypes()
 	stoneType.m_topUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(84);
 	stoneType.m_sideUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(84);
 	stoneType.m_bottomUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(84);
+	stoneType.m_isFullyOpaque = true;
 
 	// Add them
 	AddBlockType(airType);
@@ -106,7 +111,7 @@ const BlockType* BlockType::GetTypeByName(const std::string& name)
 void BlockType::AddBlockType(const BlockType& type)
 {
 	bool nameAlreadyExists = s_typeNames.find(type.m_name) != s_typeNames.end();
-	bool typeAlreadyExists = s_types[type.m_typeIndex].m_typeIndex != MISSING_TYPE_INDEX;
+	bool typeAlreadyExists = s_types[type.m_typeIndex].m_typeIndex != AIR_TYPE_INDEX;
 
 	GUARANTEE_OR_DIE(!nameAlreadyExists, Stringf("Duplicate BlockType name added: \"%s\"", type.m_name.c_str()));
 	GUARANTEE_OR_DIE(!typeAlreadyExists, Stringf("Duplicate BlockType index added: %i", type.m_typeIndex).c_str());

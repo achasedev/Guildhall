@@ -34,10 +34,12 @@ public:
 	//-----Public Member Data-----
 
 	std::string m_name = "NOT USED";
-	uint8_t		m_typeIndex = 0; // Default to air
+	uint8_t		m_typeIndex = AIR_TYPE_INDEX; // Default to air
 	AABB2		m_topUVs = AABB2::UNIT_SQUARE_OFFCENTER;
 	AABB2		m_sideUVs = AABB2::UNIT_SQUARE_OFFCENTER;
 	AABB2		m_bottomUVs = AABB2::UNIT_SQUARE_OFFCENTER;
+
+	bool		m_isFullyOpaque = false;
 
 	static constexpr uint8_t AIR_TYPE_INDEX = 0;
 	static constexpr uint8_t MISSING_TYPE_INDEX = 1;

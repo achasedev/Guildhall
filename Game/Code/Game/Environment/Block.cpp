@@ -15,25 +15,7 @@ Block Block::MISSING_BLOCK = Block(BlockType::MISSING_TYPE_INDEX, 0, 0);
 // Constructor
 //
 Block::Block(uint8_t type, uint8_t light, uint8_t flags)
+	: m_type(type), m_light(light), m_flags(flags)
 {
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns the type of the block
-//
-uint8_t Block::GetType() const
-{
-	return m_type;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Sets the block's type to be the one given
-//
-void Block::SetType(uint8_t blockType)
-{
-	m_type = blockType;
 }
 

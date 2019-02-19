@@ -7,6 +7,7 @@
 #include "Game/Environment/Chunk.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Environment/BlockType.hpp"
+#include "Game/Environment/BlockLocator.hpp"
 #include "Engine/Core/File.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Assets/AssetDB.hpp"
@@ -257,6 +258,8 @@ void Chunk::BuildMesh()
 	{
 		m_meshBuilder.UpdateMesh(*m_mesh);
 	}
+
+	m_isMeshDirty = false;
 }
 
 
@@ -273,10 +276,13 @@ void Chunk::Update()
 //
 void Chunk::Render() const
 {
-	Renderer* renderer = Renderer::GetInstance();
-	Material* material = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Block.xml");
-	
-	renderer->DrawMeshWithMaterial(m_mesh, material);
+	if (m_mesh != nullptr)
+	{
+		Renderer* renderer = Renderer::GetInstance();
+		Material* material = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Block.xml");
+
+		renderer->DrawMeshWithMaterial(m_mesh, material);
+	}
 }
 
 
@@ -415,6 +421,96 @@ bool Chunk::ShouldWriteToFile() const
 	return m_shouldWriteToFile;
 }
 
+//-----------------------------------------------------------------------------------------------
+// Returns the chunk directly to the east of this chunk
+//
+Chunk* Chunk::GetEastNeighbor() const
+{
+	return m_eastNeighborChunk;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the chunk directly to the west of this chunk
+//
+Chunk* Chunk::GetWestNeighbor() const
+{
+	return m_westNeighborChunk;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the chunk directly to the north of this chunk
+//
+Chunk* Chunk::GetNorthNeighbor() const
+{
+	return m_northNeighborChunk;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the chunk directly to the south of this chunk
+//
+Chunk* Chunk::GetSouthNeighbor() const
+{
+	return m_southNeighborChunk;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if all neighbors to this chunk exist and are in the world (may not have meshes)
+//
+bool Chunk::HasAllFourNeighbors() const
+{
+	return (m_eastNeighborChunk != nullptr && m_westNeighborChunk != nullptr 
+		&& m_northNeighborChunk != nullptr && m_southNeighborChunk != nullptr);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether this chunk's mesh needs to be (re)built
+//
+bool Chunk::IsMeshDirty() const
+{
+	return m_isMeshDirty;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets this chunk's east neighbor to the one provided
+//
+void Chunk::SetEastNeighbor(Chunk* chunkToEast)
+{
+	m_eastNeighborChunk = chunkToEast;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets this chunk's west neighbor to the one provided
+//
+void Chunk::SetWestNeighbor(Chunk* chunkToWest)
+{
+	m_westNeighborChunk = chunkToWest;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets this chunk's north neighbor to the one provided
+//
+void Chunk::SetNorthNeighbor(Chunk* chunkToNorth)
+{
+	m_northNeighborChunk = chunkToNorth;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets this chunk's south neighbor to the one provided
+//
+void Chunk::SetSouthNeighbor(Chunk* chunkToSouth)
+{
+	m_southNeighborChunk = chunkToSouth;
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // Returns the block index of the block given by blockCoords
@@ -432,8 +528,8 @@ int Chunk::GetBlockIndexFromBlockCoords(const IntVector3& blockCoords)
 IntVector3 Chunk::GetBlockCoordsFromBlockIndex(int blockIndex)
 {
 	int xCoord = blockIndex & CHUNK_X_MASK;
-	int yCoord = blockIndex & CHUNK_Y_MASK;
-	int zCoord = blockIndex & CHUNK_Z_MASK;
+	int yCoord = (blockIndex & CHUNK_Y_MASK) >> CHUNK_BITS_Y;
+	int zCoord = (blockIndex & CHUNK_Z_MASK) >> CHUNK_BITS_XY;
 
 	return IntVector3(xCoord, yCoord, zCoord);
 }
@@ -445,29 +541,67 @@ IntVector3 Chunk::GetBlockCoordsFromBlockIndex(int blockIndex)
 //
 void Chunk::PushVerticesForBlock(const IntVector3& blockCoords, const BlockType* type)
 {
+	int blockIndex = GetBlockIndexFromBlockCoords(blockCoords);
+
 	int worldXOffset = m_chunkCoords.x * CHUNK_DIMENSIONS_X;
 	int worldYOffset = m_chunkCoords.y * CHUNK_DIMENSIONS_Y;
 
 	Vector3 cubeBottomSouthWest = Vector3(worldXOffset + blockCoords.x, worldYOffset + blockCoords.y, blockCoords.z);
 	Vector3 cubeTopNorthEast = cubeBottomSouthWest + Vector3::ONES;
 
+	// For hidden surface removal
+	BlockLocator currBlockLocator = BlockLocator(this, blockIndex);
+
+	BlockLocator eastBlockLocator = currBlockLocator.ToEast();
+	BlockLocator westBlockLocator = currBlockLocator.ToWest();
+	BlockLocator northBlockLocator = currBlockLocator.ToNorth();
+	BlockLocator southBlockLocator = currBlockLocator.ToSouth();
+	BlockLocator aboveBlockLocator = currBlockLocator.ToAbove();
+	BlockLocator belowBlockLocator = currBlockLocator.ToBelow();
+
+	bool pushEastFace	= eastBlockLocator.GetBlock().GetType() == BlockType::MISSING_TYPE_INDEX || !eastBlockLocator.GetBlock().IsFullyOpaque();
+	bool pushWestFace	= westBlockLocator.GetBlock().GetType() == BlockType::MISSING_TYPE_INDEX || !westBlockLocator.GetBlock().IsFullyOpaque();
+	bool pushNorthFace	= northBlockLocator.GetBlock().GetType() == BlockType::MISSING_TYPE_INDEX || !northBlockLocator.GetBlock().IsFullyOpaque();
+	bool pushSouthFace	= southBlockLocator.GetBlock().GetType() == BlockType::MISSING_TYPE_INDEX || !southBlockLocator.GetBlock().IsFullyOpaque();
+	bool pushTopFace	= aboveBlockLocator.GetBlock().GetType() == BlockType::MISSING_TYPE_INDEX || !aboveBlockLocator.GetBlock().IsFullyOpaque();
+	bool pushBottomFace = belowBlockLocator.GetBlock().GetType() == BlockType::MISSING_TYPE_INDEX || !belowBlockLocator.GetBlock().IsFullyOpaque();
+
+
 	// East Face
-	m_meshBuilder.Push3DQuad(cubeBottomSouthWest, Vector2::ONES, type->m_sideUVs, Rgba::WHITE, Vector3::MINUS_Y_AXIS, Vector3::Z_AXIS, Vector2(1.0f, 0.f));
+	if (pushEastFace)
+	{
+		m_meshBuilder.Push3DQuad(cubeTopNorthEast, Vector2::ONES, type->m_sideUVs, Rgba::WHITE, Vector3::Y_AXIS, Vector3::Z_AXIS, Vector2(1.f, 1.0f));
+	}
 
 	// West Face
-	m_meshBuilder.Push3DQuad(cubeTopNorthEast, Vector2::ONES, type->m_sideUVs, Rgba::WHITE, Vector3::Y_AXIS, Vector3::Z_AXIS, Vector2(1.f, 1.0f));
+	if (pushWestFace)
+	{
+		m_meshBuilder.Push3DQuad(cubeBottomSouthWest, Vector2::ONES, type->m_sideUVs, Rgba::WHITE, Vector3::MINUS_Y_AXIS, Vector3::Z_AXIS, Vector2(1.0f, 0.f));
+	}
 
 	// North Face
-	m_meshBuilder.Push3DQuad(cubeTopNorthEast, Vector2::ONES, type->m_sideUVs, Rgba::WHITE, Vector3::MINUS_X_AXIS, Vector3::Z_AXIS, Vector2(0.f, 1.0f));
+	if (pushNorthFace)
+	{
+		m_meshBuilder.Push3DQuad(cubeTopNorthEast, Vector2::ONES, type->m_sideUVs, Rgba::WHITE, Vector3::MINUS_X_AXIS, Vector3::Z_AXIS, Vector2(0.f, 1.0f));
+	}
 
 	// South Face
-	m_meshBuilder.Push3DQuad(cubeBottomSouthWest, Vector2::ONES, type->m_sideUVs, Rgba::WHITE, Vector3::X_AXIS, Vector3::Z_AXIS, Vector2::ZERO);
+	if (pushSouthFace)
+	{
+		m_meshBuilder.Push3DQuad(cubeBottomSouthWest, Vector2::ONES, type->m_sideUVs, Rgba::WHITE, Vector3::X_AXIS, Vector3::Z_AXIS, Vector2::ZERO);
+	}
 
 	// Top Face
-	m_meshBuilder.Push3DQuad(cubeTopNorthEast, Vector2::ONES, type->m_topUVs, Rgba::WHITE, Vector3::MINUS_Y_AXIS, Vector3::X_AXIS, Vector2(0.f, 1.0f));
+	if (pushTopFace)
+	{
+		m_meshBuilder.Push3DQuad(cubeTopNorthEast, Vector2::ONES, type->m_topUVs, Rgba::WHITE, Vector3::MINUS_Y_AXIS, Vector3::X_AXIS, Vector2(0.f, 1.0f));
+	}
 
 	// Bottom Face
-	m_meshBuilder.Push3DQuad(cubeBottomSouthWest, Vector2::ONES, type->m_bottomUVs, Rgba::WHITE, Vector3::MINUS_Y_AXIS, Vector3::MINUS_X_AXIS, Vector2::ONES);
+	if (pushBottomFace)
+	{
+		m_meshBuilder.Push3DQuad(cubeBottomSouthWest, Vector2::ONES, type->m_bottomUVs, Rgba::WHITE, Vector3::MINUS_Y_AXIS, Vector3::MINUS_X_AXIS, Vector2::ONES);
+	}
 }
 
 

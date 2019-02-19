@@ -39,13 +39,21 @@ public:
 	Block&				GetBlock(const IntVector3& blockCoords);
 	IntVector2			GetChunkCoords() const;
 	bool				ShouldWriteToFile() const;
-
+	
 	Chunk*				GetEastNeighbor() const;
 	Chunk*				GetWestNeighbor() const;
 	Chunk*				GetNorthNeighbor() const;
 	Chunk*				GetSouthNeighbor() const;
+	bool				HasAllFourNeighbors() const;
+
+	bool				IsMeshDirty() const;
+
 
 	// Mutators
+	void				SetEastNeighbor(Chunk* chunkToEast);
+	void				SetWestNeighbor(Chunk* chunkToWest);
+	void				SetNorthNeighbor(Chunk* chunkToNorth);
+	void				SetSouthNeighbor(Chunk* chunkToSouth);
 
 	// Statics
 	static int			GetBlockIndexFromBlockCoords(const IntVector3& blockCoords);
@@ -96,7 +104,8 @@ private:
 
 	Mesh*		m_mesh = nullptr;
 	MeshBuilder m_meshBuilder;
-
+	
+	bool		m_isMeshDirty = true;
 	bool		m_shouldWriteToFile = true;
 
 };

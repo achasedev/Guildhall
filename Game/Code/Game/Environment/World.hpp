@@ -28,6 +28,9 @@ public:
 private:
 	//-----Private Methods-----
 
+	void	AddChunkToActiveList(Chunk* chunk);
+	Chunk*	RemoveChunkFromActiveList(const IntVector2& chunkCoords);
+
 	// Chunk Activation
 	void CheckToActivateChunks();
 	void ActivateChunk(const IntVector2& chunkCoords);
@@ -37,6 +40,10 @@ private:
 	void CheckToDeactivateChunks();
 	void DeactivateChunk(const IntVector2& chunkCoords);
 	bool GetFarthestActiveChunkToPlayerOutsideDeactivationRange(IntVector2& out_closestActiveChunkCoords) const;
+
+	// Chunk MeshBuilding
+	void CheckToBuildChunkMesh();
+	bool GetClosestActiveChunkToPlayerWithDirtyMesh(IntVector2& out_closestActiveDirtyCoords) const;
 
 
 private:
