@@ -21,29 +21,38 @@ public:
 	void Update();
 	void Render() const;
 
-	IntVector2 GetChunkCoordsForChunkThatContainsPosition(const Vector2& position) const;
-	IntVector2 GetChunkCoordsForChunkThatContainsPosition(const Vector3& position) const;
+	IntVector2	GetChunkCoordsForChunkThatContainsPosition(const Vector2& position) const;
+	IntVector2	GetChunkCoordsForChunkThatContainsPosition(const Vector3& position) const;
+
+	Chunk*		GetChunkThatContainsPosition(const Vector2& position) const;
+	Chunk*		GetChunkThatContainsPosition(const Vector3& position) const;
 
 
 private:
 	//-----Private Methods-----
 
-	void	AddChunkToActiveList(Chunk* chunk);
-	Chunk*	RemoveChunkFromActiveList(const IntVector2& chunkCoords);
+	void	AddChunkToActiveList(Chunk* chunkToAdd);
+	void	RemoveChunkFromActiveList(Chunk* chunkToRemove);
 
 	// Chunk Activation
 	void CheckToActivateChunks();
 	void ActivateChunk(const IntVector2& chunkCoords);
-	bool GetClosestInactiveChunkToPlayerWithinActivationRange(IntVector2& out_closestInactiveChunkCoords) const;
+	bool GetClosestInactiveChunkCoordsToPlayerWithinActivationRange(IntVector2& out_closestInactiveChunkCoords) const;
 
 	// Chunk Deactivation
 	void CheckToDeactivateChunks();
-	void DeactivateChunk(const IntVector2& chunkCoords);
-	bool GetFarthestActiveChunkToPlayerOutsideDeactivationRange(IntVector2& out_closestActiveChunkCoords) const;
+	void DeactivateChunk(Chunk* chunk);
+	Chunk* GetFarthestActiveChunkToPlayerOutsideDeactivationRange() const;
 
 	// Chunk MeshBuilding
 	void CheckToBuildChunkMesh();
 	bool GetClosestActiveChunkToPlayerWithDirtyMesh(IntVector2& out_closestActiveDirtyCoords) const;
+
+	// Update
+	void UpdateChunks();
+
+	// Render
+	void RenderChunks() const;
 
 
 private:

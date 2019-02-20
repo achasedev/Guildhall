@@ -405,6 +405,31 @@ Block& Chunk::GetBlock(const IntVector3& blockCoords)
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the block in this chunk that contains the given world position
+//
+Block& Chunk::GetBlockThatContainsWorldPosition(const Vector3& worldPosition)
+{
+	// Ensure it's within this chunk
+	if (!m_worldBounds.ContainsPoint(worldPosition))
+	{
+		return Block::MISSING_BLOCK;
+	}
+	else
+	{
+		Vector3 localOffsetFromChunkOrigin = worldPosition - m_worldBounds.mins;
+
+		int blockXCoord = Floor(localOffsetFromChunkOrigin.x);
+		int blockYCoord = Floor(localOffsetFromChunkOrigin.y);
+		int blockZCoord = Floor(localOffsetFromChunkOrigin.z);
+		IntVector3 blockCoord = IntVector3(blockXCoord, blockYCoord, blockZCoord);
+		int blockIndex = GetBlockIndexFromBlockCoords(blockCoord);
+
+		return m_blocks[blockIndex];
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the chunk coordinates of this chunk
 //
 IntVector2 Chunk::GetChunkCoords() const
@@ -418,7 +443,7 @@ IntVector2 Chunk::GetChunkCoords() const
 //
 bool Chunk::ShouldWriteToFile() const
 {
-	return m_shouldWriteToFile;
+	return m_needsToBeSaved;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -509,6 +534,24 @@ void Chunk::SetNorthNeighbor(Chunk* chunkToNorth)
 void Chunk::SetSouthNeighbor(Chunk* chunkToSouth)
 {
 	m_southNeighborChunk = chunkToSouth;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets whether the mesh of this chunk is dirty or not
+//
+void Chunk::SetIsMeshDirty(bool isMeshDirty)
+{
+	m_isMeshDirty = isMeshDirty;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets whether this chunk needs to be written to disk when deactivated
+//
+void Chunk::SetNeedsToBeSavedToDisk(bool needsToBeSaved)
+{
+	m_needsToBeSaved = needsToBeSaved;
 }
 
 

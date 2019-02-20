@@ -95,16 +95,27 @@ void Game::ShutDown()
 	s_instance = nullptr;
 }
 
-
+#include "Game/Environment/Chunk.hpp"
 //-----------------------------------------------------------------------------------------------
 // Checks for input received this frame and updates states accordingly
 //
 void Game::ProcessInput()
 {
 	m_gameCamera->ProcessInput();
+
+	// Testing persistance
+	if (InputSystem::GetInstance()->WasKeyJustPressed('P'))
+	{
+		Chunk* chunk = m_world->GetChunkThatContainsPosition(m_gameCamera->GetPosition());
+		Block& block = chunk->GetBlockThatContainsWorldPosition(m_gameCamera->GetPosition());
+
+		block.SetType(4); // Stone
+		chunk->SetIsMeshDirty(true);
+		chunk->SetNeedsToBeSavedToDisk(true);
+	}
 }
 
-#include "Game/Environment/Chunk.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // Update the movement variables of every entity in the world, as well as update the game state
 // based on the input this frame

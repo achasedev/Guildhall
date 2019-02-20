@@ -37,6 +37,8 @@ public:
 	// Accessors
 	Block&				GetBlock(int blockIndex);
 	Block&				GetBlock(const IntVector3& blockCoords);
+	Block&				GetBlockThatContainsWorldPosition(const Vector3& worldPosition);
+
 	IntVector2			GetChunkCoords() const;
 	bool				ShouldWriteToFile() const;
 	
@@ -45,7 +47,6 @@ public:
 	Chunk*				GetNorthNeighbor() const;
 	Chunk*				GetSouthNeighbor() const;
 	bool				HasAllFourNeighbors() const;
-
 	bool				IsMeshDirty() const;
 
 
@@ -54,6 +55,8 @@ public:
 	void				SetWestNeighbor(Chunk* chunkToWest);
 	void				SetNorthNeighbor(Chunk* chunkToNorth);
 	void				SetSouthNeighbor(Chunk* chunkToSouth);
+	void				SetIsMeshDirty(bool isMeshDirty);
+	void				SetNeedsToBeSavedToDisk(bool needsToBeSaved);
 
 	// Statics
 	static int			GetBlockIndexFromBlockCoords(const IntVector3& blockCoords);
@@ -106,6 +109,6 @@ private:
 	MeshBuilder m_meshBuilder;
 	
 	bool		m_isMeshDirty = true;
-	bool		m_shouldWriteToFile = true;
+	bool		m_needsToBeSaved = false;
 
 };

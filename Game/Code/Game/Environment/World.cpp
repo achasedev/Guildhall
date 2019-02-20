@@ -29,17 +29,19 @@ World::World()
 World::~World()
 {
 	// Delete all active chunks
+	// Don't use DeactivateChunk() to avoid invalidating this iterator
 	std::map<IntVector2, Chunk*>::iterator chunkItr = m_activeChunks.begin();
 
 	for (chunkItr; chunkItr != m_activeChunks.end(); chunkItr++)
 	{
 		Chunk* chunk = chunkItr->second;
+
 		if (chunk->ShouldWriteToFile())
 		{
 			chunk->WriteToFile();
 		}
 
-		delete chunkItr->second;
+		delete chunk;
 	}
 
 	m_activeChunks.clear();
@@ -55,15 +57,10 @@ void World::Update()
 
 	// Activate chunks within the range
 	CheckToActivateChunks();
-	CheckToDeactivateChunks();
 	CheckToBuildChunkMesh();
+	CheckToDeactivateChunks();
 
-	std::map<IntVector2, Chunk*>::iterator chunkItr = m_activeChunks.begin();
-
-	for (chunkItr; chunkItr != m_activeChunks.end(); chunkItr++)
-	{
-		chunkItr->second->Update();
-	}
+	UpdateChunks();
 }
 
 
@@ -72,12 +69,7 @@ void World::Update()
 //
 void World::Render() const
 {
-	std::map<IntVector2, Chunk*>::const_iterator chunkItr = m_activeChunks.begin();
-
-	for (chunkItr; chunkItr != m_activeChunks.end(); chunkItr++)
-	{
-		chunkItr->second->Render();
-	}
+	RenderChunks();
 }
 
 
@@ -95,10 +87,38 @@ IntVector2 World::GetChunkCoordsForChunkThatContainsPosition(const Vector2& posi
 
 //-----------------------------------------------------------------------------------------------
 // Returns the chunk coordinates that contain the given position
+// Does not check the Z bounds
 //
 IntVector2 World::GetChunkCoordsForChunkThatContainsPosition(const Vector3& position) const
 {
 	return GetChunkCoordsForChunkThatContainsPosition(position.xy());
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the chunk that contains the given position
+//
+Chunk* World::GetChunkThatContainsPosition(const Vector2& position) const
+{
+	IntVector2 chunkCoords = GetChunkCoordsForChunkThatContainsPosition(position);
+
+	bool chunkExists = m_activeChunks.find(chunkCoords) != m_activeChunks.end();
+	if (chunkExists)
+	{
+		return m_activeChunks.at(chunkCoords);
+	}
+
+	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the chunk that contains the given position
+// Does not check the Z bounds
+//
+Chunk* World::GetChunkThatContainsPosition(const Vector3& position) const
+{
+	return GetChunkThatContainsPosition(position.xy());
 }
 
 
@@ -134,14 +154,12 @@ void World::ActivateChunk(const IntVector2& chunkCoords)
 
 
 //-----------------------------------------------------------------------------------------------
-// Removes the chunk given by the chunk coords, and writes to file if it has been modified
+// Removes the chunk from the world's list of active chunks, and writes to file if it has been modified
+// DELETES THE CHUNK
 //
-void World::DeactivateChunk(const IntVector2& chunkCoords)
+void World::DeactivateChunk(Chunk* chunk)
 {
-	bool chunkIsActive = m_activeChunks.find(chunkCoords) != m_activeChunks.end();
-	ASSERT_OR_DIE(chunkIsActive, "World tried to deactivate a chunk that doesn't exist");
-
-	Chunk* chunk = RemoveChunkFromActiveList(chunkCoords);
+	RemoveChunkFromActiveList(chunk);
 
 	// Write to file if needed
 	if (chunk->ShouldWriteToFile())
@@ -157,7 +175,7 @@ void World::DeactivateChunk(const IntVector2& chunkCoords)
 // Checks if there is an inactive chunk within the activation range, and returns true if there exists
 // one, returning the closest one
 //
-bool World::GetClosestInactiveChunkToPlayerWithinActivationRange(IntVector2& out_closestInactiveChunkCoords) const
+bool World::GetClosestInactiveChunkCoordsToPlayerWithinActivationRange(IntVector2& out_closestInactiveChunkCoords) const
 {
 	int chunkSpanX = Ceiling(CHUNK_ACTIVATION_RANGE / (float)Chunk::CHUNK_DIMENSIONS_X);
 	int chunkSpanY = Ceiling(CHUNK_ACTIVATION_RANGE / (float)Chunk::CHUNK_DIMENSIONS_Y);
@@ -210,7 +228,7 @@ bool World::GetClosestInactiveChunkToPlayerWithinActivationRange(IntVector2& out
 // Returns true if it finds an active chunk outside the deactivation range, and returns the coords
 // of the closest one
 //
-bool World::GetFarthestActiveChunkToPlayerOutsideDeactivationRange(IntVector2& out_closestActiveChunkCoords) const
+Chunk* World::GetFarthestActiveChunkToPlayerOutsideDeactivationRange() const
 {
 	std::map<IntVector2, Chunk*>::const_iterator itr = m_activeChunks.begin();
 
@@ -218,26 +236,24 @@ bool World::GetFarthestActiveChunkToPlayerOutsideDeactivationRange(IntVector2& o
 
 	float deactivationRangeSquared = CHUNK_DEACTIVATION_RANGE * CHUNK_DEACTIVATION_RANGE;
 	float maxDistance = 0.f;
-	bool foundChunkToDeactivate = false;
-
+	Chunk* farthestActiveChunkOutsideDeactivationRange = nullptr;
+	
 	for (itr; itr != m_activeChunks.end(); itr++)
 	{
 		Chunk* currChunk = itr->second;
 
 		Vector2 chunkXYCenter = currChunk->GetWorldXYCenter();
-		
 		Vector2 vectorToChunk = (chunkXYCenter - cameraXYPosition);
 		float distanceSquared = vectorToChunk.GetLengthSquared();
 
 		if (distanceSquared > deactivationRangeSquared && distanceSquared > maxDistance)
 		{
 			maxDistance = distanceSquared;
-			out_closestActiveChunkCoords = currChunk->GetChunkCoords();
-			foundChunkToDeactivate = true;
+			farthestActiveChunkOutsideDeactivationRange = currChunk;
 		}
 	}
 
-	return foundChunkToDeactivate;
+	return farthestActiveChunkOutsideDeactivationRange;
 }
 
 
@@ -297,17 +313,45 @@ bool World::GetClosestActiveChunkToPlayerWithDirtyMesh(IntVector2& out_closestAc
 
 
 //-----------------------------------------------------------------------------------------------
+// Calls Update() on all chunks
+//
+void World::UpdateChunks()
+{
+	std::map<IntVector2, Chunk*>::iterator chunkItr = m_activeChunks.begin();
+
+	for (chunkItr; chunkItr != m_activeChunks.end(); chunkItr++)
+	{
+		chunkItr->second->Update();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Calls Render() on all the chunk
+//
+void World::RenderChunks() const
+{
+	std::map<IntVector2, Chunk*>::const_iterator chunkItr = m_activeChunks.begin();
+
+	for (chunkItr; chunkItr != m_activeChunks.end(); chunkItr++)
+	{
+		chunkItr->second->Render();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Adds the chunk to the world map, and connects any references the chunk has to its neighbors
 //
-void World::AddChunkToActiveList(Chunk* chunk)
+void World::AddChunkToActiveList(Chunk* chunkToAdd)
 {
 	// Check for duplicates
-	IntVector2 chunkCoords = chunk->GetChunkCoords();
+	IntVector2 chunkCoords = chunkToAdd->GetChunkCoords();
 	bool alreadyExists = m_activeChunks.find(chunkCoords) != m_activeChunks.end();
 	ASSERT_OR_DIE(!alreadyExists, Stringf("World attempted to add duplicate chunk at coords (%i, %i)", chunkCoords.x, chunkCoords.y).c_str());
 
 	// Add it to the map
-	m_activeChunks[chunkCoords] = chunk;
+	m_activeChunks[chunkCoords] = chunkToAdd;
 
 
 	// Hook up the references to the neighbors
@@ -325,32 +369,32 @@ void World::AddChunkToActiveList(Chunk* chunk)
 	{
 		Chunk* eastChunk = m_activeChunks[eastCoords];
 
-		chunk->SetEastNeighbor(eastChunk);
-		eastChunk->SetWestNeighbor(chunk);
+		chunkToAdd->SetEastNeighbor(eastChunk);
+		eastChunk->SetWestNeighbor(chunkToAdd);
 	}
 
 	if (westExists)
 	{
 		Chunk* westChunk = m_activeChunks[westCoords];
 
-		chunk->SetWestNeighbor(westChunk);
-		westChunk->SetEastNeighbor(chunk);
+		chunkToAdd->SetWestNeighbor(westChunk);
+		westChunk->SetEastNeighbor(chunkToAdd);
 	}
 
 	if (northExists)
 	{
 		Chunk* northChunk = m_activeChunks[northCoords];
 
-		chunk->SetNorthNeighbor(northChunk);
-		northChunk->SetSouthNeighbor(chunk);
+		chunkToAdd->SetNorthNeighbor(northChunk);
+		northChunk->SetSouthNeighbor(chunkToAdd);
 	}
 
 	if (southExists)
 	{
 		Chunk* southChunk = m_activeChunks[southCoords];
 
-		chunk->SetSouthNeighbor(southChunk);
-		southChunk->SetNorthNeighbor(chunk);
+		chunkToAdd->SetSouthNeighbor(southChunk);
+		southChunk->SetNorthNeighbor(chunkToAdd);
 	}
 }
 
@@ -358,19 +402,19 @@ void World::AddChunkToActiveList(Chunk* chunk)
 //-----------------------------------------------------------------------------------------------
 // Removes this chunk from the active list in the world and unhooks any references to neighbors
 //
-Chunk* World::RemoveChunkFromActiveList(const IntVector2& chunkCoords)
+void World::RemoveChunkFromActiveList(Chunk* chunkToRemove)
 {
+	IntVector2 chunkCoords = chunkToRemove->GetChunkCoords();
 	bool chunkExists = m_activeChunks.find(chunkCoords) != m_activeChunks.end();
 	ASSERT_OR_DIE(chunkExists, "World tried to remove chunk that doesn't exist");
 
-	Chunk* chunk = m_activeChunks[chunkCoords];
 	m_activeChunks.erase(chunkCoords);
 
 	// Remove the connections
-	Chunk* eastNeighbor = chunk->GetEastNeighbor();
-	Chunk* westNeighbor = chunk->GetWestNeighbor();
-	Chunk* northNeighbor = chunk->GetNorthNeighbor();
-	Chunk* southNeighbor = chunk->GetSouthNeighbor();
+	Chunk* eastNeighbor = chunkToRemove->GetEastNeighbor();
+	Chunk* westNeighbor = chunkToRemove->GetWestNeighbor();
+	Chunk* northNeighbor = chunkToRemove->GetNorthNeighbor();
+	Chunk* southNeighbor = chunkToRemove->GetSouthNeighbor();
 
 	if (eastNeighbor != nullptr)
 	{
@@ -392,12 +436,10 @@ Chunk* World::RemoveChunkFromActiveList(const IntVector2& chunkCoords)
 		southNeighbor->SetNorthNeighbor(nullptr);
 	}
 
-	chunk->SetEastNeighbor(nullptr);
-	chunk->SetWestNeighbor(nullptr);
-	chunk->SetNorthNeighbor(nullptr);
-	chunk->SetSouthNeighbor(nullptr);
-
-	return chunk;
+	chunkToRemove->SetEastNeighbor(nullptr);
+	chunkToRemove->SetWestNeighbor(nullptr);
+	chunkToRemove->SetNorthNeighbor(nullptr);
+	chunkToRemove->SetSouthNeighbor(nullptr);
 }
 
 
@@ -407,7 +449,7 @@ Chunk* World::RemoveChunkFromActiveList(const IntVector2& chunkCoords)
 void World::CheckToActivateChunks()
 {
 	IntVector2 closestInactiveChunkCoords;
-	bool foundInactiveChunk = GetClosestInactiveChunkToPlayerWithinActivationRange(closestInactiveChunkCoords);
+	bool foundInactiveChunk = GetClosestInactiveChunkCoordsToPlayerWithinActivationRange(closestInactiveChunkCoords);
 
 	if (foundInactiveChunk)
 	{
@@ -422,12 +464,12 @@ void World::CheckToActivateChunks()
 //
 void World::CheckToDeactivateChunks()
 {
-	IntVector2 closestActiveChunkCoords;
-	bool foundActiveChunkToDeactivate = GetFarthestActiveChunkToPlayerOutsideDeactivationRange(closestActiveChunkCoords);
+	Chunk* chunkToDeactivate = GetFarthestActiveChunkToPlayerOutsideDeactivationRange();
 
-	if (foundActiveChunkToDeactivate)
+	if (chunkToDeactivate != nullptr)
 	{
-		ConsolePrintf(Rgba::ORANGE, "Deactivating Chunk (%i, %i)", closestActiveChunkCoords.x, closestActiveChunkCoords.y);
-		DeactivateChunk(closestActiveChunkCoords);
+		IntVector2 chunkCoords = chunkToDeactivate->GetChunkCoords();
+		ConsolePrintf(Rgba::ORANGE, "Deactivating Chunk (%i, %i)", chunkCoords.x, chunkCoords.y);
+		DeactivateChunk(chunkToDeactivate);
 	}
 }
