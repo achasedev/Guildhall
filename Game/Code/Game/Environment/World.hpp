@@ -7,6 +7,23 @@
 #pragma once
 #include <map>
 #include "Engine/Math/IntVector2.hpp"
+#include "Game/Environment/BlockLocator.hpp"
+
+// For raycasting into blocks in the world
+struct RaycastResult_t
+{
+	Vector3 m_startPosition = Vector3::ZERO;
+	Vector3 m_direction = Vector3::ZERO;
+	float m_maxDistance = 0.f;
+	Vector3 m_endPosition = Vector3::ZERO;
+	Vector3 m_impactPosition = Vector3::ZERO;
+	float m_impactFraction = 0.f;
+	float m_impactDistance = 0.f;
+	BlockLocator m_impactBlock = BlockLocator(nullptr, 0);
+	Vector3 m_impactNormal = Vector3::ZERO;
+
+	bool DidImpact() const { return m_impactFraction < 1.f; }
+};
 
 class Chunk;
 
@@ -21,18 +38,20 @@ public:
 	void Update();
 	void Render() const;
 
-	IntVector2	GetChunkCoordsForChunkThatContainsPosition(const Vector2& position) const;
-	IntVector2	GetChunkCoordsForChunkThatContainsPosition(const Vector3& position) const;
+	IntVector2		GetChunkCoordsForChunkThatContainsPosition(const Vector2& position) const;
+	IntVector2		GetChunkCoordsForChunkThatContainsPosition(const Vector3& position) const;
+	Chunk*			GetChunkThatContainsPosition(const Vector2& position) const;
+	Chunk*			GetChunkThatContainsPosition(const Vector3& position) const;
+	BlockLocator	GetBlockLocatorThatContainsPosition(const Vector3& position) const;
 
-	Chunk*		GetChunkThatContainsPosition(const Vector2& position) const;
-	Chunk*		GetChunkThatContainsPosition(const Vector3& position) const;
+	RaycastResult_t Raycast(const Vector3& start, const Vector3& directionNormal, float maxDistance) const;
 
 
 private:
 	//-----Private Methods-----
 
-	void	AddChunkToActiveList(Chunk* chunkToAdd);
-	void	RemoveChunkFromActiveList(Chunk* chunkToRemove);
+	void AddChunkToActiveList(Chunk* chunkToAdd);
+	void RemoveChunkFromActiveList(Chunk* chunkToRemove);
 
 	// Chunk Activation
 	void CheckToActivateChunks();
@@ -63,5 +82,5 @@ private:
 	static constexpr int SEA_LEVEL = 20;
 	static constexpr int BASE_ELEVATION = 30;
 	static constexpr int NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION = 10;
-
+	static constexpr int RAYCAST_STEPS_PER_BLOCK = 100;
 };

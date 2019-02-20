@@ -123,6 +123,25 @@ Chunk* World::GetChunkThatContainsPosition(const Vector3& position) const
 
 
 //-----------------------------------------------------------------------------------------------
+// Performs a raycast from the given start in the direction, stopping after an impact or at maxDistance,
+// whichever comes first
+//
+RaycastResult_t World::Raycast(const Vector3& start, const Vector3& directionNormal, float maxDistance) const
+{
+	// Check if we're raycasting from inside a solid block - if so immediately return
+
+	int totalSteps = (int) (maxDistance * (float)RAYCAST_STEPS_PER_BLOCK);
+	float stepSize = (1.f / (float)RAYCAST_STEPS_PER_BLOCK);
+	fdsfsda
+	BlockLocator currBlockLocator = GetBlockLocatorThatContainsPosition(start);
+	for (int stepIndex = 0; stepIndex < totalSteps; ++stepIndex)
+	{
+		Vector3 currPos = start + (stepSize * (float)stepIndex * directionNormal);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Loads or generates a chunk at the given coords and adds it to the world
 //
 void World::ActivateChunk(const IntVector2& chunkCoords)
