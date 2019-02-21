@@ -76,12 +76,23 @@ void BlockType::InitializeTypes()
 	stoneType.m_isFullyOpaque = true;
 	stoneType.m_isSolid = true;
 
+	// Stone
+	BlockType brickType;
+	brickType.m_name = "Brick";
+	brickType.m_typeIndex = 5;
+	brickType.m_topUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(235);
+	brickType.m_sideUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(235);
+	brickType.m_bottomUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(235);
+	brickType.m_isFullyOpaque = true;
+	brickType.m_isSolid = true;
+
 	// Add them
 	AddBlockType(airType);
 	AddBlockType(missingType);
 	AddBlockType(grassType);
 	AddBlockType(dirtType);
 	AddBlockType(stoneType);
+	AddBlockType(brickType);
 }
 
 

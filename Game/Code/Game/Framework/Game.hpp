@@ -16,6 +16,7 @@
 class Clock;
 class World;
 class GameCamera;
+class Blackboard;
 
 class Game
 {
@@ -36,6 +37,7 @@ public:
 	static GameCamera*			GetGameCamera();
 	static float				GetDeltaTime();
 	static World*				GetWorld();
+	static Blackboard*			GetGameConfigBlackboard();
 
 
 private:
@@ -45,10 +47,13 @@ private:
 	~Game();
 	Game(const Game& copy) = delete;
 
+	void PopulateGameConfigBlackboard();
+
 
 private:
 	//-----Private Data-----
 
+	Blackboard* m_gameConfigBlackboard = nullptr;
 	World*		m_world = nullptr;
 	GameCamera*	m_gameCamera = nullptr;
 	Clock*		m_gameClock = nullptr;

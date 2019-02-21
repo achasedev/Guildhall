@@ -15,6 +15,7 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
+#include "Engine/Core/Utility/Blackboard.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 // The singleton instance
@@ -44,6 +45,26 @@ Game::Game()
 	
 	// Create the block types and load the texture
 	BlockType::InitializeTypes();
+
+	PopulateGameConfigBlackboard();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Loads GameConfig.xml and sets the values in the black board from it
+//
+void Game::PopulateGameConfigBlackboard()
+{
+	m_gameConfigBlackboard = new Blackboard();
+
+	XMLDocument document;
+	XMLError error = document.LoadFile("Data/Config/GameConfig.xml");
+
+	GUARANTEE_RECOVERABLE(error == tinyxml2::XML_SUCCESS, "Couldn't open GameConfig.xml");
+
+	const XMLElement* rootElement = document.RootElement();
+	const XMLElement* chunkElement = rootElement->FirstChildElement("Chunk");
+	m_gameConfigBlackboard->PopulateFromXmlElementAttributes(*chunkElement);
 }
 
 
@@ -190,6 +211,15 @@ float Game::GetDeltaTime()
 World* Game::GetWorld()
 {
 	return s_instance->m_world;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the blackboard used to set global game configurations
+//
+Blackboard* Game::GetGameConfigBlackboard()
+{
+	return s_instance->m_gameConfigBlackboard;
 }
 
 

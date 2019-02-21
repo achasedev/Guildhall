@@ -356,9 +356,9 @@ BlockLocator Chunk::GetBlockLocatorThatContainsPosition(const Vector3& worldPosi
 void Chunk::WriteToFile() const
 {
 	// Create the directory if it doesn't exist
-	CreateDirectoryA("Data/Saves", NULL);
+	CreateDirectoryA("Saves", NULL);
 
-	std::string fileName = Stringf("Data/Saves/Chunk_%i_%i.chunk", m_chunkCoords.x, m_chunkCoords.y);
+	std::string fileName = Stringf("Saves/Chunk_%i,%i.chunk", m_chunkCoords.x, m_chunkCoords.y);
 	File file;
 	bool opened = file.Open(fileName.c_str(), "wb+");
 
@@ -579,6 +579,7 @@ void Chunk::SetBlockTypeAtBlockIndex(int blockIndex, uint8_t blockType)
 
 	// Dirty the mesh and adjacent neighbors if the block was on the XY-border of the chunk
 	m_isMeshDirty = true;
+	m_needsToBeSaved = true;
 
 	IntVector3 blockCoords = GetBlockCoordsFromBlockIndex(blockIndex);
 

@@ -14,6 +14,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Core/Utility/Blackboard.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
@@ -60,7 +61,7 @@ void World::ProcessInput()
 	InputSystem* input = InputSystem::GetInstance();
 	Mouse& mouse = input->GetMouse();
 
-	if (input->WasKeyJustPressed('U'))
+	if (input->WasKeyJustPressed('R'))
 	{
 		m_raycastDetached = !m_raycastDetached;
 	}
@@ -90,6 +91,27 @@ void World::ProcessInput()
 				chunkContainingPlacedBlock->SetBlockTypeAtBlockIndex(indexOfPlacedBlock, m_blockTypeToPlace);
 			}
 		}
+	}
+
+	// For mass deactivation
+	if (input->WasKeyJustPressed('U'))
+	{
+		// Delete all active chunks
+		std::map<IntVector2, Chunk*>::iterator chunkItr = m_activeChunks.begin();
+
+		for (chunkItr; chunkItr != m_activeChunks.end(); chunkItr++)
+		{
+			Chunk* chunk = chunkItr->second;
+
+			if (chunk->ShouldWriteToFile())
+			{
+				chunk->WriteToFile();
+			}
+
+			delete chunk;
+		}
+
+		m_activeChunks.clear();
 	}
 }
 
@@ -317,7 +339,7 @@ void World::ActivateChunk(const IntVector2& chunkCoords)
 	Chunk* chunk = new Chunk(chunkCoords);
 
 	// If the file for a chunk exists, load it
-	std::string filename = Stringf("Data/Saves/Chunk_%i_%i.chunk", chunkCoords.x, chunkCoords.y);
+	std::string filename = Stringf("Saves/Chunk_%i,%i.chunk", chunkCoords.x, chunkCoords.y);
 	bool fromFileSuccess = chunk->InitializeFromFile(filename);
 
 	if (fromFileSuccess)
@@ -359,8 +381,8 @@ void World::DeactivateChunk(Chunk* chunk)
 //
 bool World::GetClosestInactiveChunkCoordsToPlayerWithinActivationRange(IntVector2& out_closestInactiveChunkCoords) const
 {
-	int chunkSpanX = Ceiling(CHUNK_ACTIVATION_RANGE / (float)Chunk::CHUNK_DIMENSIONS_X);
-	int chunkSpanY = Ceiling(CHUNK_ACTIVATION_RANGE / (float)Chunk::CHUNK_DIMENSIONS_Y);
+	int chunkSpanX = Ceiling(DEFAULT_CHUNK_ACTIVATION_RANGE / (float)Chunk::CHUNK_DIMENSIONS_X);
+	int chunkSpanY = Ceiling(DEFAULT_CHUNK_ACTIVATION_RANGE / (float)Chunk::CHUNK_DIMENSIONS_Y);
 	IntVector2 chunkSpan = IntVector2(chunkSpanX, chunkSpanY);
 
 	Vector2 cameraXYPosition = Game::GetGameCamera()->GetPosition().xy();
@@ -369,7 +391,10 @@ bool World::GetClosestInactiveChunkCoordsToPlayerWithinActivationRange(IntVector
 	IntVector2 startChunk = chunkContainingCamera - chunkSpan;
 	IntVector2 endChunk = chunkContainingCamera + chunkSpan;
 
-	float activationRangeSquared = CHUNK_ACTIVATION_RANGE * CHUNK_ACTIVATION_RANGE;
+	Blackboard* config = Game::GetGameConfigBlackboard();
+	float activationRange = config->GetValue("activation_range", DEFAULT_CHUNK_ACTIVATION_RANGE);
+	float activationRangeSquared = activationRange * activationRange;
+
 	float minDistanceSoFar = activationRangeSquared;
 	bool foundInactiveChunk = false;
 
@@ -416,7 +441,14 @@ Chunk* World::GetFarthestActiveChunkToPlayerOutsideDeactivationRange() const
 
 	Vector2 cameraXYPosition = Game::GetGameCamera()->GetPosition().xy();
 
-	float deactivationRangeSquared = CHUNK_DEACTIVATION_RANGE * CHUNK_DEACTIVATION_RANGE;
+	
+	Blackboard* config = Game::GetGameConfigBlackboard();
+	float activationRange = config->GetValue("activation_range", DEFAULT_CHUNK_ACTIVATION_RANGE);
+	float deactivationOffset = config->GetValue("deactivation_offset", DEFAULT_CHUNK_DEACTIVATION_OFFSET);
+
+	float deactivationRangeSquared = activationRange + deactivationOffset;
+	deactivationRangeSquared *= deactivationRangeSquared;
+
 	float maxDistance = 0.f;
 	Chunk* farthestActiveChunkOutsideDeactivationRange = nullptr;
 	
@@ -567,9 +599,11 @@ void World::UpdateRaycast()
 		DebugRenderSystem::DrawCube(blockCenterPosition, options, Vector3(1.f + 2.f * offSetMagnitude));
 
 		// Light up the face that was hit
-		options.m_startColor = Rgba(0, 0, 0, 0);
-		options.m_endColor = Rgba(0, 0, 0, 0);
+		options.m_startColor = Rgba::WHITE;
+		options.m_endColor = Rgba::WHITE;
 		options.m_customTexture = AssetDB::CreateOrGetTexture("White_Tint");
+		options.m_renderMode = DEBUG_RENDER_XRAY;
+		options.m_isWireFrame = false;
 
 		Vector3 quadCenterPosition = blockCenterPosition + (0.5f + offSetMagnitude) * m_lastRaycastResult.m_impactNormal;
 		Vector3 referenceRight = Vector3(-m_lastRaycastResult.m_impactNormal.y, m_lastRaycastResult.m_impactNormal.x, 0.f);
