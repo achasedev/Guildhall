@@ -183,18 +183,49 @@ Chunk* World::GetChunkThatContainsPosition(const Vector2& position) const
 
 //-----------------------------------------------------------------------------------------------
 // Returns the chunk that contains the given position
-// Does not check the Z bounds
 //
 Chunk* World::GetChunkThatContainsPosition(const Vector3& position) const
 {
+	if (position.z < 0.f || position.z >= (float)Chunk::CHUNK_DIMENSIONS_Z)
+	{
+		return nullptr;
+	}
+
 	return GetChunkThatContainsPosition(position.xy());
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the chunk that contains the given block coords, which are defined in world space
+//
+Chunk* World::GetChunkThatContainsFlooredPosition(const IntVector3& flooredPosition) const
+{
+	if (flooredPosition.z < 0 || flooredPosition.z >= Chunk::CHUNK_DIMENSIONS_Z)
+	{
+		return nullptr;
+	}
+
+	// Get the chunk coords
+	int chunkX = Floor((float)flooredPosition.x / (float)Chunk::CHUNK_DIMENSIONS_X);
+	int chunkY = Floor((float)flooredPosition.y / (float)Chunk::CHUNK_DIMENSIONS_Y);
+
+	IntVector2 chunkCoords = IntVector2(chunkX, chunkY);
+	
+	bool chunkExists = m_activeChunks.find(chunkCoords) != m_activeChunks.end();
+
+	if (chunkExists)
+	{
+		return m_activeChunks.at(chunkCoords);
+	}
+
+	return nullptr;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Returns the block locator that points to the block containing the given position
 //
-BlockLocator World::GetBlockLocatorThatContainsPosition(const Vector3& position) const
+BlockLocator World::GetBlockLocatorThatContainsWorldPosition(const Vector3& position) const
 {
 	Chunk* containingChunk = GetChunkThatContainsPosition(position);
 
@@ -210,6 +241,28 @@ BlockLocator World::GetBlockLocatorThatContainsPosition(const Vector3& position)
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the block locator that points to the block that would contain the given floored position
+// (i.e. a world position with all components floored to an int)
+//
+BlockLocator World::GetBlockLocatorForFlooredPosition(const IntVector3& flooredPosition) const
+{
+	Chunk* chunk = GetChunkThatContainsFlooredPosition(flooredPosition);
+	
+	if (chunk == nullptr)
+	{
+		return BlockLocator(nullptr, 0);
+	}
+
+	IntVector3 chunkOffset = IntVector3(chunk->GetOriginWorldPosition());
+	IntVector3 blockCoords = flooredPosition - chunkOffset;
+
+	int blockIndex = chunk->GetBlockIndexFromBlockCoords(blockCoords);
+
+	return BlockLocator(chunk, blockIndex);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Performs a raycast from the given start in the direction, stopping after an impact or at maxDistance,
 // whichever comes first
 //
@@ -220,26 +273,27 @@ RaycastResult_t World::Raycast(const Vector3& start, const Vector3& directionNor
 	int totalSteps = (int) (maxDistance * (float)RAYCAST_STEPS_PER_BLOCK);
 	float stepSize = (1.f / (float)RAYCAST_STEPS_PER_BLOCK);
 	
-	IntVector3 lastCoordsOccupied = FloorPositionToIntegerCoords(start);
+	IntVector3 lastPositionFloored = FloorPositionToIntegerCoords(start);
+
 	for (int stepIndex = 0; stepIndex < totalSteps; ++stepIndex)
 	{
 		float distanceTravelled = (stepSize * (float)stepIndex);
 		Vector3 currPos = start + (distanceTravelled * directionNormal);
-		IntVector3 currCoordsOccupied = FloorPositionToIntegerCoords(currPos);
+		IntVector3 currPositionFloored = FloorPositionToIntegerCoords(currPos);
 
 		// Don't do anything if we haven't moved into a new block
-		if (lastCoordsOccupied == currCoordsOccupied)
+		if (lastPositionFloored == currPositionFloored)
 		{
 			continue;
 		}
 
 		// We're in a new block - step east/west, then north/south, then up/down to avoid corner tunneling
-		IntVector3 coordDiff = currCoordsOccupied - lastCoordsOccupied;
-
-		if (coordDiff.x != 0)
+		IntVector3 flooredDiff = currPositionFloored - lastPositionFloored;
+		if (flooredDiff.x != 0)
 		{
-			BlockLocator blockLocator = GetBlockLocatorThatContainsPosition(currPos);
-			Block& block = blockLocator.GetBlock();
+			lastPositionFloored += IntVector3(flooredDiff.x, 0, 0);
+			BlockLocator xStepLocator = GetBlockLocatorForFlooredPosition(lastPositionFloored);
+			Block& block = xStepLocator.GetBlock();
 
 			if (block.IsSolid())
 			{
@@ -252,17 +306,18 @@ RaycastResult_t World::Raycast(const Vector3& start, const Vector3& directionNor
 				impactResult.m_impactPosition = currPos;
 				impactResult.m_impactFraction = (distanceTravelled) / maxDistance;
 				impactResult.m_impactDistance = distanceTravelled;
-				impactResult.m_impactBlock = blockLocator;
-				impactResult.m_impactNormal = Vector3(-coordDiff.x, 0, 0);
+				impactResult.m_impactBlock = xStepLocator;
+				impactResult.m_impactNormal = Vector3(-flooredDiff.x, 0, 0);
 
 				return impactResult;
 			}
 		}
 		
-		if (coordDiff.y != 0)
+		if (flooredDiff.y != 0)
 		{
-			BlockLocator blockLocator = GetBlockLocatorThatContainsPosition(currPos);
-			Block& block = blockLocator.GetBlock();
+			lastPositionFloored += IntVector3(0, flooredDiff.y, 0);
+			BlockLocator yStepLocator = GetBlockLocatorForFlooredPosition(lastPositionFloored);
+			Block& block = yStepLocator.GetBlock();
 
 			if (block.IsSolid())
 			{
@@ -275,17 +330,18 @@ RaycastResult_t World::Raycast(const Vector3& start, const Vector3& directionNor
 				impactResult.m_impactPosition = currPos;
 				impactResult.m_impactFraction = (distanceTravelled) / maxDistance;
 				impactResult.m_impactDistance = distanceTravelled;
-				impactResult.m_impactBlock = blockLocator;
-				impactResult.m_impactNormal = Vector3(0, -coordDiff.y, 0);
+				impactResult.m_impactBlock = yStepLocator;
+				impactResult.m_impactNormal = Vector3(0, -flooredDiff.y, 0);
 
 				return impactResult;
 			}
 		}
 
-		if (coordDiff.z != 0)
+		if (flooredDiff.z != 0)
 		{
-			BlockLocator blockLocator = GetBlockLocatorThatContainsPosition(currPos);
-			Block& block = blockLocator.GetBlock();
+			lastPositionFloored += IntVector3(0, 0, flooredDiff.z);
+			BlockLocator zStepLocator = GetBlockLocatorForFlooredPosition(lastPositionFloored);
+			Block& block = zStepLocator.GetBlock();
 
 			if (block.IsSolid())
 			{
@@ -298,15 +354,15 @@ RaycastResult_t World::Raycast(const Vector3& start, const Vector3& directionNor
 				impactResult.m_impactPosition = currPos;
 				impactResult.m_impactFraction = (distanceTravelled) / maxDistance;
 				impactResult.m_impactDistance = distanceTravelled;
-				impactResult.m_impactBlock = blockLocator;
-				impactResult.m_impactNormal = Vector3(0, 0, -coordDiff.z);
+				impactResult.m_impactBlock = zStepLocator;
+				impactResult.m_impactNormal = Vector3(0, 0, -flooredDiff.z);
 
 				return impactResult;
 			}
 		}
 
 		// Update the last coords we were in
-		lastCoordsOccupied = currCoordsOccupied;
+		lastPositionFloored = currPositionFloored;
 	}
 
 	// No impact, so return a negative result
@@ -319,7 +375,7 @@ RaycastResult_t World::Raycast(const Vector3& start, const Vector3& directionNor
 	noHitResult.m_impactPosition = noHitResult.m_endPosition;
 	noHitResult.m_impactFraction = 1.0f;
 	noHitResult.m_impactDistance = maxDistance;
-	noHitResult.m_impactBlock = GetBlockLocatorThatContainsPosition(noHitResult.m_endPosition);
+	noHitResult.m_impactBlock = GetBlockLocatorThatContainsWorldPosition(noHitResult.m_endPosition);
 	noHitResult.m_impactNormal = -1.0f * directionNormal;
 
 	return noHitResult;
@@ -540,9 +596,7 @@ void World::UpdateChunks()
 }
 
 
-//- C FUNCTION ----------------------------------------------------------------------------------
-// Returns the bounds for rendering a quad for the face being hit by the raycast
-//
+#include "Engine/Rendering/Core/Renderer.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Updates the last raycast struct stored on world, for debugging
@@ -586,7 +640,7 @@ void World::UpdateRaycast()
 	// Push a wire cube around the block if there was a hit
 	if (m_lastRaycastResult.DidImpact())
 	{
-		float offSetMagnitude = 0.025f;
+		float offSetMagnitude = 0.01f;
 		Vector3 blockCenterPosition = m_lastRaycastResult.m_impactBlock.GetBlockCenterWorldPosition();
 
 		DebugRenderOptions options;

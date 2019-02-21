@@ -1,0 +1,5 @@
+<GameConfig>
+
+  <Chunk activation_range="100.0" deactivation_offset="16.0"/>
+  
+</GameConfig>

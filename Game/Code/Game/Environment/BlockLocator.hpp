@@ -15,6 +15,7 @@ class BlockLocator
 public:
 	//-----Public Methods-----
 
+	BlockLocator() {}
 	BlockLocator(Chunk* chunk, int blockIndex);
 
 	bool operator==(const BlockLocator& compare) const;

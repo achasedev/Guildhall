@@ -10,12 +10,14 @@
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Environment/BlockType.hpp"
 #include "Engine/Core/Window.hpp"
+#include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/Utility/Blackboard.hpp"
+#include "Engine/Rendering/Materials/Material.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 // The singleton instance
@@ -116,7 +118,7 @@ void Game::ShutDown()
 	s_instance = nullptr;
 }
 
-#include "Game/Environment/Chunk.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // Checks for input received this frame and updates states accordingly
 //
@@ -124,22 +126,6 @@ void Game::ProcessInput()
 {
 	m_gameCamera->ProcessInput();
 	m_world->ProcessInput();
-
-	// Testing persistance
-	if (InputSystem::GetInstance()->WasKeyJustPressed('P'))
-	{
-		Vector3 cameraPosition = m_gameCamera->GetPosition();
-		Chunk* containingChunk = m_world->GetChunkThatContainsPosition(cameraPosition);
-		BlockLocator blockLocator = m_world->GetBlockLocatorThatContainsPosition(cameraPosition);
-		Block& block = blockLocator.GetBlock();
-
-		if (block.GetType() != BlockType::MISSING_TYPE_INDEX)
-		{
-			block.SetType(4); // Stone
-			containingChunk->SetIsMeshDirty(true);
-			containingChunk->SetNeedsToBeSavedToDisk(true);
-		}
-	}
 }
 
 
@@ -160,12 +146,13 @@ void Game::Update()
 void Game::Render() const
 {
 	// Render the chunks
-	Renderer::GetInstance()->SetCurrentCamera(m_gameCamera);
+	Renderer* renderer = Renderer::GetInstance();
+	renderer->SetCurrentCamera(m_gameCamera);
 	m_world->Render();
 
 	// Debug draws for camera
 	Window* window = Window::GetInstance();
-	AABB2 bounds = window->GetWindowBounds();
+	AABB2 windowBounds = window->GetWindowBounds();
 	
 	Vector3 position = m_gameCamera->GetPosition();
 	Vector3 rotation = m_gameCamera->GetRotation();
@@ -174,7 +161,22 @@ void Game::Render() const
 	std::string text = Stringf("Camera Pos : (%.2f, %.2f, %.2f)\nCamera Rot : (%.2f, %.2f, %.2f)\nChunk Containing : (%i, %i)",
 		position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, chunkContainingCamera.x, chunkContainingCamera.y);
 
-	DebugRenderSystem::Draw2DText(text, bounds, 0.f, Rgba::DARK_GREEN, 20.f);
+	DebugRenderSystem::Draw2DText(text, windowBounds, 0.f, Rgba::DARK_GREEN, 20.f);
+
+	// Screen reticle
+	renderer->SetCurrentCamera(renderer->GetUICamera());
+
+	float size = 100.f;
+	AABB2 uiBounds = renderer->GetUIBounds();
+	Vector2 center = uiBounds.GetCenter();
+
+	AABB2 crosshairBounds = AABB2(center - Vector2(0.5f * size), center + Vector2(0.5f * size));
+
+	Material material;
+	material.SetShader(AssetDB::GetShader("UI"));
+	material.SetDiffuse(AssetDB::CreateOrGetTexture("Data/Images/Crosshair.png"));
+
+	renderer->Draw2DQuad(crosshairBounds, AABB2::UNIT_SQUARE_OFFCENTER, Rgba::LIGHT_BLUE, &material);
 }
 
 

@@ -231,7 +231,6 @@ void Chunk::GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseE
 //
 void Chunk::BuildMesh()
 {
-	m_meshBuilder.Clear();
 	m_meshBuilder.BeginBuilding(PRIMITIVE_TRIANGLES, true);
 
 	for (int blockIndex = 0; blockIndex < BLOCKS_PER_CHUNK; ++blockIndex)
@@ -260,6 +259,7 @@ void Chunk::BuildMesh()
 	}
 
 	m_isMeshDirty = false;
+	m_meshBuilder.Clear();
 }
 
 

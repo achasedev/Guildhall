@@ -43,8 +43,9 @@ public:
 	IntVector2		GetChunkCoordsForChunkThatContainsPosition(const Vector3& position) const;
 	Chunk*			GetChunkThatContainsPosition(const Vector2& position) const;
 	Chunk*			GetChunkThatContainsPosition(const Vector3& position) const;
-	BlockLocator	GetBlockLocatorThatContainsPosition(const Vector3& position) const;
-
+	Chunk*			GetChunkThatContainsFlooredPosition(const IntVector3& flooredPosition) const;
+	BlockLocator	GetBlockLocatorThatContainsWorldPosition(const Vector3& position) const;
+	BlockLocator	GetBlockLocatorForFlooredPosition(const IntVector3& coords) const;
 	RaycastResult_t Raycast(const Vector3& start, const Vector3& directionNormal, float maxDistance) const;
 
 
