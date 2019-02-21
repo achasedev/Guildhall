@@ -1,4 +1,5 @@
 C27 SD4 - SuperMiner
+A2 - Huge and Persistant World
 Author: Andrew Chase
 
 -----Known Issues/Changes-----
@@ -8,8 +9,19 @@ Ensure the startup project is the game project, and not the engine project. Othe
 -----How to Use-----
 
 Run the .exe or build the solution to start the game.
-	
+
 -----Game Controls-----
+
+Use WASD to move around on the horizontal XY plane.
+Use QE to move up and down along the vertical z axis.
+Rotate the camera using mouse look.
+
+Press Left Click when looking at a block to dig the block.
+Press Right Click when looking at a block face to place a block along that face.
+
+Press 'U' to immediate deactivate all block (they will immediately reactivate in activation order)
+Press 'R' to lock the raycast and draw a debug raycast for testing. Press 'R' again to unlock the raycast.
+
 
 -----Extras-----
 
