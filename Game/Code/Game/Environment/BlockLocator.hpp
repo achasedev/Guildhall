@@ -22,6 +22,9 @@ public:
 	// Accessors
 	Block&	GetBlock();
 	Chunk*	GetChunk();
+	int		GetBlockIndex() const;
+
+	bool	IsValid() const;
 
 	// Producers
 	BlockLocator	ToEast() const;
@@ -30,6 +33,7 @@ public:
 	BlockLocator	ToSouth() const;
 	BlockLocator	ToAbove() const;
 	BlockLocator	ToBelow() const;
+	BlockLocator	StepInCoordDirection(const IntVector3& blockCoordOffset) const;
 
 	Vector3			GetBlockCenterWorldPosition() const;
 

@@ -12,15 +12,15 @@
 // For raycasting into blocks in the world
 struct RaycastResult_t
 {
-	Vector3 m_startPosition = Vector3::ZERO;
-	Vector3 m_direction = Vector3::ZERO;
-	float m_maxDistance = 0.f;
-	Vector3 m_endPosition = Vector3::ZERO;
-	Vector3 m_impactPosition = Vector3::ZERO;
-	float m_impactFraction = 0.f;
-	float m_impactDistance = 0.f;
-	BlockLocator m_impactBlock = BlockLocator(nullptr, 0);
-	Vector3 m_impactNormal = Vector3::ZERO;
+	Vector3			m_startPosition = Vector3::ZERO;
+	Vector3			m_direction = Vector3::ZERO;
+	float			m_maxDistance = 0.f;
+	Vector3			m_endPosition = Vector3::ZERO;
+	Vector3			m_impactPosition = Vector3::ZERO;
+	float			m_impactFraction = 0.f;
+	float			m_impactDistance = 0.f;
+	BlockLocator	m_impactBlock = BlockLocator(nullptr, 0);
+	Vector3			m_impactNormal = Vector3::ZERO;
 
 	bool DidImpact() const { return m_impactFraction < 1.f; }
 };
@@ -85,6 +85,8 @@ private:
 	bool m_raycastDetached = false;
 	Vector3 m_raycastReferencePosition; // Will be camera position when not detached
 	Vector3 m_raycastForward;			// Will be the camera forward when not detached
+	RaycastResult_t m_lastRaycastResult;
+	uint8_t m_blockTypeToPlace = 4;
 
 	static constexpr int SEA_LEVEL = 20;
 	static constexpr int BASE_ELEVATION = 30;

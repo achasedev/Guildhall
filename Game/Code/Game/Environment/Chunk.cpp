@@ -570,6 +570,49 @@ void Chunk::SetNeedsToBeSavedToDisk(bool needsToBeSaved)
 
 
 //-----------------------------------------------------------------------------------------------
+// Sets the block type of the block at the given index to the one provided
+//
+void Chunk::SetBlockTypeAtBlockIndex(int blockIndex, uint8_t blockType)
+{
+	Block& block = m_blocks[blockIndex];
+	block.SetType(blockType);
+
+	// Dirty the mesh and adjacent neighbors if the block was on the XY-border of the chunk
+	m_isMeshDirty = true;
+
+	IntVector3 blockCoords = GetBlockCoordsFromBlockIndex(blockIndex);
+
+	if (blockCoords.x == 0) // West Neighbor
+	{
+		m_westNeighborChunk->SetIsMeshDirty(true);
+	}
+	else if (blockCoords.x == CHUNK_DIMENSIONS_X - 1) // East Neighbor
+	{
+		m_eastNeighborChunk->SetIsMeshDirty(true);
+	}
+
+	if (blockCoords.y == 0) // South Neighbor
+	{
+		m_southNeighborChunk->SetIsMeshDirty(true);
+	}
+	else if (blockCoords.y == CHUNK_DIMENSIONS_Y - 1) // North Neighbor
+	{
+		m_northNeighborChunk->SetIsMeshDirty(true);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the type of the block at the given block coords to the given type
+//
+void Chunk::SetBlockTypeAtBlockCoords(const IntVector3& blockCoords, uint8_t blockType)
+{
+	int blockIndex = GetBlockIndexFromBlockCoords(blockCoords);
+	SetBlockTypeAtBlockIndex(blockIndex, blockType);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the block index of the block given by blockCoords
 //
 int Chunk::GetBlockIndexFromBlockCoords(const IntVector3& blockCoords)

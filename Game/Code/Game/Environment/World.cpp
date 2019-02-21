@@ -12,12 +12,12 @@
 #include "Engine/Core/File.hpp"
 #include "Engine/Math/Matrix44.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -58,10 +58,38 @@ World::~World()
 void World::ProcessInput()
 {
 	InputSystem* input = InputSystem::GetInstance();
+	Mouse& mouse = input->GetMouse();
 
-	if (input->WasKeyJustPressed('V'))
+	if (input->WasKeyJustPressed('U'))
 	{
 		m_raycastDetached = !m_raycastDetached;
+	}
+
+	if (m_lastRaycastResult.DidImpact())
+	{
+		BlockLocator hitBlock = m_lastRaycastResult.m_impactBlock;
+
+		if (hitBlock.IsValid()) // Ensures we don't do anything outside of a chunk
+		{
+			// Dig a block
+			if (mouse.WasButtonJustPressed(MOUSEBUTTON_LEFT))
+			{
+				int indexOfHitBlock = hitBlock.GetBlockIndex();
+				Chunk* chunkContainingHit = hitBlock.GetChunk();
+
+				chunkContainingHit->SetBlockTypeAtBlockIndex(indexOfHitBlock, BlockType::AIR_TYPE_INDEX);
+			}
+
+			// Place a block
+			if (mouse.WasButtonJustPressed(MOUSEBUTTON_RIGHT))
+			{
+				BlockLocator blockBeingPlaced = hitBlock.StepInCoordDirection(IntVector3(m_lastRaycastResult.m_impactNormal));
+				Chunk* chunkContainingPlacedBlock = blockBeingPlaced.GetChunk();
+				int indexOfPlacedBlock = blockBeingPlaced.GetBlockIndex();
+
+				chunkContainingPlacedBlock->SetBlockTypeAtBlockIndex(indexOfPlacedBlock, m_blockTypeToPlace);
+			}
+		}
 	}
 }
 
@@ -198,7 +226,7 @@ RaycastResult_t World::Raycast(const Vector3& start, const Vector3& directionNor
 				impactResult.m_startPosition = start;
 				impactResult.m_direction = directionNormal;
 				impactResult.m_maxDistance = maxDistance;
-				impactResult.m_endPosition = currPos;
+				impactResult.m_endPosition = start + (directionNormal * maxDistance);
 				impactResult.m_impactPosition = currPos;
 				impactResult.m_impactFraction = (distanceTravelled) / maxDistance;
 				impactResult.m_impactDistance = distanceTravelled;
@@ -221,7 +249,7 @@ RaycastResult_t World::Raycast(const Vector3& start, const Vector3& directionNor
 				impactResult.m_startPosition = start;
 				impactResult.m_direction = directionNormal;
 				impactResult.m_maxDistance = maxDistance;
-				impactResult.m_endPosition = currPos;
+				impactResult.m_endPosition = start + (directionNormal * maxDistance);
 				impactResult.m_impactPosition = currPos;
 				impactResult.m_impactFraction = (distanceTravelled) / maxDistance;
 				impactResult.m_impactDistance = distanceTravelled;
@@ -244,7 +272,7 @@ RaycastResult_t World::Raycast(const Vector3& start, const Vector3& directionNor
 				impactResult.m_startPosition = start;
 				impactResult.m_direction = directionNormal;
 				impactResult.m_maxDistance = maxDistance;
-				impactResult.m_endPosition = currPos;
+				impactResult.m_endPosition = start + (directionNormal * maxDistance);
 				impactResult.m_impactPosition = currPos;
 				impactResult.m_impactFraction = (distanceTravelled) / maxDistance;
 				impactResult.m_impactDistance = distanceTravelled;
@@ -480,6 +508,10 @@ void World::UpdateChunks()
 }
 
 
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Returns the bounds for rendering a quad for the face being hit by the raycast
+//
+
 //-----------------------------------------------------------------------------------------------
 // Updates the last raycast struct stored on world, for debugging
 //
@@ -494,7 +526,7 @@ void World::UpdateRaycast()
 		m_raycastForward = camera->GetCameraMatrix().GetIVector().xyz();
 	}
 
-	RaycastResult_t resultThisFrame = Raycast(m_raycastReferencePosition, m_raycastForward, DEFAULT_RAYCAST_DISTANCE);
+	m_lastRaycastResult = Raycast(m_raycastReferencePosition, m_raycastForward, DEFAULT_RAYCAST_DISTANCE);
 
 	if (m_raycastDetached)
 	{
@@ -505,20 +537,25 @@ void World::UpdateRaycast()
 		options.m_startColor = Rgba::RED;
 		options.m_endColor = Rgba::RED;
 
-
-		DebugRenderSystem::Draw3DLine(resultThisFrame.m_startPosition, resultThisFrame.m_endPosition, options, Rgba::RED, Rgba::RED, 1.f); // Full distance line
-		if (resultThisFrame.DidImpact())
+		if (m_lastRaycastResult.DidImpact())
 		{
-			DebugRenderSystem::DrawPoint(resultThisFrame.m_impactPosition, options, 0.05f); // Impact point
-			DebugRenderSystem::Draw3DLine(resultThisFrame.m_startPosition, resultThisFrame.m_impactPosition, options, Rgba::RED, Rgba::RED, 3.f); // Line up to impact
+			DebugRenderSystem::DrawPoint(m_lastRaycastResult.m_impactPosition, options, 0.1f); // Impact point
+			DebugRenderSystem::Draw3DLine(m_lastRaycastResult.m_startPosition, m_lastRaycastResult.m_impactPosition, options, 5.f); // Line up to impact
 		}
+		else
+		{
+			options.m_startColor = Rgba::GREEN;
+			options.m_endColor = Rgba::GREEN;
+		}
+
+		DebugRenderSystem::Draw3DLine(m_lastRaycastResult.m_startPosition, m_lastRaycastResult.m_endPosition, options, 2.f); // Full distance line
 	}
 
 	// Push a wire cube around the block if there was a hit
-	if (resultThisFrame.DidImpact())
+	if (m_lastRaycastResult.DidImpact())
 	{
 		float offSetMagnitude = 0.025f;
-		Vector3 blockCenterPosition = resultThisFrame.m_impactBlock.GetBlockCenterWorldPosition();
+		Vector3 blockCenterPosition = m_lastRaycastResult.m_impactBlock.GetBlockCenterWorldPosition();
 
 		DebugRenderOptions options;
 		options.m_lifetime = 0.f;
@@ -526,14 +563,24 @@ void World::UpdateRaycast()
 		options.m_startColor = Rgba::PURPLE;
 		options.m_endColor = Rgba::PURPLE;
 		options.m_isWireFrame = true;
-
+		
 		DebugRenderSystem::DrawCube(blockCenterPosition, options, Vector3(1.f + 2.f * offSetMagnitude));
 
 		// Light up the face that was hit
-		options.m_startColor = Rgba::WHITE;
-		options.m_endColor = Rgba::WHITE;
+		options.m_startColor = Rgba(0, 0, 0, 0);
+		options.m_endColor = Rgba(0, 0, 0, 0);
+		options.m_customTexture = AssetDB::CreateOrGetTexture("White_Tint");
 
-		//DebugRenderSystem::Draw3DQuad()
+		Vector3 quadCenterPosition = blockCenterPosition + (0.5f + offSetMagnitude) * m_lastRaycastResult.m_impactNormal;
+		Vector3 referenceRight = Vector3(-m_lastRaycastResult.m_impactNormal.y, m_lastRaycastResult.m_impactNormal.x, 0.f);
+		Vector2 quadDimensions = Vector2(1.0f);
+
+		if (referenceRight == Vector3::ZERO)
+		{
+			referenceRight = Vector3::MINUS_Y_AXIS;
+		}
+
+		DebugRenderSystem::Draw3DQuadWithNormal(quadCenterPosition, quadDimensions, options, m_lastRaycastResult.m_impactNormal, referenceRight);
 	}
 }
 
