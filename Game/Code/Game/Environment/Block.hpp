@@ -21,6 +21,7 @@ public:
 
 	// Accessors for the type
 	inline bool IsFullyOpaque() const;
+	inline bool IsSolid() const;
 
 
 public:
@@ -64,4 +65,14 @@ inline bool Block::IsFullyOpaque() const
 {
 	const BlockType* blockType = BlockType::GetTypeByIndex(m_type);
 	return blockType->m_isFullyOpaque;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if this block will block raycasts and has collsion
+//
+inline bool Block::IsSolid() const
+{
+	const BlockType* blockType = BlockType::GetTypeByIndex(m_type);
+	return blockType->m_isSolid;
 }

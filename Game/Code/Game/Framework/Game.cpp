@@ -102,16 +102,22 @@ void Game::ShutDown()
 void Game::ProcessInput()
 {
 	m_gameCamera->ProcessInput();
+	m_world->ProcessInput();
 
 	// Testing persistance
 	if (InputSystem::GetInstance()->WasKeyJustPressed('P'))
 	{
-		Chunk* chunk = m_world->GetChunkThatContainsPosition(m_gameCamera->GetPosition());
-		Block& block = chunk->GetBlockThatContainsWorldPosition(m_gameCamera->GetPosition());
+		Vector3 cameraPosition = m_gameCamera->GetPosition();
+		Chunk* containingChunk = m_world->GetChunkThatContainsPosition(cameraPosition);
+		BlockLocator blockLocator = m_world->GetBlockLocatorThatContainsPosition(cameraPosition);
+		Block& block = blockLocator.GetBlock();
 
-		block.SetType(4); // Stone
-		chunk->SetIsMeshDirty(true);
-		chunk->SetNeedsToBeSavedToDisk(true);
+		if (block.GetType() != BlockType::MISSING_TYPE_INDEX)
+		{
+			block.SetType(4); // Stone
+			containingChunk->SetIsMeshDirty(true);
+			containingChunk->SetNeedsToBeSavedToDisk(true);
+		}
 	}
 }
 

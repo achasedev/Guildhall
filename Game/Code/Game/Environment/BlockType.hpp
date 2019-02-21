@@ -39,7 +39,8 @@ public:
 	AABB2		m_sideUVs = AABB2::UNIT_SQUARE_OFFCENTER;
 	AABB2		m_bottomUVs = AABB2::UNIT_SQUARE_OFFCENTER;
 
-	bool		m_isFullyOpaque = false;
+	bool		m_isFullyOpaque = false;			// Does it fully obscure other blocks behind it?
+	bool		m_isSolid = false;					// Does it block raycasts and have collision?
 
 	static constexpr uint8_t AIR_TYPE_INDEX = 0;
 	static constexpr uint8_t MISSING_TYPE_INDEX = 1;

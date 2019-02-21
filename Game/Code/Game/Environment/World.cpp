@@ -10,10 +10,14 @@
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Engine/Core/File.hpp"
+#include "Engine/Math/Matrix44.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Input/InputSystem.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -49,6 +53,20 @@ World::~World()
 
 
 //-----------------------------------------------------------------------------------------------
+// Process Input
+//
+void World::ProcessInput()
+{
+	InputSystem* input = InputSystem::GetInstance();
+
+	if (input->WasKeyJustPressed('V'))
+	{
+		m_raycastDetached = !m_raycastDetached;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Updates all chunks in the world, as well as the camera
 //
 void World::Update()
@@ -61,6 +79,7 @@ void World::Update()
 	CheckToDeactivateChunks();
 
 	UpdateChunks();
+	UpdateRaycast();
 }
 
 
@@ -123,6 +142,24 @@ Chunk* World::GetChunkThatContainsPosition(const Vector3& position) const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the block locator that points to the block containing the given position
+//
+BlockLocator World::GetBlockLocatorThatContainsPosition(const Vector3& position) const
+{
+	Chunk* containingChunk = GetChunkThatContainsPosition(position);
+
+	if (containingChunk == nullptr)
+	{
+		return BlockLocator(nullptr, 0);
+	}
+	else
+	{
+		return containingChunk->GetBlockLocatorThatContainsPosition(position);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Performs a raycast from the given start in the direction, stopping after an impact or at maxDistance,
 // whichever comes first
 //
@@ -132,12 +169,110 @@ RaycastResult_t World::Raycast(const Vector3& start, const Vector3& directionNor
 
 	int totalSteps = (int) (maxDistance * (float)RAYCAST_STEPS_PER_BLOCK);
 	float stepSize = (1.f / (float)RAYCAST_STEPS_PER_BLOCK);
-	fdsfsda
-	BlockLocator currBlockLocator = GetBlockLocatorThatContainsPosition(start);
+	
+	IntVector3 lastCoordsOccupied = FloorPositionToIntegerCoords(start);
 	for (int stepIndex = 0; stepIndex < totalSteps; ++stepIndex)
 	{
-		Vector3 currPos = start + (stepSize * (float)stepIndex * directionNormal);
+		float distanceTravelled = (stepSize * (float)stepIndex);
+		Vector3 currPos = start + (distanceTravelled * directionNormal);
+		IntVector3 currCoordsOccupied = FloorPositionToIntegerCoords(currPos);
+
+		// Don't do anything if we haven't moved into a new block
+		if (lastCoordsOccupied == currCoordsOccupied)
+		{
+			continue;
+		}
+
+		// We're in a new block - step east/west, then north/south, then up/down to avoid corner tunneling
+		IntVector3 coordDiff = currCoordsOccupied - lastCoordsOccupied;
+
+		if (coordDiff.x != 0)
+		{
+			BlockLocator blockLocator = GetBlockLocatorThatContainsPosition(currPos);
+			Block& block = blockLocator.GetBlock();
+
+			if (block.IsSolid())
+			{
+				RaycastResult_t impactResult;
+
+				impactResult.m_startPosition = start;
+				impactResult.m_direction = directionNormal;
+				impactResult.m_maxDistance = maxDistance;
+				impactResult.m_endPosition = currPos;
+				impactResult.m_impactPosition = currPos;
+				impactResult.m_impactFraction = (distanceTravelled) / maxDistance;
+				impactResult.m_impactDistance = distanceTravelled;
+				impactResult.m_impactBlock = blockLocator;
+				impactResult.m_impactNormal = Vector3(-coordDiff.x, 0, 0);
+
+				return impactResult;
+			}
+		}
+		
+		if (coordDiff.y != 0)
+		{
+			BlockLocator blockLocator = GetBlockLocatorThatContainsPosition(currPos);
+			Block& block = blockLocator.GetBlock();
+
+			if (block.IsSolid())
+			{
+				RaycastResult_t impactResult;
+
+				impactResult.m_startPosition = start;
+				impactResult.m_direction = directionNormal;
+				impactResult.m_maxDistance = maxDistance;
+				impactResult.m_endPosition = currPos;
+				impactResult.m_impactPosition = currPos;
+				impactResult.m_impactFraction = (distanceTravelled) / maxDistance;
+				impactResult.m_impactDistance = distanceTravelled;
+				impactResult.m_impactBlock = blockLocator;
+				impactResult.m_impactNormal = Vector3(0, -coordDiff.y, 0);
+
+				return impactResult;
+			}
+		}
+
+		if (coordDiff.z != 0)
+		{
+			BlockLocator blockLocator = GetBlockLocatorThatContainsPosition(currPos);
+			Block& block = blockLocator.GetBlock();
+
+			if (block.IsSolid())
+			{
+				RaycastResult_t impactResult;
+
+				impactResult.m_startPosition = start;
+				impactResult.m_direction = directionNormal;
+				impactResult.m_maxDistance = maxDistance;
+				impactResult.m_endPosition = currPos;
+				impactResult.m_impactPosition = currPos;
+				impactResult.m_impactFraction = (distanceTravelled) / maxDistance;
+				impactResult.m_impactDistance = distanceTravelled;
+				impactResult.m_impactBlock = blockLocator;
+				impactResult.m_impactNormal = Vector3(0, 0, -coordDiff.z);
+
+				return impactResult;
+			}
+		}
+
+		// Update the last coords we were in
+		lastCoordsOccupied = currCoordsOccupied;
 	}
+
+	// No impact, so return a negative result
+	RaycastResult_t noHitResult;
+
+	noHitResult.m_startPosition = start;
+	noHitResult.m_direction = directionNormal;
+	noHitResult.m_maxDistance = maxDistance;
+	noHitResult.m_endPosition = start + (directionNormal * maxDistance);
+	noHitResult.m_impactPosition = noHitResult.m_endPosition;
+	noHitResult.m_impactFraction = 1.0f;
+	noHitResult.m_impactDistance = maxDistance;
+	noHitResult.m_impactBlock = GetBlockLocatorThatContainsPosition(noHitResult.m_endPosition);
+	noHitResult.m_impactNormal = -1.0f * directionNormal;
+
+	return noHitResult;
 }
 
 
@@ -341,6 +476,64 @@ void World::UpdateChunks()
 	for (chunkItr; chunkItr != m_activeChunks.end(); chunkItr++)
 	{
 		chunkItr->second->Update();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Updates the last raycast struct stored on world, for debugging
+//
+void World::UpdateRaycast()
+{
+	GameCamera* camera = Game::GetGameCamera();
+
+	// Update the raycast start if it isn't detached
+	if (!m_raycastDetached)
+	{
+		m_raycastReferencePosition = camera->GetPosition();
+		m_raycastForward = camera->GetCameraMatrix().GetIVector().xyz();
+	}
+
+	RaycastResult_t resultThisFrame = Raycast(m_raycastReferencePosition, m_raycastForward, DEFAULT_RAYCAST_DISTANCE);
+
+	if (m_raycastDetached)
+	{
+		// Ray cast is paused, so draw it's visualization
+		DebugRenderOptions options;
+		options.m_lifetime = 0.f;
+		options.m_renderMode = DEBUG_RENDER_XRAY;
+		options.m_startColor = Rgba::RED;
+		options.m_endColor = Rgba::RED;
+
+
+		DebugRenderSystem::Draw3DLine(resultThisFrame.m_startPosition, resultThisFrame.m_endPosition, options, Rgba::RED, Rgba::RED, 1.f); // Full distance line
+		if (resultThisFrame.DidImpact())
+		{
+			DebugRenderSystem::DrawPoint(resultThisFrame.m_impactPosition, options, 0.05f); // Impact point
+			DebugRenderSystem::Draw3DLine(resultThisFrame.m_startPosition, resultThisFrame.m_impactPosition, options, Rgba::RED, Rgba::RED, 3.f); // Line up to impact
+		}
+	}
+
+	// Push a wire cube around the block if there was a hit
+	if (resultThisFrame.DidImpact())
+	{
+		float offSetMagnitude = 0.025f;
+		Vector3 blockCenterPosition = resultThisFrame.m_impactBlock.GetBlockCenterWorldPosition();
+
+		DebugRenderOptions options;
+		options.m_lifetime = 0.f;
+		options.m_renderMode = DEBUG_RENDER_USE_DEPTH;
+		options.m_startColor = Rgba::PURPLE;
+		options.m_endColor = Rgba::PURPLE;
+		options.m_isWireFrame = true;
+
+		DebugRenderSystem::DrawCube(blockCenterPosition, options, Vector3(1.f + 2.f * offSetMagnitude));
+
+		// Light up the face that was hit
+		options.m_startColor = Rgba::WHITE;
+		options.m_endColor = Rgba::WHITE;
+
+		//DebugRenderSystem::Draw3DQuad()
 	}
 }
 

@@ -44,6 +44,7 @@ void BlockType::InitializeTypes()
 	missingType.m_sideUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(65);
 	missingType.m_bottomUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(65);
 	missingType.m_isFullyOpaque = true;
+	missingType.m_isSolid = true;
 
 	// Grass
 	BlockType grassType;
@@ -53,6 +54,7 @@ void BlockType::InitializeTypes()
 	grassType.m_sideUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(99);
 	grassType.m_bottomUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(100);
 	grassType.m_isFullyOpaque = true;
+	grassType.m_isSolid = true;
 
 	// Dirt
 	BlockType dirtType;
@@ -62,6 +64,7 @@ void BlockType::InitializeTypes()
 	dirtType.m_sideUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(100);
 	dirtType.m_bottomUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(100);
 	dirtType.m_isFullyOpaque = true;
+	dirtType.m_isSolid = true;
 
 	// Stone
 	BlockType stoneType;
@@ -71,6 +74,7 @@ void BlockType::InitializeTypes()
 	stoneType.m_sideUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(84);
 	stoneType.m_bottomUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(84);
 	stoneType.m_isFullyOpaque = true;
+	stoneType.m_isSolid = true;
 
 	// Add them
 	AddBlockType(airType);

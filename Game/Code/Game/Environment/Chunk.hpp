@@ -6,6 +6,7 @@
 /************************************************************************/
 #pragma once
 #include "Game/Environment/Block.hpp"
+#include "Game/Environment/BlockLocator.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Rendering/Meshes/MeshBuilder.hpp"
@@ -32,12 +33,13 @@ public:
 	// Producers
 	Vector2				GetWorldXYCenter() const;
 	AABB2				GetWorldXYBounds() const;
+	Vector3				GetOriginWorldPosition() const;
+	BlockLocator		GetBlockLocatorThatContainsPosition(const Vector3& worldPosition);
 	void				WriteToFile() const;
 
 	// Accessors
 	Block&				GetBlock(int blockIndex);
 	Block&				GetBlock(const IntVector3& blockCoords);
-	Block&				GetBlockThatContainsWorldPosition(const Vector3& worldPosition);
 
 	IntVector2			GetChunkCoords() const;
 	bool				ShouldWriteToFile() const;

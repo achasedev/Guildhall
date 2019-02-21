@@ -312,6 +312,45 @@ AABB2 Chunk::GetWorldXYBounds() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the "0,0,0" position in this chunk's coords in world coordinates
+//
+Vector3 Chunk::GetOriginWorldPosition() const
+{
+	float x = CHUNK_DIMENSIONS_X * (float) m_chunkCoords.x;
+	float y = CHUNK_DIMENSIONS_Y * (float) m_chunkCoords.y;
+	float z = 0.f;
+
+	return Vector3(x, y, z);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns a block locator that points to the block contains the given world position
+// Returns an empty locator if this chunk doesn't contain it
+//
+BlockLocator Chunk::GetBlockLocatorThatContainsPosition(const Vector3& worldPosition)
+{
+	// Ensure it's within this chunk
+	if (!m_worldBounds.ContainsPoint(worldPosition))
+	{
+		return BlockLocator(nullptr, 0);
+	}
+	else
+	{
+		Vector3 localOffsetFromChunkOrigin = worldPosition - m_worldBounds.mins;
+
+		int blockXCoord = Floor(localOffsetFromChunkOrigin.x);
+		int blockYCoord = Floor(localOffsetFromChunkOrigin.y);
+		int blockZCoord = Floor(localOffsetFromChunkOrigin.z);
+		IntVector3 blockCoord = IntVector3(blockXCoord, blockYCoord, blockZCoord);
+		int blockIndex = GetBlockIndexFromBlockCoords(blockCoord);
+
+		return BlockLocator(this, blockIndex);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Writes the chunk to file
 //
 void Chunk::WriteToFile() const
@@ -401,31 +440,6 @@ Block& Chunk::GetBlock(const IntVector3& blockCoords)
 {
 	int blockIndex = GetBlockIndexFromBlockCoords(blockCoords);
 	return GetBlock(blockIndex);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns the block in this chunk that contains the given world position
-//
-Block& Chunk::GetBlockThatContainsWorldPosition(const Vector3& worldPosition)
-{
-	// Ensure it's within this chunk
-	if (!m_worldBounds.ContainsPoint(worldPosition))
-	{
-		return Block::MISSING_BLOCK;
-	}
-	else
-	{
-		Vector3 localOffsetFromChunkOrigin = worldPosition - m_worldBounds.mins;
-
-		int blockXCoord = Floor(localOffsetFromChunkOrigin.x);
-		int blockYCoord = Floor(localOffsetFromChunkOrigin.y);
-		int blockZCoord = Floor(localOffsetFromChunkOrigin.z);
-		IntVector3 blockCoord = IntVector3(blockXCoord, blockYCoord, blockZCoord);
-		int blockIndex = GetBlockIndexFromBlockCoords(blockCoord);
-
-		return m_blocks[blockIndex];
-	}
 }
 
 

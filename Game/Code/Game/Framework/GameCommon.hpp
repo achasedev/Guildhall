@@ -6,8 +6,13 @@
 				common game elements (renderers, input systems, etc)
 /************************************************************************/
 #pragma once
+#include "Engine/Math/Vector3.hpp"
+#include "Engine/Math/IntVector3.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
+
+// Utility Functions
+IntVector3 FloorPositionToIntegerCoords(const Vector3& position);
 
 // Camera
 constexpr float CAMERA_TRANSLATION_SPEED = 5.0f;

@@ -5,6 +5,7 @@
 /* Description: Class to represent a block iterator
 /************************************************************************/
 #pragma once
+#include "Engine/Math/Vector3.hpp"
 
 class Chunk;
 class Block;
@@ -16,18 +17,21 @@ public:
 
 	BlockLocator(Chunk* chunk, int blockIndex);
 
+	bool operator==(const BlockLocator& compare) const;
+
 	// Accessors
-	Block& GetBlock();
-	Chunk* GetChunk();
+	Block&	GetBlock();
+	Chunk*	GetChunk();
 
 	// Producers
-	BlockLocator ToEast() const;
-	BlockLocator ToWest() const;
-	BlockLocator ToNorth() const;
-	BlockLocator ToSouth() const;
-	BlockLocator ToAbove() const;
-	BlockLocator ToBelow() const;
+	BlockLocator	ToEast() const;
+	BlockLocator	ToWest() const;
+	BlockLocator	ToNorth() const;
+	BlockLocator	ToSouth() const;
+	BlockLocator	ToAbove() const;
+	BlockLocator	ToBelow() const;
 
+	Vector3			GetBlockCenterWorldPosition() const;
 
 
 private:

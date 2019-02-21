@@ -35,6 +35,7 @@ public:
 	World();
 	~World();
 
+	void ProcessInput();
 	void Update();
 	void Render() const;
 
@@ -69,6 +70,7 @@ private:
 
 	// Update
 	void UpdateChunks();
+	void UpdateRaycast();
 
 	// Render
 	void RenderChunks() const;
@@ -79,8 +81,15 @@ private:
 	
 	std::map<IntVector2, Chunk*> m_activeChunks;
 
+	// For Debugging
+	bool m_raycastDetached = false;
+	Vector3 m_raycastReferencePosition; // Will be camera position when not detached
+	Vector3 m_raycastForward;			// Will be the camera forward when not detached
+
 	static constexpr int SEA_LEVEL = 20;
 	static constexpr int BASE_ELEVATION = 30;
 	static constexpr int NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION = 10;
 	static constexpr int RAYCAST_STEPS_PER_BLOCK = 100;
+	static constexpr float DEFAULT_RAYCAST_DISTANCE = 8.f;
+
 };

@@ -7,7 +7,7 @@
 #include "Game/Environment/Chunk.hpp"
 #include "Game/Environment/Block.hpp"
 #include "Game/Environment/BlockLocator.hpp"
-
+#include "Engine/Math/IntVector3.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -15,6 +15,15 @@
 BlockLocator::BlockLocator(Chunk* chunk, int blockIndex)
 	: m_chunk(chunk), m_blockIndex(blockIndex)
 {
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Operator - returns true if both locators point to the exact same block
+//
+bool BlockLocator::operator==(const BlockLocator& compare) const
+{
+	return (m_chunk == compare.m_chunk && m_blockIndex == compare.m_blockIndex);
 }
 
 
@@ -146,4 +155,22 @@ BlockLocator BlockLocator::ToBelow() const
 	{
 		return BlockLocator(m_chunk, m_blockIndex - Chunk::BLOCKS_PER_Z_LAYER);
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns this block's center position in world coordinates
+//
+Vector3 BlockLocator::GetBlockCenterWorldPosition() const
+{
+	if (m_chunk == nullptr)
+	{
+		return Vector3::ZERO;
+	}
+
+	Vector3 chunkOrigin = m_chunk->GetOriginWorldPosition();
+	IntVector3 blockCoords = m_chunk->GetBlockCoordsFromBlockIndex(m_blockIndex);
+	Vector3 blockCenterPosition = chunkOrigin + blockCoords.GetAsFloats() + Vector3(0.5f);
+
+	return blockCenterPosition;
 }
