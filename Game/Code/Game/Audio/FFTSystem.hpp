@@ -127,7 +127,6 @@ private:
 	float								m_sampleRate = -1.0f;
 	FMOD::Channel*						m_musicChannel = nullptr;
 	std::string							m_musicDataPath;
-	Stopwatch*							m_playBackTimer = nullptr;
 	float								m_songLength = 0.f;
 
 	// FFT Settings

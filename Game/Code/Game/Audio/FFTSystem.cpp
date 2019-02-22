@@ -556,7 +556,7 @@ void FFTSystem::PlaySongWithBeatAnalysisData(const char* songName)
 	}
 
 	// Set the song path
-	m_musicDataPath = Stringf("Data/Audio/Music/%s.png");
+	m_musicDataPath = Stringf("Data/Audio/Music/%s.mp3");
 
 	std::string beatAnalysisPath = Stringf("Data/FFTBeatAnalyses/%s.fftbeat", songName);
 	LoadFFTBeatAnalysis(beatAnalysisPath);
@@ -614,12 +614,6 @@ void FFTSystem::UpdateCollecting()
 
 	if (newSample)
 	{
-		// Start the timer here to avoid delays from when the song starts
-		if (m_playBackTimer == nullptr)
-		{
-			m_playBackTimer = new Stopwatch();
-		}
-
 		AddCurrentFFTSampleToBinData();
 
 		UpdateBarMesh();
@@ -655,11 +649,6 @@ void FFTSystem::UpdateBeatPlayback()
 	}
 
 	ASSERT_OR_DIE(IsPlaying(), "UpdateBeatPlayback() called when no song is playing");
-
-	if (m_playBackTimer == nullptr)
-	{
-		m_playBackTimer = new Stopwatch();
-	}
 
 	// Most of the "Updating" for this state occurs in Render(), in the form of checking the data
 }
@@ -900,7 +889,9 @@ void FFTSystem::AddCurrentFFTSampleToBinData()
 	{
 		FFTBin_t binData;
 		binData.binAverageOfAllChannels = m_lastFFTSampleChannelAverages[binIndex];
-		binData.timeIntoSong = m_playBackTimer->GetElapsedTime();
+		unsigned int millisecondsIntoSong;
+		m_musicChannel->getPosition(&millisecondsIntoSong, FMOD_TIMEUNIT_MS);
+		binData.timeIntoSong = (float)millisecondsIntoSong * 0.001f;
 
 		m_FFTBinSets[binIndex].fftBinSamples.push_back(binData);
 	}
@@ -1037,9 +1028,6 @@ void FFTSystem::CleanUp()
 	delete m_fftGridMesh;
 	m_fftGridMesh = new Mesh();
 	UpdateGridAndPanelMesh();
-
-	delete m_playBackTimer;
-	m_playBackTimer = nullptr;
 
 	m_systemState = STATE_IDLE;
 }
