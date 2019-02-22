@@ -20,7 +20,41 @@ void BehaviorComponent_PursueDirect::Update()
 
 	if (m_closestPlayer != nullptr)
 	{
-		MoveToClosestPlayer();
+		Vector3 direction3D = (m_closestPlayer->GetCenterPosition() - m_owningEntity->GetCenterPosition()).GetNormalized();
+		Vector2 direction2D = direction3D.xz();
+
+		// Check for nearby static obstacles
+		std::vector<Entity*> entities = Game::GetWorld()->GetEntitiesThatOverlapSphere(m_owningEntity->GetCenterPosition(), 10.f);
+		Vector2 repulsion = Vector2::ZERO;
+		float minDistance = 10000.f;
+
+		for (int entityIndex = 0; entityIndex < (int)entities.size(); ++entityIndex)
+		{
+			Entity* entity = entities[entityIndex];
+
+			if (entity == m_owningEntity || entity->GetPhysicsType() != PHYSICS_TYPE_STATIC)
+			{
+				continue;
+			}
+
+			Vector2 directionToObstacle = entity->GetCenterPosition().xz() - m_owningEntity->GetCenterPosition().xz();
+			float currDistance = directionToObstacle.NormalizeAndGetLength();
+
+			if (currDistance < minDistance)
+			{
+				minDistance = currDistance;
+				repulsion = directionToObstacle;
+			}
+		}
+
+		Vector2 sideStepDirection = 2.f * Vector2(-repulsion.y, repulsion.x);
+		Vector2 finalDirection = (sideStepDirection + direction2D).GetNormalized();
+
+		m_owningEntity->Move(finalDirection);
+		m_owningEntity->SetOrientation(direction2D.GetOrientationDegrees());
+		// Check for holes
+
+		
 	}
 }
 
