@@ -25,8 +25,8 @@ FFTSystem::FFTSystem()
 {
 	CreateAndAddFFTDSPToMasterChannel();
 
-	m_barMesh = new Mesh();
-	m_gridMesh = new Mesh();
+	m_fftBarMesh = new Mesh();
+	m_fftGridMesh = new Mesh();
 
 	SetupFFTGraphUI();
 }
@@ -50,46 +50,20 @@ void FFTSystem::BeginFrame()
 {
 	AudioSystem::BeginFrame();
 
-	// Need to ensure we don't sample on the first frame, to avoid any lag from loading
-	// the song from disk
-	static bool firstFrame = true;
-	
-	if (!IsPlaying())
+	switch (m_systemState)
 	{
-		firstFrame = true;
-		return;
-	}
-	
-	if (firstFrame)
-	{
-		firstFrame = false;
-		return;
-	}
-
-	// Checks and updates the last sample from FMOD if it's new
-	bool newSample = CheckForNewFFTSample();
-
-	if (newSample)
-	{
-		// Start the timer here to avoid delays from when the song starts
-		if (m_playBackTimer == nullptr)
-		{
-			m_playBackTimer = new Stopwatch();
-		}
-
-		AddCurrentFFTSampleToBinData();
-
-		UpdateBarMesh();
-		UpdateGridAndPanelMesh();
-	}
-
-	if (IsSoundFinished((SoundPlaybackID)m_musicChannel))
-	{
-		ConsolePrintf(Rgba::PURPLE, "Playback for song %s finished", m_musicTitleBeingPlayed.c_str());
-
-		FinalizeBinCollection();
-		WriteFFTBinDataToFile();
-		CleanUp();
+	case STATE_IDLE:
+		break;
+	case STATE_JUST_PLAYING:
+		break;
+	case STATE_COLLECTING_FFT_DATA:
+		UpdateCollecting();
+		break;
+	case STATE_BEAT_DATA_PLAYBACK:
+		UpdateBeatPlayback();
+		break;
+	default:
+		break;
 	}
 }
 
@@ -172,67 +146,31 @@ std::string GetStringForWindowType(FMOD_DSP_FFT_WINDOW windowType)
 //
 void FFTSystem::Render() const
 {
-	Renderer* renderer = Renderer::GetInstance();
-	renderer->SetCurrentCamera(renderer->GetUICamera());
-	AABB2 bounds = renderer->GetUIBounds();
-	BitmapFont* font = AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png");
-
-	renderer->DrawMeshWithMaterial(m_gridMesh, AssetDB::GetSharedMaterial("UI"));
-	renderer->DrawMeshWithMaterial(m_barMesh, AssetDB::GetSharedMaterial("Gradient"));
-
-	std::string text = Stringf("Number of Channels: %i\n", m_pointerToFMODFFTSpectrum->numchannels);
-	text += Stringf("Number of intervals displayed: %i (out of %i)\n", m_binsToDisplay, m_fftWindowSize);
-	text += Stringf("Frequency resolution: %f hz\n", m_sampleRate / (float)m_fftWindowSize);
-	text += Stringf("Sample Rate: %.0f hz\n", m_sampleRate);
-
-	int windowType;
-	m_fftDSP->getParameterInt(FMOD_DSP_FFT_WINDOWTYPE, &windowType, 0, 0);
-
-	std::string windowTypeText = GetStringForWindowType((FMOD_DSP_FFT_WINDOW)windowType);
-
-	text += Stringf("[Left, Right] Window Type: %s", windowTypeText.c_str());
-
-	renderer->DrawTextInBox2D(text, m_headingBounds, Vector2::ZERO, m_fontHeight, TEXT_DRAW_SHRINK_TO_FIT, font, m_fontColor);
-
-	// Draw x axis labels
-	float maxFrequencyOnGraph = m_sampleRate * ((float)m_binsToDisplay / (float)m_fftWindowSize);
-
-	float graphWidth = m_graphBounds.GetDimensions().x;
-	float axisFontHeight = m_fontHeight * 0.5f;
-	Vector2 xTextPos = Vector2(0.f, m_graphBounds.mins.y - axisFontHeight - 10.f);
-
-	for (int i = 0; i <= m_gridSegmentCount.x; ++i)
+	switch (m_systemState)
 	{
-		float normalizedOffsetIntoXRange = ((float)i / (float)m_gridSegmentCount.x);
-		float frequencyValue = normalizedOffsetIntoXRange * maxFrequencyOnGraph;
-		std::string frequencyText = Stringf("%.0f", frequencyValue);
-
-		float textWidth = font->GetStringWidth(frequencyText, axisFontHeight, 1.0f);
-
-		xTextPos.x = m_graphBounds.mins.x + graphWidth * ((float)i / (float)m_gridSegmentCount.x) - (0.5f * textWidth);
-
-		renderer->DrawText2D(Stringf("%.0f", frequencyValue), xTextPos, axisFontHeight, font, m_fontColor);
+	case STATE_IDLE:
+		break;
+	case STATE_JUST_PLAYING:
+		break;
+	case STATE_COLLECTING_FFT_DATA:
+		RenderFFTGraph();
+		break;
+	case STATE_BEAT_DATA_PLAYBACK:
+		RenderBeatPlayback();
+		break;
+	default:
+		break;
 	}
+}
 
-	// Draw y axis labels
-	float graphHeight = m_graphBounds.GetDimensions().y;
 
-	for (int i = 0; i <= m_gridSegmentCount.y; ++i)
-	{
-		float value = (float)i / (float)m_gridSegmentCount.y;
-		std::string labelText = Stringf("%.2f", value);
-		float textWidth = font->GetStringWidth(labelText, axisFontHeight, 1.0f);
-
-		Vector2 yTextPos;
-		yTextPos.x = m_yAxisBounds.maxs.x - textWidth - 10.f;
-		yTextPos.y = m_graphBounds.mins.y + (value * graphHeight) - (0.5f * axisFontHeight);
-		renderer->DrawText2D(Stringf("%.2f", m_fftMaxYAxis * value), yTextPos, axisFontHeight, font, m_fontColor);
-	}
-
-	renderer->DrawTextInBox2D("Frequency (hz)", m_xAxisBounds, Vector2(0.5f, 1.f), m_fontHeight, TEXT_DRAW_OVERRUN, font, m_fontColor);
-
-	float yPosition = RangeMapFloat(m_maxValueLastFrame, 0.f, m_fftMaxYAxis, 1.f, 0.0f);
-	renderer->DrawTextInBox2D(Stringf("%.3f", m_maxValueLastFrame), m_maxValueBounds, Vector2(0.f, yPosition), m_fontHeight, TEXT_DRAW_SHRINK_TO_FIT, font, m_fontColor);
+//-----------------------------------------------------------------------------------------------
+// Just plays a song, with no audio analysis
+//
+void FFTSystem::PlaySongAndNothingElse(const char* songPath)
+{
+	m_musicDataPath = songPath;
+	LoadSoundTrackAndPlay();
 }
 
 
@@ -266,24 +204,6 @@ void FFTSystem::SetFFTWindowType(FMOD_DSP_FFT_WINDOW windowType)
 {
 	FMOD_RESULT result = m_fftDSP->setParameterInt(FMOD_DSP_FFT_WINDOWTYPE, windowType);
 	ASSERT_OR_DIE(result == FMOD_OK, "Couldn't assign window type parameter");
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Sets whether the FFT Graph should render to the screen
-//
-void FFTSystem::SetShouldRenderFFTGraph(bool shouldRender)
-{
-	m_renderFFTGraph = shouldRender;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns whether the system is set to render the graph
-//
-bool FFTSystem::IsSetToRenderGraph()
-{
-	return m_renderFFTGraph;
 }
 
 
@@ -562,6 +482,15 @@ File* FFTSystem::LoadFFTDataFile(const std::string& filename) const
 
 
 //-----------------------------------------------------------------------------------------------
+// Loads the beat data and song file given by songName and plays them with visualization
+//
+void FFTSystem::PlayBeatDataWithSong(const char* songName)
+{
+	UNUSED(songName);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Sets the UI parameters for rendering the graph
 //
 void FFTSystem::SetupFFTGraphUI()
@@ -606,7 +535,7 @@ void FFTSystem::SetupFFTGraphUI()
 //-----------------------------------------------------------------------------------------------
 // Starts playing a song and analying FFT data from it
 //
-void FFTSystem::PlaySongAndCollectFFTData(const char* songPath)
+void FFTSystem::CollectFFTDataFromSong(const char* songPath)
 {
 	if (IsPlaying())
 	{
@@ -615,35 +544,9 @@ void FFTSystem::PlaySongAndCollectFFTData(const char* songPath)
 		CleanUp();
 	}
 
-	SoundID sound = MISSING_SOUND_ID;
-
-	FMOD::Sound* newSound = nullptr;
-	m_fmodSystem->createSound(songPath, FMOD_DEFAULT, nullptr, &newSound);
-	if (newSound)
-	{
-		std::string soundFilePath = songPath;
-		SoundID newSoundID = m_registeredSounds.size();
-		m_registeredSoundIDs[soundFilePath] = newSoundID;
-		m_registeredSounds.push_back(newSound);
-		sound = newSoundID;
-	}
-
-	GUARANTEE_OR_DIE(sound != MISSING_SOUND_ID, Stringf("Error: FFTSystem couldn't find song file %s", songPath).c_str());
-
-	m_musicChannel = (FMOD::Channel*) AudioSystem::PlaySound(sound, false, 1.0f);
-
-	unsigned int millisecondLength;
-	newSound->getLength(&millisecondLength, FMOD_TIMEUNIT_MS);
-
-	m_songLength = ((float) millisecondLength / 1000.f);
-
-	std::vector<std::string> tokens = Tokenize(songPath, '/');
-	std::string songNameWithExt = tokens[tokens.size() - 1];
-
-	std::string songName = std::string(songNameWithExt, 0, songNameWithExt.find_first_of('.'));
-	m_musicTitleBeingPlayed = songName;
-
-	SetupForFFTPlayback();
+	// Set the song path
+	m_musicDataPath = songPath;
+	m_systemState = STATE_COLLECTING_FFT_DATA;
 }
 
 
@@ -669,6 +572,180 @@ void FFTSystem::SetupForFFTPlayback()
 		m_FFTBinSets.push_back(spanData);
 		m_FFTBinSets.back().fftBinSamples.reserve(10000);
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Update for collecting FFT data from an actively playing song
+//
+void FFTSystem::UpdateCollecting()
+{
+	if (!IsPlaying())
+	{
+		bool songJustLoaded = LoadSoundTrackAndPlay();
+		SetupForFFTPlayback();
+
+		// This ensures we don't start our timer until the song is already loaded, not paying for the delay
+		if (songJustLoaded)
+		{
+			return;
+		}
+	}
+
+	// Checks and updates the last sample from FMOD if it's new
+	bool newSample = CheckForNewFFTSample();
+
+	if (newSample)
+	{
+		// Start the timer here to avoid delays from when the song starts
+		if (m_playBackTimer == nullptr)
+		{
+			m_playBackTimer = new Stopwatch();
+		}
+
+		AddCurrentFFTSampleToBinData();
+
+		UpdateBarMesh();
+		UpdateGridAndPanelMesh();
+	}
+
+	if (IsSoundFinished((SoundPlaybackID)m_musicChannel))
+	{
+		ConsolePrintf(Rgba::PURPLE, "Playback for song %s finished", m_musicDataPath.c_str());
+
+		FinalizeBinCollection();
+		WriteFFTBinDataToFile();
+		CleanUp();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Update for testing beat playback
+//
+void FFTSystem::UpdateBeatPlayback()
+{
+	// This ensures we don't start until the song is already loaded
+	if (GetSound(m_musicDataPath) == MISSING_SOUND_ID)
+	{
+		LoadSoundTrackAndPlay();
+		return;
+	}
+
+	ASSERT_OR_DIE(IsPlaying(), "UpdateBeatPlayback() called when no song is playing");
+
+	if (m_playBackTimer == nullptr)
+	{
+		m_playBackTimer = new Stopwatch();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Renders the FFT data; Used when the system is collecting the FFT data during song playback
+//
+void FFTSystem::RenderFFTGraph() const
+{
+	Renderer* renderer = Renderer::GetInstance();
+	renderer->SetCurrentCamera(renderer->GetUICamera());
+	AABB2 bounds = renderer->GetUIBounds();
+	BitmapFont* font = AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png");
+
+	renderer->DrawMeshWithMaterial(m_fftGridMesh, AssetDB::GetSharedMaterial("UI"));
+	renderer->DrawMeshWithMaterial(m_fftBarMesh, AssetDB::GetSharedMaterial("Gradient"));
+
+	std::string text = Stringf("Number of Channels: %i\n", m_pointerToFMODFFTSpectrum->numchannels);
+	text += Stringf("Number of intervals displayed: %i (out of %i)\n", m_binsToDisplay, m_fftWindowSize);
+	text += Stringf("Frequency resolution: %f hz\n", m_sampleRate / (float)m_fftWindowSize);
+	text += Stringf("Sample Rate: %.0f hz\n", m_sampleRate);
+
+	int windowType;
+	m_fftDSP->getParameterInt(FMOD_DSP_FFT_WINDOWTYPE, &windowType, 0, 0);
+
+	std::string windowTypeText = GetStringForWindowType((FMOD_DSP_FFT_WINDOW)windowType);
+
+	text += Stringf("[Left, Right] Window Type: %s", windowTypeText.c_str());
+
+	renderer->DrawTextInBox2D(text, m_headingBounds, Vector2::ZERO, m_fontHeight, TEXT_DRAW_SHRINK_TO_FIT, font, m_fontColor);
+
+	// Draw x axis labels
+	float maxFrequencyOnGraph = m_sampleRate * ((float)m_binsToDisplay / (float)m_fftWindowSize);
+
+	float graphWidth = m_graphBounds.GetDimensions().x;
+	float axisFontHeight = m_fontHeight * 0.5f;
+	Vector2 xTextPos = Vector2(0.f, m_graphBounds.mins.y - axisFontHeight - 10.f);
+
+	for (int i = 0; i <= m_gridSegmentCount.x; ++i)
+	{
+		float normalizedOffsetIntoXRange = ((float)i / (float)m_gridSegmentCount.x);
+		float frequencyValue = normalizedOffsetIntoXRange * maxFrequencyOnGraph;
+		std::string frequencyText = Stringf("%.0f", frequencyValue);
+
+		float textWidth = font->GetStringWidth(frequencyText, axisFontHeight, 1.0f);
+
+		xTextPos.x = m_graphBounds.mins.x + graphWidth * ((float)i / (float)m_gridSegmentCount.x) - (0.5f * textWidth);
+
+		renderer->DrawText2D(Stringf("%.0f", frequencyValue), xTextPos, axisFontHeight, font, m_fontColor);
+	}
+
+	// Draw y axis labels
+	float graphHeight = m_graphBounds.GetDimensions().y;
+
+	for (int i = 0; i <= m_gridSegmentCount.y; ++i)
+	{
+		float value = (float)i / (float)m_gridSegmentCount.y;
+		std::string labelText = Stringf("%.2f", value);
+		float textWidth = font->GetStringWidth(labelText, axisFontHeight, 1.0f);
+
+		Vector2 yTextPos;
+		yTextPos.x = m_yAxisBounds.maxs.x - textWidth - 10.f;
+		yTextPos.y = m_graphBounds.mins.y + (value * graphHeight) - (0.5f * axisFontHeight);
+		renderer->DrawText2D(Stringf("%.2f", m_fftMaxYAxis * value), yTextPos, axisFontHeight, font, m_fontColor);
+	}
+
+	renderer->DrawTextInBox2D("Frequency (hz)", m_xAxisBounds, Vector2(0.5f, 1.f), m_fontHeight, TEXT_DRAW_OVERRUN, font, m_fontColor);
+
+	float yPosition = RangeMapFloat(m_maxValueLastFrame, 0.f, m_fftMaxYAxis, 1.f, 0.0f);
+	renderer->DrawTextInBox2D(Stringf("%.3f", m_maxValueLastFrame), m_maxValueBounds, Vector2(0.f, yPosition), m_fontHeight, TEXT_DRAW_SHRINK_TO_FIT, font, m_fontColor);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Renders the beat playback visuals for testing
+//
+void FFTSystem::RenderBeatPlayback() const
+{
+}
+
+//-----------------------------------------------------------------------------------------------
+// Loads the sound from data and sets the given parameters on the FFTSystem
+// Returns true if the song had to be loaded just now
+//
+bool FFTSystem::LoadSoundTrackAndPlay()
+{
+	// Load the track
+	SoundID soundID = GetSound(m_musicDataPath);
+	bool soundJustLoaded = false;
+
+	if (soundID == MISSING_SOUND_ID)
+	{
+		soundID = CreateOrGetSound(m_musicDataPath);
+		soundJustLoaded = true;
+	}
+
+	GUARANTEE_OR_DIE(soundID != MISSING_SOUND_ID, Stringf("Error: FFTSystem couldn't find song file %s", m_musicDataPath.c_str()).c_str());
+
+	// Set the channel
+	m_musicChannel = (FMOD::Channel*) AudioSystem::PlaySound(soundID, false, 1.0f);
+
+	// Get the song length
+	FMOD::Sound* sound = GetSoundForSoundID(soundID);
+
+	unsigned int millisecondLength;
+	sound->getLength(&millisecondLength, FMOD_TIMEUNIT_MS);
+	m_songLength = ((float)millisecondLength / 1000.f);
+
+	return soundJustLoaded;
 }
 
 
@@ -859,7 +936,11 @@ void FFTSystem::WriteFFTBinDataToFile()
 {
 	CreateDirectoryA("Data/FFTLogs", NULL);
 
-	std::string binDataFilePath = Stringf("Data/FFTLogs/%s.fftlog", m_musicTitleBeingPlayed.c_str());
+	std::vector<std::string> tokens = Tokenize(m_musicDataPath, '/');
+	std::string songNameWithExt = tokens[tokens.size() - 1];
+
+	std::string songName = std::string(songNameWithExt, 0, songNameWithExt.find_first_of('.'));
+	std::string binDataFilePath = Stringf("Data/FFTLogs/%s.fftlog", songName.c_str());
 
 	ConsolePrintf("Writing Bin Data to file %s...", binDataFilePath.c_str());
 	File file;
@@ -867,7 +948,7 @@ void FFTSystem::WriteFFTBinDataToFile()
 
 	ASSERT_OR_DIE(opened, "Error: Couldn't open FFT file for write");
 
-	std::string buffer = Stringf("Song File: %s\n", m_musicTitleBeingPlayed.c_str()).c_str();
+	std::string buffer = Stringf("Song File: %s\n", m_musicDataPath.c_str()).c_str();
 
 	buffer += Stringf("Duration: %.3f seconds\n", m_songLength).c_str();
 
@@ -911,7 +992,7 @@ void FFTSystem::WriteFFTBinDataToFile()
 void FFTSystem::CleanUp()
 {
 	m_FFTBinSets.clear();
-	m_musicTitleBeingPlayed.clear();
+	m_musicDataPath.clear();
 
 	if (m_lastFFTSampleChannelAverages)
 	{
@@ -926,15 +1007,17 @@ void FFTSystem::CleanUp()
 	m_songLength = 0.f;
 	m_numBinsToSaveUpTo = -1;
 
-	delete m_barMesh;
-	m_barMesh = new Mesh();
+	delete m_fftBarMesh;
+	m_fftBarMesh = new Mesh();
 
-	delete m_gridMesh;
-	m_gridMesh = new Mesh();
+	delete m_fftGridMesh;
+	m_fftGridMesh = new Mesh();
 	UpdateGridAndPanelMesh();
 
 	delete m_playBackTimer;
 	m_playBackTimer = nullptr;
+
+	m_systemState = STATE_IDLE;
 }
 
 
@@ -947,7 +1030,7 @@ void FFTSystem::SetupForFFTBeatAnalysis(File* file)
 
 	// Song name
 	file->GetNextLine(currLine);
-	m_musicTitleBeingPlayed = Tokenize(currLine, ' ')[2];
+	m_musicDataPath = Tokenize(currLine, ' ')[2];
 
 	// Duration
 	file->GetNextLine(currLine);
@@ -1024,7 +1107,11 @@ void FFTSystem::WriteFFTBeatAnalysisToFile()
 {
 	CreateDirectoryA("Data/FFTBeatAnalyses", NULL);
 
-	std::string filePath = Stringf("Data/FFTBeatAnalyses/%s.fftbeat", m_musicTitleBeingPlayed.c_str());
+	std::vector<std::string> tokens = Tokenize(m_musicDataPath, '/');
+	std::string songNameWithExt = tokens[tokens.size() - 1];
+
+	std::string songName = std::string(songNameWithExt, 0, songNameWithExt.find_first_of('.'));
+	std::string filePath = Stringf("Data/FFTBeatAnalyses/%s.fftbeat", songName.c_str());
 	File file;
 	bool success = file.Open(filePath.c_str(), "w+");
 
@@ -1035,7 +1122,7 @@ void FFTSystem::WriteFFTBeatAnalysisToFile()
 	}
 
 	// Song title
-	std::string buffer = Stringf("Song File: %s\n", m_musicTitleBeingPlayed.c_str()).c_str();
+	std::string buffer = Stringf("Song File: %s\n", m_musicDataPath.c_str()).c_str();
 
 	// Duration
 	buffer += Stringf("Duration: %.3f seconds\n", m_songLength).c_str();
@@ -1155,7 +1242,7 @@ void FFTSystem::UpdateBarMesh()
 		}
 
 		mb.FinishBuilding();
-		mb.UpdateMesh(*m_barMesh);
+		mb.UpdateMesh(*m_fftBarMesh);
 	}
 }
 
@@ -1231,5 +1318,5 @@ void FFTSystem::UpdateGridAndPanelMesh()
 	mb.Push2DQuad(m_rightSidePanel, AABB2::UNIT_SQUARE_OFFCENTER, m_lineAndPanelColor);
 
 	mb.FinishBuilding();
-	mb.UpdateMesh(*m_gridMesh);
+	mb.UpdateMesh(*m_fftGridMesh);
 }

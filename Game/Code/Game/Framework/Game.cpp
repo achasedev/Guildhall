@@ -33,7 +33,7 @@ void Command_PlaySongForFFTAnalysis(Command& cmd)
 			return;
 		}
 
-		fftSystem->PlaySongAndCollectFFTData(filepath.c_str());
+		fftSystem->CollectFFTDataFromSong(filepath.c_str());
 		ConsolePrintf(Rgba::GREEN, "Starting FFT Bin Collection on %s...please wait for playback to finish", filepath.c_str());
 	}
 	else
@@ -185,10 +185,7 @@ void Game::Update()
 //
 void Game::Render() const
 {
-	if (m_fftSystem->IsSetToRenderGraph())
-	{
-		m_fftSystem->Render();
-	}
+	m_fftSystem->Render();
 }
 
 

@@ -12,6 +12,14 @@
 #include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Rendering/Meshes/Mesh.hpp"
 
+enum eFFTSystemState
+{
+	STATE_IDLE,
+	STATE_JUST_PLAYING,
+	STATE_COLLECTING_FFT_DATA,
+	STATE_BEAT_DATA_PLAYBACK,
+};
+
 struct FFTBin_t
 {
 	float binAverageOfAllChannels = 0.f;
@@ -52,25 +60,35 @@ public:
 	void			ProcessInput();
 	void			Render() const;
 
-	void						PlaySongAndCollectFFTData(const char* songPath);
+	void						PlaySongAndNothingElse(const char* songPath);
+	void						CollectFFTDataFromSong(const char* songPath);
+	void						PlaySongWithBeatAnalysisData(const char* songPath);
 
 	// FFT Mutators
 	void						SetFFTGraphMaxXValue(float maxXValue);
 	void						SetFFTGraphMaxYValue(float maxYValue);
 	void						SetFFTWindowType(FMOD_DSP_FFT_WINDOW windowType);
-	void						SetShouldRenderFFTGraph(bool shouldRender);
 
 	// FFT Accessors
-	bool						IsSetToRenderGraph();
 	bool						IsPlaying() const;
 
 	// FFT Data File Processing
-	void PeformBeatDetectionAnalysis(const std::string& filename, float beatWindowDuration, float beatThresholdScalar, float delayAfterBeatDetected, float periodMedianThreshold, float phaseMedianThreshold);
-	File* LoadFFTDataFile(const std::string& filename) const;
+	void						PeformBeatDetectionAnalysis(const std::string& filename, float beatWindowDuration, float beatThresholdScalar, float delayAfterBeatDetected, float periodMedianThreshold, float phaseMedianThreshold);
 	
+	// Beat Testing
+	void						PlayBeatDataWithSong(const char* songName);
+
 
 private:
 	//-----Private Methods-----
+
+	void UpdateCollecting();
+	void UpdateBeatPlayback();
+
+	void RenderFFTGraph() const;
+	void RenderBeatPlayback() const;
+
+	bool LoadSoundTrackAndPlay();
 
 	// Initialization
 	void CreateAndAddFFTDSPToMasterChannel();
@@ -91,19 +109,25 @@ private:
 	void CleanUp();
 
 	// Bin Data Analysis
-	void SetupForFFTBeatAnalysis(File* file);
-	void WriteFFTBeatAnalysisToFile();
+	File*	LoadFFTDataFile(const std::string& filename) const;
+	void	SetupForFFTBeatAnalysis(File* file);
+	void	WriteFFTBeatAnalysisToFile();
+
+	// Beat testing
+	void LoadFFTBeatAnalysis();
 
 
 private:
 	//-----Private Data-----
+
+	eFFTSystemState m_systemState = STATE_IDLE;
 
 	// FFT Data
 	FMOD::DSP*							m_fftDSP = nullptr;
 	FMOD_DSP_PARAMETER_FFT*				m_pointerToFMODFFTSpectrum = nullptr;
 	float								m_sampleRate = -1.0f;
 	FMOD::Channel*						m_musicChannel = nullptr;
-	std::string							m_musicTitleBeingPlayed;
+	std::string							m_musicDataPath;
 	Stopwatch*							m_playBackTimer = nullptr;
 	float								m_songLength = 0.f;
 
@@ -127,11 +151,10 @@ private:
 	// Beat Detection
 
 	// Rendering
-	bool								m_renderFFTGraph = true;
 	float								m_fftMaxYAxis = 1.0f;
 	unsigned int						m_binsToDisplay = 128;
-	Mesh*								m_barMesh = nullptr;
-	Mesh*								m_gridMesh = nullptr;
+	Mesh*								m_fftBarMesh = nullptr;
+	Mesh*								m_fftGridMesh = nullptr;
 
 	// UI Settings
 	const float							m_graphHeight = 800.f;
