@@ -76,6 +76,20 @@ void Command_PerformBeatAnalysis(Command& cmd)
 	}
 }
 
+void Command_RunBeatPlayback(Command& cmd)
+{
+	std::string songName;
+	bool specified = cmd.GetParam("n", songName);
+
+	if (!specified)
+	{
+		ConsoleErrorf("No name specified with -n");
+		return;
+	}
+
+	Game::GetFFTSystem()->PlaySongWithBeatAnalysisData(songName.c_str());
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // Default constructor, initialize any game members here (private)
@@ -148,6 +162,7 @@ void Game::Initialize()
 
 	Command::Register("fft_collect", "Collects FFT Data given the song by -f", Command_PlaySongForFFTAnalysis);
 	Command::Register("fft_analyze_beat", "Analyzed beats in fft data file given in -f", Command_PerformBeatAnalysis);
+	Command::Register("fft_play_beat", "Plays back the beat data for song name -n", Command_RunBeatPlayback);
 }
 
 

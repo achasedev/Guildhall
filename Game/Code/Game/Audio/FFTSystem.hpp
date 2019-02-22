@@ -36,11 +36,13 @@ struct FFTBinSet_t
 	float						periodMedianThreshold;
 	int							periodsWithinThreshold;
 	int							totalPeriods;
+	float						periodConfidence;
 
 	float						phaseMedian;
 	float						phaseMedianThreshold;
 	int							phasesWithinThreshold;
 	int							totalPhases;
+	float						phaseConfidence;
 
 	float						averageBinExpressivity;
 	float						averageBinExpressivityNormalized;
@@ -74,9 +76,6 @@ public:
 
 	// FFT Data File Processing
 	void						PeformBeatDetectionAnalysis(const std::string& filename, float beatWindowDuration, float beatThresholdScalar, float delayAfterBeatDetected, float periodMedianThreshold, float phaseMedianThreshold);
-	
-	// Beat Testing
-	void						PlayBeatDataWithSong(const char* songName);
 
 
 private:
@@ -114,7 +113,7 @@ private:
 	void	WriteFFTBeatAnalysisToFile();
 
 	// Beat testing
-	void LoadFFTBeatAnalysis();
+	void LoadFFTBeatAnalysis(const std::string& filepath);
 
 
 private:
