@@ -153,6 +153,7 @@ private:
 	unsigned int						m_binsToDisplay = 128;
 	Mesh*								m_fftBarMesh = nullptr;
 	Mesh*								m_fftGridMesh = nullptr;
+	int									m_beatDisplayBinOffset = 0;
 
 	// UI Settings
 	const float							m_graphHeight = 800.f;

@@ -84,12 +84,16 @@ void FFTSystem::ProcessInput()
 	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_LEFT_ARROW))
 	{
 		windowType--;
+		m_beatDisplayBinOffset--;
 	}
 
 	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_RIGHT_ARROW))
 	{
 		windowType++;
+		m_beatDisplayBinOffset++;
 	}
+
+	m_beatDisplayBinOffset = ClampInt(m_beatDisplayBinOffset, 0, (int)m_FFTBinSets.size());
 
 	// There are only 6 window types, 0 through 5
 	if (windowType > 5)
@@ -561,8 +565,6 @@ void FFTSystem::PlaySongWithBeatAnalysisData(const char* songName)
 	std::string beatAnalysisPath = Stringf("Data/FFTBeatAnalyses/%s.fftbeat", songName);
 	LoadFFTBeatAnalysis(beatAnalysisPath);
 
-	WriteFFTBeatAnalysisToFile();
-
 	m_systemState = STATE_BEAT_DATA_PLAYBACK;
 }
 
@@ -728,6 +730,58 @@ void FFTSystem::RenderFFTGraph() const
 //
 void FFTSystem::RenderBeatPlayback() const
 {
+	static int lastBinSampleIndex = 0;
+
+	unsigned int millisecondsIntoSong;
+	m_musicChannel->getPosition(&millisecondsIntoSong, FMOD_TIMEUNIT_MS);
+	float secondsIntoSong = (float)millisecondsIntoSong * 0.001f;
+	
+	// Render each bin to screen
+	Renderer* renderer = Renderer::GetInstance();
+	renderer->SetCurrentCamera(renderer->GetUICamera());
+	AABB2 uiBounds = renderer->GetUIBounds();
+	Vector2 uiDimensions = uiBounds.GetDimensions();
+
+	AABB2 baseWindowBounds = AABB2(Vector2(0.f, 0.1f * uiDimensions.y), Vector2(0.25f * uiDimensions.x, 0.9f * uiDimensions.y));
+	Vector2 baseWindowDimensions = baseWindowBounds.GetDimensions();
+
+	int windowsToDisplay = 4;
+	
+	for (int binSetIndex = m_beatDisplayBinOffset; binSetIndex < MinInt(m_beatDisplayBinOffset + windowsToDisplay, (int) m_FFTBinSets.size()); ++binSetIndex)
+	{
+		AABB2 interiorWindowBounds = baseWindowBounds;
+		Vector2 interiorWindowDimensions = interiorWindowBounds.GetDimensions();
+
+		interiorWindowBounds.AddPaddingToSides(-baseWindowDimensions.x * 0.05, -baseWindowDimensions.y * 0.05f);
+
+		const FFTBinSet_t& binSet = m_FFTBinSets[binSetIndex];
+
+		std::string infoText = Stringf("Period: %.3f\nPeriod Confidence: %.2f%%\nPhase: %.3f\nPhase Confidence: %.2f%%\nExpressivity: %.4f\nNormalized Expressivity: %.3f",
+			binSet.periodMedian, binSet.periodConfidence * 100.f, binSet.phaseMedian, binSet.phaseConfidence * 100.f, binSet.averageBinExpressivity, binSet.averageBinExpressivityNormalized);
+		std::string headingText = Stringf("BIN: %i\nFreq: [%.2f - %.2f)", binSetIndex, binSet.frequencyInterval.min, binSet.frequencyInterval.max);
+		
+		renderer->Draw2DQuad(baseWindowBounds, AABB2::UNIT_SQUARE_OFFCENTER, m_lineAndPanelColor, AssetDB::GetSharedMaterial("UI"));
+		renderer->Draw2DQuad(interiorWindowBounds, AABB2::UNIT_SQUARE_OFFCENTER, Rgba::BLACK, AssetDB::GetSharedMaterial("UI"));
+		renderer->DrawTextInBox2D(headingText, interiorWindowBounds, Vector2(0.5f, 0.f), 20.f, TEXT_DRAW_SHRINK_TO_FIT, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), m_fontColor);
+		renderer->DrawTextInBox2D(infoText, interiorWindowBounds, Vector2(0.f, 1.0f), 20.f, TEXT_DRAW_SHRINK_TO_FIT, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), m_fontColor);
+
+		AABB2 beatIndicatorBounds = interiorWindowBounds;
+		beatIndicatorBounds.AddPaddingToSides(-interiorWindowDimensions.x * 0.4, -interiorWindowDimensions.y * 0.4f);
+
+		float timeWithPhaseRemoved = secondsIntoSong - binSet.phaseMedian;
+		float timeIntoPeriod = ModFloat(timeWithPhaseRemoved, binSet.periodMedian);
+
+		Rgba color = Rgba::BLACK;
+
+		if (timeIntoPeriod < 0.05f) // At 60 fps, about a frame's worth
+		{
+			color = Rgba::RED;
+		}
+
+		renderer->Draw2DQuad(beatIndicatorBounds, AABB2::UNIT_SQUARE_OFFCENTER, color, AssetDB::GetSharedMaterial("UI"));
+
+		baseWindowBounds.Translate(baseWindowDimensions.x, 0.f);
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
