@@ -15,7 +15,7 @@
 	</Stage> 
 
 	<Stage map="Forest2" enter="west">
-		<SpawnEvent type="from_ground" spawn_mins="0, 192" spawn_maxs="256, 256" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="10"/>
+		<SpawnEvent type="from_ground" spawn_mins="0, 192" spawn_maxs="256, 256" entity="Bunny" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="10"/>
 		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="256, 64" entity="Walker" spawn_rate="3" spawn_count_delay="8" spawn_time_delay="1.0" total_to_spawn="10"/>
 	</Stage>
 

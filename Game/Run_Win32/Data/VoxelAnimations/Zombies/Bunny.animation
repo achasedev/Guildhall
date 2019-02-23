@@ -1,0 +1,7 @@
+<VoxelAnimations>
+
+	<VoxelAnimation name="Bunny_idle" playmode="loop">
+		<Frame voxelsprite="Bunny_idle_0" duration="0.5"/>
+	</VoxelAnimation>
+
+</VoxelAnimations>

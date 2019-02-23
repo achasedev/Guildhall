@@ -1,0 +1,11 @@
+<VoxelAnimationSet name="Bunny">
+
+	<Alias alias="idle">
+		<VoxelAnimation name="Bunny_idle"/>
+	</Alias>
+
+	<Alias alias="move">
+		<VoxelAnimation name="Bunny_idle"/>
+	</Alias>
+
+</VoxelAnimationSet>

@@ -37,6 +37,7 @@
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Tank.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Dog.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Soldier.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Zombies/Bunny.sprite"/>
 
 		<!-- Players -->
 		<VoxelSprite file="Data/VoxelSprites/Players/Default.sprite"/>
@@ -55,6 +56,7 @@
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Tank.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Dog.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Soldier.animset"/>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Bunny.animset"/>
 
 		<!-- Players -->
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/OldMan.animset"/>
@@ -71,6 +73,7 @@
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Tank.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Dog.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Soldier.animation"/>
+		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Bunny.animation"/>
 
 		<!-- Players -->
 		<VoxelAnimation file="Data/VoxelAnimations/Players/OldMan.animation"/>
