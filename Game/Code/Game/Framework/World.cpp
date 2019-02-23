@@ -374,7 +374,7 @@ void World::AddParticle(Particle* particle)
 void World::ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage /*= 0*/, 
 	float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/, Entity* hitEntity /*=nullptr*/)
 {
-	DestroyPartOfMap(coord, radius, impulseMagnitude, 2);
+	DestroyPartOfMap(coord, radius, impulseMagnitude);
 
 	// Apply damage and knockback to entities within the radius
 	std::vector<Entity*> entities = GetEntitiesThatOverlapSphere(Vector3(coord), radius);
@@ -1312,7 +1312,6 @@ void World::DeleteMarkedEntities()
 	{
 		if (m_particles[i]->IsMarkedForDelete())
 		{
-			m_particles[i]->OnDeath();
 			delete m_particles[i];
 
 			if (i < (int)m_particles.size() - 1)

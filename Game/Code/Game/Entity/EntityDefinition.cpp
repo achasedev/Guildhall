@@ -9,6 +9,7 @@
 #include "Game/Animation/VoxelAnimationSet.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Smash.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Charge.hpp"
+#include "Game/Entity/Components/BehaviorComponent_Bomber.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursueJump.hpp"
 #include "Game/Entity/Components/BehaviorComponent_ShootDirect.hpp"
 #include "Game/Entity/Components/BehaviorComponent_ShootCircle.hpp"
@@ -17,7 +18,6 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
-
 
 // Global map for all entity definitions
 std::map<std::string, const EntityDefinition*> EntityDefinition::s_definitions;
@@ -298,6 +298,14 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 	{
 		BehaviorComponent_Smash* smashBehavior = new BehaviorComponent_Smash();
 		toReturn = smashBehavior;
+	}
+	else if (behaviorName == "bomber")
+	{
+		std::string projectileName = ParseXmlAttribute(behaviorElement, "projectile", "");
+		GUARANTEE_OR_DIE(!IsStringNullOrEmpty(projectileName), "No projectile specified");
+
+		const EntityDefinition* projectileDefinition = EntityDefinition::GetDefinition(projectileName);
+		toReturn = new BehaviorComponent_Bomber(projectileDefinition);
 	}
 	else
 	{

@@ -1,7 +1,7 @@
 /************************************************************************/
 /* File: BehaviorComponent_SwarmAndAvoid.hpp
 /* Author: Andrew Chase
-/* Date: February 23rd 2018
+/* Date: February 23rd 2019
 /* Description: Behavior where the entity moves towards the player,
 /*				but also takes care to not run into statics or eachother
 /************************************************************************/

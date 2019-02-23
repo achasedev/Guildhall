@@ -87,7 +87,7 @@ void Projectile::OnEntityCollision(Entity* other)
 void Projectile::OnGroundCollision()
 {
 	Game::GetWorld()->ApplyExplosion(GetCoordinatePosition(), m_entityTeam, m_definition->m_projectileDamage, m_definition->m_projectileHitRadius, m_definition->m_collisionDef.m_collisionKnockback);
-	m_isMarkedForDelete = true;
+	OnDeath();
 }
 
 

@@ -58,7 +58,7 @@ void Particle::Update()
 
 	if (m_stopwatch.HasIntervalElapsed())
 	{
-		m_isMarkedForDelete = true;
+		OnDeath();
 	}
 }
 
@@ -102,4 +102,6 @@ void Particle::OnGroundCollision()
 			m_isMarkedForDelete = true;
 		}
 	}
+
+	OnDeath();
 }
