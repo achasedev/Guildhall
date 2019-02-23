@@ -90,6 +90,7 @@ public:
 	bool					AreCoordsInWorld(const IntVector3& coords) const;
 	int						GetMapHeightForEntity(const Entity* entity) const;
 	int						GetMapHeightForBounds(const IntVector3& coordPosition, const IntVector2& dimensions) const;
+	int						GetMapHeightForPosition(const Vector2& position) const;
 	std::vector<Entity*>	GetEntitiesThatOverlapSphere(const Vector3& position, float radius) const;
 
 

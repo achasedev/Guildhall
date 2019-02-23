@@ -875,6 +875,16 @@ int World::GetMapHeightForBounds(const IntVector3& coordPosition, const IntVecto
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the height of the map at the given XZ position
+//
+int World::GetMapHeightForPosition(const Vector2& position) const
+{
+	IntVector2 xzMapCoord = IntVector2(RoundToNearestInt(position.x), RoundToNearestInt(position.y));
+	return m_map->GetHeightAtCoords(xzMapCoord);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Checks for entities clipping into the ground, and if so fixes them
 //
 void World::CheckEntityForGroundCollision(Entity* entity)

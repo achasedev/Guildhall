@@ -12,6 +12,7 @@
 #include "Game/Entity/Components/BehaviorComponent_ShootDirect.hpp"
 #include "Game/Entity/Components/BehaviorComponent_ShootCircle.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursueDirect.hpp"
+#include "Game/Entity/Components/BehaviorComponent_SwarmAndAvoid.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
@@ -286,6 +287,11 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 		shootBehavior->m_shootRange = ParseXmlAttribute(behaviorElement, "shoot_range", shootBehavior->m_shootRange);
 
 		toReturn = shootBehavior;
+	}
+	else if (behaviorName == "swarm_and_avoid")
+	{
+		BehaviorComponent_SwarmAndAvoid* swarmBehavior = new BehaviorComponent_SwarmAndAvoid();
+		toReturn = swarmBehavior;
 	}
 	else
 	{

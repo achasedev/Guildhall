@@ -9,15 +9,15 @@
 			<CollisionDefinition response="share_correction" layer="enemy"/>
 		</Physics>
 		<!--AI behavior="charge" damage_on_touch="1" damage_on_charge="2" charge_speed="100.0" knockback="30.0" charge_duration="1.0" rest_duration="1.0"/>-->
-		<AI behavior="pursue_direct"/>
+		<AI behavior="swarm_and_avoid"/>
 		<Audio on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Death Screams\Human\sfx_deathscream_human6.wav"/>
 	</EntityDefinition>
 
 	<EntityDefinition name="Tank" initial_health="10">
-		<Movement max_acceleration="2000.0" max_speed="5.0" max_deceleration="100.0" jump_impulse="10.0"/>
+		<Movement max_acceleration="2000.0" max_speed="12.0" max_deceleration="100.0" jump_impulse="10.0"/>
 		<Visuals animation_set="Tank" default_sprite="Tank_idle_0"/>
 		<Physics physics_type="dynamic" has_gravity="true">
-			<CollisionDefinition response="share_correction" layer="enemy"/>
+			<CollisionDefinition response="no_correction" layer="enemy" can_destroy_voxels="true"/>
 		</Physics>
 		<AI behavior="pursue_direct"/>
 		<Audio on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Death Screams\Human\sfx_deathscream_human4.wav" on_damage_taken="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Death Screams\Human\sfx_deathscream_human5.wav"/>

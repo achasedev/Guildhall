@@ -181,6 +181,9 @@
     <ClCompile Include="Entity\EntitySpawnEvent_OffScreen.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\Components\BehaviorComponent_SwarmAndAvoid.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -255,5 +258,6 @@
     <ClInclude Include="Entity\EntitySpawnEvent_FromGround.hpp" />
     <ClInclude Include="Entity\EntitySpawnEvent_Meteor.hpp" />
     <ClInclude Include="Entity\EntitySpawnEvent_OffScreen.hpp" />
+    <ClInclude Include="Entity\Components\BehaviorComponent_SwarmAndAvoid.hpp" />
   </ItemGroup>
 </Project>
