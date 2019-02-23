@@ -34,5 +34,5 @@ void BehaviorComponent_PursueDirect::Update()
 BehaviorComponent* BehaviorComponent_PursueDirect::Clone() const
 {
 	ASSERT_OR_DIE(m_owningEntity == nullptr, "Error: Behavior clone had non-null base members on prototype");
-	return new BehaviorComponent_PursueDirect();
+	return new BehaviorComponent_PursueDirect(*this);
 }

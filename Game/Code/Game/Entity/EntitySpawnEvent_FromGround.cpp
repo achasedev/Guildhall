@@ -44,7 +44,7 @@ void EntitySpawnEvent_FromGround::Update()
 		{
 			risingEntity.entity->SetShouldUpdate(true);
 			risingEntity.entity->SetShouldCheckForGroundCollisions(true);
-			risingEntity.entity->GetPhysicsComponent()->SetGravity(true);
+			risingEntity.entity->GetPhysicsComponent()->SetGravity(risingEntity.entity->GetEntityDefinition()->m_affectedByGravity);
 
 			m_entitiesRisingFromGround.erase(m_entitiesRisingFromGround.begin() + riseIndex);
 		}

@@ -138,6 +138,18 @@ void Entity::SetPosition(const Vector3& newPosition)
 
 
 //-----------------------------------------------------------------------------------------------
+// Sets the position of this entity so its center position is the one provided
+//
+void Entity::SetCenterPosition(const Vector3& newCenterPosition)
+{
+	Vector3 halfDimensions = Vector3(GetOrientedDimensions()) * 0.5f;
+	Vector3 newPosition = newCenterPosition - halfDimensions;
+
+	m_position = newPosition;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Sets the orientation of the entity to the provided value
 //
 void Entity::SetOrientation(float orientation)
@@ -594,4 +606,18 @@ Vector3 Entity::GetForwardVector() const
 IntVector3 Entity::GetCoordinatePosition() const
 {
 	return IntVector3(RoundToNearestInt(m_position.x), RoundToNearestInt(m_position.y), RoundToNearestInt(m_position.z));
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the coordinate position of the bottom center of this entity
+//
+IntVector3 Entity::GetBottomCenterCoordinatePosition() const
+{
+	IntVector3 coordinatePosition = GetCoordinatePosition();
+	IntVector3 halfDimensions = GetOrientedDimensions() / 2;
+
+	IntVector3 bottomCenterCoords = coordinatePosition + IntVector3(halfDimensions.x, 0, halfDimensions.z);
+
+	return bottomCenterCoords;
 }

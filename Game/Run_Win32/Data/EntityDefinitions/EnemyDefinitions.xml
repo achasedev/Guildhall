@@ -14,12 +14,12 @@
 	</EntityDefinition>
 
 	<EntityDefinition name="Tank" initial_health="10">
-		<Movement max_acceleration="2000.0" max_speed="12.0" max_deceleration="100.0" jump_impulse="10.0"/>
+		<Movement max_acceleration="2000.0" max_speed="12.0" max_deceleration="100.0" jump_impulse="50.0"/>
 		<Visuals animation_set="Tank" default_sprite="Tank_idle_0"/>
 		<Physics physics_type="dynamic" has_gravity="true">
 			<CollisionDefinition response="no_correction" layer="enemy" can_destroy_voxels="true"/>
 		</Physics>
-		<AI behavior="pursue_direct"/>
+		<AI behavior="smash"/>
 		<Audio on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Death Screams\Human\sfx_deathscream_human4.wav" on_damage_taken="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Death Screams\Human\sfx_deathscream_human5.wav"/>
 	</EntityDefinition>
 

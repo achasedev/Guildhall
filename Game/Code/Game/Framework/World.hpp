@@ -70,6 +70,7 @@ public:
 	void	AddParticle(Particle* particle);
 	void	ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage = 0, float radius = 0.f, float impulseMagnitude = 0.f, Entity* hitEntity = nullptr);
 	void	AddVoxelToMap(const IntVector3& coord, const Rgba& color);
+	void	DestroyPartOfMap(const IntVector3& coord, float radius = 0.f, float particleFlyAwaySpeed = 0.f, int maxYRadius = 256);
 
 	// Accessors
 	IntVector3			GetDimensions() const;
@@ -125,9 +126,6 @@ private:
 	// map
 	void CheckEntityForGroundCollision(Entity* entity);
 	void CheckParticleForGroundCollision(Particle* particle);
-
-	// Explosions
-	void DestroyPartOfMap(const IntVector3& coord, float radius = 0.f, float impulseMagnitude = 0.f);
 
 
 private:

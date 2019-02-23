@@ -37,6 +37,7 @@ public:
 	// Mutators
 	void							AddPositionOffset(const Vector3& offset);
 	void							SetPosition(const Vector3& newPosition);
+	void							SetCenterPosition(const Vector3& newCenterPosition);
 	void							SetOrientation(float orientation);
 	void							SetTeam(eEntityTeam team);
 	void							SetIsGrounded(bool isGrounded);
@@ -84,6 +85,7 @@ public:
 	Vector3							GetForwardVector() const;
 
 	IntVector3						GetCoordinatePosition() const;
+	IntVector3						GetBottomCenterCoordinatePosition() const;
 
 	// Events
 	virtual void					OnEntityCollision(Entity* other);

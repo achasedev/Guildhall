@@ -11,7 +11,6 @@
 // Default acceleration due to gravity
 #define GRAVITY_MAGNITUDE (200.f);
 
-
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
@@ -136,7 +135,6 @@ void PhysicsComponent::ApplyPhysicsStep()
 	if (m_affectedByGravity)
 	{
 		m_force += Vector3::MINUS_Y_AXIS * m_owningEntity->GetMass() * GRAVITY_MAGNITUDE;
-		m_owningEntity->SetIsGrounded(false); // Collision detection will set this to true if we're falling through something
 	}
 
 	Vector3 acceleration = (m_force * m_owningEntity->GetInverseMass());
@@ -144,7 +142,7 @@ void PhysicsComponent::ApplyPhysicsStep()
 	currAcceleration = ClampFloat(currAcceleration, 0.f, m_maxAcceleration);
 	acceleration *= currAcceleration;
 
-	float deltaTime =Game::GetDeltaTime();
+	float deltaTime = Game::GetDeltaTime();
 	m_velocity += (acceleration * deltaTime);
 
 	// Clamp velocity - component wise

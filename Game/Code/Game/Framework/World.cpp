@@ -374,7 +374,7 @@ void World::AddParticle(Particle* particle)
 void World::ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage /*= 0*/, 
 	float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/, Entity* hitEntity /*=nullptr*/)
 {
-	DestroyPartOfMap(coord, radius, impulseMagnitude);
+	DestroyPartOfMap(coord, radius, impulseMagnitude, 2);
 
 	// Apply damage and knockback to entities within the radius
 	std::vector<Entity*> entities = GetEntitiesThatOverlapSphere(Vector3(coord), radius);
@@ -949,7 +949,7 @@ void World::CheckParticleForGroundCollision(Particle* particle)
 //-----------------------------------------------------------------------------------------------
 // Destroys the map at coord and within a given radius
 //
-void World::DestroyPartOfMap(const IntVector3& hitCoordinate, float radius /*= 0.f*/, float impulseMagnitude /*= 0.f*/)
+void World::DestroyPartOfMap(const IntVector3& hitCoordinate, float radius /*= 0.f*/, float particleFlyAwaySpeed /*= 0.f*/, int maxYRadius /*= 64*/)
 {
 	if (!AreCoordsInWorld(hitCoordinate))
 	{
@@ -957,13 +957,17 @@ void World::DestroyPartOfMap(const IntVector3& hitCoordinate, float radius /*= 0
 	}
 
 	// For the ground I hit, blow it away! (anything within radius)
-	int xStart = hitCoordinate.x - RoundToNearestInt(radius);
-	int zStart = hitCoordinate.z - RoundToNearestInt(radius);
+	int xRadius = RoundToNearestInt(radius);
+	int zRadius = RoundToNearestInt(radius);
 
-	int xEnd = hitCoordinate.x + RoundToNearestInt(radius);
-	int zEnd = hitCoordinate.z + RoundToNearestInt(radius);
+	int xStart = hitCoordinate.x - xRadius;
+	int xEnd = hitCoordinate.x + xRadius;
+	int zStart = hitCoordinate.z - zRadius;
+	int zEnd = hitCoordinate.z + zRadius;
 
-	int minYInRadius = ClampInt(hitCoordinate.y - RoundToNearestInt(radius), 0, 256);
+	int minYOfExplosion = ClampInt(hitCoordinate.y - MinInt(RoundToNearestInt(radius), maxYRadius), 0, 256);
+	int maxYOfExplosion = ClampInt(hitCoordinate.y + MinInt(RoundToNearestInt(radius), maxYRadius), 0, 256);
+
 
 	float radiusSquared = radius * radius;
 
@@ -978,13 +982,14 @@ void World::DestroyPartOfMap(const IntVector3& hitCoordinate, float radius /*= 0
 
 			int mapHeightAtCoord = m_map->GetHeightAtCoords(IntVector2(x, z));
 
-			for (int y = mapHeightAtCoord - 1; y >= minYInRadius; --y) // Iterate downward to avoid heightmap errors
+
+			for (int y = mapHeightAtCoord - 1; y >= minYOfExplosion; --y) // Iterate downward to avoid heightmap errors
 			{
 				IntVector3 currCoord = IntVector3(x, y, z);
 
 				float distanceSquared = (Vector3(hitCoordinate) - Vector3(currCoord)).GetLengthSquared();
 
-				if (distanceSquared > radiusSquared && y > hitCoordinate.y)
+				if ((distanceSquared > radiusSquared && y > hitCoordinate.y) || (distanceSquared < radiusSquared && y > maxYOfExplosion))
 				{
 					Rgba color = m_map->RemoveVoxel(currCoord);
 
@@ -997,9 +1002,9 @@ void World::DestroyPartOfMap(const IntVector3& hitCoordinate, float radius /*= 0
 
 					if (CheckRandomChance(0.2f))
 					{
-						Vector3 velocity = impulseMagnitude * Vector3(GetRandomFloatInRange(-1.f, 1.f), 1.f, GetRandomFloatInRange(-1.f, 1.f));
+						Vector3 velocity = particleFlyAwaySpeed * Vector3(GetRandomFloatInRange(-1.f, 1.f), 1.f, GetRandomFloatInRange(-1.f, 1.f));
 
-						Particle* particle = new Particle(color, 5.0f, Vector3(currCoord), velocity, true);
+						Particle* particle = new Particle(color, 5.0f, Vector3(currCoord + IntVector3(0, 1, 0)), velocity, true);
 						AddParticle(particle);
 					}
 				}
@@ -1070,6 +1075,7 @@ void World::CheckGroundCollisions()
 			continue;
 		}
 
+		dynamicEntity->SetIsGrounded(false); // Collision detection will set this to true if we're falling through something
 		CheckEntityForGroundCollision(dynamicEntity);
 	}
 

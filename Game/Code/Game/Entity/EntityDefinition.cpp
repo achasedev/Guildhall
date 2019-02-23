@@ -7,6 +7,7 @@
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
+#include "Game/Entity/Components/BehaviorComponent_Smash.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Charge.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursueJump.hpp"
 #include "Game/Entity/Components/BehaviorComponent_ShootDirect.hpp"
@@ -292,6 +293,11 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 	{
 		BehaviorComponent_SwarmAndAvoid* swarmBehavior = new BehaviorComponent_SwarmAndAvoid();
 		toReturn = swarmBehavior;
+	}
+	else if (behaviorName == "smash")
+	{
+		BehaviorComponent_Smash* smashBehavior = new BehaviorComponent_Smash();
+		toReturn = smashBehavior;
 	}
 	else
 	{

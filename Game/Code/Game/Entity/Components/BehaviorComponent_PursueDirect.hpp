@@ -20,11 +20,4 @@ public:
 	virtual void				Update() override;
 	virtual BehaviorComponent*	Clone() const override;
 
-
-private:
-	//-----Private Data-----
-
-	float m_elbowRoom = 9.f;
-	float m_holeDetectionRange = 8.f;
-
 };
