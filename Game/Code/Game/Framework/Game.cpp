@@ -47,13 +47,13 @@ void Command_PerformBeatAnalysis(Command& cmd)
 	std::string filepath;
 	bool specified = cmd.GetParam("f", filepath);
 
-	float beatWindowDuration = 1.0f;
+	float beatWindowDuration = 0.5f;
 	cmd.GetParam("w", beatWindowDuration, &beatWindowDuration);
 
-	float delayOnDetect = 0.25f;
+	float delayOnDetect = 0.4f;
 	cmd.GetParam("d", delayOnDetect, &delayOnDetect);
 
-	float beatThresholdScalar = 1.5;
+	float beatThresholdScalar = 2.2f;
 	cmd.GetParam("bt", beatThresholdScalar, &beatThresholdScalar);
 	
 	float periodMedianThrehold = 0.1f;

@@ -140,9 +140,10 @@ private:
 	int									m_minBinAverageBinIndex = 0;
 	float								m_maxBinExpressivityAverage = -1;
 	int									m_maxBinAverageBinIndex = 0;
+	int									m_sampleCount = 0;
 
 	// FFT Bin Collection
-	const float							m_maxFrequencyToSaveUpTo = 6000.f;
+	const float							m_maxFrequencyToSaveUpTo = 3000.f;
 	int									m_numBinsToSaveUpTo = -1;
 	std::vector<FFTBinSet_t>			m_FFTBinSets;
 

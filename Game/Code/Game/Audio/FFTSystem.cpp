@@ -243,6 +243,9 @@ void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float b
 
 	SetupForFFTBeatAnalysis(dataFile);
 
+	dataFile->Close();
+	delete dataFile;
+	dataFile = nullptr;
 
 	int numBins = (int) m_FFTBinSets.size();
 	std::vector<FFTBin_t> rollingWindow;
@@ -307,7 +310,7 @@ void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float b
 
 				// Remove excess, not going under the window
 				float durationStored = rollingWindow.back().timeIntoSong - rollingWindow.front().timeIntoSong;
-				while ((durationStored > beatWindowDuration) && ((rollingWindow.size() > 1 && rollingWindow.back().timeIntoSong - rollingWindow[1].timeIntoSong > beatWindowDuration)))
+				while ((durationStored > beatWindowDuration) && ((rollingWindow.size() > 1 && (durationStored - (rollingWindow[1].timeIntoSong - rollingWindow.front().timeIntoSong)) > beatWindowDuration)))
 				{
 					rollingWindow.erase(rollingWindow.begin());
 					durationStored = rollingWindow.back().timeIntoSong - rollingWindow.front().timeIntoSong;
@@ -321,7 +324,7 @@ void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float b
 
 				// Remove excess, not going under the window
 				float durationStored = rollingWindow.back().timeIntoSong - rollingWindow.front().timeIntoSong;
-				while ((durationStored > beatWindowDuration) && ((rollingWindow.size() > 1 && rollingWindow.back().timeIntoSong - rollingWindow[1].timeIntoSong > beatWindowDuration)))
+				while ((durationStored > beatWindowDuration) && ((rollingWindow.size() > 1 && (durationStored - (rollingWindow[1].timeIntoSong - rollingWindow.front().timeIntoSong)) > beatWindowDuration)))
 				{
 					rollingWindow.erase(rollingWindow.begin());
 					durationStored = rollingWindow.back().timeIntoSong - rollingWindow.front().timeIntoSong;
@@ -333,14 +336,12 @@ void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float b
 		float intervalStartTimeIntoSong = 0.f;
 		float intervalEndTimeIntoSong = 0.f;
 		std::vector<float> periodIntervals;
-		float timeStartForFirstInterval = -1.0f;
 
 		// Setup time start at the first high
 		for (sampleIndex = 0; sampleIndex < numSamplesInBinSpan; ++sampleIndex)
 		{
 			if (binSpan.fftBinSamples[sampleIndex].isHigh)
 			{
-				timeStartForFirstInterval = binSpan.fftBinSamples[sampleIndex].timeIntoSong;
 				sampleIndex++;
 				break;
 			}
@@ -348,26 +349,36 @@ void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float b
 
 		// Starting from the first high
 		bool onBeatInterval = true;
+		bool isStartTheEndOfThePreviousInterval = false;
 		std::vector<float> beats;
+		beats.push_back(binSpan.fftBinSamples[sampleIndex - 1].timeIntoSong);
+
 		for (sampleIndex; sampleIndex < numSamplesInBinSpan; ++sampleIndex)
 		{
 			if (onBeatInterval)
 			{
 				intervalEndTimeIntoSong = binSpan.fftBinSamples[sampleIndex].timeIntoSong;
 
-				float currentIntervalDuration = intervalEndTimeIntoSong - intervalStartTimeIntoSong;
+				float currentIntervalSeconds = intervalEndTimeIntoSong - intervalStartTimeIntoSong;
 
 				// Set a limit to a beat we detect, so if we go over it then just throw it out (prevents outliers)
-				if (currentIntervalDuration > 2.0f)
+				if (currentIntervalSeconds > 0.75f)
 				{
+					if (!isStartTheEndOfThePreviousInterval)
+					{
+						beats.erase(beats.begin() + (beats.size() - 1));
+					}
+
 					onBeatInterval = false;
+					isStartTheEndOfThePreviousInterval = false;
 				}
 				else if (binSpan.fftBinSamples[sampleIndex].isHigh) // We should already have a lower limit from the beat delay above, so no worry about small intervals
 				{
-					beats.push_back(intervalStartTimeIntoSong);
+					beats.push_back(intervalEndTimeIntoSong);
+					periodIntervals.push_back(currentIntervalSeconds);
 
-					periodIntervals.push_back(currentIntervalDuration);
 					intervalStartTimeIntoSong = intervalEndTimeIntoSong;
+					isStartTheEndOfThePreviousInterval = true;
 				}
 
 				// Else do nothing in search of the end of the interval
@@ -377,14 +388,10 @@ void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float b
 				// We're looking for the start interval of the beat
 				if (binSpan.fftBinSamples[sampleIndex].isHigh)
 				{
+					beats.push_back(binSpan.fftBinSamples[sampleIndex].timeIntoSong);
 					intervalStartTimeIntoSong = binSpan.fftBinSamples[sampleIndex].timeIntoSong;
 					onBeatInterval = true;
-
-					// If we don't have an interval yet, update where we believe the beat starts in the song
-					if (periodIntervals.size() == 0)
-					{
-						timeStartForFirstInterval = intervalStartTimeIntoSong;
-					}
+					isStartTheEndOfThePreviousInterval = false;
 				}
 			}
 		}
@@ -464,9 +471,6 @@ void FFTSystem::PeformBeatDetectionAnalysis(const std::string& filename, float b
 	WriteFFTBeatAnalysisToFile();
 
 	CleanUp();
-	
-	dataFile->Close();
-	delete dataFile;
 }
 
 
@@ -560,7 +564,7 @@ void FFTSystem::PlaySongWithBeatAnalysisData(const char* songName)
 	}
 
 	// Set the song path
-	m_musicDataPath = Stringf("Data/Audio/Music/%s.mp3");
+	m_musicDataPath = Stringf("Data/Audio/Music/%s.mp3", songName);
 
 	std::string beatAnalysisPath = Stringf("Data/FFTBeatAnalyses/%s.fftbeat", songName);
 	LoadFFTBeatAnalysis(beatAnalysisPath);
@@ -621,6 +625,7 @@ void FFTSystem::UpdateCollecting()
 		UpdateBarMesh();
 		UpdateGridAndPanelMesh();
 	}
+
 
 	if (IsSoundFinished((SoundPlaybackID)m_musicChannel))
 	{
@@ -752,7 +757,7 @@ void FFTSystem::RenderBeatPlayback() const
 		AABB2 interiorWindowBounds = baseWindowBounds;
 		Vector2 interiorWindowDimensions = interiorWindowBounds.GetDimensions();
 
-		interiorWindowBounds.AddPaddingToSides(-baseWindowDimensions.x * 0.05, -baseWindowDimensions.y * 0.05f);
+		interiorWindowBounds.AddPaddingToSides(-baseWindowDimensions.x * 0.05f, -baseWindowDimensions.y * 0.05f);
 
 		const FFTBinSet_t& binSet = m_FFTBinSets[binSetIndex];
 
@@ -764,9 +769,11 @@ void FFTSystem::RenderBeatPlayback() const
 		renderer->Draw2DQuad(interiorWindowBounds, AABB2::UNIT_SQUARE_OFFCENTER, Rgba::BLACK, AssetDB::GetSharedMaterial("UI"));
 		renderer->DrawTextInBox2D(headingText, interiorWindowBounds, Vector2(0.5f, 0.f), 20.f, TEXT_DRAW_SHRINK_TO_FIT, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), m_fontColor);
 		renderer->DrawTextInBox2D(infoText, interiorWindowBounds, Vector2(0.f, 1.0f), 20.f, TEXT_DRAW_SHRINK_TO_FIT, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), m_fontColor);
+		
+		Vector2 indicatorPosition = interiorWindowBounds.mins + Vector2(interiorWindowDimensions.x * 0.45f, interiorWindowDimensions.y * 0.5f);
+		Vector2 indicatorDimensions = Vector2(interiorWindowDimensions.x * 0.3f);
 
-		AABB2 beatIndicatorBounds = interiorWindowBounds;
-		beatIndicatorBounds.AddPaddingToSides(-interiorWindowDimensions.x * 0.4, -interiorWindowDimensions.y * 0.4f);
+		AABB2 beatIndicatorBounds = AABB2(indicatorPosition - 0.5f * indicatorDimensions, indicatorPosition + 0.5f * indicatorDimensions);
 
 		float timeWithPhaseRemoved = secondsIntoSong - binSet.phaseMedian;
 		float timeIntoPeriod = ModFloat(timeWithPhaseRemoved, binSet.periodMedian);
@@ -804,8 +811,9 @@ bool FFTSystem::LoadSoundTrackAndPlay()
 
 	// Set the channel
 	m_musicChannel = (FMOD::Channel*) AudioSystem::PlaySound(soundID, false, 1.0f);
+	FMOD_RESULT result = m_musicChannel->addDSP(FMOD_CHANNELCONTROL_DSP_HEAD, m_fftDSP);
+	ASSERT_OR_DIE(result == FMOD_OK, "Couldn't ADD the DSP to the channel");	
 
-	// Get the song length
 	FMOD::Sound* sound = GetSoundForSoundID(soundID);
 
 	unsigned int millisecondLength;
@@ -832,16 +840,6 @@ void FFTSystem::CreateAndAddFFTDSPToMasterChannel()
 
 	result = m_fftDSP->setParameterInt(FMOD_DSP_FFT_WINDOWSIZE, m_fftWindowSize);
 	ASSERT_OR_DIE(result == FMOD_OK, "Couldn't assign window size parameter");
-
-	result = masterChannelGroup->addDSP(FMOD_CHANNELCONTROL_DSP_HEAD, m_fftDSP);
-	ASSERT_OR_DIE(result == FMOD_OK, "Couldn't ADD the DSP to the master channel group");
-
-	// Get the fft data
-	void* spectrumData = nullptr;
-	m_fftDSP->getParameterData(FMOD_DSP_FFT_SPECTRUMDATA, (void**)&spectrumData, 0, 0, 0);
-	m_pointerToFMODFFTSpectrum = (FMOD_DSP_PARAMETER_FFT*)spectrumData;
-
-	ASSERT_OR_DIE(m_pointerToFMODFFTSpectrum != nullptr, "No FFT data available");
 }
 
 
@@ -883,8 +881,13 @@ bool FFTSystem::CheckForNewFFTSample()
 		return false;
 	}
 
-	// FMOD hasn't processed any data yet
-	if (m_pointerToFMODFFTSpectrum->length == 0)
+	// Get the fft data
+	void* spectrumData = nullptr;
+	m_fftDSP->getParameterData(FMOD_DSP_FFT_SPECTRUMDATA, (void**)&spectrumData, 0, 0, 0);
+
+	m_pointerToFMODFFTSpectrum = (FMOD_DSP_PARAMETER_FFT*)spectrumData;
+
+	if (m_pointerToFMODFFTSpectrum == nullptr || m_pointerToFMODFFTSpectrum->length == 0)
 	{
 		return false;
 	}
