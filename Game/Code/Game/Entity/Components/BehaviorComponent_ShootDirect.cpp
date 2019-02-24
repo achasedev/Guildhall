@@ -5,7 +5,7 @@
 /* Description: Implementation of the shoot direct class
 /************************************************************************/
 #include "Game/Entity/Weapon.hpp"
-#include "Game/Entity/AnimatedEntity.hpp"
+#include "Game/Entity/AIEntity.hpp"
 #include "Game/Entity/Components/BehaviorComponent_ShootDirect.hpp"
 
 
@@ -21,7 +21,7 @@ BehaviorComponent_ShootDirect::BehaviorComponent_ShootDirect(const EntityDefinit
 //-----------------------------------------------------------------------------------------------
 // Creates the weapon and equips it to the entity
 //
-void BehaviorComponent_ShootDirect::Initialize(AnimatedEntity* owningEntity)
+void BehaviorComponent_ShootDirect::Initialize(AIEntity* owningEntity)
 {
 	BehaviorComponent::Initialize(owningEntity);
 	m_weapon = new Weapon(m_weaponDefinition);

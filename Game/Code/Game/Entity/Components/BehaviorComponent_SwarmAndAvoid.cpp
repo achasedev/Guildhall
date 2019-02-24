@@ -4,10 +4,11 @@
 /* Date: February 23rd 2019
 /* Description: Implementation of the SwarmAndAvoid behavior
 /************************************************************************/
-#include "Game/Framework/Game.hpp"
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
+#include "Game/Entity/AIEntity.hpp"
 #include "Game/Entity/Components/BehaviorComponent_SwarmAndAvoid.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/Clock.hpp"

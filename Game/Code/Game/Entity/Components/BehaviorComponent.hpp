@@ -8,7 +8,7 @@
 
 class Player;
 class Entity;
-class AnimatedEntity;
+class AIEntity;
 
 class BehaviorComponent
 {
@@ -18,17 +18,18 @@ public:
 	BehaviorComponent();
 	virtual ~BehaviorComponent();
 
-	virtual void				Initialize(AnimatedEntity* owningEntity);
+	virtual void				Initialize(AIEntity* owningEntity);
 	virtual void				Update();
 	virtual BehaviorComponent*	Clone() const = 0;
 
+	virtual void				OnSpawn();
 	virtual void				OnEntityCollision(Entity* other);
 
 	
 protected:
 	//-----Protected Methods-----
 
-	Player*	GetClosestPlayer() const;
+	Player*	GetClosestAlivePlayer() const;
 	Player* GetClosestPlayerInSight() const;
 	float	GetDistanceToClosestPlayer() const;
 
@@ -38,7 +39,7 @@ protected:
 protected:
 	//-----Protected Data-----
 	
-	AnimatedEntity*	m_owningEntity = nullptr;
-	Player* m_closestPlayer = nullptr;
+	AIEntity*	m_owningEntity = nullptr;
+	Player*		m_closestPlayer = nullptr;
 
 };

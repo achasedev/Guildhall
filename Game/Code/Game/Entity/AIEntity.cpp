@@ -68,7 +68,6 @@ void AIEntity::OnDeath()
 		Game::GetWorld()->AddEntity(drop);
 	}
 
-
 	if (GetTeam() == ENTITY_TEAM_ENEMY)
 	{
 		Game::AddPointsToScore(m_definition->m_pointValue);
@@ -83,6 +82,16 @@ void AIEntity::OnEntityCollision(Entity* other)
 {
 	AnimatedEntity::OnEntityCollision(other);
 	m_behaviorComponent->OnEntityCollision(other);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// For setting up the behavior
+//
+void AIEntity::OnSpawn()
+{
+	AnimatedEntity::OnSpawn();
+	m_behaviorComponent->OnSpawn();
 }
 
 

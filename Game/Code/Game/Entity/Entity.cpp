@@ -213,6 +213,16 @@ void Entity::SetShouldCheckForEdgeCollisions(bool shouldCheck)
 
 
 //-----------------------------------------------------------------------------------------------
+// Sets the color to render this sprite on future draw calls
+//
+void Entity::SetColorOverride(const Rgba& colorOverride)
+{
+	m_spriteColorOverride = colorOverride;
+	m_renderWithColorOverride = true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Subtracts the amount to the entity's health
 //
 void Entity::TakeDamage(int damageAmount, const Vector3& knockback /*=Vector3::ZERO*/)
@@ -531,15 +541,30 @@ bool Entity::ShouldCheckForEdgeCollisions() const
 // Returns true if the entity just took damage and needs to render a white silouette the next frame
 // Sets the value to false if it is true to avoid rendering the flash for more than a frame
 //
-bool Entity::ShouldRenderDamageFlash()
+bool Entity::ShouldRenderWithColorOverride()
 {
-	if (m_renderDamageFlashNextFrame)
+	if (m_renderWithColorOverride)
 	{
-		m_renderDamageFlashNextFrame = false;
+		m_renderWithColorOverride = false;
 		return true;
 	}
 
 	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Renders the color to color this entity on its draw
+// Also resets the flag, so next frame it will need to be set again in order to color override
+//
+Rgba Entity::GetAndResetColorOverride()
+{
+	m_renderWithColorOverride = false;
+	
+	Rgba overrideColor = m_spriteColorOverride;
+	m_spriteColorOverride = Rgba::WHITE;
+
+	return overrideColor;
 }
 
 

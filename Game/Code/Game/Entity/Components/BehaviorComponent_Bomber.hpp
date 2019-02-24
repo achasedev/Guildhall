@@ -19,9 +19,10 @@ public:
 	BehaviorComponent_Bomber(const EntityDefinition* projectileDefinition);
 	~BehaviorComponent_Bomber() {}
 
-	virtual void				Initialize(AnimatedEntity* owningEntity) override;
+	virtual void				Initialize(AIEntity* owningEntity) override;
 	virtual void				Update() override;
 	virtual BehaviorComponent*	Clone() const override;
+	virtual void				OnSpawn() override;
 
 
 private:
@@ -33,7 +34,6 @@ private:
 private:
 	//-----Private Data-----
 
-	bool m_spawned = false;
 
 	float m_moveSpeed = 50.f;
 	const EntityDefinition* m_projectileDefinition = nullptr;

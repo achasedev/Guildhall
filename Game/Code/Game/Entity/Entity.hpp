@@ -7,6 +7,7 @@
 #pragma once
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
+#include "Engine/Core/Rgba.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/Vector3.hpp"
 
@@ -45,6 +46,7 @@ public:
 	void							SetShouldCheckForGroundCollisions(bool shouldCheck);
 	void							SetMarkedForDelete(bool isMarkedForDelete);
 	void							SetShouldCheckForEdgeCollisions(bool shouldCheck);
+	void							SetColorOverride(const Rgba& colorOverride);
 
 	void							TakeDamage(int damageAmount, const Vector3& knockback = Vector3::ZERO);
 
@@ -75,7 +77,8 @@ public:
 	bool							ShouldCheckForGroundCollisions() const;
 	bool							ShouldCheckForEdgeCollisions() const;
 	
-	bool							ShouldRenderDamageFlash();
+	bool							ShouldRenderWithColorOverride();
+	Rgba							GetAndResetColorOverride();
 
 	// Producers
 	bool							IsMarkedForDelete() const;
@@ -117,7 +120,8 @@ protected:
 	bool					m_shouldCheckForGroundCollisions = true;
 	bool					m_shouldCheckForEdgeCollisions = true;
 
-	bool					m_renderDamageFlashNextFrame = false;
+	bool					m_renderWithColorOverride = false;
+	Rgba					m_spriteColorOverride = Rgba::WHITE;
 
 	// Physics
 	float					m_mass = DEFAULT_MASS;					// Mass of the Entity

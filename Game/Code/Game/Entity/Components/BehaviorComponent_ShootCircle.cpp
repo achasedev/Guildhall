@@ -6,10 +6,9 @@
 /************************************************************************/
 #include "Game/Entity/Weapon.hpp"
 #include "Game/Entity/Player.hpp"
-#include "Game/Entity/AnimatedEntity.hpp"
+#include "Game/Entity/AIEntity.hpp"
 #include "Game/Entity/Components/BehaviorComponent_ShootCircle.hpp"
 #include "Engine/Math/MathUtils.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -23,7 +22,7 @@ BehaviorComponent_ShootCircle::BehaviorComponent_ShootCircle(const EntityDefinit
 //-----------------------------------------------------------------------------------------------
 // Creates the weapon and equips it to the entity
 //
-void BehaviorComponent_ShootCircle::Initialize(AnimatedEntity* owningEntity)
+void BehaviorComponent_ShootCircle::Initialize(AIEntity* owningEntity)
 {
 	BehaviorComponent::Initialize(owningEntity);
 	m_weapon = new Weapon(m_weaponDefinition);

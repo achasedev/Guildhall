@@ -20,6 +20,7 @@ public:
 	virtual void Update() override;
 	virtual void OnDeath() override;
 	virtual void OnEntityCollision(Entity* other) override;
+	virtual void OnSpawn() override;
 
 	void SetSpawnEvent(EntitySpawnEvent* spawnEvent);
 

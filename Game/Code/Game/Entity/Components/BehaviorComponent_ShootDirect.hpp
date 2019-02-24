@@ -21,7 +21,7 @@ public:
 	
 	BehaviorComponent_ShootDirect(const EntityDefinition* weaponDef);
 
-	virtual void Initialize(AnimatedEntity* owningEntity) override;
+	virtual void Initialize(AIEntity* owningEntity) override;
 	virtual void Update() override;
 	virtual BehaviorComponent* Clone() const override;
 

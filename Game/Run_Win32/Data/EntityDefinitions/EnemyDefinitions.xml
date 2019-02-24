@@ -3,13 +3,13 @@
 	<!-- Enemies (LOAD AFTER WEAPONS)-->
 
 	<EntityDefinition name="Walker" initial_health="1" points="300">
-		<Movement max_acceleration="3000.0" max_speed="20.0" max_deceleration="100.0" jump_impulse="30.0"/>
+		<Movement max_acceleration="3000.0" max_speed="50.0" max_deceleration="200.0" jump_impulse="30.0"/>
 		<Visuals animation_set="Walker" default_sprite="Walker_idle_0"/>
 		<Physics physics_type="dynamic" has_gravity="true">
 			<CollisionDefinition response="ignore_correction" layer="enemy"/>
 		</Physics>
 		<!--AI behavior="charge" damage_on_touch="1" damage_on_charge="2" charge_speed="100.0" knockback="30.0" charge_duration="1.0" rest_duration="1.0"/>-->
-		<AI behavior="bomber" projectile="Missile"/>
+		<AI behavior="kamikaze"/>
 		<Audio on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Death Screams\Human\sfx_deathscream_human6.wav"/>
 	</EntityDefinition>
 

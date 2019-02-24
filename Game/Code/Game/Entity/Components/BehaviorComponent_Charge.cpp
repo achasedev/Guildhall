@@ -6,6 +6,7 @@
 /************************************************************************/
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
+#include "Game/Entity/AIEntity.hpp"
 #include "Game/Animation/VoxelAnimator.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Charge.hpp"

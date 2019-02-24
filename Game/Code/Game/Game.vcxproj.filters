@@ -190,6 +190,9 @@
     <ClCompile Include="Entity\Components\BehaviorComponent_Bomber.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\Components\BehaviorComponent_Kamikaze.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -267,5 +270,6 @@
     <ClInclude Include="Entity\Components\BehaviorComponent_SwarmAndAvoid.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_Smash.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_Bomber.hpp" />
+    <ClInclude Include="Entity\Components\BehaviorComponent_Kamikaze.hpp" />
   </ItemGroup>
 </Project>

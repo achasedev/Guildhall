@@ -8,6 +8,7 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
+#include "Game/Entity/AIEntity.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Smash.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
@@ -23,7 +24,7 @@ BehaviorComponent_Smash::BehaviorComponent_Smash()
 //-----------------------------------------------------------------------------------------------
 // Used to shut off physics when the enemy spawns
 //
-void BehaviorComponent_Smash::Initialize(AnimatedEntity* owningEntity)
+void BehaviorComponent_Smash::Initialize(AIEntity* owningEntity)
 {
 	BehaviorComponent::Initialize(owningEntity);
 	m_owningEntity->SetPhysicsEnabled(false);

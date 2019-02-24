@@ -7,6 +7,7 @@
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
+#include "Game/Entity/AIEntity.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursueJump.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 

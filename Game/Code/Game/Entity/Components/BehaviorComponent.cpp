@@ -6,6 +6,7 @@
 /************************************************************************/
 #include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
+#include "Game/Entity/AIEntity.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Entity/Components/BehaviorComponent.hpp"
 #include "Engine/Core/Utility/HeatMap.hpp"
@@ -30,10 +31,9 @@ BehaviorComponent::~BehaviorComponent()
 //-----------------------------------------------------------------------------------------------
 // Initialize
 //
-void BehaviorComponent::Initialize(AnimatedEntity* owningEntity)
+void BehaviorComponent::Initialize(AIEntity* owningEntity)
 {
 	m_owningEntity = owningEntity;
-	m_closestPlayer = GetClosestPlayer();
 }
 
 
@@ -42,7 +42,16 @@ void BehaviorComponent::Initialize(AnimatedEntity* owningEntity)
 //
 void BehaviorComponent::Update()
 {
-	m_closestPlayer = GetClosestPlayer();
+	m_closestPlayer = GetClosestAlivePlayer();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// For when we need to set parameters or initialize after the entity has spawned
+//
+void BehaviorComponent::OnSpawn()
+{
+	m_closestPlayer = GetClosestAlivePlayer();
 }
 
 
@@ -58,7 +67,7 @@ void BehaviorComponent::OnEntityCollision(Entity* other)
 //-----------------------------------------------------------------------------------------------
 // Returns the closest player to the entity with this component
 //
-Player* BehaviorComponent::GetClosestPlayer() const
+Player* BehaviorComponent::GetClosestAlivePlayer() const
 {
 	Player** players = Game::GetPlayers();
 

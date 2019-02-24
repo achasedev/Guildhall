@@ -1367,7 +1367,8 @@ void World::DrawStaticEntitiesToGrid(const IntVector3& offset)
 				VoxelDrawOptions_t options;
 				options.castsShadows = true;
 				options.receivesShadows = true;
-				options.hasColorOverride = m_entities[entityIndex]->ShouldRenderDamageFlash();
+				options.hasColorOverride = m_entities[entityIndex]->ShouldRenderWithColorOverride();
+				options.colorOverride = m_entities[entityIndex]->GetAndResetColorOverride();
 
 				grid->DrawEntity(m_entities[entityIndex], offset, options);
 			}
@@ -1408,7 +1409,8 @@ void World::DrawDynamicEntitiesToGrid(const IntVector3& offset)
 				options.castsShadows = true;
 				options.receivesShadows = true;
 				options.whiteReplacement = whiteReplacement;
-				options.hasColorOverride = m_entities[entityIndex]->ShouldRenderDamageFlash();
+				options.hasColorOverride = m_entities[entityIndex]->ShouldRenderWithColorOverride();
+				options.colorOverride = m_entities[entityIndex]->GetAndResetColorOverride();
 
 				grid->DrawEntity(m_entities[entityIndex], offset, options);
 			}

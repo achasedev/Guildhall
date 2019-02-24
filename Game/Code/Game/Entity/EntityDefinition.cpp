@@ -10,6 +10,7 @@
 #include "Game/Entity/Components/BehaviorComponent_Smash.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Charge.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Bomber.hpp"
+#include "Game/Entity/Components/BehaviorComponent_Kamikaze.hpp"
 #include "Game/Entity/Components/BehaviorComponent_PursueJump.hpp"
 #include "Game/Entity/Components/BehaviorComponent_ShootDirect.hpp"
 #include "Game/Entity/Components/BehaviorComponent_ShootCircle.hpp"
@@ -306,6 +307,10 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 
 		const EntityDefinition* projectileDefinition = EntityDefinition::GetDefinition(projectileName);
 		toReturn = new BehaviorComponent_Bomber(projectileDefinition);
+	}
+	else if (behaviorName == "kamikaze")
+	{
+		toReturn = new BehaviorComponent_Kamikaze();
 	}
 	else
 	{

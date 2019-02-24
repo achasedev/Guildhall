@@ -5,9 +5,9 @@
 /* Description: Implementation of the bomber behavior
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
+#include "Game/Entity/AIEntity.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Entity/Projectile.hpp"
-#include "Game/Entity/AnimatedEntity.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Bomber.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -21,7 +21,7 @@ BehaviorComponent_Bomber::BehaviorComponent_Bomber(const EntityDefinition* proje
 }
 
 
-void BehaviorComponent_Bomber::Initialize(AnimatedEntity* owningEntity)
+void BehaviorComponent_Bomber::Initialize(AIEntity* owningEntity)
 {
 	BehaviorComponent::Initialize(owningEntity);
 	owningEntity->SetPhysicsEnabled(false);
@@ -33,19 +33,6 @@ void BehaviorComponent_Bomber::Initialize(AnimatedEntity* owningEntity)
 //
 void BehaviorComponent_Bomber::Update()
 {
-	if (!m_spawned)
-	{
-		FindNewTargetPosition();
-
-		// Get the enemy a little off the ground
-		Vector3 position = m_owningEntity->GetPosition();
-		position.y = TARGET_HEIGHT_OFF_GROUND;
-		m_owningEntity->SetPosition(position);
-
-		m_bombTimer.SetInterval(m_bombCooldown);
-		m_spawned = true;
-	}
-
 	float deltaTime = Game::GetDeltaTime();
 	Vector3 translation = m_movingDirection * m_moveSpeed * deltaTime;
 	m_owningEntity->AddPositionOffset(translation);
@@ -79,7 +66,25 @@ BehaviorComponent* BehaviorComponent_Bomber::Clone() const
 	return new BehaviorComponent_Bomber(*this);
 }
 
-#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+
+//-----------------------------------------------------------------------------------------------
+// Finds a target and sets the entity up in the air where it should be hovering
+//
+void BehaviorComponent_Bomber::OnSpawn()
+{
+	BehaviorComponent::OnSpawn();
+
+	FindNewTargetPosition();
+
+	// Get the enemy a little off the ground
+	Vector3 position = m_owningEntity->GetPosition();
+	position.y = TARGET_HEIGHT_OFF_GROUND;
+	m_owningEntity->SetPosition(position);
+
+	m_bombTimer.SetInterval(m_bombCooldown);
+}
+
+
 //-----------------------------------------------------------------------------------------------
 // Finds a new position to move to that is away from the entity
 //
@@ -105,10 +110,6 @@ void BehaviorComponent_Bomber::FindNewTargetPosition()
 			m_movingDirection = directionToTarget;
 			m_targetPosition = target;
 			done = true;
-
-			ConsolePrintf("Start: (%.2f, %.2f, %.2f) | Target: (%.2f, %.2f, %.2f) | Direction: (%.2f, %.2f, %.2f)",
-				m_owningEntity->GetCenterPosition().x, m_owningEntity->GetCenterPosition().y, m_owningEntity->GetCenterPosition().z,
-				target.x, target.y, target.z, directionToTarget.x, directionToTarget.y, directionToTarget.z);
 		}
 	}
 }

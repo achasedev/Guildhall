@@ -84,7 +84,8 @@ void AnimatedEntity::OnEntityCollision(Entity* other)
 void AnimatedEntity::OnDamageTaken(int damageAmount)
 {
 	Entity::OnDamageTaken(damageAmount);
-	m_renderDamageFlashNextFrame = true;
+	m_spriteColorOverride = Rgba::WHITE;
+	m_renderWithColorOverride = true;
 }
 
 
@@ -103,7 +104,6 @@ void AnimatedEntity::OnDeath()
 void AnimatedEntity::OnSpawn()
 {
 	Entity::OnSpawn();
-
 	m_animator->Play("idle");
 }
 
