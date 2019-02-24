@@ -20,6 +20,8 @@ class Player;
 
 class BehaviorComponent_Kamikaze : public BehaviorComponent
 {
+	friend class EntityDefinition;
+
 public:
 	//-----Public Methods-----
 
@@ -47,9 +49,10 @@ private:
 
 	Stopwatch m_tickTimer;
 	float m_normalizedTimeLastFrame = 0.f;
-	int m_explosionDamage = 3;
-	float m_explosionRadius = 8.f;
-	float m_explosionImpulse = 50.f;
+
+	int		m_explosionDamage = 3;
+	float	m_explosionRadius = 8.f;
+	float	m_explosionKnockback = 50.f;
 
 	static constexpr float DISTANCE_TO_EXPLODE = 5.f;
 	static constexpr float TICK_DURATION = 2.f;

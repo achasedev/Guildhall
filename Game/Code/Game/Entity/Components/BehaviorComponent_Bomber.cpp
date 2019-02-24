@@ -34,7 +34,8 @@ void BehaviorComponent_Bomber::Initialize(AIEntity* owningEntity)
 void BehaviorComponent_Bomber::Update()
 {
 	float deltaTime = Game::GetDeltaTime();
-	Vector3 translation = m_movingDirection * m_moveSpeed * deltaTime;
+	float moveSpeed = m_owningEntity->GetEntityDefinition()->m_maxMoveSpeed;
+	Vector3 translation = m_movingDirection * moveSpeed * deltaTime;
 	m_owningEntity->AddPositionOffset(translation);
 
 	float distanceToTargetSquared = (m_targetPosition - m_owningEntity->GetCenterPosition()).GetLengthSquared();
@@ -53,7 +54,7 @@ void BehaviorComponent_Bomber::Update()
 
 		Game::GetWorld()->AddEntity(bomb);
 
-		m_bombTimer.SetInterval(m_bombCooldown);
+		m_bombTimer.SetInterval(1.f / m_bombDropRate);
 	}
 }
 
@@ -81,7 +82,7 @@ void BehaviorComponent_Bomber::OnSpawn()
 	position.y = TARGET_HEIGHT_OFF_GROUND;
 	m_owningEntity->SetPosition(position);
 
-	m_bombTimer.SetInterval(m_bombCooldown);
+	m_bombTimer.SetInterval(1.f / m_bombDropRate);
 }
 
 

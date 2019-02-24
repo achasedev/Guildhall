@@ -126,7 +126,7 @@ void BehaviorComponent_Kamikaze::UpdateTicking()
 void BehaviorComponent_Kamikaze::UpdateExplode()
 {
 	IntVector3 entityCenterCoord = m_owningEntity->GetBottomCenterCoordinatePosition();
-	Game::GetWorld()->ApplyExplosion(entityCenterCoord, ENTITY_TEAM_ENEMY, m_explosionDamage, m_explosionRadius, m_explosionImpulse, m_owningEntity);
+	Game::GetWorld()->ApplyExplosion(entityCenterCoord, ENTITY_TEAM_ENEMY, m_explosionDamage, m_explosionRadius, m_explosionKnockback, m_owningEntity);
 
 	m_owningEntity->OnDeath();
 }

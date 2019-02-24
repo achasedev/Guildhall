@@ -13,6 +13,8 @@ class Player;
 
 class BehaviorComponent_Bomber : public BehaviorComponent
 {
+	friend class EntityDefinition;
+
 public:
 	//-----Public Methods-----
 
@@ -34,11 +36,9 @@ private:
 private:
 	//-----Private Data-----
 
-
-	float m_moveSpeed = 50.f;
+	float m_bombDropRate = 1.0f;
 	const EntityDefinition* m_projectileDefinition = nullptr;
 	Stopwatch m_bombTimer;
-	float m_bombCooldown = 1.0f;
 
 	Vector3 m_targetPosition;
 	Vector3 m_movingDirection;

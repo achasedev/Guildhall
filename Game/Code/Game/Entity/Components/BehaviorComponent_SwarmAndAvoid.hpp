@@ -12,6 +12,8 @@ class Player;
 
 class BehaviorComponent_SwarmAndAvoid : public BehaviorComponent
 {
+	friend class EntityDefinition;
+
 public:
 	//-----Public Methods-----
 
@@ -26,6 +28,5 @@ private:
 	//-----Private Data-----
 
 	float m_elbowRoom = 9.f;
-	float m_holeDetectionRange = 8.f;
 
 };

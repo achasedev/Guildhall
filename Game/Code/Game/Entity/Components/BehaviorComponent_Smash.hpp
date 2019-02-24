@@ -19,6 +19,8 @@ enum eSmashState
 
 class BehaviorComponent_Smash : public BehaviorComponent
 {
+	friend class EntityDefinition;
+
 public:
 	//-----Public Methods-----
 
@@ -27,6 +29,7 @@ public:
 	virtual void				Initialize(AIEntity* owningEntity) override;
 	virtual void				Update() override;
 	virtual BehaviorComponent*	Clone() const override;
+	virtual void				OnEntityCollision(Entity* other) override;
 
 
 private:
@@ -46,9 +49,8 @@ private:
 	Vector3 m_hoverDirection;
 	Stopwatch m_waitTimer;
 
-	int m_damageOnTouch = 1;
-	int m_damageOnSmash = 3;
-	float m_smashKnockBackMagnitude = 30.f;
+	int		m_damageOnSmash = 3;
+	float	m_smashKnockBackMagnitude = 30.f;
 
 	static constexpr float HOVER_HEIGHT_ABOVE_PLAYER = 30.f;
 	static constexpr float HOVER_WAIT_TIME = 1.0f;

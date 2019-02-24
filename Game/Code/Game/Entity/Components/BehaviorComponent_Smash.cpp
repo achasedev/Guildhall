@@ -69,6 +69,26 @@ BehaviorComponent* BehaviorComponent_Smash::Clone() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Override for when the entity smash collides into a player
+//
+void BehaviorComponent_Smash::OnEntityCollision(Entity* other)
+{
+	if (other->GetTeam() != m_owningEntity->GetTeam())
+	{
+		if (m_state == STATE_SMASHING)
+		{
+			Vector3 knockback = (other->GetCenterPosition() - m_owningEntity->GetCenterPosition()).GetNormalized();
+			other->TakeDamage(m_damageOnSmash, knockback * m_smashKnockBackMagnitude);
+		}
+		else
+		{
+			BehaviorComponent::OnEntityCollision(other);
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Update for when the entity is sitting on the ground waiting for the next move
 //
 void BehaviorComponent_Smash::UpdateWaitingOnGround()

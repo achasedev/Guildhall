@@ -292,11 +292,18 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 	else if (behaviorName == "swarm_and_avoid")
 	{
 		BehaviorComponent_SwarmAndAvoid* swarmBehavior = new BehaviorComponent_SwarmAndAvoid();
+
+		swarmBehavior->m_elbowRoom = ParseXmlAttribute(behaviorElement, "elbow_room", swarmBehavior->m_elbowRoom);
+
 		toReturn = swarmBehavior;
 	}
 	else if (behaviorName == "smash")
 	{
 		BehaviorComponent_Smash* smashBehavior = new BehaviorComponent_Smash();
+
+		smashBehavior->m_damageOnSmash = ParseXmlAttribute(behaviorElement, "smash_damage", smashBehavior->m_damageOnSmash);
+		smashBehavior->m_smashKnockBackMagnitude = ParseXmlAttribute(behaviorElement, "smash_knockback", smashBehavior->m_smashKnockBackMagnitude);
+
 		toReturn = smashBehavior;
 	}
 	else if (behaviorName == "bomber")
@@ -305,17 +312,27 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 		GUARANTEE_OR_DIE(!IsStringNullOrEmpty(projectileName), "No projectile specified");
 
 		const EntityDefinition* projectileDefinition = EntityDefinition::GetDefinition(projectileName);
-		toReturn = new BehaviorComponent_Bomber(projectileDefinition);
+		BehaviorComponent_Bomber* bombBehavior = new BehaviorComponent_Bomber(projectileDefinition);
+
+		bombBehavior->m_bombDropRate = ParseXmlAttribute(behaviorElement, "bomb_rate", bombBehavior->m_bombDropRate);
+
+		toReturn = bombBehavior;
 	}
 	else if (behaviorName == "kamikaze")
 	{
-		toReturn = new BehaviorComponent_Kamikaze();
+		BehaviorComponent_Kamikaze* kamikazeBehavior = new BehaviorComponent_Kamikaze();;
+		kamikazeBehavior->m_explosionDamage = ParseXmlAttribute(behaviorElement, "explosion_damage", kamikazeBehavior->m_explosionDamage);
+		kamikazeBehavior->m_explosionKnockback = ParseXmlAttribute(behaviorElement, "explosion_knockback", kamikazeBehavior->m_explosionKnockback);
+		kamikazeBehavior->m_explosionRadius = ParseXmlAttribute(behaviorElement, "explosion_radius", kamikazeBehavior->m_explosionRadius);
+
+		toReturn = kamikazeBehavior;
 	}
 	else
 	{
 		ERROR_AND_DIE("Unknown Behavior");
 	}
 
+	// Base behavior component members
 	toReturn->m_damageDealtOnTouch = ParseXmlAttribute(behaviorElement, "damage_on_touch", toReturn->m_damageDealtOnTouch);
 	toReturn->m_knockBackOnTouch = ParseXmlAttribute(behaviorElement, "knockback_on_touch", toReturn->m_knockBackOnTouch);
 
