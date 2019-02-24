@@ -55,7 +55,7 @@ private:
 	float	m_explosionRadius = 8.f;
 	float	m_explosionKnockback = 50.f;
 
-	static constexpr float DISTANCE_TO_EXPLODE = 5.f;
+	static constexpr float DISTANCE_TO_EXPLODE = 8.f;
 	static constexpr float TICK_DURATION = 2.f;
 
 };

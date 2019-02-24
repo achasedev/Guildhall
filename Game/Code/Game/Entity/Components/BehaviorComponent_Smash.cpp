@@ -93,7 +93,7 @@ void BehaviorComponent_Smash::OnEntityCollision(Entity* other)
 //
 void BehaviorComponent_Smash::UpdateWaitingOnGround()
 {
-	if (m_waitTimer.HasIntervalElapsed())
+	if (m_waitTimer.HasIntervalElapsed() && m_closestPlayer != nullptr)
 	{
 		// Find a target
 		Vector3 playerPosition = m_closestPlayer->GetCenterPosition();

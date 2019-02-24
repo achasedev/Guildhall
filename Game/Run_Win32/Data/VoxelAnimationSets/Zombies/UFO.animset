@@ -1,0 +1,11 @@
+<VoxelAnimationSet name="UFO">
+
+	<Alias alias="idle">
+		<VoxelAnimation name="UFO_idle"/>
+	</Alias>
+
+	<Alias alias="shoot">
+		<VoxelAnimation name="UFO_shoot"/>
+	</Alias>
+
+</VoxelAnimationSet>

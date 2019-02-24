@@ -35,4 +35,13 @@
 		<Audio on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Explosions\Short\sfx_exp_short_soft9.wav"/>
 	</EntityDefinition>
 
+	<EntityDefinition name="UFO_bomb">
+		<Visuals default_sprite="UFO_bomb"/>
+		<Physics physics_type="dynamic" has_gravity="true">
+			<CollisionDefinition response="ignore_correction" can_destroy_voxels="true"/>
+		</Physics>
+		<Projectile speed="100.0" hit_radius="20.0" damage="5" lifetime="2.0"/>
+		<Audio on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Explosions\Short\sfx_exp_short_soft9.wav"/>
+	</EntityDefinition>
+
 </EntityDefinitions>

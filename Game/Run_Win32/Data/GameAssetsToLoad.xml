@@ -9,6 +9,7 @@
 		<VoxelSprite file="Data/VoxelSprites/Shell.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Flame.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Missile.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/UFO_bomb.sprite"/>
 
 		<!-- Weapons -->
 		<VoxelSprite file="Data/VoxelSprites/Pistol.sprite"/>
@@ -39,6 +40,7 @@
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Soldier.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Bunny.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Spider.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Zombies/UFO.sprite"/>
 
 		<!-- Players -->
 		<VoxelSprite file="Data/VoxelSprites/Players/Default.sprite"/>
@@ -59,6 +61,7 @@
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Soldier.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Bunny.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Spider.animset"/>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/UFO.animset"/>
 
 		<!-- Players -->
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/OldMan.animset"/>
@@ -77,6 +80,7 @@
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Soldier.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Bunny.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Spider.animation"/>
+		<VoxelAnimation file="Data/VoxelAnimations/Zombies/UFO.animation"/>
 
 		<!-- Players -->
 		<VoxelAnimation file="Data/VoxelAnimations/Players/OldMan.animation"/>

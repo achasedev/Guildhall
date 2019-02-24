@@ -1,0 +1,11 @@
+<VoxelAnimations>
+
+	<VoxelAnimation name="UFO_idle" playmode="loop">
+		<Frame voxelsprite="UFO_idle_0" duration="0.5"/>
+	</VoxelAnimation>
+
+	<VoxelAnimation name="UFO_shoot" playmode="loop">
+		<Frame voxelsprite="UFO_shoot_0" duration="0.5"/>
+	</VoxelAnimation>
+
+</VoxelAnimations>

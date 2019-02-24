@@ -8,6 +8,7 @@
 #include "Game/Entity/AIEntity.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Entity/Projectile.hpp"
+#include "Game/Animation/VoxelAnimator.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Bomber.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -55,6 +56,10 @@ void BehaviorComponent_Bomber::Update()
 		Game::GetWorld()->AddEntity(bomb);
 
 		m_bombTimer.SetInterval(1.f / m_bombDropRate);
+
+		m_owningEntity->GetAnimator()->Play("shoot");
+		AudioSystem* audio = AudioSystem::GetInstance();
+		audio->PlaySound(m_owningEntity->GetEntityDefinition()->m_customSound, false, 0.5f);
 	}
 }
 

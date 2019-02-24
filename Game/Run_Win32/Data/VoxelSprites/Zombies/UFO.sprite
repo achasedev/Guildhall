@@ -1,0 +1,6 @@
+<VoxelSprites>
+
+	<VoxelSprite name="UFO_idle_0" file="Data/VoxelModels/Zombies/UFO/UFO_idle_0.qef"/>
+	<VoxelSprite name="UFO_shoot_0" file="Data/VoxelModels/Zombies/UFO/UFO_shoot_0.qef"/>
+
+</VoxelSprites>
