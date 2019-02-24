@@ -64,6 +64,7 @@ private:
 
 	static constexpr float RESPAWN_INTERVAL = 5.0f;
 	static constexpr float SCREENSHAKE_ADDED_ON_DEATH = 1.5f;
+	static constexpr float	PLAYER_INVINCIBILITY_DURATION_FROM_HIT = 1.0f;
 
 	static Rgba s_playerColors[4];
 

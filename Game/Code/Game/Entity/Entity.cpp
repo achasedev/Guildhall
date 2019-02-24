@@ -228,7 +228,7 @@ void Entity::SetColorOverride(const Rgba& colorOverride)
 void Entity::TakeDamage(int damageAmount, const Vector3& knockback /*=Vector3::ZERO*/)
 {
 	// Apply damage if not dead
-	if (!m_isMarkedForDelete)
+	if (!m_isMarkedForDelete && m_invincibilityTimer.HasIntervalElapsed())
 	{
 		m_health -= damageAmount;
 		OnDamageTaken(damageAmount);
@@ -239,6 +239,15 @@ void Entity::TakeDamage(int damageAmount, const Vector3& knockback /*=Vector3::Z
 			m_physicsComponent->AddImpulse(knockback);
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the timer that gives this entity time where they cannot take damage
+//
+void Entity::SetInvincibilityTimer(float invincibilityTime)
+{
+	m_invincibilityTimer.SetInterval(invincibilityTime);
 }
 
 

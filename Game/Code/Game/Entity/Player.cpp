@@ -188,6 +188,9 @@ void Player::OnEntityCollision(Entity* other)
 void Player::OnDamageTaken(int damageAmount)
 {
 	AnimatedEntity::OnDamageTaken(damageAmount);
+
+	// Give the player some invincibility time
+	SetInvincibilityTimer(PLAYER_INVINCIBILITY_DURATION_FROM_HIT);
 }
 
 

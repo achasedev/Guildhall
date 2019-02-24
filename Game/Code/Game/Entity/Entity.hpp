@@ -10,6 +10,7 @@
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/Vector3.hpp"
+#include "Engine/Core/Time/Stopwatch.hpp"
 
 class VoxelAnimator;
 class PhysicsComponent;
@@ -49,6 +50,7 @@ public:
 	void							SetColorOverride(const Rgba& colorOverride);
 
 	void							TakeDamage(int damageAmount, const Vector3& knockback = Vector3::ZERO);
+	void							SetInvincibilityTimer(float invincibilityTime);
 
 	// Accessors
 	int								GetHealth() const;
@@ -122,6 +124,8 @@ protected:
 
 	bool					m_renderWithColorOverride = false;
 	Rgba					m_spriteColorOverride = Rgba::WHITE;
+
+	Stopwatch				m_invincibilityTimer;
 
 	// Physics
 	float					m_mass = DEFAULT_MASS;					// Mass of the Entity
