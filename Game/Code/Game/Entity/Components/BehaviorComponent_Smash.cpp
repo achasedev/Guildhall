@@ -73,7 +73,7 @@ BehaviorComponent* BehaviorComponent_Smash::Clone() const
 //
 void BehaviorComponent_Smash::OnEntityCollision(Entity* other)
 {
-	if (other->GetTeam() != m_owningEntity->GetTeam())
+	if (other->GetTeam() == ENTITY_TEAM_PLAYER)
 	{
 		if (m_state == STATE_SMASHING)
 		{

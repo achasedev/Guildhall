@@ -1,0 +1,14 @@
+<VoxelAnimations>
+
+	<VoxelAnimation name="Spider_idle" playmode="loop">
+		<Frame voxelsprite="Spider_idle_0" duration="0.5"/>
+	</VoxelAnimation>
+
+	<VoxelAnimation name="Spider_walk" playmode="loop">
+		<Frame voxelsprite="Spider_walk_0" duration="0.25"/>
+		<Frame voxelsprite="Spider_idle_0" duration="0.25"/>
+		<Frame voxelsprite="Spider_walk_1" duration="0.25"/>
+		<Frame voxelsprite="Spider_idle_0" duration="0.25"/>
+	</VoxelAnimation>
+
+</VoxelAnimations>

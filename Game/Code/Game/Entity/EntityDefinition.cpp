@@ -152,6 +152,12 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement, eEntityClass
 		{
 			m_onPickupSound = audio->CreateOrGetSound(onPickupSoundPath);
 		}
+
+		std::string customSoundPath = ParseXmlAttribute(*audioElement, "custom", "");
+		if (!IsStringNullOrEmpty(customSoundPath))
+		{
+			m_customSound = audio->CreateOrGetSound(customSoundPath);
+		}
 	}
 
 	// Visuals

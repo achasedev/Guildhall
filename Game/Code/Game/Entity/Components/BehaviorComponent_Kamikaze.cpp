@@ -56,21 +56,35 @@ void BehaviorComponent_Kamikaze::OnSpawn()
 
 
 //-----------------------------------------------------------------------------------------------
+// If a player touches this entity just blow up
+//
+void BehaviorComponent_Kamikaze::OnEntityCollision(Entity* other)
+{
+	if (other->IsPlayer())
+	{
+		m_state = STATE_EXPLODE;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Update for chasing after a target player
 //
 void BehaviorComponent_Kamikaze::UpdatePursue()
 {
 	// Need to swap targets if our target dies
-	if (m_targetedPlayer->IsRespawning())
+	if (m_targetedPlayer == nullptr || m_targetedPlayer->IsRespawning())
 	{
 		m_targetedPlayer = m_closestPlayer;
+
+		// Do nothing if there is no player
+		if (m_targetedPlayer == nullptr)
+		{
+			m_owningEntity->Decelerate();
+			return;
+		}
 	}
 
-	// Do nothing if there is no player
-	if (m_targetedPlayer == nullptr)
-	{
-		return;
-	}
 
 	Vector3 targetPlayerPosition = m_targetedPlayer->GetPosition();
 	Vector3 currPosition = m_owningEntity->GetPosition();
@@ -109,6 +123,10 @@ void BehaviorComponent_Kamikaze::UpdateTicking()
 	if (t >= 0.25f && m_normalizedTimeLastFrame < 0.25f || t >= 0.5f && m_normalizedTimeLastFrame < 0.5f || t >= 0.75f && m_normalizedTimeLastFrame < 0.75f)
 	{
 		m_owningEntity->SetColorOverride(Rgba::RED);
+
+		// Play the tick sound
+		AudioSystem* audio = AudioSystem::GetInstance();
+		audio->PlaySound(m_owningEntity->GetEntityDefinition()->m_customSound);
 	}
 
 	m_normalizedTimeLastFrame = t;

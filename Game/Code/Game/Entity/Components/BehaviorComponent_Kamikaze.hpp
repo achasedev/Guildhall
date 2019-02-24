@@ -31,6 +31,7 @@ public:
 	virtual void				Update() override;
 	virtual BehaviorComponent*	Clone() const override;
 	virtual void				OnSpawn() override;
+	virtual void				OnEntityCollision(Entity* other) override;
 
 
 private:
