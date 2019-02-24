@@ -52,11 +52,10 @@ private:
 	Stopwatch m_stateTimer;
 	Vector2 m_chargeDirection;
 
-	float m_chargeDuration = 1.f;
-	float m_restDuration = 1.f;
-	float m_chargeSpeed = 100.f;
-	float m_knockbackMagnitude = 30.f;
-	int m_damageOnTouch = 1;
-	int m_damageOnCharge = 2;
+	float	m_chargeDuration = 2.f;
+	float	m_restDuration = 1.f;
+	float	m_chargeSpeed = 100.f;
+	float	m_knockbackMagnitude = 30.f;
+	int		m_damageOnCharge = 2;
 
 };

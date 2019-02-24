@@ -262,7 +262,6 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 		chargeBehavior->m_chargeDuration = ParseXmlAttribute(behaviorElement, "charge_duration", chargeBehavior->m_chargeDuration);
 		chargeBehavior->m_restDuration = ParseXmlAttribute(behaviorElement, "rest_duration", chargeBehavior->m_restDuration);
 		chargeBehavior->m_chargeSpeed = ParseXmlAttribute(behaviorElement, "charge_speed", chargeBehavior->m_chargeSpeed);
-		chargeBehavior->m_damageOnTouch = ParseXmlAttribute(behaviorElement, "damage_on_touch", chargeBehavior->m_damageOnTouch);
 		chargeBehavior->m_damageOnCharge = ParseXmlAttribute(behaviorElement, "damage_on_charge", chargeBehavior->m_damageOnCharge);
 		chargeBehavior->m_knockbackMagnitude = ParseXmlAttribute(behaviorElement, "knockback", chargeBehavior->m_knockbackMagnitude);
 
@@ -316,6 +315,9 @@ BehaviorComponent* EntityDefinition::ConstructBehaviorPrototype(const XMLElement
 	{
 		ERROR_AND_DIE("Unknown Behavior");
 	}
+
+	toReturn->m_damageDealtOnTouch = ParseXmlAttribute(behaviorElement, "damage_on_touch", toReturn->m_damageDealtOnTouch);
+	toReturn->m_knockBackOnTouch = ParseXmlAttribute(behaviorElement, "knockback_on_touch", toReturn->m_knockBackOnTouch);
 
 	return toReturn;
 }

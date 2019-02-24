@@ -86,7 +86,6 @@ BehaviorComponent* BehaviorComponent_Charge::Clone() const
 	charge->m_restDuration = m_restDuration;
 	charge->m_chargeDuration = m_chargeDuration;
 	charge->m_damageOnCharge = m_damageOnCharge;
-	charge->m_damageOnTouch = m_damageOnTouch;
 	charge->m_knockbackMagnitude = m_knockbackMagnitude;
 
 	return charge;
@@ -122,12 +121,8 @@ void BehaviorComponent_Charge::OnEntityCollision(Entity* other)
 	}
 	else
 	{
-		// Hard coded knockback, and the touch damage
-		if (other->GetTeam() != m_owningEntity->GetTeam())
-		{
-			Vector3 direction = (other->GetPosition() - m_owningEntity->GetPosition()).GetNormalized();
-			other->TakeDamage(m_damageOnTouch, 20.f * direction);
-		}
+		// Just do default damage
+		BehaviorComponent::OnEntityCollision(other);
 	}
 }
 

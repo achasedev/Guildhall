@@ -60,7 +60,11 @@ void BehaviorComponent::OnSpawn()
 //
 void BehaviorComponent::OnEntityCollision(Entity* other)
 {
-	UNUSED(other);
+	if (other->GetTeam() != m_owningEntity->GetTeam())
+	{
+		Vector3 knockBackDirection = (other->GetCenterPosition() - m_owningEntity->GetCenterPosition()).GetNormalized();
+		other->TakeDamage(m_damageDealtOnTouch, m_knockBackOnTouch * knockBackDirection);
+	}
 }
 
 

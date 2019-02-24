@@ -1438,6 +1438,35 @@ void World::DrawParticlesToGrid(const IntVector3& offset)
 }
 
 
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Returns the bit mask that isolates the bit for the given layer
+// THIS IS DONE AS A BUNCH OF IFS because layers can have the same enumeration value, so switch
+// statements won't compile
+//
+eCollisionLayerBit GetBitMaskForLayer(eCollisionLayer layer)
+{
+	if (layer == COLLISION_LAYER_WORLD)
+		return COLLISION_LAYER_BIT_WORLD;
+
+	if (layer == COLLISION_LAYER_PLAYER)
+		return COLLISION_LAYER_BIT_PLAYER;
+
+	if (layer == COLLISION_LAYER_ENEMY)
+		return COLLISION_LAYER_BIT_ENEMY;
+
+	if (layer == COLLISION_LAYER_PLAYER_BULLET)
+		return COLLISION_LAYER_BIT_PLAYER_BULLET;
+
+	if (layer == COLLISION_LAYER_ENEMY_BULLET)
+		return COLLISION_LAYER_BIT_ENEMY_BULLET;
+
+	if (layer == COLLISION_LAYER_ITEM)
+		return COLLISION_LAYER_BIT_ITEM;
+
+	ERROR_AND_DIE("Invalid Collision Layer!");
+}
+
+
 //- C FUNCTION ----------------------------------------------------------------------------------------------
 // Returns true if the two given collision layers collide with eachother
 //
@@ -1446,7 +1475,13 @@ bool DoEntitiesCollide(Entity* firstEntity, Entity* secondEntity)
 	eCollisionLayer firstLayer = firstEntity->GetCollisionLayer();
 	eCollisionLayer secondLayer = secondEntity->GetCollisionLayer();
 
-	return (firstLayer & secondLayer) != 0;
+	eCollisionLayerBit maskForFirst = GetBitMaskForLayer(secondLayer);
+	eCollisionLayerBit maskForSecond = GetBitMaskForLayer(firstLayer);
+
+	bool firstCollidesWithSecond = (firstLayer & maskForFirst) != 0;
+	bool secondCollidesWithfirst = (secondLayer & maskForSecond) != 0;
+
+	return (firstCollidesWithSecond && secondCollidesWithfirst);
 }
 
 

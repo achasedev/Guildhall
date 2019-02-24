@@ -12,6 +12,8 @@ class AIEntity;
 
 class BehaviorComponent
 {
+	friend class EntityDefinition;
+
 public:
 	//-----Public Methods-----
 	
@@ -43,5 +45,8 @@ protected:
 	
 	AIEntity*	m_owningEntity = nullptr;
 	Player*		m_closestPlayer = nullptr;
+
+	int			m_damageDealtOnTouch = 1;
+	float		m_knockBackOnTouch = 100.f;
 
 };
