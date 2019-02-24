@@ -78,10 +78,12 @@ void Weapon::Shoot()
 	ASSERT_OR_DIE(m_entityEquippedTo != nullptr, "Weapon fired when it doesn't have an entity owning it");
 
 	// Check the shoot timer
-	if (m_shootTimer.DecrementByIntervalAll() == 0)
+	if (!m_shootTimer.HasIntervalElapsed())
 	{
 		return;
 	}
+
+	m_shootTimer.SetInterval(1.f / m_definition->m_fireRate);
 
 	if (m_definition->m_onShootSound != MISSING_SOUND_ID)
 	{

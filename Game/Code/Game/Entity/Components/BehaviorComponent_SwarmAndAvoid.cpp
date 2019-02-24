@@ -9,11 +9,11 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Entity/AIEntity.hpp"
+#include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Entity/Components/BehaviorComponent_SwarmAndAvoid.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Update
@@ -87,6 +87,10 @@ void BehaviorComponent_SwarmAndAvoid::Update()
 
 		// Make sure the entity is still looking at the player
 		m_owningEntity->SetOrientation(directionToPlayer.GetOrientationDegrees());
+	}
+	else
+	{
+		m_owningEntity->GetPhysicsComponent()->StopAllMovement();
 	}
 }
 

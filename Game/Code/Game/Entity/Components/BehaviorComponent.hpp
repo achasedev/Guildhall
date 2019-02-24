@@ -35,6 +35,8 @@ protected:
 
 	void	MoveToClosestPlayer();
 
+	Vector2 GetDirectionToAvoidClosestStaticObstacle(const Vector2& targetDirection) const;
+	
 
 protected:
 	//-----Protected Data-----

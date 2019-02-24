@@ -9,8 +9,8 @@
 #include "Game/Entity/AIEntity.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Entity/Components/BehaviorComponent.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/HeatMap.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -135,4 +135,50 @@ void BehaviorComponent::MoveToClosestPlayer()
 
 	m_owningEntity->Move(directionToPlayer.xz());
 	m_owningEntity->Decelerate();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// For avoiding obstacles, will return the vector direction to weight into the primary move direction
+// If no obstacle, returns (0,0)
+//
+Vector2 BehaviorComponent::GetDirectionToAvoidClosestStaticObstacle(const Vector2& targetDirection) const
+{
+	std::vector<Entity*> entities = Game::GetWorld()->GetEntitiesThatOverlapSphere(m_owningEntity->GetCenterPosition(), 10.f);
+	Vector2 directionToClosestStaticObstacle = Vector2::ZERO;
+	Vector2 entityForward = m_owningEntity->GetForwardVector().xz();
+	float distanceToClosestStatic = 10000.f;
+
+	// Check all nearby entities
+	for (int entityIndex = 0; entityIndex < (int)entities.size(); ++entityIndex)
+	{
+		Entity* entity = entities[entityIndex];
+
+		if (entity == m_owningEntity) // Don't compare to ourselves
+		{
+			continue;
+		}
+		else if (entity->GetPhysicsType() == PHYSICS_TYPE_STATIC) // Walk around a static
+		{
+			Vector2 directionToObstacle = entity->GetCenterPosition().xz() - m_owningEntity->GetCenterPosition().xz();
+			float currDistance = directionToObstacle.NormalizeAndGetLength();
+
+			bool withinCone = DotProduct(directionToObstacle, entityForward) > CosDegrees(45.f);
+
+			if (withinCone && currDistance < distanceToClosestStatic)
+			{
+				distanceToClosestStatic = currDistance;
+				directionToClosestStaticObstacle = directionToObstacle;
+			}
+		}
+	}
+
+	Vector2 directionToAvoidObstacle = Vector2::ZERO;
+	if (directionToClosestStaticObstacle != Vector2::ZERO)
+	{
+		float sign = (GetAngularDisplacement(targetDirection.GetOrientationDegrees(), directionToClosestStaticObstacle.GetOrientationDegrees()) < 0.f ? 1.0f : -1.0f);
+		directionToAvoidObstacle = sign * Vector2(-directionToClosestStaticObstacle.y, directionToClosestStaticObstacle.x);
+	}
+
+	return directionToAvoidObstacle;
 }

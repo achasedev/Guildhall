@@ -10,6 +10,7 @@
 #include "Game/Entity/AIEntity.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Kamikaze.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Update - moves to the targeted player and blows up when close enough
@@ -74,8 +75,13 @@ void BehaviorComponent_Kamikaze::UpdatePursue()
 	Vector3 targetPlayerPosition = m_targetedPlayer->GetPosition();
 	Vector3 currPosition = m_owningEntity->GetPosition();
 
-	Vector3 directionToPlayer = (targetPlayerPosition - currPosition);
+	Vector2 directionToPlayer = (targetPlayerPosition - currPosition).xz();
 	float distanceToTargetPlayer = directionToPlayer.NormalizeAndGetLength();
+
+	Vector2 directionToAvoidObstacle = GetDirectionToAvoidClosestStaticObstacle(directionToPlayer);
+
+	// Sum directions together
+	Vector2 finalDirection = (0.5f * directionToAvoidObstacle + 0.5f * directionToPlayer).GetNormalized();
 
 	if (distanceToTargetPlayer <= DISTANCE_TO_EXPLODE)
 	{
@@ -84,8 +90,8 @@ void BehaviorComponent_Kamikaze::UpdatePursue()
 	}
 	else
 	{
-		m_owningEntity->Move(directionToPlayer.xz());
-		//m_owningEntity->Decelerate();
+		m_owningEntity->Move(finalDirection);	
+		m_owningEntity->SetOrientation(directionToPlayer.GetOrientationDegrees());
 	}
 }
 
