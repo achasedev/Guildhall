@@ -72,6 +72,14 @@ enum eCollisionLayer : uint8_t
 	COLLISION_LAYER_ITEM = (COLLISION_LAYER_BIT_WORLD | COLLISION_LAYER_BIT_PLAYER)
 };
 
+enum eWeaponSpreadType
+{
+	SPREAD_NONE,
+	SPREAD_RANDOM,
+	SPREAD_FAN,
+	SPREAD_SOURCE
+};
+
 
 // Collision state for a single entity
 struct CollisionDefinition_t
@@ -153,6 +161,8 @@ public:
 	float									m_fireSpread = 0.f;
 	int										m_projectilesFiredPerShot = 1;
 	int										m_initialAmmoCount = 1;
+	eWeaponSpreadType						m_spreadType = SPREAD_NONE;
+	bool									m_isFullAuto = true;
 
 	SoundID									m_onPickupSound = MISSING_SOUND_ID;
 	SoundID									m_onShootSound = MISSING_SOUND_ID;

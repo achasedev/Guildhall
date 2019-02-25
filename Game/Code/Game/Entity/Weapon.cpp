@@ -76,6 +76,7 @@ void Weapon::OnUnequip()
 void Weapon::Shoot()
 {
 	ASSERT_OR_DIE(m_entityEquippedTo != nullptr, "Weapon fired when it doesn't have an entity owning it");
+	ASSERT_OR_DIE(m_currAmmoCount > 0, "Weapon fired with no ammo");
 
 	// Check the shoot timer
 	if (!m_shootTimer.HasIntervalElapsed())
@@ -83,48 +84,27 @@ void Weapon::Shoot()
 		return;
 	}
 
+	
+	// Create and fire the projectiles
+	std::vector<Projectile*> shotsFired;
+	int projectileCount = CreateProjectiles(shotsFired);
+
+	World* world = Game::GetWorld();
+
+	for (int projectileIndex = 0; projectileIndex < projectileCount; ++projectileIndex)
+	{
+		world->AddEntity(shotsFired[projectileIndex]);
+		m_currAmmoCount--;
+	}
+	
+	// Shoot cooldown
 	m_shootTimer.SetInterval(1.f / m_definition->m_fireRate);
 
+	// Play shoot sound
 	if (m_definition->m_onShootSound != MISSING_SOUND_ID)
 	{
 		AudioSystem* audio = AudioSystem::GetInstance();
 		audio->PlaySound(m_definition->m_onShootSound);
-	}
-
-	Vector3 baseDirection = m_entityEquippedTo->GetForwardVector();
-	Vector3 position = m_entityEquippedTo->GetCenterPosition() + (baseDirection * WEAPON_FIRE_OFFSET);
-	eEntityTeam team = m_entityEquippedTo->GetTeam();
-	float projectileSpeed = m_definition->m_projectileDefinition->m_projectileSpeed;
-	World* world = Game::GetWorld();
-
-	int projectileCount = m_definition->m_projectilesFiredPerShot;
-
-	// Shoot as many as we are supposed to this fire
-	for (int i = 0; i < projectileCount; ++i)
-	{
-		Projectile* proj = new Projectile(m_definition->m_projectileDefinition, m_entityEquippedTo->GetTeam());
-
-		Vector3 spread;
-		spread.x = GetRandomFloatInRange(-m_definition->m_fireSpread, m_definition->m_fireSpread);
-		spread.y = GetRandomFloatInRange(-m_definition->m_fireSpread, m_definition->m_fireSpread);
-		spread.z = GetRandomFloatInRange(-m_definition->m_fireSpread, m_definition->m_fireSpread);
-
-		Vector3 finalDirection = baseDirection + spread;
-		float finalOrientation = finalDirection.xz().GetOrientationDegrees();
-
-		proj->SetPosition(position);
-		proj->SetOrientation(finalOrientation);
-		proj->SetTeam(team);
-
-		proj->GetPhysicsComponent()->SetVelocity(finalDirection * projectileSpeed);
-
-		world->AddEntity(proj);
-		m_currAmmoCount--;
-
-		if (IsOutOfAmmo())
-		{
-			return;
-		}
 	}
 }
 
@@ -135,6 +115,15 @@ void Weapon::Shoot()
 void Weapon::SetHasInfiniteAmmo(bool hasInfiniteAmmo)
 {
 	m_hasInfiniteAmmo = hasInfiniteAmmo;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the number of projectiles that this weapon can still spawn
+//
+int Weapon::GetAmmoCountRemaining() const
+{
+	return m_currAmmoCount;
 }
 
 
@@ -178,4 +167,194 @@ const VoxelSprite* Weapon::GetTextureForUIRender()
 	}
 
 	return nullptr;
+}
+
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if this weapon will continuously fire if the fire button is held
+//
+bool Weapon::IsFullAuto() const
+{
+	return m_definition->m_isFullAuto;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Creates the projectiles from a single "shot" of this weapon
+// Returns the number of projectiles created
+//
+int Weapon::CreateProjectiles(std::vector<Projectile*>& out_projectiles) const
+{
+	int projectileCountCreated = 0;
+	switch (m_definition->m_spreadType)
+	{
+	case SPREAD_NONE:
+		projectileCountCreated = CreateProjectilesForNoSpread(out_projectiles);
+		break;
+	case SPREAD_RANDOM:
+		projectileCountCreated = CreateProjectilesForRandomSpread(out_projectiles);
+		break;
+	case SPREAD_FAN:
+		projectileCountCreated = CreateProjectilesForFanSpread(out_projectiles);
+		break;
+	case SPREAD_SOURCE: 
+		projectileCountCreated = CreateProjectilesForSourceSpread(out_projectiles);
+		break;
+	default:
+		ERROR_AND_DIE("Invalid spread type");
+		break;
+	}
+
+	return projectileCountCreated;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Creates the given number of projectiles a 2D uniform fan spread
+//
+int Weapon::CreateProjectilesForFanSpread(std::vector<Projectile*>& out_projectiles) const
+{
+	Vector3 baseDirection = m_entityEquippedTo->GetForwardVector();
+	Vector3 baseSpawnPosition = m_entityEquippedTo->GetCenterPosition() + (baseDirection * WEAPON_FIRE_OFFSET);
+	eEntityTeam team = m_entityEquippedTo->GetTeam();
+	float projectileSpeed = m_definition->m_projectileDefinition->m_projectileSpeed;
+	int countToSpawn = m_definition->m_projectilesFiredPerShot;
+
+	float degreeOffsetPerShot = m_definition->m_fireSpread / (float) countToSpawn;
+	float minDegreeOffset = ((float) (countToSpawn - 1) / 2.f) * degreeOffsetPerShot;
+
+	// Shoot as many as we are supposed to this fire
+	for (int i = 0; i < countToSpawn; ++i)
+	{
+		Projectile* proj = new Projectile(m_definition->m_projectileDefinition, m_entityEquippedTo->GetTeam());
+
+		float currDegreeOffset = minDegreeOffset - (float)i * degreeOffsetPerShot;
+		float currOrientation = m_entityEquippedTo->GetOrientation();
+		float finalOrientation = currOrientation + currDegreeOffset;
+
+		Vector2 finalDirection2D = Vector2::MakeDirectionAtDegrees(finalOrientation);
+		Vector3 finalDirection = Vector3(finalDirection2D.x, 0.f, finalDirection2D.y);
+
+		proj->SetPosition(baseSpawnPosition);
+		proj->SetOrientation(finalOrientation);
+		proj->SetTeam(team);
+
+		proj->GetPhysicsComponent()->SetVelocity(finalDirection * projectileSpeed);
+
+		out_projectiles.push_back(proj);
+	}
+
+	return (int) out_projectiles.size();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Creates the given number of projectiles with completely randomized spread
+//
+int Weapon::CreateProjectilesForRandomSpread(std::vector<Projectile*>& out_projectiles) const
+{
+	Vector3 baseDirection = m_entityEquippedTo->GetForwardVector();
+	Vector3 baseSpawnPosition = m_entityEquippedTo->GetCenterPosition() + (baseDirection * WEAPON_FIRE_OFFSET);
+	eEntityTeam team = m_entityEquippedTo->GetTeam();
+	float projectileSpeed = m_definition->m_projectileDefinition->m_projectileSpeed;
+	int countToSpawn = MinInt(m_definition->m_projectilesFiredPerShot, GetAmmoCountRemaining());
+	float maxSpread = m_definition->m_fireSpread;
+
+	// Shoot as many as we are supposed to this fire
+	for (int i = 0; i < countToSpawn; ++i)
+	{
+		Projectile* proj = new Projectile(m_definition->m_projectileDefinition, m_entityEquippedTo->GetTeam());
+
+		Vector3 spreadOffset;
+
+		spreadOffset.x = GetRandomFloatInRange(-maxSpread, maxSpread);
+		spreadOffset.y = GetRandomFloatInRange(-maxSpread, maxSpread);
+		spreadOffset.z = GetRandomFloatInRange(-maxSpread, maxSpread);
+
+		Vector3 finalDirection = (baseDirection + spreadOffset).GetNormalized();
+		float finalOrientation = finalDirection.xz().GetOrientationDegrees();
+
+		proj->SetPosition(baseSpawnPosition);
+		proj->SetOrientation(finalOrientation);
+		proj->SetTeam(team);
+
+		proj->GetPhysicsComponent()->SetVelocity(finalDirection * projectileSpeed);
+
+		out_projectiles.push_back(proj);
+	}
+
+	return (int) out_projectiles.size();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Creates the given number of projectiles with spread on the spawn position, but not on the direction
+//
+int Weapon::CreateProjectilesForSourceSpread(std::vector<Projectile*>& out_projectiles) const
+{
+	Vector3 baseDirection = m_entityEquippedTo->GetForwardVector();
+	Vector3 rightDirection = m_entityEquippedTo->GetRightVector();
+	Vector3 upDirection = m_entityEquippedTo->GetUpVector();
+
+	Vector3 baseSpawnPosition = m_entityEquippedTo->GetCenterPosition() + (baseDirection * WEAPON_FIRE_OFFSET);
+	float finalOrientation = baseDirection.xz().GetOrientationDegrees();
+
+	eEntityTeam team = m_entityEquippedTo->GetTeam();
+	float projectileSpeed = m_definition->m_projectileDefinition->m_projectileSpeed;
+	int countToSpawn = MinInt(m_definition->m_projectilesFiredPerShot, GetAmmoCountRemaining());
+	float maxSpread = m_definition->m_fireSpread;
+
+	// Shoot as many as we are supposed to this fire
+	for (int i = 0; i < countToSpawn; ++i)
+	{
+		Projectile* proj = new Projectile(m_definition->m_projectileDefinition, m_entityEquippedTo->GetTeam());
+
+		float upSpreadMagnitude = GetRandomFloatInRange(-maxSpread, maxSpread);
+		float rightSpreadMagnitude = GetRandomFloatInRange(-maxSpread, maxSpread);
+
+		Vector3 spawnOffset = upDirection * upSpreadMagnitude + rightDirection * rightSpreadMagnitude;
+		Vector3 finalPosition = baseSpawnPosition + spawnOffset;
+
+		proj->SetPosition(finalPosition);
+		proj->SetOrientation(finalOrientation);
+		proj->SetTeam(team);
+
+		proj->GetPhysicsComponent()->SetVelocity(baseDirection * projectileSpeed);
+
+		out_projectiles.push_back(proj);
+	}
+
+	return (int) out_projectiles.size();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Creates the given number of projectiles with no spread, perfect accuracy
+//
+int Weapon::CreateProjectilesForNoSpread(std::vector<Projectile*>& out_projectiles) const
+{
+	Vector3 baseDirection = m_entityEquippedTo->GetForwardVector();
+	Vector3 baseSpawnPosition = m_entityEquippedTo->GetCenterPosition() + (baseDirection * WEAPON_FIRE_OFFSET);
+	eEntityTeam team = m_entityEquippedTo->GetTeam();
+	float projectileSpeed = m_definition->m_projectileDefinition->m_projectileSpeed;
+	int countToSpawn = MinInt(m_definition->m_projectilesFiredPerShot, GetAmmoCountRemaining());
+
+	// Shoot as many as we are supposed to this fire
+	for (int i = 0; i < countToSpawn; ++i)
+	{
+		Projectile* proj = new Projectile(m_definition->m_projectileDefinition, m_entityEquippedTo->GetTeam());
+
+		float finalOrientation = baseDirection.xz().GetOrientationDegrees();
+
+		proj->SetPosition(baseSpawnPosition);
+		proj->SetOrientation(finalOrientation);
+		proj->SetTeam(team);
+
+		proj->GetPhysicsComponent()->SetVelocity(baseDirection * projectileSpeed);
+
+		out_projectiles.push_back(proj);
+	}
+
+	return (int) out_projectiles.size();
 }

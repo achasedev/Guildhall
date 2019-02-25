@@ -88,6 +88,8 @@ public:
 	Vector3							GetPositionForLocalCoords(const IntVector3& localCoords) const;
 	Vector3							GetPositionForLocalIndex(unsigned int index) const;
 	Vector3							GetForwardVector() const;
+	Vector3							GetRightVector() const;
+	Vector3							GetUpVector() const;
 
 	IntVector3						GetCoordinatePosition() const;
 	IntVector3						GetBottomCenterCoordinatePosition() const;

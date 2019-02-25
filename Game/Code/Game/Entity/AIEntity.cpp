@@ -47,22 +47,7 @@ void AIEntity::OnDeath()
 
 	if (CheckRandomChance(1.f))
 	{
-		Weapon* drop = nullptr;
-
-		float roll = GetRandomFloatZeroToOne();
-
-		if (roll > 0.2f)
-		{
-			drop = new Weapon(EntityDefinition::GetDefinition("MissileLauncher"));
-		}
-		else if (roll > 0.6f)
-		{
-			drop = new Weapon(EntityDefinition::GetDefinition("Flamethrower"));
-		}
-		else
-		{
-			drop = new Weapon(EntityDefinition::GetDefinition("Shotgun"));
-		}
+		Weapon* drop = new Weapon(EntityDefinition::GetDefinition("Shotgun"));
 
 		drop->SetPosition(GetCenterPosition());
 		Game::GetWorld()->AddEntity(drop);

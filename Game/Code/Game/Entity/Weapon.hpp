@@ -17,17 +17,25 @@ public:
 	Weapon(const EntityDefinition* definition);
 
 	// Events
-	virtual void OnEntityCollision(Entity* other) override;
+	virtual void		OnEntityCollision(Entity* other) override;
+	void				OnEquip(Entity* playerEquipping);
+	void				OnUnequip();
+	void				Shoot();
+	void				SetHasInfiniteAmmo(bool hasInfiniteAmmo);
+	int					GetAmmoCountRemaining() const;
+	bool				IsOutOfAmmo() const;
+	const VoxelSprite*	GetTextureForUIRender();
+	bool				IsFullAuto() const;
 
-	void OnEquip(Entity* playerEquipping);
-	void OnUnequip();
 
-	void Shoot();
-	void SetHasInfiniteAmmo(bool hasInfiniteAmmo);
+private:
+	//-----Private Methods-----
 
-	bool IsOutOfAmmo() const;
-
-	const VoxelSprite* GetTextureForUIRender();
+	int CreateProjectiles(std::vector<Projectile*>& out_projectiles) const;
+	int CreateProjectilesForFanSpread(std::vector<Projectile*>& out_projectiles) const;
+	int CreateProjectilesForRandomSpread(std::vector<Projectile*>& out_projectiles) const;
+	int CreateProjectilesForSourceSpread(std::vector<Projectile*>& out_projectiles) const;
+	int CreateProjectilesForNoSpread(std::vector<Projectile*>& out_projectiles) const;
 
 
 private:

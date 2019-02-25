@@ -145,7 +145,8 @@ void Player::ProcessGameplayInput()
 	}
 
 	// Test shooting
-	if (controller.GetTriggerValue(XBOX_TRIGGER_RIGHT) > 0.5f)
+	bool triggerJustPulled = controller.WasTriggerJustPulled(XBOX_TRIGGER_RIGHT);
+	if (triggerJustPulled || (controller.GetTriggerValue(XBOX_TRIGGER_RIGHT) > 0.5f && m_currWeapon->IsFullAuto()))
 	{
 		Shoot();
 	}

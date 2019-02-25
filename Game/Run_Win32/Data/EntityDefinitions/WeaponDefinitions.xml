@@ -7,7 +7,7 @@
 		<Physics physics_type="dynamic">
 			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
 		</Physics>
-		<Weapon fire_rate="4.0" fire_spread="0.0" projectile="Bullet" count_per_shot="1"/>
+		<Weapon fire_rate="4.0" fire_spread="0.0" spread_type="none" projectile="Bullet" count_per_shot="1"/>
 		<Audio on_shoot="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Weapons\Single Shot Sounds\sfx_weapon_singleshot3.wav" on_pickup="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Interactions\sfx_sounds_interaction1.wav"/>
 	</EntityDefinition>
 
@@ -16,7 +16,7 @@
 		<Physics physics_type="dynamic">
 			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
 		</Physics>
-		<Weapon fire_rate="2.0" fire_spread="0.0" projectile="Bullet" count_per_shot="1"/>
+		<Weapon fire_rate="2.0" fire_spread="0.0" spread_type="none" projectile="Bullet" count_per_shot="1"/>
 		<Audio on_shoot="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Weapons\Single Shot Sounds\sfx_weapon_singleshot3.wav" on_pickup="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Interactions\sfx_sounds_interaction1.wav"/>
 	</EntityDefinition>
 
@@ -25,7 +25,7 @@
 		<Physics physics_type="dynamic">
 			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
 		</Physics>
-		<Weapon fire_rate="2.0" fire_spread="0.4" projectile="Shell" count_per_shot="6" initial_ammo="60"/>
+		<Weapon fire_rate="8.0" fire_spread="45.0" spread_type="fan" projectile="Shell" count_per_shot="12" initial_ammo="240" is_full_auto="false"/>
 		<Audio on_shoot="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Weapons\Shotgun\sfx_weapon_shotgun1.wav" on_pickup="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Interactions\sfx_sounds_interaction1.wav"/>
 	</EntityDefinition>
 
@@ -34,7 +34,7 @@
 		<Physics physics_type="dynamic">
 			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
 		</Physics>
-		<Weapon fire_rate="15.0" fire_spread="0.2" projectile="Flame" count_per_shot="15" initial_ammo="600"/>
+		<Weapon fire_rate="15.0" fire_spread="0.2" spread_type="random" projectile="Flame" count_per_shot="15" initial_ammo="600"/>
 		<Audio on_shoot="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Weapons\Single Shot Sounds\sfx_weapon_singleshot21.wav" on_pickup="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Interactions\sfx_sounds_interaction1.wav"/>
 	</EntityDefinition>
 
@@ -43,7 +43,7 @@
 		<Physics physics_type="dynamic">
 			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
 		</Physics>
-		<Weapon fire_rate="2.0" fire_spread="0.0" projectile="Missile" count_per_shot="1" initial_ammo="5"/>
+		<Weapon fire_rate="2.0" fire_spread="0.0" spread_type="none" projectile="Missile" count_per_shot="1" initial_ammo="5"/>
 		<Audio on_shoot="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Weapons\Grenade Whistles\sfx_wpn_missilelaunch.wav" on_pickup="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Interactions\sfx_sounds_interaction1.wav"/>
 	</EntityDefinition>
 

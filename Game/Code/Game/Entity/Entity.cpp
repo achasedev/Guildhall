@@ -635,6 +635,25 @@ Vector3 Entity::GetForwardVector() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns this entity's current "right" direction
+//
+Vector3 Entity::GetRightVector() const
+{
+	Vector2 direction = Vector2::MakeDirectionAtDegrees(m_orientation - 90.f);
+	return Vector3(direction.x, 0.f, direction.y);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns this entity's up vector - should always be positive Y axis!
+//
+Vector3 Entity::GetUpVector() const
+{
+	return Vector3::Y_AXIS;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the coordinate position that this entity occupies
 //
 IntVector3 Entity::GetCoordinatePosition() const

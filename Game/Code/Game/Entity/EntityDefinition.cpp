@@ -92,6 +92,21 @@ eEntityClass GetEntityClassForString(const std::string& text)
 }
 
 
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Return the enumeration for the spread type text given
+//
+eWeaponSpreadType ConvertSpreadTypeFromString(const std::string& spreadText)
+{
+	if (spreadText == "random") { return SPREAD_RANDOM; }
+	else if (spreadText == "fan") { return SPREAD_FAN; }
+	else if (spreadText == "source") { return SPREAD_SOURCE; }
+	else
+	{
+		return SPREAD_NONE;
+	}
+}
+
+
 //-----------------------------------------------------------------------------------------------
 // Constructor
 //
@@ -240,6 +255,11 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement, eEntityClass
 		m_fireSpread = ParseXmlAttribute(*weaponElement, "fire_spread", m_fireSpread);
 		m_projectilesFiredPerShot = ParseXmlAttribute(*weaponElement, "count_per_shot", m_projectilesFiredPerShot);
 		m_initialAmmoCount = ParseXmlAttribute(*weaponElement, "initial_ammo", m_initialAmmoCount);
+
+		std::string spreadText = ParseXmlAttribute(*weaponElement, "spread_type", "");
+		m_spreadType = ConvertSpreadTypeFromString(spreadText);
+
+		m_isFullAuto = ParseXmlAttribute(*weaponElement, "is_full_auto", m_isFullAuto);
 	}
 }
 
