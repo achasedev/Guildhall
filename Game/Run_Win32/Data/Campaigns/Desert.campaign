@@ -1,8 +1,10 @@
 <Campaign name="Desert" music="Data/Audio/Music/Boss Battle #3 V1.wav" character_select_map="Desert0">
 
 	<Stage map="Desert1" enter="west">
-		<!--<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Soldier" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="3"/>-->
-		<SpawnEvent type="off_screen" entity="Walker" direction="east" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>
+		<SpawnEvent type="off_screen" entity="Walker" spawn_direction="east" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="300"/>
+		<SpawnEvent type="off_screen" entity="Walker" spawn_direction="north" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="300"/>
+		<SpawnEvent type="off_screen" entity="Walker" spawn_direction="south" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="300"/>
+		<SpawnEvent type="off_screen" entity="Walker" spawn_direction="west" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="300"/>
 	</Stage> 
 
 	<Stage map="Desert2" enter="north">
@@ -26,9 +28,9 @@
 		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>
 		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Tank" spawn_rate="3" spawn_count_delay="10" spawn_time_delay="6.0" total_to_spawn="3"/>
 
-		<SpawnEvent type="meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Soldier" spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="3"/>
-		<SpawnEvent type="meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Soldier" spawn_count_delay="0" spawn_time_delay="15.0" total_to_spawn="3"/>
-		<SpawnEvent type="meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Soldier" spawn_count_delay="0" spawn_time_delay="20.0" total_to_spawn="3"/>
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Soldier" spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="3"/>
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Soldier" spawn_count_delay="0" spawn_time_delay="15.0" total_to_spawn="3"/>
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Soldier" spawn_count_delay="0" spawn_time_delay="20.0" total_to_spawn="3"/>
 	</Stage>
 
 </Campaign>

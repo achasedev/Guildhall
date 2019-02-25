@@ -8,7 +8,6 @@
 		<SpawnEvent type="off_screen" spawn_direction="north" entity="UFO" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
 		<SpawnEvent type="from_ground" entity="Smasher" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
 		<SpawnEvent type="off_screen" spawn_direction="south" entity="Bunny" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="10"/>
-		<SpawnEvent type="off_screen" spawn_direction="north" entity="Soldier" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="2"/>
 		<SpawnEvent type="from_ground" entity="Spider" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="10"/>
 
 	</Stage>

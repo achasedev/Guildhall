@@ -76,7 +76,7 @@ void Weapon::OnUnequip()
 void Weapon::Shoot()
 {
 	ASSERT_OR_DIE(m_entityEquippedTo != nullptr, "Weapon fired when it doesn't have an entity owning it");
-	ASSERT_OR_DIE(m_currAmmoCount > 0, "Weapon fired with no ammo");
+	//ASSERT_OR_DIE(m_currAmmoCount > 0, "Weapon fired with no ammo");
 
 	// Check the shoot timer
 	if (!m_shootTimer.HasIntervalElapsed())

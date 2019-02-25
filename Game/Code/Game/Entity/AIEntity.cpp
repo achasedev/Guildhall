@@ -45,9 +45,24 @@ void AIEntity::OnDeath()
 	m_eventSpawnedFrom->StopTrackingEntity(this);
 	Game::GetWorld()->ParticalizeEntity(this);
 
-	if (CheckRandomChance(1.f))
+	if (CheckRandomChance(0.25f))
 	{
-		Weapon* drop = new Weapon(EntityDefinition::GetDefinition("Shotgun"));
+		Weapon* drop = nullptr;
+		
+		float chance = GetRandomFloatZeroToOne();
+
+		if (chance > 0.5f)
+		{
+			drop = new Weapon(EntityDefinition::GetDefinition("Shotgun"));
+		}
+		else if (chance > 0.2f)
+		{
+			drop = new Weapon(EntityDefinition::GetDefinition("Flamethrower"));
+		}
+		else
+		{
+			drop = new Weapon(EntityDefinition::GetDefinition("MissileLauncher"));
+		}
 
 		drop->SetPosition(GetCenterPosition());
 		Game::GetWorld()->AddEntity(drop);

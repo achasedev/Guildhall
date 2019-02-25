@@ -2,7 +2,7 @@
 
 	<Stage map="Forest1" enter="west">
 
-		<SpawnEvent type="off_screen" spawn_direction="north" entity="Spider" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="15"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Spider" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="150"/>
 
 	</Stage>
 
