@@ -1,0 +1,9 @@
+<Campaign name="Spider Zoo" music="Data/Audio/Music/Boss Battle #4 V1.wav" character_select_map="Forest0">
+
+	<Stage map="Forest1" enter="west">
+
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Spider" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="15"/>
+
+	</Stage>
+
+</Campaign>

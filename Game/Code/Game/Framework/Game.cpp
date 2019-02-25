@@ -738,7 +738,7 @@ void DrawHUDForPlayer(int playerID, Player* player, VoxelGrid* grid, VoxelFont* 
 	// Lastly, append/prepend the player icon based on alignment
 	if (options.alignment.x == 1.0f)
 	{
-		std::string iconText = Stringf(" P%i", playerID);
+		std::string iconText = Stringf(" P%i", playerID + 1);
 		playerHudText += iconText;
 
 		for (int i = 0; i < (int)iconText.size(); ++i)
@@ -748,7 +748,7 @@ void DrawHUDForPlayer(int playerID, Player* player, VoxelGrid* grid, VoxelFont* 
 	}
 	else
 	{
-		std::string iconText = Stringf("P%i ", playerID);
+		std::string iconText = Stringf("P%i ", playerID + 1);
 		playerHudText.insert(0, iconText);
 
 		for (int i = 0; i < (int)iconText.size(); ++i)

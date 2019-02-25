@@ -1,0 +1,18 @@
+<VoxelAnimations>
+
+	<VoxelAnimation name="Tank_idle" playmode="loop">
+		<Frame voxelsprite="Tank_idle_0" duration="0.5"/>
+	</VoxelAnimation>
+
+	<VoxelAnimation name="Tank_walk" playmode="loop">
+		<Frame voxelsprite="Tank_walk_0" duration="0.25"/>
+		<Frame voxelsprite="Tank_walk_1" duration="0.25"/>
+		<Frame voxelsprite="Tank_walk_0" duration="0.25"/>
+		<Frame voxelsprite="Tank_idle_0" duration="0.25"/>
+		<Frame voxelsprite="Tank_walk_2" duration="0.25"/>
+		<Frame voxelsprite="Tank_walk_3" duration="0.25"/>
+		<Frame voxelsprite="Tank_walk_2" duration="0.25"/>
+		<Frame voxelsprite="Tank_idle_0" duration="0.25"/>
+	</VoxelAnimation>
+
+</VoxelAnimations>
