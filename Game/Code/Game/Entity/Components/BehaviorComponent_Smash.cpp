@@ -9,8 +9,12 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Entity/AIEntity.hpp"
+#include "Game/Entity/Projectile.hpp"
+#include "Game/Entity/EntityDefinition.hpp"
+#include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Smash.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -156,5 +160,31 @@ void BehaviorComponent_Smash::UpdateSmashing()
 		m_state = STATE_WAITING_ON_GROUND;
 
 		Game::GetWorld()->DestroyPartOfMap(m_owningEntity->GetBottomCenterCoordinatePosition(), (float)m_owningEntity->GetOrientedDimensions().x, 50.f, 2);
+
+		// Spawn some projectiles
+		Vector3 centerPosition = m_owningEntity->GetBottomCenterPosition();
+		centerPosition.y += 2.f;
+
+		float distanceFromCenter = (float) m_owningEntity->GetOrientedDimensions().x;
+
+		int projectileCount = 150;
+		float angleBetweenProjectiles = 360.f / (float) projectileCount;
+		for (int i = 0; i < projectileCount; ++i)
+		{
+			float currAngle = (float)i * angleBetweenProjectiles;
+			Vector2 direction = Vector2::MakeDirectionAtDegrees(currAngle);
+
+			Vector3 direction3D = Vector3(direction.x, 0.f, direction.y);
+			Vector3 spawnPosition = centerPosition + direction3D * distanceFromCenter;
+
+			const EntityDefinition* projDefinition = EntityDefinition::GetDefinition("Bullet");
+			Projectile* projectile = new Projectile(projDefinition, ENTITY_TEAM_ENEMY);
+			projectile->SetPosition(spawnPosition);
+			projectile->SetOrientation(direction.GetOrientationDegrees());
+
+			projectile->GetPhysicsComponent()->SetVelocity(direction3D * projDefinition->m_projectileSpeed);
+
+			Game::GetWorld()->AddEntity(projectile);
+		}
 	}
 }

@@ -2,7 +2,7 @@
 
 	<!-- Enemies (LOAD AFTER WEAPONS)-->
 
-	<EntityDefinition name="Walker" initial_health="1" points="300">
+	<EntityDefinition name="Walker" initial_health="2" points="300">
 		<Movement max_acceleration="3000.0" max_speed="20.0" max_deceleration="100.0" jump_impulse="30.0"/>
 		<Visuals animation_set="Walker" default_sprite="Walker_idle_0"/>
 		<Physics physics_type="dynamic" has_gravity="true">
@@ -13,7 +13,7 @@
 		<Audio on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Death Screams\Human\sfx_deathscream_human6.wav"/>
 	</EntityDefinition>
 
-	<EntityDefinition name="Tank" initial_health="10">
+	<EntityDefinition name="Tank" initial_health="20">
 		<Movement max_acceleration="2000.0" max_speed="12.0" max_deceleration="100.0" jump_impulse="50.0"/>
 		<Visuals animation_set="Tank" default_sprite="Tank_idle_0"/>
 		<Physics physics_type="dynamic" has_gravity="true">
@@ -33,7 +33,7 @@
 		<Audio on_death="Data\Audio\SFX\dog\dog-snarl.flac"/>
 	</EntityDefinition>
 
-	<EntityDefinition name="Soldier" initial_health="1">
+	<EntityDefinition name="Soldier" initial_health="5">
 		<Movement max_acceleration="2000.0" max_speed="20.0" 
 			max_deceleration="100.0" jump_impulse="10.0"/>
 		<Visuals animation_set="Soldier" default_sprite="Soldier_idle_0"/>
@@ -66,7 +66,7 @@
 		<Audio on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Buttons\sfx_sounds_button8.wav" custom="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Buttons\sfx_sounds_button12.wav"/>
 	</EntityDefinition>
 
-	<EntityDefinition name="UFO" initial_health="1" points="1000">
+	<EntityDefinition name="UFO" initial_health="3" points="1000">
 		<Movement max_acceleration="3000.0" max_speed="60.0" max_deceleration="150.0" jump_impulse="30.0"/>
 		<Visuals animation_set="UFO" default_sprite="UFO_idle_0"/>
 		<Physics physics_type="dynamic" has_gravity="false">
