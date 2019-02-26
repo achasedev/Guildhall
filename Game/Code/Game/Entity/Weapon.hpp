@@ -51,7 +51,7 @@ private:
 	bool m_showTexture = true;
 
 	// For rendering behavior, same for all weapons
-	static constexpr float WEAPON_FIRE_OFFSET = 5.f;
+	static constexpr float WEAPON_FIRE_OFFSET = 0.5f;
 	static constexpr float WEAPON_LOW_AMMO_PERCENTAGE = 0.2f;
 	static constexpr float WEAPON_LOW_AMMO_FLASH_INTERVAL = 0.25f;
 

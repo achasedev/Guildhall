@@ -1,0 +1,5 @@
+<VoxelSprites>
+
+	<VoxelSprite name="LaserShot" file="Data/VoxelModels/Projectiles/LaserShot.qef"/>
+
+</VoxelSprites>

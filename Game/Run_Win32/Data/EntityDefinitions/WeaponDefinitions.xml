@@ -38,6 +38,15 @@
 		<Audio on_shoot="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Weapons\Single Shot Sounds\sfx_weapon_singleshot21.wav" on_pickup="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Interactions\sfx_sounds_interaction1.wav"/>
 	</EntityDefinition>
 
+	<EntityDefinition name="Laser">
+		<Visuals default_sprite="Laser"/>
+		<Physics physics_type="dynamic">
+			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
+		</Physics>
+		<Weapon fire_rate="50" fire_spread="1.0" spread_type="source" projectile="LaserShot" count_per_shot="20" initial_ammo="4000"/>
+		<Audio on_shoot="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Weapons\Single Shot Sounds\sfx_weapon_singleshot21.wav" on_pickup="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Interactions\sfx_sounds_interaction1.wav"/>
+	</EntityDefinition>
+
 	<EntityDefinition name="MissileLauncher">
 		<Visuals default_sprite="MissileLauncher"/>
 		<Physics physics_type="dynamic">

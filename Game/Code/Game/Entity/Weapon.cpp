@@ -293,12 +293,12 @@ int Weapon::CreateProjectilesForRandomSpread(std::vector<Projectile*>& out_proje
 //
 int Weapon::CreateProjectilesForSourceSpread(std::vector<Projectile*>& out_projectiles) const
 {
-	Vector3 baseDirection = m_entityEquippedTo->GetForwardVector();
+	Vector3 forwardDirection = m_entityEquippedTo->GetForwardVector();
 	Vector3 rightDirection = m_entityEquippedTo->GetRightVector();
 	Vector3 upDirection = m_entityEquippedTo->GetUpVector();
 
-	Vector3 baseSpawnPosition = m_entityEquippedTo->GetCenterPosition() + (baseDirection * WEAPON_FIRE_OFFSET);
-	float finalOrientation = baseDirection.xz().GetOrientationDegrees();
+	Vector3 baseSpawnPosition = m_entityEquippedTo->GetCenterPosition() + (forwardDirection * WEAPON_FIRE_OFFSET);
+	float finalOrientation = forwardDirection.xz().GetOrientationDegrees();
 
 	eEntityTeam team = m_entityEquippedTo->GetTeam();
 	float projectileSpeed = m_definition->m_projectileDefinition->m_projectileSpeed;
@@ -312,15 +312,16 @@ int Weapon::CreateProjectilesForSourceSpread(std::vector<Projectile*>& out_proje
 
 		float upSpreadMagnitude = GetRandomFloatInRange(-maxSpread, maxSpread);
 		float rightSpreadMagnitude = GetRandomFloatInRange(-maxSpread, maxSpread);
+		float forwardSpreadMagnitude = GetRandomFloatInRange(-maxSpread, maxSpread);
 
-		Vector3 spawnOffset = upDirection * upSpreadMagnitude + rightDirection * rightSpreadMagnitude;
+		Vector3 spawnOffset = upDirection * upSpreadMagnitude + rightDirection * rightSpreadMagnitude + forwardDirection * 2.f * forwardSpreadMagnitude;
 		Vector3 finalPosition = baseSpawnPosition + spawnOffset;
 
 		proj->SetPosition(finalPosition);
 		proj->SetOrientation(finalOrientation);
 		proj->SetTeam(team);
 
-		proj->GetPhysicsComponent()->SetVelocity(baseDirection * projectileSpeed);
+		proj->GetPhysicsComponent()->SetVelocity(forwardDirection * projectileSpeed);
 
 		out_projectiles.push_back(proj);
 	}

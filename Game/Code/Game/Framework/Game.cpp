@@ -404,7 +404,6 @@ void Game::Render() const
 	}
 
 	m_voxelGrid->BuildMeshAndDraw();
-	m_voxelGrid->DrawDebugLineGrid();
 }
 
 
