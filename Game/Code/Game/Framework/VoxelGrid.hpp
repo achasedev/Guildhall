@@ -77,6 +77,8 @@ public:
 	void				Initialize(const IntVector3& voxelDimensions);
 	void				BuildMeshAndDraw();
 
+	void				DrawDebugLineGrid();
+
 	// Mutators
 	void				Clear();
 	void				ColorVoxelAtCoords(const IntVector3& coords, const Rgba& color);
@@ -104,6 +106,7 @@ private:
 
 	// Initialization
 	void				InitializeBuffers();
+	void				BuildDebugLineMesh();
 
 	// For the render step
 	void				UpdateBuffers();
@@ -123,7 +126,8 @@ private:
 	RenderBuffer			m_colorBuffer;
 	RenderBuffer			m_metaBuffer;
 	RenderBuffer			m_countBuffer;
-	Mesh					m_mesh;
+	Mesh					m_voxelMesh;
+	Mesh					m_debugGridLineMesh;
 	ComputeShader*			m_computeShader = nullptr;
 
 };

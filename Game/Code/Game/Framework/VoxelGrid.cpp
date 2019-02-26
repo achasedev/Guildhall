@@ -98,6 +98,8 @@ void VoxelGrid::Initialize(const IntVector3& voxelDimensions)
 	m_computeShader->Initialize("Data/ComputeShaders/VoxelMeshRebuild.cs");
 
 	InitializeBuffers();
+
+	BuildDebugLineMesh();
 }
 
 
@@ -113,6 +115,33 @@ void VoxelGrid::BuildMeshAndDraw()
 
 	// Draw the mesh
 	DrawGrid();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Draws the debug line grid used to better visualize the dissection of voxels
+//
+void VoxelGrid::DrawDebugLineGrid()
+{
+	PROFILE_LOG_SCOPE_FUNCTION();
+
+	// Draw
+
+	Renderer* renderer = Renderer::GetInstance();
+	renderer->SetCurrentCamera(Game::GetGameCamera());
+	renderer->SetGLLineWidth(5.f);
+
+	Renderable rend;
+	rend.AddInstanceMatrix(Matrix44::IDENTITY);
+
+	RenderableDraw_t draw;
+	draw.mesh = &m_debugGridLineMesh;
+	draw.sharedMaterial = AssetDB::CreateOrGetSharedMaterial("Default_Opaque");
+
+	rend.AddDraw(draw);
+
+	renderer->DrawRenderable(&rend);
+	renderer->SetGLLineWidth(1.f);
 }
 
 
@@ -615,7 +644,56 @@ void VoxelGrid::InitializeBuffers()
 	unsigned int indexCount = (voxelCount / 4) * INDICES_PER_VOXEL;
 
 	// Setup the mesh so the compute shader can directly write to its buffers
-	m_mesh.InitializeBuffersForCompute<VertexVoxel>((unsigned int)VERTEX_BINDING, vertexCount, (unsigned int)INDEX_BINDING, indexCount);
+	m_voxelMesh.InitializeBuffersForCompute<VertexVoxel>((unsigned int)VERTEX_BINDING, vertexCount, (unsigned int)INDEX_BINDING, indexCount);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Builds the mesh consisting of line that separate the voxel increments in the grid
+//
+void VoxelGrid::BuildDebugLineMesh()
+{
+	MeshBuilder mb;
+	mb.BeginBuilding(PRIMITIVE_LINES, false);
+
+	// -x/+x Lines
+	for (int zIndex = 0; zIndex < m_dimensions.z + 1; ++zIndex)
+	{
+		for (int yIndex = 0; yIndex < m_dimensions.y + 1; ++yIndex)
+		{
+			Vector3 start = Vector3(0.f, (float)yIndex, (float)zIndex);
+			Vector3 end = Vector3((float)m_dimensions.x, (float)yIndex, (float)zIndex);
+
+			mb.PushLine(start, end, Rgba::RED);
+		}
+	}
+
+	// -y/+y Lines
+	for (int zIndex = 0; zIndex < m_dimensions.z + 1; ++zIndex)
+	{
+		for (int xIndex = 0; xIndex < m_dimensions.x + 1; ++xIndex)
+		{
+			Vector3 start = Vector3((float)xIndex, 0.f, (float)zIndex);
+			Vector3 end = Vector3((float)xIndex, (float)m_dimensions.y, (float)zIndex);
+
+			mb.PushLine(start, end, Rgba::RED);
+		}
+	}
+
+	// -z/+z Lines
+	for (int yIndex = 0; yIndex < m_dimensions.y + 1; ++yIndex)
+	{
+		for (int xIndex = 0; xIndex < m_dimensions.x + 1; ++xIndex)
+		{
+			Vector3 start = Vector3((float)xIndex, (float)yIndex, 0.f);
+			Vector3 end = Vector3((float)xIndex, (float)yIndex, (float)m_dimensions.z);
+
+			mb.PushLine(start, end, Rgba::RED);
+		}
+	}
+
+	mb.FinishBuilding();
+	mb.UpdateMesh(m_debugGridLineMesh);
 }
 
 
@@ -661,8 +739,8 @@ void VoxelGrid::RebuildMesh()
 	unsigned int indexCount = faceOffset * 6;
 
 	// Update the mesh's CPU side data
-	m_mesh.UpdateCounts(vertexCount, indexCount);
-	m_mesh.SetDrawInstruction(PRIMITIVE_TRIANGLES, true, 0, indexCount);
+	m_voxelMesh.UpdateCounts(vertexCount, indexCount);
+	m_voxelMesh.SetDrawInstruction(PRIMITIVE_TRIANGLES, true, 0, indexCount);
 }
 
 
@@ -681,7 +759,7 @@ void VoxelGrid::DrawGrid()
 	rend.AddInstanceMatrix(Matrix44::IDENTITY);
 
 	RenderableDraw_t draw;
-	draw.mesh = &m_mesh;
+	draw.mesh = &m_voxelMesh;
 	draw.sharedMaterial = AssetDB::CreateOrGetSharedMaterial("Default_Opaque");
 
 	rend.AddDraw(draw);
