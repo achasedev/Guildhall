@@ -91,7 +91,7 @@ private:
 	RaycastResult_t m_lastRaycastResult;
 	uint8_t m_blockTypeToPlace = 5;
 
-	static constexpr int SEA_LEVEL = 20;
+	static constexpr int SEA_LEVEL = 25;
 	static constexpr int BASE_ELEVATION = 30;
 	static constexpr int NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION = 10;
 	static constexpr int RAYCAST_STEPS_PER_BLOCK = 100;

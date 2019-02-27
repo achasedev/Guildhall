@@ -24,7 +24,7 @@ public:
 	~Chunk();
 
 	bool				InitializeFromFile(const std::string& filepath);
-	void				GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseElevation);
+	void				GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseElevation, int seaLevel);
 	void				BuildMesh();
 
 	void				Update();

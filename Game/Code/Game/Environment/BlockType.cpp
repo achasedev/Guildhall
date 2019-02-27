@@ -76,7 +76,7 @@ void BlockType::InitializeTypes()
 	stoneType.m_isFullyOpaque = true;
 	stoneType.m_isSolid = true;
 
-	// Stone
+	// Brick
 	BlockType brickType;
 	brickType.m_name = "Brick";
 	brickType.m_typeIndex = 5;
@@ -86,6 +86,16 @@ void BlockType::InitializeTypes()
 	brickType.m_isFullyOpaque = true;
 	brickType.m_isSolid = true;
 
+	// Water
+	BlockType waterType;
+	waterType.m_name = "Water";
+	waterType.m_typeIndex = 6;
+	waterType.m_topUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(126);
+	waterType.m_sideUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(126);
+	waterType.m_bottomUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(126);
+	waterType.m_isFullyOpaque = true;
+	waterType.m_isSolid = true;
+
 	// Add them
 	AddBlockType(airType);
 	AddBlockType(missingType);
@@ -93,6 +103,7 @@ void BlockType::InitializeTypes()
 	AddBlockType(dirtType);
 	AddBlockType(stoneType);
 	AddBlockType(brickType);
+	AddBlockType(waterType);
 }
 
 

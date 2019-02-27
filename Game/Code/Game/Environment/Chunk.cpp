@@ -182,11 +182,13 @@ bool Chunk::InitializeFromFile(const std::string& filepath)
 //-----------------------------------------------------------------------------------------------
 // Populates the chunk with blocks using Perlin Noise
 //
-void Chunk::GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseElevation)
+void Chunk::GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseElevation, int seaLevel)
 {
 	const BlockType* grassType = BlockType::GetTypeByName("Grass");
 	const BlockType* dirtType = BlockType::GetTypeByName("Dirt");
 	const BlockType* stoneType = BlockType::GetTypeByName("Stone");
+	const BlockType* waterType = BlockType::GetTypeByName("Water");
+	const BlockType* missingType = BlockType::GetTypeByIndex(BlockType::MISSING_TYPE_INDEX);
 
 	for (int yIndex = 0; yIndex < CHUNK_DIMENSIONS_Y; ++yIndex)
 	{
@@ -198,23 +200,44 @@ void Chunk::GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseE
 
 			// Get the height of the chunk at these coordinates
 			float noise = Compute2dPerlinNoise(blockXYCenter.x, blockXYCenter.y, 50.f);
-			int grassHeight = RoundToNearestInt(noise * maxDeviationFromBaseElevation) + baseElevation;
+			int elevationFromNoise = RoundToNearestInt(noise * maxDeviationFromBaseElevation) + baseElevation;
 
-			for (int zIndex = 0; zIndex < grassHeight; ++zIndex)
+			int maxHeightForThisColumn = MaxInt(elevationFromNoise, seaLevel);
+
+			for (int zIndex = 0; zIndex < maxHeightForThisColumn; ++zIndex)
 			{
 				const BlockType* typeToUse = nullptr;
-				if (zIndex == grassHeight - 1)
+				if (elevationFromNoise >= seaLevel)
 				{
-					typeToUse = grassType;
-				}
-				else if (zIndex >= grassHeight - 4) // Dirt for 3 blocks below the grass height
-				{
-					typeToUse = dirtType;
+					if (zIndex == elevationFromNoise - 1)
+					{
+						typeToUse = grassType;
+					}
+					else if (zIndex > elevationFromNoise - 4) // Dirt for 3 blocks below the grass height
+					{
+						typeToUse = dirtType;
+					}
+					else
+					{
+						typeToUse = stoneType;
+					}
 				}
 				else
 				{
-					typeToUse = stoneType;
+					if (zIndex >= elevationFromNoise)
+					{
+						typeToUse = waterType;
+					}
+					else if (zIndex > seaLevel - 4)
+					{
+						typeToUse = missingType;
+					}
+					else
+					{
+						typeToUse = stoneType;
+					}
 				}
+
 
 				IntVector3 blockCoords = IntVector3(xIndex, yIndex, zIndex);
 				int blockIndex = GetBlockIndexFromBlockCoords(blockCoords);
