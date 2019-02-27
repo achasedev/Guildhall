@@ -183,25 +183,31 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, Voxel
 
 	DrawVoxelSprite(texture, position, orientation, options);
 
-	// Hack to render the player's weapon
 	if (entity->IsPlayer())
 	{
+		// Hack to render the player's weapon
 		const Player* player = dynamic_cast<const Player*>(entity);
 
 		Weapon* weapon = player->GetCurrentWeapon();
-		
+		IntVector3 weaponPosition = position + IntVector3(0, 12, 0);
+		const VoxelSprite* weaponTexture = weapon->GetTextureForUIRender();
+
 		if (weapon->GetEntityDefinition()->GetName() != "Pistol")
 		{
-			const VoxelSprite* weaponTexture = weapon->GetTextureForUIRender();
-
 			if (weaponTexture != nullptr)
 			{
-				IntVector3 weaponPosition = position + IntVector3(0, 12, 0);
-
 				// Don't let the weapons cast or receive shadows, so pass default param for options
 				DrawVoxelSprite(weaponTexture, weaponPosition, 0.f);
 			}
 		}
+
+		// Hack to draw the player's arrow indicator
+		const VoxelSprite* indicatorSprite = VoxelSprite::GetVoxelSprite("PlayerIndicator");
+		IntVector3 indicatorPosition = weaponPosition + IntVector3(-1 * indicatorSprite->GetBaseDimensions().x / 4, 8, 0);
+
+		options.castsShadows = false;
+		options.receivesShadows = false;
+		DrawVoxelSprite(indicatorSprite, indicatorPosition, 0.f, options);
 	}
 }
 

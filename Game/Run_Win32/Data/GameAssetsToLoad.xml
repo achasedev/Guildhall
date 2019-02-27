@@ -51,6 +51,8 @@
 		<VoxelSprite file="Data/VoxelSprites/Players/Cat.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Mouse.sprite"/>
 
+		<VoxelSprite file="Data/VoxelSprites/Players/PlayerIndicator.sprite"/>
+
 	</VoxelSprites>
 
 

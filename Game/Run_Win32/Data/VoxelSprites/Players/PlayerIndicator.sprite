@@ -1,0 +1,5 @@
+<VoxelSprites>
+
+	<VoxelSprite name="PlayerIndicator" file="Data/VoxelModels/Players/PlayerIndicator.qef"/>
+
+</VoxelSprites>
