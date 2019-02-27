@@ -81,7 +81,7 @@ void BehaviorComponent_SwarmAndAvoid::Update()
 		}
 
 		// Sum directions together
-		Vector2 finalDirection = (0.2f * sumOfVectorsAwayFromNearbySwarmMembers + 0.5f * directionToAvoidObstacle + 0.3f * directionToPlayer).GetNormalized();
+		Vector2 finalDirection = (0.3f * sumOfVectorsAwayFromNearbySwarmMembers + 0.5f * directionToAvoidObstacle + 0.2f * directionToPlayer).GetNormalized();
 
 		m_owningEntity->Move(finalDirection);
 

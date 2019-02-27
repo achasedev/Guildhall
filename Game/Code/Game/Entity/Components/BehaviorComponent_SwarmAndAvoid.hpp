@@ -27,6 +27,6 @@ public:
 private:
 	//-----Private Data-----
 
-	float m_elbowRoom = 9.f;
+	float m_elbowRoom = 10.f;
 
 };
