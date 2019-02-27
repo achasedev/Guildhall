@@ -136,6 +136,8 @@
 		<Campaign file="Data/Campaigns/Forest.campaign"/>
 		<Campaign file="Data/Campaigns/Desert.campaign"/>
 
+		<Campaign file="Data/Campaigns/Empty.campaign"/>
+
 		<Campaign file="Data/Campaigns/AIZoos/Walker.campaign"/>
 		<Campaign file="Data/Campaigns/AIZoos/Tank.campaign"/>
 		<Campaign file="Data/Campaigns/AIZoos/Soldier.campaign"/>		

@@ -15,7 +15,7 @@
 //
 GameCamera::GameCamera()
 	: m_offsetDirection(Vector3(0.f, 1.f, -1.3f).GetNormalized())
-	, m_offsetDistance(220.f)
+	, m_offsetDistance(150.f)
 {
 	m_screenShakeInterval.Reset();
 }
@@ -30,9 +30,76 @@ GameCamera::~GameCamera()
 
 
 //-----------------------------------------------------------------------------------------------
+// Checks for input that directly moves the camera and caches it off for update
+//
+void GameCamera::ProcessInput()
+{
+	float deltaTime = Game::GetDeltaTime();
+	InputSystem* input = InputSystem::GetInstance();
+
+	// Translating the camera
+	Vector3 translationOffset = Vector3::ZERO;
+	if (input->IsKeyPressed('W')) { translationOffset.z += 1.f; }									// Forward
+	if (input->IsKeyPressed('S')) { translationOffset.z -= 1.f; }									// Left
+	if (input->IsKeyPressed('A')) { translationOffset.x -= 1.f; }									// Back
+	if (input->IsKeyPressed('D')) { translationOffset.x += 1.f; }									// Right
+	if (input->IsKeyPressed(InputSystem::KEYBOARD_SPACEBAR)) { translationOffset.y += 1.f; }		// Up
+	if (input->IsKeyPressed('X')) { translationOffset.y -= 1.f; }									// Down
+
+	if (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT))
+	{
+		translationOffset *= 50.f;
+	}
+
+	translationOffset *= CAMERA_TRANSLATION_SPEED * deltaTime;
+
+	m_frameTranslation = translationOffset;
+
+	// Rotating the camera
+	Mouse& mouse = InputSystem::GetMouse();
+	IntVector2 mouseDelta = mouse.GetMouseDelta();
+
+	Vector2 rotationOffset = Vector2((float)mouseDelta.y, (float)mouseDelta.x) * 0.12f;
+	m_frameRotation = Vector3(rotationOffset.x * CAMERA_ROTATION_SPEED * deltaTime, rotationOffset.y * CAMERA_ROTATION_SPEED * deltaTime, 0.f);
+
+	// Check for updating state
+	if (input->WasKeyJustPressed('B'))
+	{
+		m_state = (eCameraState) (m_state + 1);
+		if (m_state >= NUM_STATES)
+		{
+			m_state = (eCameraState)0;
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Updates the camera to move based on its current state
+//
+void GameCamera::UpdateBasedOnState()
+{
+	switch (m_state)
+	{
+	case STATE_FIXED:
+		UpdateFixed();
+		break;
+	case STATE_FOLLOW:
+		UpdateFollow();
+		break;
+	case STATE_FREE:
+		UpdateFree();
+		break;
+	default:
+		break;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Updates the camera to be positioned relative to the players' locations
 //
-void GameCamera::UpdatePositionBasedOnPlayers()
+void GameCamera::UpdateFollow()
 {
 	Player** players = Game::GetPlayers();
 
@@ -83,83 +150,31 @@ void GameCamera::UpdatePositionBasedOnPlayers()
 //-----------------------------------------------------------------------------------------------
 // Updates the camera by checking for input
 //
-void GameCamera::UpdatePositionOnInput()
+void GameCamera::UpdateFree()
 {
-	float deltaTime = Game::GetDeltaTime();
-	InputSystem* input = InputSystem::GetInstance();
+	TranslateLocal(m_frameTranslation);
+	Rotate(m_frameRotation);
 
-	// Translating the camera
-	Vector3 translationOffset = Vector3::ZERO;
-	if (input->IsKeyPressed('W')) { translationOffset.z += 1.f; }		// Forward
-	if (input->IsKeyPressed('S')) { translationOffset.z -= 1.f; }		// Left
-	if (input->IsKeyPressed('A')) { translationOffset.x -= 1.f; }		// Back
-	if (input->IsKeyPressed('D')) { translationOffset.x += 1.f; }		// Right
-	if (input->IsKeyPressed(InputSystem::KEYBOARD_SPACEBAR)) { translationOffset.y += 1.f; }		// Up
-	if (input->IsKeyPressed('X')) { translationOffset.y -= 1.f; }		// Down
-
-	if (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT))
-	{
-		translationOffset *= 50.f;
-	}
-
-	translationOffset *= CAMERA_TRANSLATION_SPEED * deltaTime;
-
-	GameCamera* gameCamera = Game::GetGameCamera();
-	gameCamera->TranslateLocal(translationOffset);
-
-	// Rotating the camera
-	Mouse& mouse = InputSystem::GetMouse();
-	IntVector2 mouseDelta = mouse.GetMouseDelta();
-
-	Vector2 rotationOffset = Vector2((float)mouseDelta.y, (float)mouseDelta.x) * 0.12f;
-	Vector3 rotation = Vector3(rotationOffset.x * CAMERA_ROTATION_SPEED * deltaTime, rotationOffset.y * CAMERA_ROTATION_SPEED * deltaTime, 0.f);
-
-	gameCamera->Rotate(rotation);
+	m_frameTranslation = Vector3::ZERO;
+	m_frameRotation = Vector3::ZERO;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Sets the camera back to it's offset position looking at the grid's center
 //
-void GameCamera::LookAtGridCenter()
+void GameCamera::UpdateFixed()
 {
 	
 	Vector3 target = Vector3(128.f, 0.f, 120.f);
 	Vector3 newPos = Vector3(128.f, 185.f, -90.f);
 	LookAt(newPos, target);
 
-	// Apply screenshake
+	// Apply screenshake in fixed only
 	float magnitude = m_screenShakeInterval.GetTimeUntilIntervalEnds();
 	Vector3 localDirection = magnitude * Vector3(GetRandomFloatZeroToOne(), GetRandomFloatZeroToOne(), 0.f);
 
 	TranslateLocal(localDirection);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Toggles the ejected state of the camera
-//
-void GameCamera::ToggleEjected()
-{
-	m_cameraEjected = !m_cameraEjected;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Sets the ejected state of the camera to the state provided
-//
-void GameCamera::SetEjected(bool newState)
-{
-	m_cameraEjected = newState;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns the ejected state of the camera
-//
-bool GameCamera::IsEjected() const
-{
-	return m_cameraEjected;
 }
 
 

@@ -142,6 +142,6 @@ private:
 
 	bool					m_drawCollisions = false;
 
-	static constexpr int DEFAULT_MAX_Y_EXPLOSION_RADIUS = 3;
+	static constexpr int DEFAULT_MAX_Y_EXPLOSION_RADIUS = 10;
 
 };

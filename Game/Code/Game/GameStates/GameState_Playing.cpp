@@ -235,18 +235,6 @@ void GameState_Playing::ProcessInput()
 	{
 		Game::GetWorld()->ParticalizeAllEntities();
 	}
-
-	// Camera
-	GameCamera* camera = Game::GetGameCamera();
-	if (InputSystem::GetInstance()->WasKeyJustPressed('B'))
-	{
-		camera->ToggleEjected();
-	}
-
-	if (camera->IsEjected())
-	{
-		camera->UpdatePositionOnInput();
-	}
 }
 
 

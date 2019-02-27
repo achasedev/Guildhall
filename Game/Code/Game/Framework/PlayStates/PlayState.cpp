@@ -69,15 +69,6 @@ void PlayState::UpdateWorldAndCamera()
 {
 	// World
 	Game::GetWorld()->Update();
-
-	// Camera
-	GameCamera* camera = Game::GetGameCamera();
-
-	if (!camera->IsEjected())
-	{
-		//Game::GetGameCamera()->UpdatePositionBasedOnPlayers();
-		Game::GetGameCamera()->LookAtGridCenter();
-	}
 }
 
 

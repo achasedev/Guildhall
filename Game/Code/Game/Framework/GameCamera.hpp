@@ -8,6 +8,14 @@
 #include "Engine/Core/Time/Stopwatch.hpp"
 #include "Engine/Rendering/Core/Camera.hpp"
 
+enum eCameraState
+{
+	STATE_FIXED,
+	STATE_FREE,
+	STATE_FOLLOW,
+	NUM_STATES
+};
+
 class GameCamera : public Camera
 {
 public:
@@ -16,24 +24,30 @@ public:
 	GameCamera();
 	~GameCamera();
 
-	void UpdatePositionBasedOnPlayers();
-	void UpdatePositionOnInput();
-	void LookAtGridCenter();
-
-	void ToggleEjected();
-	void SetEjected(bool newState);
-	bool IsEjected() const;
+	void ProcessInput();
+	void UpdateBasedOnState();
 
 	void AddScreenShake(float addedScreenShakeMagnitude);
 
 
 private:
+	//-----Private Methods-----
+
+	void UpdateFollow();
+	void UpdateFree();
+	void UpdateFixed();
+
+
+private:
 	//-----Private Data-----
 	
+	Vector3 m_frameTranslation = Vector3::ZERO;
+	Vector3 m_frameRotation = Vector3::ZERO;
+
 	float	m_offsetDistance;
 	Vector3 m_offsetDirection;
 
-	bool						m_cameraEjected = false;
+	eCameraState				m_state = STATE_FIXED;
 
 	Stopwatch					m_screenShakeInterval;
 

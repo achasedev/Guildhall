@@ -333,6 +333,8 @@ void Game::ProcessInput()
 	{
 		m_currentState->ProcessInput();
 	}
+
+	m_gameCamera->ProcessInput();
 }
 
 
@@ -375,6 +377,8 @@ void Game::Update()
 	{
 		m_currentState->Update();
 	}
+
+	m_gameCamera->UpdateBasedOnState();
 
 	// Update any music crossfades
 	UpdateMusicCrossfade();

@@ -65,18 +65,6 @@ void GameState_MainMenu::ProcessInput()
 	{
 		App::GetInstance()->Quit();
 	}
-
-	// Camera
-	GameCamera* camera = Game::GetGameCamera();
-	if (InputSystem::GetInstance()->WasKeyJustPressed('B'))
-	{
-		camera->ToggleEjected();
-	}
-
-	if (camera->IsEjected())
-	{
-		camera->UpdatePositionOnInput();
-	}
 }
 
 
@@ -85,14 +73,6 @@ void GameState_MainMenu::ProcessInput()
 //
 void GameState_MainMenu::Update()
 {
-	GameCamera* camera = Game::GetGameCamera();
-
-	if (camera != nullptr && !camera->IsEjected())
-	{
-		//Game::GetGameCamera()->LookAt(m_defaultCameraPosition, Vector3(128.f, 32.f, 128.f));
-		Game::GetGameCamera()->LookAtGridCenter();
-	}
-
 	m_emitters[0]->Update();
 	m_emitters[1]->Update();
 

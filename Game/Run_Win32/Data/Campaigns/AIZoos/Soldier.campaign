@@ -2,7 +2,7 @@
 
 	<Stage map="Forest1" enter="west">
 
-		<SpawnEvent type="from_ground" spawn_direction="north" entity="Soldier" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>
+		<SpawnEvent type="from_ground" spawn_direction="north" entity="Soldier" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="3"/>
 
 	</Stage>
 

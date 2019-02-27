@@ -14,7 +14,7 @@
 	<EntityDefinition name="Pistol_soldier">
 		<Visuals default_sprite="Pistol"/>
 		<Physics physics_type="dynamic">
-			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item" initial_ammo="24000"/>
+			<CollisionDefinition response="ignore_correction" has_gravity="true" layer="item"/>
 		</Physics>
 		<Weapon fire_rate="2.0" fire_spread="0.0" spread_type="none" projectile="Bullet" count_per_shot="1"/>
 		<Audio on_shoot="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Weapons\Single Shot Sounds\sfx_weapon_singleshot3.wav" on_pickup="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Interactions\sfx_sounds_interaction1.wav"/>
