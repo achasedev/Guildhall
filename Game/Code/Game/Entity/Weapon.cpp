@@ -123,6 +123,11 @@ void Weapon::SetHasInfiniteAmmo(bool hasInfiniteAmmo)
 //
 int Weapon::GetAmmoCountRemaining() const
 {
+	if (m_hasInfiniteAmmo)
+	{
+		return 99999999;
+	}
+
 	return m_currAmmoCount;
 }
 
