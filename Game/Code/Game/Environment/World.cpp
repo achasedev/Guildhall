@@ -14,11 +14,12 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/Utility/Blackboard.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
-#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"\
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -139,6 +140,53 @@ void World::Update()
 void World::Render() const
 {
 	RenderChunks();
+
+	Renderer* renderer = Renderer::GetInstance();
+	Material* xRayMaterial = AssetDB::GetSharedMaterial("X_Ray");
+
+	if (m_raycastDetached)
+	{
+		if (m_lastRaycastResult.DidImpact())
+		{
+			renderer->Draw3DLine(m_lastRaycastResult.m_startPosition, Rgba::RED, m_lastRaycastResult.m_impactPosition, Rgba::RED, 5.f);
+			renderer->Draw3DLine(m_lastRaycastResult.m_impactPosition, Rgba::RED, m_lastRaycastResult.m_endPosition, Rgba::RED, 2.f);
+			renderer->Draw3DLine(m_lastRaycastResult.m_impactPosition, Rgba::RED, m_lastRaycastResult.m_endPosition, Rgba::RED, 2.f, xRayMaterial);
+
+			renderer->DrawPoint(m_lastRaycastResult.m_impactPosition, Rgba::RED, 0.1f);
+			renderer->DrawPoint(m_lastRaycastResult.m_impactPosition, Rgba::RED, 0.1f, xRayMaterial);
+		}
+		else
+		{
+			renderer->Draw3DLine(m_lastRaycastResult.m_startPosition, Rgba::GREEN, m_lastRaycastResult.m_endPosition, Rgba::GREEN, 2.f);
+		}
+	}
+
+	// Push a wire cube around the block if there was a hit
+	if (m_lastRaycastResult.DidImpact() && m_lastRaycastResult.m_impactDistance > 2.0f) // Only draw if more than one block away to avoid blocking vision
+	{
+		float offSetMagnitude = 0.01f;
+		Vector3 blockCenterPosition = m_lastRaycastResult.m_impactBlock.GetBlockCenterWorldPosition();
+
+		renderer->SetGLLineWidth(2.0f);
+		renderer->DrawWireCube(blockCenterPosition, Vector3::ONES + Vector3(offSetMagnitude), Rgba::PURPLE);
+		renderer->SetGLLineWidth(1.0f);
+
+		Vector3 quadCenterPosition = blockCenterPosition + (0.5f + offSetMagnitude) * m_lastRaycastResult.m_impactNormal;
+		Vector2 quadDimensions = Vector2(1.0f);
+
+		Vector3 referenceRight = Vector3(-m_lastRaycastResult.m_impactNormal.y, m_lastRaycastResult.m_impactNormal.x, 0.f);
+		if (referenceRight == Vector3::ZERO)
+		{
+			referenceRight = Vector3::MINUS_Y_AXIS;
+		}
+
+		Vector3 normal = m_lastRaycastResult.m_impactNormal;
+		Vector3 up = CrossProduct(normal, referenceRight);
+		Vector3 right = CrossProduct(up, normal);
+
+		renderer->Draw3DQuad(quadCenterPosition, quadDimensions, AABB2::UNIT_SQUARE_OFFCENTER, right, up, Rgba::WHITE, Vector2(0.5f), AssetDB::GetSharedMaterial("Default_Alpha"));
+		renderer->Draw3DQuad(quadCenterPosition, quadDimensions, AABB2::UNIT_SQUARE_OFFCENTER, right, up, Rgba::WHITE, Vector2(0.5f), xRayMaterial);
+	}
 }
 
 
@@ -259,6 +307,15 @@ BlockLocator World::GetBlockLocatorForFlooredPosition(const IntVector3& flooredP
 	int blockIndex = chunk->GetBlockIndexFromBlockCoords(blockCoords);
 
 	return BlockLocator(chunk, blockIndex);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the number of chunks currently active in the world
+//
+int World::GetActiveChunkCount() const
+{
+	return (int) m_activeChunks.size();
 }
 
 
@@ -437,8 +494,12 @@ void World::DeactivateChunk(Chunk* chunk)
 //
 bool World::GetClosestInactiveChunkCoordsToPlayerWithinActivationRange(IntVector2& out_closestInactiveChunkCoords) const
 {
-	int chunkSpanX = Ceiling(DEFAULT_CHUNK_ACTIVATION_RANGE / (float)Chunk::CHUNK_DIMENSIONS_X);
-	int chunkSpanY = Ceiling(DEFAULT_CHUNK_ACTIVATION_RANGE / (float)Chunk::CHUNK_DIMENSIONS_Y);
+	Blackboard* config = Game::GetGameConfigBlackboard();
+	float activationRange = config->GetValue("activation_range", DEFAULT_CHUNK_ACTIVATION_RANGE);
+	float activationRangeSquared = activationRange * activationRange;
+
+	int chunkSpanX = Ceiling(activationRange / (float)Chunk::CHUNK_DIMENSIONS_X);
+	int chunkSpanY = Ceiling(activationRange / (float)Chunk::CHUNK_DIMENSIONS_Y);
 	IntVector2 chunkSpan = IntVector2(chunkSpanX, chunkSpanY);
 
 	Vector2 cameraXYPosition = Game::GetGameCamera()->GetPosition().xy();
@@ -446,10 +507,6 @@ bool World::GetClosestInactiveChunkCoordsToPlayerWithinActivationRange(IntVector
 
 	IntVector2 startChunk = chunkContainingCamera - chunkSpan;
 	IntVector2 endChunk = chunkContainingCamera + chunkSpan;
-
-	Blackboard* config = Game::GetGameConfigBlackboard();
-	float activationRange = config->GetValue("activation_range", DEFAULT_CHUNK_ACTIVATION_RANGE);
-	float activationRangeSquared = activationRange * activationRange;
 
 	float minDistanceSoFar = activationRangeSquared;
 	bool foundInactiveChunk = false;
@@ -613,63 +670,6 @@ void World::UpdateRaycast()
 	}
 
 	m_lastRaycastResult = Raycast(m_raycastReferencePosition, m_raycastForward, DEFAULT_RAYCAST_DISTANCE);
-
-	if (m_raycastDetached)
-	{
-		// Ray cast is paused, so draw it's visualization
-		DebugRenderOptions options;
-		options.m_lifetime = 0.f;
-		options.m_renderMode = DEBUG_RENDER_XRAY;
-		options.m_startColor = Rgba::RED;
-		options.m_endColor = Rgba::RED;
-
-		if (m_lastRaycastResult.DidImpact())
-		{
-			DebugRenderSystem::DrawPoint(m_lastRaycastResult.m_impactPosition, options, 0.1f); // Impact point
-			DebugRenderSystem::Draw3DLine(m_lastRaycastResult.m_startPosition, m_lastRaycastResult.m_impactPosition, options, 5.f); // Line up to impact
-		}
-		else
-		{
-			options.m_startColor = Rgba::GREEN;
-			options.m_endColor = Rgba::GREEN;
-		}
-
-		DebugRenderSystem::Draw3DLine(m_lastRaycastResult.m_startPosition, m_lastRaycastResult.m_endPosition, options, 2.f); // Full distance line
-	}
-
-	// Push a wire cube around the block if there was a hit
-	if (m_lastRaycastResult.DidImpact())
-	{
-		float offSetMagnitude = 0.01f;
-		Vector3 blockCenterPosition = m_lastRaycastResult.m_impactBlock.GetBlockCenterWorldPosition();
-
-		DebugRenderOptions options;
-		options.m_lifetime = 0.f;
-		options.m_renderMode = DEBUG_RENDER_USE_DEPTH;
-		options.m_startColor = Rgba::PURPLE;
-		options.m_endColor = Rgba::PURPLE;
-		options.m_isWireFrame = true;
-		
-		DebugRenderSystem::DrawCube(blockCenterPosition, options, Vector3(1.f + 2.f * offSetMagnitude));
-
-		// Light up the face that was hit
-		options.m_startColor = Rgba::WHITE;
-		options.m_endColor = Rgba::WHITE;
-		options.m_customTexture = AssetDB::CreateOrGetTexture("White_Tint");
-		options.m_renderMode = DEBUG_RENDER_XRAY;
-		options.m_isWireFrame = false;
-
-		Vector3 quadCenterPosition = blockCenterPosition + (0.5f + offSetMagnitude) * m_lastRaycastResult.m_impactNormal;
-		Vector3 referenceRight = Vector3(-m_lastRaycastResult.m_impactNormal.y, m_lastRaycastResult.m_impactNormal.x, 0.f);
-		Vector2 quadDimensions = Vector2(1.0f);
-
-		if (referenceRight == Vector3::ZERO)
-		{
-			referenceRight = Vector3::MINUS_Y_AXIS;
-		}
-
-		DebugRenderSystem::Draw3DQuadWithNormal(quadCenterPosition, quadDimensions, options, m_lastRaycastResult.m_impactNormal, referenceRight);
-	}
 }
 
 

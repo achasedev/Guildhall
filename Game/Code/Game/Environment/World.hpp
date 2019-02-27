@@ -46,6 +46,8 @@ public:
 	Chunk*			GetChunkThatContainsFlooredPosition(const IntVector3& flooredPosition) const;
 	BlockLocator	GetBlockLocatorThatContainsWorldPosition(const Vector3& position) const;
 	BlockLocator	GetBlockLocatorForFlooredPosition(const IntVector3& coords) const;
+	int				GetActiveChunkCount() const;
+
 	RaycastResult_t Raycast(const Vector3& start, const Vector3& directionNormal, float maxDistance) const;
 
 
