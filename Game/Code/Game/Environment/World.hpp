@@ -73,6 +73,12 @@ private:
 	void			CheckToBuildChunkMesh();
 	bool			GetClosestActiveChunkToPlayerWithDirtyMesh(IntVector2& out_closestActiveDirtyCoords) const;
 
+	// Lighting
+	void			AddBlockToDirtyLightingList(BlockLocator blockLocator);
+	void			InitializeSkyBlocksForChunk(Chunk* chunk);
+	void			InitializeLightSourceBlocksForChunk(Chunk* chunk);
+	void			SetNeighborEdgeBlocksToDirtyForChunk(Chunk* chunk);
+
 	// Update
 	void			UpdateChunks();
 	void			UpdateRaycast();

@@ -40,6 +40,8 @@ public:
 	// Accessors
 	Block&				GetBlock(int blockIndex);
 	Block&				GetBlock(const IntVector3& blockCoords);
+	BlockLocator		GetBlockLocator(int blockIndex);
+	BlockLocator		GetBlockLocator(const IntVector3& blockCoords);
 
 	IntVector2			GetChunkCoords() const;
 	bool				ShouldWriteToFile() const;

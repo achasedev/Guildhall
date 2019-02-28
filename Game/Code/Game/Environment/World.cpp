@@ -461,7 +461,7 @@ void World::PopulateBlocksOnChunk(Chunk* chunkToPopulate)
 	else
 	{
 		chunkToPopulate->GenerateWithPerlinNoise(BASE_ELEVATION, NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION, SEA_LEVEL);
-		ConsolePrintf(Rgba::GREEN, "Chunk (%i, %i) gererated from noise", chunkCoords.x, chunkCoords.y);
+		ConsolePrintf(Rgba::GREEN, "Chunk (%i, %i) generated from noise", chunkCoords.x, chunkCoords.y);
 	}
 }
 
@@ -543,7 +543,9 @@ bool World::GetClosestInactiveChunkCoordsToPlayerWithinActivationRange(IntVector
 //
 void World::InitializeLightingForChunk(Chunk* chunk)
 {
-	UNUSED(chunk);
+	InitializeSkyBlocksForChunk(chunk);
+	//InitializeLightSourceBlocksForChunk(chunk);
+	//SetNeighborEdgeBlocksToDirtyForChunk(chunk);
 }
 
 
@@ -643,6 +645,115 @@ bool World::GetClosestActiveChunkToPlayerWithDirtyMesh(IntVector2& out_closestAc
 
 
 //-----------------------------------------------------------------------------------------------
+// Adds the block to the dirty lighting list, checking for duplicates
+//
+void World::AddBlockToDirtyLightingList(BlockLocator blockLocator)
+{
+	Block& block = blockLocator.GetBlock();
+
+	if (!block.IsLightingDirty())
+	{
+		block.SetIsLightingDirty(true);
+		m_dirtyLightingBlocks.push_front(blockLocator);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Finds and sets all blocks considered sky in the block, and sets adjacent neighbors
+// to dirty to begin outdoor light cascading
+//
+void World::InitializeSkyBlocksForChunk(Chunk* chunk)
+{
+	// PASS 1 - Find all sky blocks and set their lighting to 15, flag them as sky
+	// Sky == "I am not opaque, and no one above me is opaque"
+	for (int yIndex = 0; yIndex < Chunk::CHUNK_DIMENSIONS_Y; ++yIndex)
+	{
+		for (int xIndex = 0; xIndex < Chunk::CHUNK_DIMENSIONS_X; ++xIndex)
+		{
+			for (int zIndex = Chunk::CHUNK_DIMENSIONS_Z - 1; zIndex >= 0; --zIndex)
+			{
+				IntVector3 blockCoords = IntVector3(xIndex, yIndex, zIndex);
+				BlockLocator blockLocator = chunk->GetBlockLocator(blockCoords);
+				Block& block = blockLocator.GetBlock();
+
+				if (!block.IsFullyOpaque())
+				{
+					block.SetIsPartOfSky(true);
+					block.SetOutdoorLighting(Block::BLOCK_MAX_LIGHTING);
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+	}
+
+	// Pass 2 - Set horizontal neighbors to sky blocks as dirty to propogate the light
+	for (int blockIndex = 0; blockIndex < Chunk::BLOCKS_PER_CHUNK; ++blockIndex)
+	{
+		BlockLocator blockLocator = chunk->GetBlockLocator(blockIndex);
+		Block& block = blockLocator.GetBlock();
+
+		if (!block.IsPartOfSky())
+		{
+			continue;
+		}
+
+		BlockLocator eastLocator = blockLocator.ToEast();
+		BlockLocator westLocator = blockLocator.ToWest();
+		BlockLocator northLocator = blockLocator.ToNorth();
+		BlockLocator southLocator = blockLocator.ToSouth();
+
+		// East
+		if (eastLocator.IsValid())
+		{
+			Block& eastBlock = eastLocator.GetBlock();
+
+			if (!eastBlock.IsFullyOpaque() && !eastBlock.IsPartOfSky())
+			{
+				AddBlockToDirtyLightingList(eastLocator);
+			}
+		}
+	
+		// West
+		if (westLocator.IsValid())
+		{
+			Block& westBlock = westLocator.GetBlock();
+
+			if (!westBlock.IsFullyOpaque() && !westBlock.IsPartOfSky())
+			{
+				AddBlockToDirtyLightingList(westLocator);
+			}
+		}
+	
+		// North
+		if (northLocator.IsValid())
+		{
+			Block& northBlock = northLocator.GetBlock();
+
+			if (!northBlock.IsFullyOpaque() && !northBlock.IsPartOfSky())
+			{
+				AddBlockToDirtyLightingList(northLocator);
+			}
+		}
+
+		// South
+		if (southLocator.IsValid())
+		{
+			Block& southBlock = southLocator.GetBlock();
+
+			if (!southBlock.IsFullyOpaque() && !southBlock.IsPartOfSky())
+			{
+				AddBlockToDirtyLightingList(southLocator);
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Calls Update() on all chunks
 //
 void World::UpdateChunks()
@@ -655,8 +766,6 @@ void World::UpdateChunks()
 	}
 }
 
-
-#include "Engine/Rendering/Core/Renderer.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Updates the last raycast struct stored on world, for debugging

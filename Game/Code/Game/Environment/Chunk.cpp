@@ -451,9 +451,6 @@ void Chunk::WriteToFile() const
 }
 
 
-//-----------------------------------------------------------------------------------------------
-// Returns a reference to the block at the given index
-//
 Block& Chunk::GetBlock(int blockIndex)
 {
 	return m_blocks[blockIndex];
@@ -461,12 +458,31 @@ Block& Chunk::GetBlock(int blockIndex)
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns a reference to the block at the given coordinates
+// Returns the block at the given coords
 //
 Block& Chunk::GetBlock(const IntVector3& blockCoords)
 {
 	int blockIndex = GetBlockIndexFromBlockCoords(blockCoords);
 	return GetBlock(blockIndex);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns a reference to the block at the given index
+//
+BlockLocator Chunk::GetBlockLocator(int blockIndex)
+{
+	return BlockLocator(this, blockIndex);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns a reference to the block at the given coordinates
+//
+BlockLocator Chunk::GetBlockLocator(const IntVector3& blockCoords)
+{
+	int blockIndex = GetBlockIndexFromBlockCoords(blockCoords);
+	return GetBlockLocator(blockIndex);
 }
 
 
