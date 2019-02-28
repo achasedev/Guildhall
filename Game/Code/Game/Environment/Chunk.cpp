@@ -230,7 +230,7 @@ void Chunk::GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseE
 					}
 					else if (zIndex > seaLevel - 4)
 					{
-						typeToUse = missingType;
+						typeToUse = dirtType;
 					}
 					else
 					{
@@ -302,7 +302,7 @@ void Chunk::Render() const
 	if (m_mesh != nullptr)
 	{
 		Renderer* renderer = Renderer::GetInstance();
-		Material* material = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Block.xml");
+		Material* material = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Overworld_Opaque.material");
 
 		renderer->DrawMeshWithMaterial(m_mesh, material);
 	}

@@ -1,0 +1,20 @@
+<material>
+
+	<shader name="Data/Shaders/Overworld_Opaque.shader"/>
+
+	<textures>
+		<texture name="Data/Images/Terrain_32x32.png" bind="0" generateMipMaps="true"/>
+	</textures>
+
+	<samplers>
+		<sampler filter="nearest" sampling="repeat" bind="0"/>
+	</samplers>
+
+	<properties>
+		<property name="FOG_MIN_DISTANCE" value="64.0"/>
+		<property name="FOG_MAX_DISTANCE" value="200.0"/>
+		<property name="FOG_MIN_FACTOR" value="0.0"/>
+		<property name="FOG_MAX_FACTOR" value="0.9"/>
+	</properties>
+
+</material>
