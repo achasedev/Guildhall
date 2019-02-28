@@ -60,8 +60,8 @@ public:
 	void				SetIsMeshDirty(bool isMeshDirty);
 	void				SetNeedsToBeSavedToDisk(bool needsToBeSaved);
 
-	void				SetBlockTypeAtBlockIndex(int blockIndex, uint8_t blockType);
-	void				SetBlockTypeAtBlockCoords(const IntVector3& blockCoords, uint8_t blockType);
+	void				SetBlockTypeAtBlockIndex(int blockIndex, const BlockType* blockType);
+	void				SetBlockTypeAtBlockCoords(const IntVector3& blockCoords, const BlockType* blockType);
 
 	// Statics
 	static int			GetBlockIndexFromBlockCoords(const IntVector3& blockCoords);

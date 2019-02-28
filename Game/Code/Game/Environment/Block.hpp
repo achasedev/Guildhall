@@ -7,6 +7,8 @@
 #pragma once
 #include <stdint.h>
 #include "Game/Environment/BlockType.hpp"
+#include "Engine/Core/Rgba.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 class Block
 {
@@ -16,12 +18,29 @@ public:
 	Block() {}
 	Block(uint8_t type, uint8_t light, uint8_t flags);
 
-	inline uint8_t	GetType() const;
-	inline void		SetType(uint8_t blockType);
 
-	// Accessors for the type
-	inline bool IsFullyOpaque() const;
-	inline bool IsSolid() const;
+	// Accessors
+	inline uint8_t	GetType() const;
+	inline bool		IsPartOfSky() const;
+	inline bool		IsLightingDirty() const;
+	inline bool		IsFullyOpaque() const;
+	inline bool		IsVisible() const;
+	inline bool		IsSolid() const;
+
+	inline int		GetOutdoorLight() const;
+	inline int		GetIndoorLight() const;
+	inline Rgba		GetLightingAsRGBChannels() const;
+
+	// Mutators
+	inline void		SetType(const BlockType* blockType);
+	inline void		SetIsPartOfSky(bool isPartOfSky);
+	inline void		SetIsLightingDirty(bool isLightingDirty);
+	inline void		SetIsFullyOpaque(bool isFullyOpaque);
+	inline void		SetIsVisible(bool isVisible);
+	inline void		SetIsSolid(bool isSolid);
+
+	inline void		SetOutdoorLighting(int outdoorLightValue);
+	inline void		SetIndoorLighting(int indoorLightValue);
 
 
 public:
@@ -29,6 +48,16 @@ public:
 
 	static Block MISSING_BLOCK; // For references outside chunk space, etc.
 	
+	static constexpr uint8_t BLOCK_MAX_LIGHTING			= 15;
+	static constexpr uint8_t BLOCK_OUTDOOR_LIGHT_MASK	= 0b11110000;
+	static constexpr uint8_t BLOCK_INDOOR_LIGHT_MASK	= 0b00001111;
+
+	static constexpr uint8_t BLOCK_BIT_IS_SKY			= 0b10000000;
+	static constexpr uint8_t BLOCK_BIT_IS_LIGHT_DIRTY	= 0b01000000;
+	static constexpr uint8_t BLOCK_BIT_IS_FULLY_OPAQUE	= 0b00100000;
+	static constexpr uint8_t BLOCK_BIT_IS_VISIBLE		= 0b00010000;
+	static constexpr uint8_t BLOCK_BIT_IS_SOLID			= 0b00001000;
+
 
 private:
 	//-----Private Data-----
@@ -52,9 +81,32 @@ inline uint8_t Block::GetType() const
 //-----------------------------------------------------------------------------------------------
 // Sets the block's type to be the one given
 //
-inline void Block::SetType(uint8_t blockType)
+inline void Block::SetType(const BlockType* blockType)
 {
-	m_type = blockType;
+	m_type = blockType->m_typeIndex;
+
+	// Also set the helper flags!
+	SetIsFullyOpaque(blockType->m_isFullyOpaque);
+	SetIsSolid(blockType->m_isSolid);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if this block is part of the sky (i.e. is not opaque AND has no opaque blocks
+// directly above it)
+//
+inline bool Block::IsPartOfSky() const
+{
+	return (m_flags & BLOCK_BIT_IS_SKY);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if this block has dirty lighting, meaning it is in the dirty lighting list
+//
+inline bool Block::IsLightingDirty() const
+{
+	return (m_flags & BLOCK_BIT_IS_LIGHT_DIRTY);
 }
 
 
@@ -63,8 +115,16 @@ inline void Block::SetType(uint8_t blockType)
 //
 inline bool Block::IsFullyOpaque() const
 {
-	const BlockType* blockType = BlockType::GetTypeByIndex(m_type);
-	return blockType->m_isFullyOpaque;
+	return (m_flags & BLOCK_BIT_IS_FULLY_OPAQUE);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if this block is visible....not sure what it means yet....
+//
+inline bool Block::IsVisible() const
+{
+	return (m_flags & BLOCK_BIT_IS_VISIBLE);
 }
 
 
@@ -73,6 +133,146 @@ inline bool Block::IsFullyOpaque() const
 //
 inline bool Block::IsSolid() const
 {
-	const BlockType* blockType = BlockType::GetTypeByIndex(m_type);
-	return blockType->m_isSolid;
+	return (m_flags & BLOCK_BIT_IS_SOLID);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the outdoor light value this block possesses
+//
+inline int Block::GetOutdoorLight() const
+{
+	return (m_light & BLOCK_OUTDOOR_LIGHT_MASK);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the indoor light value this block possesses
+//
+inline int Block::GetIndoorLight() const
+{
+	return (m_light & BLOCK_INDOOR_LIGHT_MASK);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the indoor and outdoor lighting, for building a mesh with lighting
+//
+inline Rgba Block::GetLightingAsRGBChannels() const
+{
+	int outdoorLightingRaw = GetOutdoorLight();
+	int indoorLightingRaw = GetIndoorLight();
+
+	float outdoorLighting = RangeMapFloat((float) outdoorLightingRaw, 0.f, (float)BLOCK_MAX_LIGHTING, 0.f, 1.0f);
+	float indoorLighting = RangeMapFloat((float) indoorLightingRaw, 0.f, (float)BLOCK_MAX_LIGHTING, 0.f, 1.0f);
+
+	return Rgba(outdoorLighting, indoorLighting, 0.5f, 1.0f);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets whether this block is part of the sky or not
+//
+inline void	Block::SetIsPartOfSky(bool isPartOfSky)
+{
+	if (isPartOfSky)
+	{
+		m_flags |= BLOCK_BIT_IS_SKY;
+	}
+	else
+	{
+		m_flags &= ~BLOCK_BIT_IS_SKY;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets whether the lighting on this block is dirty and needs to be updated
+//
+inline void	Block::SetIsLightingDirty(bool isLightingDirty)
+{
+	if (isLightingDirty)
+	{
+		m_flags |= BLOCK_BIT_IS_LIGHT_DIRTY;
+	}
+	else
+	{
+		m_flags &= ~BLOCK_BIT_IS_LIGHT_DIRTY;
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+// Sets whether this block is fully opaque
+//
+inline void	Block::SetIsFullyOpaque(bool isFullyOpaque)
+{
+	if (isFullyOpaque)
+	{
+		m_flags |= BLOCK_BIT_IS_FULLY_OPAQUE;
+	}
+	else
+	{
+		m_flags &= ~BLOCK_BIT_IS_FULLY_OPAQUE;
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+// Sets whether this block is visible or not
+//
+inline void	Block::SetIsVisible(bool isVisible)
+{
+	if (isVisible)
+	{
+		m_flags |= BLOCK_BIT_IS_VISIBLE;
+	}
+	else
+	{
+		m_flags &= ~BLOCK_BIT_IS_VISIBLE;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets whether this block is solid or not
+//
+inline void	Block::SetIsSolid(bool isSolid)
+{
+	if (isSolid)
+	{
+		m_flags |= BLOCK_BIT_IS_SOLID;
+	}
+	else
+	{
+		m_flags &= ~BLOCK_BIT_IS_SOLID;
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+// Sets the outdoor lighting for this block
+//
+inline void	Block::SetOutdoorLighting(int outdoorLightValue)
+{
+	outdoorLightValue = ClampInt(outdoorLightValue, 0, BLOCK_MAX_LIGHTING);
+	int outdoorValueShifted = (outdoorLightValue << 4);
+	
+	// Clear the old value
+	m_light &= ~BLOCK_OUTDOOR_LIGHT_MASK;
+
+	// Apply the new value
+	m_light |= outdoorValueShifted;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the indoor lighting for this block
+//
+inline void	Block::SetIndoorLighting(int indoorLightValue)
+{
+	indoorLightValue = ClampInt(indoorLightValue, 0, BLOCK_MAX_LIGHTING);
+
+	// Clear the old value
+	m_light &= ~BLOCK_INDOOR_LIGHT_MASK;
+
+	// Apply the new value
+	m_light |= indoorLightValue;
 }

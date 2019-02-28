@@ -79,7 +79,9 @@ void World::ProcessInput()
 				int indexOfHitBlock = hitBlock.GetBlockIndex();
 				Chunk* chunkContainingHit = hitBlock.GetChunk();
 
-				chunkContainingHit->SetBlockTypeAtBlockIndex(indexOfHitBlock, BlockType::AIR_TYPE_INDEX);
+				const BlockType* blockType = BlockType::GetTypeByIndex(BlockType::AIR_TYPE_INDEX);
+				chunkContainingHit->SetBlockTypeAtBlockIndex(indexOfHitBlock, blockType);
+				chunkContainingHit->SetNeedsToBeSavedToDisk(true);
 			}
 
 			// Place a block
@@ -89,7 +91,9 @@ void World::ProcessInput()
 				Chunk* chunkContainingPlacedBlock = blockBeingPlaced.GetChunk();
 				int indexOfPlacedBlock = blockBeingPlaced.GetBlockIndex();
 
-				chunkContainingPlacedBlock->SetBlockTypeAtBlockIndex(indexOfPlacedBlock, m_blockTypeToPlace);
+				const BlockType* blockType = BlockType::GetTypeByIndex(m_blockTypeToPlace);
+				chunkContainingPlacedBlock->SetBlockTypeAtBlockIndex(indexOfPlacedBlock, blockType);
+				chunkContainingPlacedBlock->SetNeedsToBeSavedToDisk(true);
 			}
 		}
 	}

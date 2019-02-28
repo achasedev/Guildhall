@@ -165,11 +165,12 @@ bool Chunk::InitializeFromFile(const std::string& filepath)
 	for (size_t byteIndex = sizeof(ChunkFileHeader_t); byteIndex < fileSize; byteIndex += 2)
 	{
 		uint8_t runType = data[byteIndex];
+		const BlockType* blockType = BlockType::GetTypeByIndex(runType);
 		uint8_t runCount = data[byteIndex + 1];
 
 		for (int blockIndex = blocksLoadedSoFar; blockIndex < blocksLoadedSoFar + (int) runCount; ++blockIndex)
 		{
-			m_blocks[blockIndex].SetType(runType);
+			SetBlockTypeAtBlockIndex(blockIndex, blockType);
 		}
 
 		blocksLoadedSoFar += runCount;
@@ -188,7 +189,7 @@ void Chunk::GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseE
 	const BlockType* dirtType = BlockType::GetTypeByName("Dirt");
 	const BlockType* stoneType = BlockType::GetTypeByName("Stone");
 	const BlockType* waterType = BlockType::GetTypeByName("Water");
-	const BlockType* missingType = BlockType::GetTypeByIndex(BlockType::MISSING_TYPE_INDEX);
+	const BlockType* airType = BlockType::GetTypeByName("Air");
 
 	for (int yIndex = 0; yIndex < CHUNK_DIMENSIONS_Y; ++yIndex)
 	{
@@ -204,10 +205,15 @@ void Chunk::GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseE
 
 			int maxHeightForThisColumn = MaxInt(elevationFromNoise, seaLevel);
 
-			for (int zIndex = 0; zIndex < maxHeightForThisColumn; ++zIndex)
+			for (int zIndex = 0; zIndex < CHUNK_DIMENSIONS_Z; ++zIndex)
 			{
 				const BlockType* typeToUse = nullptr;
-				if (elevationFromNoise >= seaLevel)
+				
+				if (zIndex > maxHeightForThisColumn - 1)
+				{
+					typeToUse = airType; // Explicitly set air to setup light values for testing
+				}
+				else if (elevationFromNoise >= seaLevel)
 				{
 					if (zIndex == elevationFromNoise - 1)
 					{
@@ -240,9 +246,7 @@ void Chunk::GenerateWithPerlinNoise(int baseElevation, int maxDeviationFromBaseE
 
 
 				IntVector3 blockCoords = IntVector3(xIndex, yIndex, zIndex);
-				int blockIndex = GetBlockIndexFromBlockCoords(blockCoords);
-
-				m_blocks[blockIndex].SetType(typeToUse->m_typeIndex);
+				SetBlockTypeAtBlockCoords(blockCoords, typeToUse);
 			}
 		}
 	}
@@ -595,31 +599,30 @@ void Chunk::SetNeedsToBeSavedToDisk(bool needsToBeSaved)
 //-----------------------------------------------------------------------------------------------
 // Sets the block type of the block at the given index to the one provided
 //
-void Chunk::SetBlockTypeAtBlockIndex(int blockIndex, uint8_t blockType)
+void Chunk::SetBlockTypeAtBlockIndex(int blockIndex, const BlockType* blockType)
 {
 	Block& block = m_blocks[blockIndex];
 	block.SetType(blockType);
 
 	// Dirty the mesh and adjacent neighbors if the block was on the XY-border of the chunk
 	m_isMeshDirty = true;
-	m_needsToBeSaved = true;
 
 	IntVector3 blockCoords = GetBlockCoordsFromBlockIndex(blockIndex);
 
-	if (blockCoords.x == 0) // West Neighbor
+	if (blockCoords.x == 0 && m_westNeighborChunk != nullptr) // West Neighbor
 	{
 		m_westNeighborChunk->SetIsMeshDirty(true);
 	}
-	else if (blockCoords.x == CHUNK_DIMENSIONS_X - 1) // East Neighbor
+	else if (blockCoords.x == CHUNK_DIMENSIONS_X - 1 && m_eastNeighborChunk != nullptr) // East Neighbor
 	{
 		m_eastNeighborChunk->SetIsMeshDirty(true);
 	}
 
-	if (blockCoords.y == 0) // South Neighbor
+	if (blockCoords.y == 0 && m_southNeighborChunk != nullptr) // South Neighbor
 	{
 		m_southNeighborChunk->SetIsMeshDirty(true);
 	}
-	else if (blockCoords.y == CHUNK_DIMENSIONS_Y - 1) // North Neighbor
+	else if (blockCoords.y == CHUNK_DIMENSIONS_Y - 1 && m_northNeighborChunk != nullptr) // North Neighbor
 	{
 		m_northNeighborChunk->SetIsMeshDirty(true);
 	}
@@ -629,7 +632,7 @@ void Chunk::SetBlockTypeAtBlockIndex(int blockIndex, uint8_t blockType)
 //-----------------------------------------------------------------------------------------------
 // Sets the type of the block at the given block coords to the given type
 //
-void Chunk::SetBlockTypeAtBlockCoords(const IntVector3& blockCoords, uint8_t blockType)
+void Chunk::SetBlockTypeAtBlockCoords(const IntVector3& blockCoords, const BlockType* blockType)
 {
 	int blockIndex = GetBlockIndexFromBlockCoords(blockCoords);
 	SetBlockTypeAtBlockIndex(blockIndex, blockType);
@@ -683,48 +686,54 @@ void Chunk::PushVerticesForBlock(const IntVector3& blockCoords, const BlockType*
 	BlockLocator aboveBlockLocator = currBlockLocator.ToAbove();
 	BlockLocator belowBlockLocator = currBlockLocator.ToBelow();
 
-	bool pushEastFace	= eastBlockLocator.GetBlock().GetType() == BlockType::MISSING_TYPE_INDEX || !eastBlockLocator.GetBlock().IsFullyOpaque();
-	bool pushWestFace	= westBlockLocator.GetBlock().GetType() == BlockType::MISSING_TYPE_INDEX || !westBlockLocator.GetBlock().IsFullyOpaque();
-	bool pushNorthFace	= northBlockLocator.GetBlock().GetType() == BlockType::MISSING_TYPE_INDEX || !northBlockLocator.GetBlock().IsFullyOpaque();
-	bool pushSouthFace	= southBlockLocator.GetBlock().GetType() == BlockType::MISSING_TYPE_INDEX || !southBlockLocator.GetBlock().IsFullyOpaque();
-	bool pushTopFace	= aboveBlockLocator.GetBlock().GetType() == BlockType::MISSING_TYPE_INDEX || !aboveBlockLocator.GetBlock().IsFullyOpaque();
-	bool pushBottomFace = belowBlockLocator.GetBlock().GetType() == BlockType::MISSING_TYPE_INDEX || !belowBlockLocator.GetBlock().IsFullyOpaque();
+	bool pushEastFace	= !eastBlockLocator.GetBlock().IsFullyOpaque();
+	bool pushWestFace	= !westBlockLocator.GetBlock().IsFullyOpaque();
+	bool pushNorthFace	= !northBlockLocator.GetBlock().IsFullyOpaque();
+	bool pushSouthFace	= !southBlockLocator.GetBlock().IsFullyOpaque();
+	bool pushTopFace	= !aboveBlockLocator.GetBlock().IsFullyOpaque();
+	bool pushBottomFace = !belowBlockLocator.GetBlock().IsFullyOpaque();
 
 
 	// East Face
 	if (pushEastFace)
 	{
-		m_meshBuilder.Push3DQuad(cubeTopNorthEast, Vector2::ONES, type->m_sideUVs, Rgba::WHITE, Vector3::Y_AXIS, Vector3::Z_AXIS, Vector2(1.f, 1.0f));
+		Rgba lightValues = eastBlockLocator.GetBlock().GetLightingAsRGBChannels();
+		m_meshBuilder.Push3DQuad(cubeTopNorthEast, Vector2::ONES, type->m_sideUVs, lightValues, Vector3::Y_AXIS, Vector3::Z_AXIS, Vector2(1.f, 1.0f));
 	}
 
 	// West Face
 	if (pushWestFace)
 	{
-		m_meshBuilder.Push3DQuad(cubeBottomSouthWest, Vector2::ONES, type->m_sideUVs, Rgba::WHITE, Vector3::MINUS_Y_AXIS, Vector3::Z_AXIS, Vector2(1.0f, 0.f));
+		Rgba lightValues = westBlockLocator.GetBlock().GetLightingAsRGBChannels();
+		m_meshBuilder.Push3DQuad(cubeBottomSouthWest, Vector2::ONES, type->m_sideUVs, lightValues, Vector3::MINUS_Y_AXIS, Vector3::Z_AXIS, Vector2(1.0f, 0.f));
 	}
 
 	// North Face
 	if (pushNorthFace)
 	{
-		m_meshBuilder.Push3DQuad(cubeTopNorthEast, Vector2::ONES, type->m_sideUVs, Rgba::WHITE, Vector3::MINUS_X_AXIS, Vector3::Z_AXIS, Vector2(0.f, 1.0f));
+		Rgba lightValues = northBlockLocator.GetBlock().GetLightingAsRGBChannels();
+		m_meshBuilder.Push3DQuad(cubeTopNorthEast, Vector2::ONES, type->m_sideUVs, lightValues, Vector3::MINUS_X_AXIS, Vector3::Z_AXIS, Vector2(0.f, 1.0f));
 	}
 
 	// South Face
 	if (pushSouthFace)
 	{
-		m_meshBuilder.Push3DQuad(cubeBottomSouthWest, Vector2::ONES, type->m_sideUVs, Rgba::WHITE, Vector3::X_AXIS, Vector3::Z_AXIS, Vector2::ZERO);
+		Rgba lightValues = southBlockLocator.GetBlock().GetLightingAsRGBChannels();
+		m_meshBuilder.Push3DQuad(cubeBottomSouthWest, Vector2::ONES, type->m_sideUVs, lightValues, Vector3::X_AXIS, Vector3::Z_AXIS, Vector2::ZERO);
 	}
 
 	// Top Face
 	if (pushTopFace)
 	{
-		m_meshBuilder.Push3DQuad(cubeTopNorthEast, Vector2::ONES, type->m_topUVs, Rgba::WHITE, Vector3::MINUS_Y_AXIS, Vector3::X_AXIS, Vector2(0.f, 1.0f));
+		Rgba lightValues = aboveBlockLocator.GetBlock().GetLightingAsRGBChannels();
+		m_meshBuilder.Push3DQuad(cubeTopNorthEast, Vector2::ONES, type->m_topUVs, lightValues, Vector3::MINUS_Y_AXIS, Vector3::X_AXIS, Vector2(0.f, 1.0f));
 	}
 
 	// Bottom Face
 	if (pushBottomFace)
 	{
-		m_meshBuilder.Push3DQuad(cubeBottomSouthWest, Vector2::ONES, type->m_bottomUVs, Rgba::WHITE, Vector3::MINUS_Y_AXIS, Vector3::MINUS_X_AXIS, Vector2::ONES);
+		Rgba lightValues = belowBlockLocator.GetBlock().GetLightingAsRGBChannels();
+		m_meshBuilder.Push3DQuad(cubeBottomSouthWest, Vector2::ONES, type->m_bottomUVs, lightValues, Vector3::MINUS_Y_AXIS, Vector3::MINUS_X_AXIS, Vector2::ONES);
 	}
 }
 

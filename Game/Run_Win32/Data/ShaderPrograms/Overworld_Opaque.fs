@@ -30,10 +30,19 @@ vec4 ApplyFog(vec4 finalColor, float fragDepth)
 
 
 //-----------------------------------------------------------------------------
+vec4 ApplyLighting(vec4 finalColor)
+{
+	return finalColor;
+}
+
+
+
+//-----------------------------------------------------------------------------
 void main( void )											
 {																																			
 	vec4 diffuse = texture(gTexDiffuse, passUV);	
-	vec4 finalColor = diffuse * passLightValues;
-
-	outColor = ApplyFog(finalColor, passCameraPosition.z);	 				
+	vec4 finalColor = diffuse;
+	vec4 finalColorWithLighting = ApplyLighting(finalColor);
+	
+	outColor = ApplyFog(finalColorWithLighting, passCameraPosition.z);	 				
 }
