@@ -42,6 +42,8 @@ public:
 	bool		m_isFullyOpaque = false;			// Does it fully obscure other blocks behind it?
 	bool		m_isSolid = false;					// Does it block raycasts and have collision?
 
+	int			m_internalLightLevel = 0;
+
 	static constexpr uint8_t AIR_TYPE_INDEX = 0;
 	static constexpr uint8_t MISSING_TYPE_INDEX = 1;
 

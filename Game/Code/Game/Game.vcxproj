@@ -314,6 +314,10 @@
       <Project>{d6bb42a6-9ded-4704-ac63-1b40cc9c7038}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Environment\BlockLocator.inl" />
+    <None Include="Environment\Chunk.inl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

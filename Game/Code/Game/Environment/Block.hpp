@@ -20,7 +20,9 @@ public:
 
 
 	// Accessors
-	inline uint8_t	GetType() const;
+	inline uint8_t			GetTypeIndex() const;
+	inline const BlockType* GetType() const;
+
 	inline bool		IsPartOfSky() const;
 	inline bool		IsLightingDirty() const;
 	inline bool		IsFullyOpaque() const;
@@ -62,7 +64,7 @@ public:
 private:
 	//-----Private Data-----
 
-	uint8_t m_type = 0; // Default blocks to air type
+	uint8_t m_typeIndex = 0; // Default blocks to air type
 	uint8_t m_light = 0;
 	uint8_t m_flags = 0;
 
@@ -70,11 +72,20 @@ private:
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the type index of the block
+//
+inline uint8_t Block::GetTypeIndex() const
+{
+	return m_typeIndex;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the type of the block
 //
-inline uint8_t Block::GetType() const
+inline const BlockType* Block::GetType() const
 {
-	return m_type;
+	return BlockType::GetTypeByIndex(m_typeIndex);
 }
 
 
@@ -83,7 +94,7 @@ inline uint8_t Block::GetType() const
 //
 inline void Block::SetType(const BlockType* blockType)
 {
-	m_type = blockType->m_typeIndex;
+	m_typeIndex = blockType->m_typeIndex;
 
 	// Also set the helper flags!
 	SetIsFullyOpaque(blockType->m_isFullyOpaque);

@@ -7,8 +7,10 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Environment/World.hpp"
 #include "Game/Environment/Chunk.hpp"
+#include "Game/Environment/Chunk.inl"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/GameCommon.hpp"
+#include "Game/Environment/BlockLocator.inl"
 #include "Engine/Core/File.hpp"
 #include "Engine/Math/Matrix44.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -544,8 +546,8 @@ bool World::GetClosestInactiveChunkCoordsToPlayerWithinActivationRange(IntVector
 void World::InitializeLightingForChunk(Chunk* chunk)
 {
 	InitializeSkyBlocksForChunk(chunk);
-	//InitializeLightSourceBlocksForChunk(chunk);
-	//SetNeighborEdgeBlocksToDirtyForChunk(chunk);
+	InitializeLightSourceBlocksForChunk(chunk);
+	SetNeighborEdgeBlocksToDirtyForChunk(chunk);
 }
 
 
@@ -665,88 +667,197 @@ void World::AddBlockToDirtyLightingList(BlockLocator blockLocator)
 //
 void World::InitializeSkyBlocksForChunk(Chunk* chunk)
 {
-	// PASS 1 - Find all sky blocks and set their lighting to 15, flag them as sky
-	// Sky == "I am not opaque, and no one above me is opaque"
-	for (int yIndex = 0; yIndex < Chunk::CHUNK_DIMENSIONS_Y; ++yIndex)
+// PASS 1 - Find all sky blocks and set their lighting to 15, flag them as sky
+// Sky == "I am not opaque, and no one above me is opaque"
+for (int yIndex = 0; yIndex < Chunk::CHUNK_DIMENSIONS_Y; ++yIndex)
+{
+	for (int xIndex = 0; xIndex < Chunk::CHUNK_DIMENSIONS_X; ++xIndex)
 	{
-		for (int xIndex = 0; xIndex < Chunk::CHUNK_DIMENSIONS_X; ++xIndex)
+		for (int zIndex = Chunk::CHUNK_DIMENSIONS_Z - 1; zIndex >= 0; --zIndex)
 		{
-			for (int zIndex = Chunk::CHUNK_DIMENSIONS_Z - 1; zIndex >= 0; --zIndex)
+			IntVector3 blockCoords = IntVector3(xIndex, yIndex, zIndex);
+			BlockLocator blockLocator = chunk->GetBlockLocator(blockCoords);
+			Block& block = blockLocator.GetBlock();
+
+			if (!block.IsFullyOpaque())
 			{
-				IntVector3 blockCoords = IntVector3(xIndex, yIndex, zIndex);
-				BlockLocator blockLocator = chunk->GetBlockLocator(blockCoords);
+				block.SetIsPartOfSky(true);
+				block.SetOutdoorLighting(Block::BLOCK_MAX_LIGHTING);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+}
+
+// Pass 2 - Set horizontal neighbors to sky blocks as dirty to propogate the light
+for (int blockIndex = 0; blockIndex < Chunk::BLOCKS_PER_CHUNK; ++blockIndex)
+{
+	BlockLocator blockLocator = chunk->GetBlockLocator(blockIndex);
+	Block& block = blockLocator.GetBlock();
+
+	if (!block.IsPartOfSky())
+	{
+		continue;
+	}
+
+	BlockLocator eastLocator = blockLocator.ToEast();
+	BlockLocator westLocator = blockLocator.ToWest();
+	BlockLocator northLocator = blockLocator.ToNorth();
+	BlockLocator southLocator = blockLocator.ToSouth();
+
+	// East
+	if (eastLocator.IsValid())
+	{
+		Block& eastBlock = eastLocator.GetBlock();
+
+		if (!eastBlock.IsFullyOpaque() && !eastBlock.IsPartOfSky())
+		{
+			AddBlockToDirtyLightingList(eastLocator);
+		}
+	}
+
+	// West
+	if (westLocator.IsValid())
+	{
+		Block& westBlock = westLocator.GetBlock();
+
+		if (!westBlock.IsFullyOpaque() && !westBlock.IsPartOfSky())
+		{
+			AddBlockToDirtyLightingList(westLocator);
+		}
+	}
+
+	// North
+	if (northLocator.IsValid())
+	{
+		Block& northBlock = northLocator.GetBlock();
+
+		if (!northBlock.IsFullyOpaque() && !northBlock.IsPartOfSky())
+		{
+			AddBlockToDirtyLightingList(northLocator);
+		}
+	}
+
+	// South
+	if (southLocator.IsValid())
+	{
+		Block& southBlock = southLocator.GetBlock();
+
+		if (!southBlock.IsFullyOpaque() && !southBlock.IsPartOfSky())
+		{
+			AddBlockToDirtyLightingList(southLocator);
+		}
+	}
+}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Searches the chunk for light sources and flags them for dirty so they propagate
+//
+void World::InitializeLightSourceBlocksForChunk(Chunk* chunk)
+{
+	for (int blockIndex = 0; blockIndex < Chunk::BLOCKS_PER_CHUNK; ++blockIndex)
+	{
+		BlockLocator blockLocator = chunk->GetBlockLocator(blockIndex);
+		Block& block = blockLocator.GetBlock();
+		const BlockType* blockType = block.GetType();
+
+		if (!block.IsFullyOpaque() && blockType->m_internalLightLevel > 0)
+		{
+			// Do not set the lighting of this block! Let the algorithm set it
+			AddBlockToDirtyLightingList(blockLocator);
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the non-opaque edge blocks of neighbors to be dirty so light will propogate into them
+// when this chunk is fully initialized
+//
+void World::SetNeighborEdgeBlocksToDirtyForChunk(Chunk* chunk)
+{
+	Chunk* eastChunk = chunk->GetEastNeighbor();
+	Chunk* westChunk = chunk->GetWestNeighbor();
+	Chunk* northChunk = chunk->GetNorthNeighbor();
+	Chunk* southChunk = chunk->GetSouthNeighbor();
+
+	// East
+	if (eastChunk != nullptr)
+	{
+		for (int zIndex = 0; zIndex < Chunk::CHUNK_DIMENSIONS_Z; ++zIndex)
+		{
+			for (int yIndex = 0; yIndex < Chunk::CHUNK_DIMENSIONS_Y; ++yIndex)
+			{
+				IntVector3 blockCoords = IntVector3(0, yIndex, zIndex);
+				BlockLocator blockLocator = eastChunk->GetBlockLocator(blockCoords);
 				Block& block = blockLocator.GetBlock();
 
 				if (!block.IsFullyOpaque())
 				{
-					block.SetIsPartOfSky(true);
-					block.SetOutdoorLighting(Block::BLOCK_MAX_LIGHTING);
-				}
-				else
-				{
-					break;
+					AddBlockToDirtyLightingList(blockLocator);
 				}
 			}
 		}
 	}
 
-	// Pass 2 - Set horizontal neighbors to sky blocks as dirty to propogate the light
-	for (int blockIndex = 0; blockIndex < Chunk::BLOCKS_PER_CHUNK; ++blockIndex)
+	// West
+	if (westChunk != nullptr)
 	{
-		BlockLocator blockLocator = chunk->GetBlockLocator(blockIndex);
-		Block& block = blockLocator.GetBlock();
-
-		if (!block.IsPartOfSky())
+		for (int zIndex = 0; zIndex < Chunk::CHUNK_DIMENSIONS_Z; ++zIndex)
 		{
-			continue;
-		}
-
-		BlockLocator eastLocator = blockLocator.ToEast();
-		BlockLocator westLocator = blockLocator.ToWest();
-		BlockLocator northLocator = blockLocator.ToNorth();
-		BlockLocator southLocator = blockLocator.ToSouth();
-
-		// East
-		if (eastLocator.IsValid())
-		{
-			Block& eastBlock = eastLocator.GetBlock();
-
-			if (!eastBlock.IsFullyOpaque() && !eastBlock.IsPartOfSky())
+			for (int yIndex = 0; yIndex < Chunk::CHUNK_DIMENSIONS_Y; ++yIndex)
 			{
-				AddBlockToDirtyLightingList(eastLocator);
+				IntVector3 blockCoords = IntVector3(Chunk::CHUNK_DIMENSIONS_X - 1, yIndex, zIndex);
+				BlockLocator blockLocator = westChunk->GetBlockLocator(blockCoords);
+				Block& block = blockLocator.GetBlock();
+
+				if (!block.IsFullyOpaque())
+				{
+					AddBlockToDirtyLightingList(blockLocator);
+				}
 			}
 		}
-	
-		// West
-		if (westLocator.IsValid())
-		{
-			Block& westBlock = westLocator.GetBlock();
+	}
 
-			if (!westBlock.IsFullyOpaque() && !westBlock.IsPartOfSky())
+	// North
+	if (northChunk != nullptr)
+	{
+		for (int zIndex = 0; zIndex < Chunk::CHUNK_DIMENSIONS_Z; ++zIndex)
+		{
+			for (int xIndex = 0; xIndex < Chunk::CHUNK_DIMENSIONS_X; ++xIndex)
 			{
-				AddBlockToDirtyLightingList(westLocator);
+				IntVector3 blockCoords = IntVector3(xIndex, 0, zIndex);
+				BlockLocator blockLocator = northChunk->GetBlockLocator(blockCoords);
+				Block& block = blockLocator.GetBlock();
+
+				if (!block.IsFullyOpaque())
+				{
+					AddBlockToDirtyLightingList(blockLocator);
+				}
 			}
 		}
-	
-		// North
-		if (northLocator.IsValid())
+	}
+
+	// South
+	if (southChunk != nullptr)
+	{
+		for (int zIndex = 0; zIndex < Chunk::CHUNK_DIMENSIONS_Z; ++zIndex)
 		{
-			Block& northBlock = northLocator.GetBlock();
-
-			if (!northBlock.IsFullyOpaque() && !northBlock.IsPartOfSky())
+			for (int xIndex = 0; xIndex < Chunk::CHUNK_DIMENSIONS_X; ++xIndex)
 			{
-				AddBlockToDirtyLightingList(northLocator);
-			}
-		}
+				IntVector3 blockCoords = IntVector3(xIndex, 0, zIndex);
+				BlockLocator blockLocator = southChunk->GetBlockLocator(blockCoords);
+				Block& block = blockLocator.GetBlock();
 
-		// South
-		if (southLocator.IsValid())
-		{
-			Block& southBlock = southLocator.GetBlock();
-
-			if (!southBlock.IsFullyOpaque() && !southBlock.IsPartOfSky())
-			{
-				AddBlockToDirtyLightingList(southLocator);
+				if (!block.IsFullyOpaque())
+				{
+					AddBlockToDirtyLightingList(blockLocator);
+				}
 			}
 		}
 	}

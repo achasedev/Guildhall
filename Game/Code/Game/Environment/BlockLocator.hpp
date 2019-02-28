@@ -7,8 +7,8 @@
 #pragma once
 #include "Engine/Math/Vector3.hpp"
 
-class Chunk;
 class Block;
+class Chunk;
 
 class BlockLocator
 {
@@ -21,11 +21,11 @@ public:
 	bool operator==(const BlockLocator& compare) const;
 
 	// Accessors
-	Block&	GetBlock();
-	Chunk*	GetChunk();
-	int		GetBlockIndex() const;
-
-	bool	IsValid() const;
+	inline Block&	GetBlock();
+	inline Chunk*	GetChunk();
+	inline int		GetBlockIndex() const;
+	 
+	inline bool		IsValid() const;
 
 	// Producers
 	BlockLocator	ToEast() const;

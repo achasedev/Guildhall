@@ -4,9 +4,9 @@
 /* Date: February 18th 2019
 /* Description: Implementation of the BlockLocator class
 /************************************************************************/
-#include "Game/Environment/Chunk.hpp"
+#include "Game/Environment/Chunk.inl"
 #include "Game/Environment/Block.hpp"
-#include "Game/Environment/BlockLocator.hpp"
+#include "Game/Environment/BlockLocator.inl"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/IntVector3.hpp"
 
@@ -25,49 +25,6 @@ BlockLocator::BlockLocator(Chunk* chunk, int blockIndex)
 bool BlockLocator::operator==(const BlockLocator& compare) const
 {
 	return (m_chunk == compare.m_chunk && m_blockIndex == compare.m_blockIndex);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns the block this locator references, or the missing block if it doesn't exist
-//
-Block& BlockLocator::GetBlock()
-{
-	if (m_chunk == nullptr)
-	{
-		return Block::MISSING_BLOCK;
-	}
-	else
-	{
-		return m_chunk->GetBlock(m_blockIndex);
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns the chunk that contains the block this locator locates
-//
-Chunk* BlockLocator::GetChunk()
-{
-	return m_chunk;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns the block index of the block this locator points to
-//
-int BlockLocator::GetBlockIndex() const
-{
-	return m_blockIndex;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns whether this block locator is a valid locator
-//
-bool BlockLocator::IsValid() const
-{
-	return (m_chunk != nullptr);
 }
 
 

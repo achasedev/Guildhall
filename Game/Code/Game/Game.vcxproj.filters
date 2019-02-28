@@ -64,4 +64,8 @@
     <ClInclude Include="Framework\GameCamera.hpp" />
     <ClInclude Include="Environment\BlockLocator.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Environment\BlockLocator.inl" />
+    <None Include="Environment\Chunk.inl" />
+  </ItemGroup>
 </Project>
