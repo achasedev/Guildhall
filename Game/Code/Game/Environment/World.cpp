@@ -446,18 +446,13 @@ RaycastResult_t World::Raycast(const Vector3& start, const Vector3& directionNor
 //-----------------------------------------------------------------------------------------------
 // Loads or generates a chunk at the given coords and adds it to the world
 //
-void World::ActivateChunk(const IntVector2& chunkCoords)
+void World::PopulateBlocksOnChunk(Chunk* chunkToPopulate)
 {
-	// Ensure we don't try to activate an already active chunk
-	bool alreadyActive = m_activeChunks.find(chunkCoords) != m_activeChunks.end();
-	ASSERT_OR_DIE(!alreadyActive, Stringf("World tried to activate chunk at coords (%i, %i) but it was already active", chunkCoords.x, chunkCoords.y).c_str());
-
-	// Generate with Perlin noise for now
-	Chunk* chunk = new Chunk(chunkCoords);
-
 	// If the file for a chunk exists, load it
+	IntVector2 chunkCoords = chunkToPopulate->GetChunkCoords();
+
 	std::string filename = Stringf("Saves/Chunk_%i,%i.chunk", chunkCoords.x, chunkCoords.y);
-	bool fromFileSuccess = chunk->InitializeFromFile(filename);
+	bool fromFileSuccess = chunkToPopulate->InitializeFromFile(filename);
 
 	if (fromFileSuccess)
 	{
@@ -465,12 +460,9 @@ void World::ActivateChunk(const IntVector2& chunkCoords)
 	}
 	else
 	{
-		chunk->GenerateWithPerlinNoise(BASE_ELEVATION, NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION, SEA_LEVEL);
+		chunkToPopulate->GenerateWithPerlinNoise(BASE_ELEVATION, NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION, SEA_LEVEL);
 		ConsolePrintf(Rgba::GREEN, "Chunk (%i, %i) gererated from noise", chunkCoords.x, chunkCoords.y);
 	}
-
-	// Add the chunk to the active list; its mesh will be built later
-	AddChunkToActiveList(chunk);
 }
 
 
@@ -480,8 +472,6 @@ void World::ActivateChunk(const IntVector2& chunkCoords)
 //
 void World::DeactivateChunk(Chunk* chunk)
 {
-	RemoveChunkFromActiveList(chunk);
-
 	// Write to file if needed
 	if (chunk->ShouldWriteToFile())
 	{
@@ -545,6 +535,15 @@ bool World::GetClosestInactiveChunkCoordsToPlayerWithinActivationRange(IntVector
 	}
 
 	return foundInactiveChunk;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets up the initial lighting values for the chunk so that the lighting algorithm can run on it
+//
+void World::InitializeLightingForChunk(Chunk* chunk)
+{
+	UNUSED(chunk);
 }
 
 
@@ -704,7 +703,6 @@ void World::AddChunkToActiveList(Chunk* chunkToAdd)
 	// Add it to the map
 	m_activeChunks[chunkCoords] = chunkToAdd;
 
-
 	// Hook up the references to the neighbors
 	IntVector2 eastCoords = chunkCoords + IntVector2(1, 0);
 	IntVector2 westCoords = chunkCoords + IntVector2(-1, 0);
@@ -805,7 +803,16 @@ void World::CheckToActivateChunks()
 	if (foundInactiveChunk)
 	{
 		ConsolePrintf("Activating Chunk (%i, %i)", closestInactiveChunkCoords.x, closestInactiveChunkCoords.y);
-		ActivateChunk(closestInactiveChunkCoords);
+
+		// Populate from data or noise
+		Chunk* chunk = new Chunk(closestInactiveChunkCoords);
+		PopulateBlocksOnChunk(chunk);
+
+		// Add to the list
+		AddChunkToActiveList(chunk);
+
+		// Initialize lighting after adding so it can dirty its neighbor's blocks 
+		InitializeLightingForChunk(chunk);
 	}
 }
 
@@ -821,6 +828,8 @@ void World::CheckToDeactivateChunks()
 	{
 		IntVector2 chunkCoords = chunkToDeactivate->GetChunkCoords();
 		ConsolePrintf(Rgba::ORANGE, "Deactivating Chunk (%i, %i)", chunkCoords.x, chunkCoords.y);
+
+		RemoveChunkFromActiveList(chunkToDeactivate);
 		DeactivateChunk(chunkToDeactivate);
 	}
 }

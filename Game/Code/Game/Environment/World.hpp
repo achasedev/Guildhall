@@ -6,6 +6,7 @@
 /************************************************************************/
 #pragma once
 #include <map>
+#include <deque>
 #include "Engine/Math/IntVector2.hpp"
 #include "Game/Environment/BlockLocator.hpp"
 
@@ -54,47 +55,49 @@ public:
 private:
 	//-----Private Methods-----
 
-	void AddChunkToActiveList(Chunk* chunkToAdd);
-	void RemoveChunkFromActiveList(Chunk* chunkToRemove);
 
 	// Chunk Activation
-	void CheckToActivateChunks();
-	void ActivateChunk(const IntVector2& chunkCoords);
-	bool GetClosestInactiveChunkCoordsToPlayerWithinActivationRange(IntVector2& out_closestInactiveChunkCoords) const;
+	void			CheckToActivateChunks();
+	void			PopulateBlocksOnChunk(Chunk* chunkToPopulate);
+	void			AddChunkToActiveList(Chunk* chunkToAdd);
+	bool			GetClosestInactiveChunkCoordsToPlayerWithinActivationRange(IntVector2& out_closestInactiveChunkCoords) const;
+	void			InitializeLightingForChunk(Chunk* chunk);
 
 	// Chunk Deactivation
-	void CheckToDeactivateChunks();
-	void DeactivateChunk(Chunk* chunk);
-	Chunk* GetFarthestActiveChunkToPlayerOutsideDeactivationRange() const;
+	void			CheckToDeactivateChunks();
+	void			RemoveChunkFromActiveList(Chunk* chunkToRemove);
+	void			DeactivateChunk(Chunk* chunk);
+	Chunk*			GetFarthestActiveChunkToPlayerOutsideDeactivationRange() const;
 
 	// Chunk MeshBuilding
-	void CheckToBuildChunkMesh();
-	bool GetClosestActiveChunkToPlayerWithDirtyMesh(IntVector2& out_closestActiveDirtyCoords) const;
+	void			CheckToBuildChunkMesh();
+	bool			GetClosestActiveChunkToPlayerWithDirtyMesh(IntVector2& out_closestActiveDirtyCoords) const;
 
 	// Update
-	void UpdateChunks();
-	void UpdateRaycast();
+	void			UpdateChunks();
+	void			UpdateRaycast();
 
 	// Render
-	void RenderChunks() const;
+	void			RenderChunks() const;
 
 
 private:
 	//-----Private Data-----
 	
-	std::map<IntVector2, Chunk*> m_activeChunks;
+	std::map<IntVector2, Chunk*>	m_activeChunks;
+	std::deque<BlockLocator>		m_dirtyLightingBlocks;
 
 	// For Debugging
-	bool m_raycastDetached = false;
-	Vector3 m_raycastReferencePosition; // Will be camera position when not detached
-	Vector3 m_raycastForward;			// Will be the camera forward when not detached
-	RaycastResult_t m_lastRaycastResult;
-	uint8_t m_blockTypeToPlace = 5;
+	bool							m_raycastDetached = false;
+	Vector3							m_raycastReferencePosition; // Will be camera position when not detached
+	Vector3							m_raycastForward;			// Will be the camera forward when not detached
+	RaycastResult_t					m_lastRaycastResult;
+	uint8_t							m_blockTypeToPlace = 5;
 
-	static constexpr int SEA_LEVEL = 25;
-	static constexpr int BASE_ELEVATION = 30;
-	static constexpr int NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION = 10;
-	static constexpr int RAYCAST_STEPS_PER_BLOCK = 100;
-	static constexpr float DEFAULT_RAYCAST_DISTANCE = 8.f;
+	static constexpr int			SEA_LEVEL = 25;
+	static constexpr int			BASE_ELEVATION = 30;
+	static constexpr int			NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION = 10;
+	static constexpr int			RAYCAST_STEPS_PER_BLOCK = 100;
+	static constexpr float			DEFAULT_RAYCAST_DISTANCE = 8.f;
 
 };
