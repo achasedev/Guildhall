@@ -676,8 +676,7 @@ for (int yIndex = 0; yIndex < Chunk::CHUNK_DIMENSIONS_Y; ++yIndex)
 		for (int zIndex = Chunk::CHUNK_DIMENSIONS_Z - 1; zIndex >= 0; --zIndex)
 		{
 			IntVector3 blockCoords = IntVector3(xIndex, yIndex, zIndex);
-			BlockLocator blockLocator = chunk->GetBlockLocator(blockCoords);
-			Block& block = blockLocator.GetBlock();
+			Block& block = chunk->GetBlock(blockCoords);
 
 			if (!block.IsFullyOpaque())
 			{
@@ -695,7 +694,7 @@ for (int yIndex = 0; yIndex < Chunk::CHUNK_DIMENSIONS_Y; ++yIndex)
 // Pass 2 - Set horizontal neighbors to sky blocks as dirty to propogate the light
 for (int blockIndex = 0; blockIndex < Chunk::BLOCKS_PER_CHUNK; ++blockIndex)
 {
-	BlockLocator blockLocator = chunk->GetBlockLocator(blockIndex);
+	BlockLocator blockLocator(chunk, blockIndex); // simple constructions
 	Block& block = blockLocator.GetBlock();
 
 	if (!block.IsPartOfSky())
@@ -762,7 +761,7 @@ void World::InitializeLightSourceBlocksForChunk(Chunk* chunk)
 {
 	for (int blockIndex = 0; blockIndex < Chunk::BLOCKS_PER_CHUNK; ++blockIndex)
 	{
-		BlockLocator blockLocator = chunk->GetBlockLocator(blockIndex);
+		BlockLocator blockLocator(chunk, blockIndex);
 		Block& block = blockLocator.GetBlock();
 		const BlockType* blockType = block.GetType();
 
@@ -794,7 +793,7 @@ void World::SetNeighborEdgeBlocksToDirtyForChunk(Chunk* chunk)
 			for (int yIndex = 0; yIndex < Chunk::CHUNK_DIMENSIONS_Y; ++yIndex)
 			{
 				IntVector3 blockCoords = IntVector3(0, yIndex, zIndex);
-				BlockLocator blockLocator = eastChunk->GetBlockLocator(blockCoords);
+				BlockLocator blockLocator(eastChunk, blockCoords);
 				Block& block = blockLocator.GetBlock();
 
 				if (!block.IsFullyOpaque())
@@ -813,7 +812,7 @@ void World::SetNeighborEdgeBlocksToDirtyForChunk(Chunk* chunk)
 			for (int yIndex = 0; yIndex < Chunk::CHUNK_DIMENSIONS_Y; ++yIndex)
 			{
 				IntVector3 blockCoords = IntVector3(Chunk::CHUNK_DIMENSIONS_X - 1, yIndex, zIndex);
-				BlockLocator blockLocator = westChunk->GetBlockLocator(blockCoords);
+				BlockLocator blockLocator(westChunk, blockCoords);
 				Block& block = blockLocator.GetBlock();
 
 				if (!block.IsFullyOpaque())
@@ -832,7 +831,7 @@ void World::SetNeighborEdgeBlocksToDirtyForChunk(Chunk* chunk)
 			for (int xIndex = 0; xIndex < Chunk::CHUNK_DIMENSIONS_X; ++xIndex)
 			{
 				IntVector3 blockCoords = IntVector3(xIndex, 0, zIndex);
-				BlockLocator blockLocator = northChunk->GetBlockLocator(blockCoords);
+				BlockLocator blockLocator(northChunk, blockCoords);
 				Block& block = blockLocator.GetBlock();
 
 				if (!block.IsFullyOpaque())
@@ -851,7 +850,7 @@ void World::SetNeighborEdgeBlocksToDirtyForChunk(Chunk* chunk)
 			for (int xIndex = 0; xIndex < Chunk::CHUNK_DIMENSIONS_X; ++xIndex)
 			{
 				IntVector3 blockCoords = IntVector3(xIndex, 0, zIndex);
-				BlockLocator blockLocator = southChunk->GetBlockLocator(blockCoords);
+				BlockLocator blockLocator(southChunk, blockCoords);
 				Block& block = blockLocator.GetBlock();
 
 				if (!block.IsFullyOpaque())

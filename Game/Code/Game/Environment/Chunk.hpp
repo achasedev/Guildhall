@@ -40,8 +40,6 @@ public:
 	// Accessors
 	inline Block&			GetBlock(int blockIndex);
 	inline Block&			GetBlock(const IntVector3& blockCoords);
-	inline BlockLocator		GetBlockLocator(int blockIndex);
-	inline BlockLocator		GetBlockLocator(const IntVector3& blockCoords); 
 	inline IntVector2		GetChunkCoords() const;
 	inline bool				ShouldWriteToFile() const;
 	inline Chunk*			GetEastNeighbor() const;

@@ -17,6 +17,7 @@ public:
 
 	BlockLocator() {}
 	BlockLocator(Chunk* chunk, int blockIndex);
+	BlockLocator(Chunk* chunk, const IntVector3& blockCoords);
 
 	bool operator==(const BlockLocator& compare) const;
 

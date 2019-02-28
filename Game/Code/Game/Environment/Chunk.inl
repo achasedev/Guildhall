@@ -29,25 +29,6 @@ inline Block& Chunk::GetBlock(const IntVector3& blockCoords)
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns a reference to the block at the given index
-//
-inline BlockLocator Chunk::GetBlockLocator(int blockIndex)
-{
-	return BlockLocator(this, blockIndex);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns a reference to the block at the given coordinates
-//
-inline BlockLocator Chunk::GetBlockLocator(const IntVector3& blockCoords)
-{
-	int blockIndex = GetBlockIndexFromBlockCoords(blockCoords);
-	return GetBlockLocator(blockIndex);
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Returns the chunk coordinates of this chunk
 //
 inline IntVector2 Chunk::GetChunkCoords() const

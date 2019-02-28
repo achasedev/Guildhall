@@ -20,6 +20,24 @@ BlockLocator::BlockLocator(Chunk* chunk, int blockIndex)
 
 
 //-----------------------------------------------------------------------------------------------
+// Constructor from coordinates
+//
+BlockLocator::BlockLocator(Chunk* chunk, const IntVector3& blockCoords)
+{
+	m_chunk = chunk;
+
+	if (chunk == nullptr)
+	{
+		m_blockIndex = 0;
+	}
+	else
+	{
+		m_blockIndex = m_chunk->GetBlockIndexFromBlockCoords(blockCoords);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Operator - returns true if both locators point to the exact same block
 //
 bool BlockLocator::operator==(const BlockLocator& compare) const
