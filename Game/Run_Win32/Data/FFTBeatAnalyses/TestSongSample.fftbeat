@@ -1,0 +1,3797 @@
+Song File: Data/Audio/Music/TestSongSample.mp3
+Duration: 32.235 seconds
+Sample Rate: 44100.00 hz
+Number of Bins: 70
+Number of Samples per bin: 7411
+Max Average Bin Expressivity: 0.00892277 in Bin 1
+Min Average Bin Expressivity: 0.00027134 in Bin 64
+BIN 0 | Frequency Range: [ 0.00 - 43.07 ) hertz
+Period Median: 0.4280 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 43
+Total Periods: 54
+Period Confidence for this bin: 79.63 %
+Phase Median: 0.2110 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 22
+Total Phases: 54
+Phase Confidence for this Bin: 40.74 %
+Bin Average Expressivity: 0.00619816
+Bin Average Expressivity Normalized: 0.69464564
+HIGH SAMPLES
+Time: 0.5230 - Value: 0.01486140
+Time: 1.4320 - Value: 0.00549018
+Time: 1.8600 - Value: 0.00660565
+Time: 2.2710 - Value: 0.01266882
+Time: 3.1510 - Value: 0.01086479
+Time: 3.5670 - Value: 0.00301306
+Time: 4.0130 - Value: 0.01233032
+Time: 4.8710 - Value: 0.01065512
+Time: 5.2840 - Value: 0.00822134
+Time: 5.6910 - Value: 0.01648396
+Time: 6.5800 - Value: 0.01082877
+Time: 7.0000 - Value: 0.00927822
+Time: 7.4310 - Value: 0.01364599
+Time: 8.2910 - Value: 0.00727063
+Time: 8.7160 - Value: 0.00995488
+Time: 9.1200 - Value: 0.01520632
+Time: 10.0090 - Value: 0.01179539
+Time: 10.4200 - Value: 0.00289143
+Time: 10.8210 - Value: 0.01122416
+Time: 11.7200 - Value: 0.00808068
+Time: 12.1400 - Value: 0.00464990
+Time: 12.7800 - Value: 0.00303823
+Time: 13.4310 - Value: 0.00299539
+Time: 13.8800 - Value: 0.00891132
+Time: 14.3510 - Value: 0.03504039
+Time: 14.7550 - Value: 0.01867648
+Time: 15.1830 - Value: 0.02209287
+Time: 15.6290 - Value: 0.01993795
+Time: 16.0510 - Value: 0.03024236
+Time: 16.4790 - Value: 0.02831338
+Time: 16.9080 - Value: 0.02863948
+Time: 17.3370 - Value: 0.02998669
+Time: 17.7710 - Value: 0.02143924
+Time: 18.2280 - Value: 0.03178615
+Time: 18.6310 - Value: 0.02184077
+Time: 19.0400 - Value: 0.02129602
+Time: 19.4670 - Value: 0.02435631
+Time: 19.9070 - Value: 0.02260384
+Time: 20.3510 - Value: 0.02814176
+Time: 20.7640 - Value: 0.02689024
+Time: 21.1930 - Value: 0.02095801
+Time: 21.6110 - Value: 0.02249556
+Time: 22.0400 - Value: 0.02000063
+Time: 22.4670 - Value: 0.02295387
+Time: 22.9430 - Value: 0.02834589
+Time: 23.3510 - Value: 0.03637417
+Time: 23.7640 - Value: 0.02658029
+Time: 24.1810 - Value: 0.02345897
+Time: 24.6090 - Value: 0.01870121
+Time: 25.0390 - Value: 0.02355182
+Time: 25.5010 - Value: 0.02750892
+Time: 25.9330 - Value: 0.02222974
+Time: 26.3430 - Value: 0.02191956
+Time: 26.7800 - Value: 0.03604383
+Time: 27.2000 - Value: 0.02309573
+BIN 1 | Frequency Range: [ 43.07 - 86.13 ) hertz
+Period Median: 0.4300 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 39
+Total Periods: 53
+Period Confidence for this bin: 73.58 %
+Phase Median: 0.1130 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 21
+Total Phases: 53
+Phase Confidence for this Bin: 39.62 %
+Bin Average Expressivity: 0.00892277
+Bin Average Expressivity Normalized: 1.00000000
+HIGH SAMPLES
+Time: 0.5310 - Value: 0.01831486
+Time: 1.4390 - Value: 0.00804839
+Time: 1.8560 - Value: 0.00740541
+Time: 2.5310 - Value: 0.01786721
+Time: 3.1510 - Value: 0.00868354
+Time: 3.5670 - Value: 0.00347070
+Time: 4.2400 - Value: 0.01683340
+Time: 4.8650 - Value: 0.00888585
+Time: 5.2800 - Value: 0.00297558
+Time: 5.9600 - Value: 0.01729919
+Time: 6.5770 - Value: 0.00760705
+Time: 6.9910 - Value: 0.00216499
+Time: 7.3930 - Value: 0.01666394
+Time: 8.2990 - Value: 0.00715143
+Time: 8.7080 - Value: 0.00329061
+Time: 10.0110 - Value: 0.00845972
+Time: 10.4230 - Value: 0.00496546
+Time: 11.1010 - Value: 0.01743675
+Time: 11.7200 - Value: 0.00691248
+Time: 12.1400 - Value: 0.00628056
+Time: 12.7800 - Value: 0.00366502
+Time: 13.3200 - Value: 0.00165081
+Time: 13.7510 - Value: 0.00295803
+Time: 14.3310 - Value: 0.03097640
+Time: 14.7410 - Value: 0.02735908
+Time: 15.1760 - Value: 0.02958572
+Time: 15.6000 - Value: 0.02954128
+Time: 16.0310 - Value: 0.02851347
+Time: 16.4590 - Value: 0.02869056
+Time: 16.8960 - Value: 0.03407038
+Time: 17.3200 - Value: 0.02840822
+Time: 17.7490 - Value: 0.02771229
+Time: 18.1690 - Value: 0.02652478
+Time: 18.6110 - Value: 0.03384716
+Time: 19.0310 - Value: 0.02834310
+Time: 19.4610 - Value: 0.02765760
+Time: 19.8880 - Value: 0.02840944
+Time: 20.3230 - Value: 0.03199978
+Time: 20.7510 - Value: 0.03446870
+Time: 21.1800 - Value: 0.02802842
+Time: 21.6000 - Value: 0.02938386
+Time: 22.0290 - Value: 0.02726668
+Time: 22.4670 - Value: 0.03514281
+Time: 22.8880 - Value: 0.02797582
+Time: 23.3200 - Value: 0.02945467
+Time: 23.7510 - Value: 0.03032131
+Time: 24.1710 - Value: 0.02819562
+Time: 24.6110 - Value: 0.03194290
+Time: 25.0290 - Value: 0.02851477
+Time: 25.4590 - Value: 0.02773498
+Time: 25.8910 - Value: 0.02895592
+Time: 26.3150 - Value: 0.02824994
+Time: 26.7510 - Value: 0.03129980
+Time: 27.1710 - Value: 0.02759723
+BIN 2 | Frequency Range: [ 86.13 - 129.20 ) hertz
+Period Median: 0.4310 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 33
+Total Periods: 48
+Period Confidence for this bin: 68.75 %
+Phase Median: 0.0500 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 5
+Total Phases: 48
+Phase Confidence for this Bin: 10.42 %
+Bin Average Expressivity: 0.00851942
+Bin Average Expressivity Normalized: 0.95479572
+HIGH SAMPLES
+Time: 0.8000 - Value: 0.01872744
+Time: 1.6400 - Value: 0.00428921
+Time: 2.1970 - Value: 0.02013289
+Time: 3.3530 - Value: 0.00358497
+Time: 3.9110 - Value: 0.02053645
+Time: 5.0710 - Value: 0.00318899
+Time: 5.6190 - Value: 0.01496623
+Time: 6.7800 - Value: 0.00297753
+Time: 7.3320 - Value: 0.01303496
+Time: 8.5000 - Value: 0.00278748
+Time: 9.0510 - Value: 0.01941917
+Time: 10.2070 - Value: 0.00134005
+Time: 10.7610 - Value: 0.01421611
+Time: 11.7200 - Value: 0.00488275
+Time: 12.1400 - Value: 0.00682647
+Time: 12.7800 - Value: 0.00428325
+Time: 13.2110 - Value: 0.00191294
+Time: 13.6400 - Value: 0.00718675
+Time: 14.3030 - Value: 0.03483566
+Time: 14.7310 - Value: 0.03538267
+Time: 15.1600 - Value: 0.03579060
+Time: 15.5910 - Value: 0.03504177
+Time: 16.0150 - Value: 0.03037543
+Time: 16.4400 - Value: 0.02554927
+Time: 16.8800 - Value: 0.03930450
+Time: 17.3000 - Value: 0.03101986
+Time: 17.7280 - Value: 0.02950471
+Time: 18.1600 - Value: 0.03646859
+Time: 18.5910 - Value: 0.03746386
+Time: 19.0130 - Value: 0.02834969
+Time: 19.4450 - Value: 0.03272714
+Time: 19.8710 - Value: 0.02922407
+Time: 20.3040 - Value: 0.03585217
+Time: 20.7330 - Value: 0.03941908
+Time: 21.1560 - Value: 0.02722709
+Time: 21.5880 - Value: 0.03643171
+Time: 22.0190 - Value: 0.04064141
+Time: 22.4490 - Value: 0.03523433
+Time: 22.8730 - Value: 0.03218504
+Time: 23.2990 - Value: 0.02746970
+Time: 23.7310 - Value: 0.03365144
+Time: 24.1600 - Value: 0.03514484
+Time: 24.5910 - Value: 0.03831051
+Time: 25.0130 - Value: 0.02881333
+Time: 25.4450 - Value: 0.03416520
+Time: 25.8710 - Value: 0.02649338
+Time: 26.3000 - Value: 0.02895055
+Time: 26.7360 - Value: 0.03757436
+Time: 27.1600 - Value: 0.03479396
+BIN 3 | Frequency Range: [ 129.20 - 172.27 ) hertz
+Period Median: 0.4300 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 36
+Total Periods: 52
+Period Confidence for this bin: 69.23 %
+Phase Median: 0.0930 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 14
+Total Phases: 52
+Phase Confidence for this Bin: 26.92 %
+Bin Average Expressivity: 0.00489017
+Bin Average Expressivity Normalized: 0.54805565
+HIGH SAMPLES
+Time: 0.7910 - Value: 0.01042634
+Time: 1.4310 - Value: 0.00315646
+Time: 1.8470 - Value: 0.00069608
+Time: 2.5080 - Value: 0.01375687
+Time: 3.1470 - Value: 0.00296811
+Time: 3.5710 - Value: 0.00274980
+Time: 4.2200 - Value: 0.00966825
+Time: 5.0710 - Value: 0.00145911
+Time: 5.6190 - Value: 0.02278359
+Time: 6.7800 - Value: 0.00275792
+Time: 7.3270 - Value: 0.01083717
+Time: 8.2920 - Value: 0.00276405
+Time: 8.7080 - Value: 0.00550019
+Time: 9.3710 - Value: 0.02247186
+Time: 10.2070 - Value: 0.00127467
+Time: 10.7570 - Value: 0.01486702
+Time: 11.7200 - Value: 0.00324862
+Time: 12.1400 - Value: 0.00606722
+Time: 12.6710 - Value: 0.00036761
+Time: 13.1030 - Value: 0.00198210
+Time: 13.5530 - Value: 0.00306167
+Time: 13.9590 - Value: 0.01211024
+Time: 14.7200 - Value: 0.02335316
+Time: 15.1510 - Value: 0.02878650
+Time: 15.5800 - Value: 0.03119127
+Time: 16.0150 - Value: 0.04079828
+Time: 16.4400 - Value: 0.04003890
+Time: 16.8630 - Value: 0.01634851
+Time: 17.2910 - Value: 0.01773549
+Time: 17.7230 - Value: 0.02967008
+Time: 18.1530 - Value: 0.03866054
+Time: 18.5800 - Value: 0.02896516
+Time: 19.0110 - Value: 0.03828383
+Time: 19.4360 - Value: 0.02209627
+Time: 19.8690 - Value: 0.04081553
+Time: 20.3000 - Value: 0.03936935
+Time: 20.7200 - Value: 0.02445934
+Time: 21.1510 - Value: 0.03150551
+Time: 21.5760 - Value: 0.01978891
+Time: 22.0090 - Value: 0.02886927
+Time: 22.4400 - Value: 0.03584071
+Time: 22.8640 - Value: 0.02594210
+Time: 23.2930 - Value: 0.02953658
+Time: 23.7210 - Value: 0.02297366
+Time: 24.1480 - Value: 0.01851319
+Time: 24.5800 - Value: 0.03093101
+Time: 25.0090 - Value: 0.03487164
+Time: 25.4390 - Value: 0.02904631
+Time: 25.8650 - Value: 0.02401753
+Time: 26.2910 - Value: 0.01774484
+Time: 26.7200 - Value: 0.02188909
+Time: 27.1510 - Value: 0.02627685
+Time: 28.1110 - Value: 0.00022359
+BIN 4 | Frequency Range: [ 172.27 - 215.33 ) hertz
+Period Median: 0.4290 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 37
+Total Periods: 54
+Period Confidence for this bin: 68.52 %
+Phase Median: 0.1290 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 36
+Total Phases: 54
+Phase Confidence for this Bin: 66.67 %
+Bin Average Expressivity: 0.00300337
+Bin Average Expressivity Normalized: 0.33659568
+HIGH SAMPLES
+Time: 0.7910 - Value: 0.01655636
+Time: 1.6330 - Value: 0.00061509
+Time: 2.1790 - Value: 0.00632815
+Time: 2.7230 - Value: 0.00890070
+Time: 3.3490 - Value: 0.00113159
+Time: 3.8950 - Value: 0.00998608
+Time: 4.4370 - Value: 0.00867755
+Time: 5.0610 - Value: 0.00044308
+Time: 5.6110 - Value: 0.01365584
+Time: 6.1510 - Value: 0.01027874
+Time: 6.5770 - Value: 0.00381237
+Time: 6.9910 - Value: 0.00364265
+Time: 7.6480 - Value: 0.02001824
+Time: 8.7110 - Value: 0.00505122
+Time: 9.3600 - Value: 0.01164627
+Time: 10.2110 - Value: 0.00158337
+Time: 10.7510 - Value: 0.00846128
+Time: 11.2930 - Value: 0.00889298
+Time: 12.1400 - Value: 0.00557242
+Time: 12.5880 - Value: 0.00144596
+Time: 13.0110 - Value: 0.00322210
+Time: 13.4360 - Value: 0.00571229
+Time: 13.8640 - Value: 0.03290712
+Time: 14.2910 - Value: 0.02788029
+Time: 14.7200 - Value: 0.03478712
+Time: 15.1510 - Value: 0.03528157
+Time: 15.5800 - Value: 0.03532806
+Time: 16.0040 - Value: 0.02540128
+Time: 16.4310 - Value: 0.01679413
+Time: 16.8630 - Value: 0.02742373
+Time: 17.2800 - Value: 0.01048455
+Time: 17.7200 - Value: 0.02992447
+Time: 18.1510 - Value: 0.03818832
+Time: 18.5760 - Value: 0.02485532
+Time: 19.0010 - Value: 0.01571737
+Time: 19.4310 - Value: 0.01596412
+Time: 19.8600 - Value: 0.02142479
+Time: 20.2890 - Value: 0.01700029
+Time: 20.7170 - Value: 0.02248268
+Time: 21.1480 - Value: 0.02429462
+Time: 21.5760 - Value: 0.03140863
+Time: 22.0010 - Value: 0.01540767
+Time: 22.4350 - Value: 0.03408509
+Time: 22.8600 - Value: 0.02082264
+Time: 23.2880 - Value: 0.01982361
+Time: 23.7150 - Value: 0.01231531
+Time: 24.1390 - Value: 0.00991440
+Time: 24.5730 - Value: 0.01555905
+Time: 25.0040 - Value: 0.02604321
+Time: 25.4330 - Value: 0.02649867
+Time: 25.8590 - Value: 0.01435228
+Time: 26.2850 - Value: 0.00878912
+Time: 26.7200 - Value: 0.03283816
+Time: 27.1510 - Value: 0.03192215
+Time: 28.1110 - Value: 0.00021380
+BIN 5 | Frequency Range: [ 215.33 - 258.40 ) hertz
+Period Median: 0.4310 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 31
+Total Periods: 51
+Period Confidence for this bin: 60.78 %
+Phase Median: 0.0550 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 4
+Total Phases: 51
+Phase Confidence for this Bin: 7.84 %
+Bin Average Expressivity: 0.00393952
+Bin Average Expressivity Normalized: 0.44151366
+HIGH SAMPLES
+Time: 0.7810 - Value: 0.00477945
+Time: 1.6400 - Value: 0.00190542
+Time: 2.1790 - Value: 0.01108406
+Time: 2.7160 - Value: 0.00973246
+Time: 3.3510 - Value: 0.00139019
+Time: 3.8910 - Value: 0.00274420
+Time: 4.4280 - Value: 0.00373567
+Time: 5.0670 - Value: 0.00175103
+Time: 5.6050 - Value: 0.00509392
+Time: 6.1400 - Value: 0.00375778
+Time: 6.7760 - Value: 0.00040465
+Time: 7.3200 - Value: 0.00983439
+Time: 7.8710 - Value: 0.01649377
+Time: 8.7200 - Value: 0.01852031
+Time: 9.3510 - Value: 0.00268624
+Time: 10.2070 - Value: 0.00196559
+Time: 10.7510 - Value: 0.01401778
+Time: 11.2930 - Value: 0.01962499
+Time: 12.6810 - Value: 0.00224836
+Time: 13.1110 - Value: 0.00463212
+Time: 13.5400 - Value: 0.01012971
+Time: 14.2910 - Value: 0.03314214
+Time: 14.7200 - Value: 0.03384686
+Time: 15.1510 - Value: 0.02684002
+Time: 15.5710 - Value: 0.01512720
+Time: 16.0040 - Value: 0.03530950
+Time: 16.4310 - Value: 0.02879226
+Time: 16.8630 - Value: 0.02976924
+Time: 17.2800 - Value: 0.01223714
+Time: 17.7200 - Value: 0.03032788
+Time: 18.1510 - Value: 0.02716437
+Time: 18.5760 - Value: 0.03397890
+Time: 19.0010 - Value: 0.02327420
+Time: 19.4310 - Value: 0.02639570
+Time: 19.8600 - Value: 0.03068995
+Time: 20.2890 - Value: 0.02503537
+Time: 20.7050 - Value: 0.00469690
+Time: 21.1480 - Value: 0.03050036
+Time: 21.5760 - Value: 0.03683593
+Time: 22.0010 - Value: 0.02245593
+Time: 22.4350 - Value: 0.03508328
+Time: 22.8600 - Value: 0.03149450
+Time: 23.2880 - Value: 0.02966910
+Time: 23.7150 - Value: 0.01839947
+Time: 24.1390 - Value: 0.01402473
+Time: 24.5730 - Value: 0.02709587
+Time: 25.0040 - Value: 0.03318768
+Time: 25.4330 - Value: 0.03492833
+Time: 25.8590 - Value: 0.02263803
+Time: 26.2850 - Value: 0.01504866
+Time: 26.7200 - Value: 0.03142223
+Time: 27.1400 - Value: 0.00517609
+Time: 28.1070 - Value: 0.00008237
+BIN 6 | Frequency Range: [ 258.40 - 301.46 ) hertz
+Period Median: 0.4310 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 30
+Total Periods: 48
+Period Confidence for this bin: 62.50 %
+Phase Median: 0.0530 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 5
+Total Phases: 48
+Phase Confidence for this Bin: 10.42 %
+Bin Average Expressivity: 0.00496788
+Bin Average Expressivity Normalized: 0.55676490
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00186509
+Time: 1.6400 - Value: 0.00161969
+Time: 2.1790 - Value: 0.01561575
+Time: 2.7160 - Value: 0.01933204
+Time: 3.3510 - Value: 0.00132219
+Time: 3.8910 - Value: 0.00414871
+Time: 4.4280 - Value: 0.01139488
+Time: 5.0670 - Value: 0.00160018
+Time: 5.6050 - Value: 0.00906851
+Time: 6.1400 - Value: 0.00931866
+Time: 6.7810 - Value: 0.00236283
+Time: 7.3230 - Value: 0.01758482
+Time: 8.6600 - Value: 0.01523525
+Time: 9.3630 - Value: 0.01703863
+Time: 10.4230 - Value: 0.01047952
+Time: 11.0710 - Value: 0.02580791
+Time: 12.6800 - Value: 0.00681441
+Time: 13.1110 - Value: 0.00929808
+Time: 13.5400 - Value: 0.01449245
+Time: 14.2910 - Value: 0.02748760
+Time: 14.7130 - Value: 0.02348013
+Time: 15.1480 - Value: 0.02731089
+Time: 15.5710 - Value: 0.02120552
+Time: 16.0040 - Value: 0.03120374
+Time: 16.4310 - Value: 0.03367011
+Time: 16.8630 - Value: 0.02158625
+Time: 17.2910 - Value: 0.02536336
+Time: 17.7170 - Value: 0.03129941
+Time: 18.1450 - Value: 0.03500327
+Time: 18.5760 - Value: 0.03138195
+Time: 19.0010 - Value: 0.02816759
+Time: 19.4310 - Value: 0.03033914
+Time: 19.8600 - Value: 0.03237438
+Time: 20.2890 - Value: 0.02828257
+Time: 20.7170 - Value: 0.03127559
+Time: 21.1480 - Value: 0.02812961
+Time: 21.5760 - Value: 0.03086280
+Time: 22.0010 - Value: 0.02796135
+Time: 22.4350 - Value: 0.02626628
+Time: 22.8550 - Value: 0.01415201
+Time: 23.2880 - Value: 0.03292457
+Time: 23.7150 - Value: 0.02173503
+Time: 24.1430 - Value: 0.02684808
+Time: 24.5710 - Value: 0.01936481
+Time: 24.9990 - Value: 0.02430297
+Time: 25.4330 - Value: 0.02996744
+Time: 25.8590 - Value: 0.02847365
+Time: 26.2850 - Value: 0.02158141
+Time: 26.7200 - Value: 0.02108101
+Time: 28.1120 - Value: 0.00022427
+BIN 7 | Frequency Range: [ 301.46 - 344.53 ) hertz
+Period Median: 0.4310 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 34
+Total Periods: 48
+Period Confidence for this bin: 70.83 %
+Phase Median: 0.0510 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 4
+Total Phases: 48
+Phase Confidence for this Bin: 8.33 %
+Bin Average Expressivity: 0.00537824
+Bin Average Expressivity Normalized: 0.60275477
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00213214
+Time: 1.4320 - Value: 0.00397677
+Time: 1.8510 - Value: 0.00369260
+Time: 2.4910 - Value: 0.00167302
+Time: 3.3510 - Value: 0.00121158
+Time: 3.8910 - Value: 0.00753207
+Time: 4.4280 - Value: 0.01701270
+Time: 4.8600 - Value: 0.00327856
+Time: 5.2800 - Value: 0.00378724
+Time: 5.9200 - Value: 0.00229681
+Time: 6.7800 - Value: 0.00218550
+Time: 7.2800 - Value: 0.00995222
+Time: 7.8550 - Value: 0.02707036
+Time: 8.7160 - Value: 0.01800700
+Time: 9.5710 - Value: 0.01899095
+Time: 10.4280 - Value: 0.01870760
+Time: 11.0760 - Value: 0.01754246
+Time: 13.3200 - Value: 0.01350482
+Time: 13.7510 - Value: 0.03530193
+Time: 14.2910 - Value: 0.01971804
+Time: 14.7130 - Value: 0.02634893
+Time: 15.1480 - Value: 0.01916049
+Time: 15.5710 - Value: 0.02458551
+Time: 15.9970 - Value: 0.01598591
+Time: 16.4280 - Value: 0.02782294
+Time: 16.8600 - Value: 0.02601425
+Time: 17.2850 - Value: 0.02529285
+Time: 17.7120 - Value: 0.01808470
+Time: 18.1450 - Value: 0.02832955
+Time: 18.5690 - Value: 0.01847766
+Time: 19.0000 - Value: 0.02624529
+Time: 19.4270 - Value: 0.01689918
+Time: 19.8590 - Value: 0.03016910
+Time: 20.2890 - Value: 0.02692312
+Time: 20.7170 - Value: 0.02795970
+Time: 21.1400 - Value: 0.01657758
+Time: 21.5710 - Value: 0.02540532
+Time: 22.0010 - Value: 0.02924322
+Time: 22.4350 - Value: 0.01812895
+Time: 22.8550 - Value: 0.01661529
+Time: 23.2880 - Value: 0.02926157
+Time: 23.7150 - Value: 0.02550183
+Time: 24.1430 - Value: 0.02613012
+Time: 24.5710 - Value: 0.02543262
+Time: 24.9990 - Value: 0.02681196
+Time: 25.4270 - Value: 0.01948685
+Time: 25.8600 - Value: 0.02464463
+Time: 26.2910 - Value: 0.01944622
+Time: 26.7160 - Value: 0.02981760
+Time: 27.1450 - Value: 0.02772286
+Time: 28.1110 - Value: 0.00022714
+BIN 8 | Frequency Range: [ 344.53 - 387.60 ) hertz
+Period Median: 0.4290 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 34
+Total Periods: 44
+Period Confidence for this bin: 77.27 %
+Phase Median: 0.1240 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 34
+Total Phases: 44
+Phase Confidence for this Bin: 77.27 %
+Bin Average Expressivity: 0.00544721
+Bin Average Expressivity Normalized: 0.61048406
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00302244
+Time: 1.4320 - Value: 0.00436476
+Time: 1.8510 - Value: 0.00662441
+Time: 2.4910 - Value: 0.00217042
+Time: 3.3510 - Value: 0.00143272
+Time: 3.8910 - Value: 0.01159781
+Time: 4.4200 - Value: 0.00158659
+Time: 4.8600 - Value: 0.00384768
+Time: 5.2800 - Value: 0.00732317
+Time: 5.9200 - Value: 0.00308794
+Time: 6.5720 - Value: 0.00316366
+Time: 6.9930 - Value: 0.01071202
+Time: 9.5670 - Value: 0.01764294
+Time: 10.4280 - Value: 0.01752016
+Time: 11.2870 - Value: 0.02412044
+Time: 13.3230 - Value: 0.01526051
+Time: 13.7510 - Value: 0.02649157
+Time: 14.7110 - Value: 0.02035973
+Time: 15.1390 - Value: 0.01647588
+Time: 15.5710 - Value: 0.02846056
+Time: 15.9970 - Value: 0.02038542
+Time: 16.4280 - Value: 0.02622548
+Time: 16.8600 - Value: 0.01814323
+Time: 17.2850 - Value: 0.02715119
+Time: 17.7120 - Value: 0.02517943
+Time: 18.1450 - Value: 0.01957511
+Time: 18.5690 - Value: 0.02505955
+Time: 19.0000 - Value: 0.02734449
+Time: 19.4270 - Value: 0.02212951
+Time: 19.8590 - Value: 0.02576509
+Time: 20.2890 - Value: 0.02104412
+Time: 20.7170 - Value: 0.02157555
+Time: 21.1400 - Value: 0.02326800
+Time: 21.5710 - Value: 0.02761807
+Time: 22.0010 - Value: 0.02412499
+Time: 22.4250 - Value: 0.02297234
+Time: 22.8550 - Value: 0.02009051
+Time: 23.2880 - Value: 0.02343620
+Time: 23.7150 - Value: 0.02587280
+Time: 24.1390 - Value: 0.01893093
+Time: 24.5680 - Value: 0.02069069
+Time: 25.0000 - Value: 0.02865495
+Time: 25.4310 - Value: 0.02162422
+Time: 25.8590 - Value: 0.02493411
+Time: 26.2850 - Value: 0.02625914
+Time: 26.7110 - Value: 0.01952538
+Time: 27.1400 - Value: 0.02231479
+Time: 28.1120 - Value: 0.00026186
+BIN 9 | Frequency Range: [ 387.60 - 430.66 ) hertz
+Period Median: 0.4300 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 30
+Total Periods: 44
+Period Confidence for this bin: 68.18 %
+Phase Median: 0.0810 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 9
+Total Phases: 44
+Phase Confidence for this Bin: 20.45 %
+Bin Average Expressivity: 0.00473581
+Bin Average Expressivity Normalized: 0.53075516
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00409653
+Time: 1.4290 - Value: 0.00333375
+Time: 1.8510 - Value: 0.01054884
+Time: 2.4910 - Value: 0.00270777
+Time: 3.1510 - Value: 0.00226939
+Time: 3.5670 - Value: 0.01702022
+Time: 4.2110 - Value: 0.01444055
+Time: 4.8600 - Value: 0.00420047
+Time: 5.2800 - Value: 0.01147732
+Time: 5.9200 - Value: 0.00394816
+Time: 6.5720 - Value: 0.00341840
+Time: 6.9930 - Value: 0.01362189
+Time: 7.6400 - Value: 0.01852302
+Time: 8.7110 - Value: 0.02073672
+Time: 9.5670 - Value: 0.01883182
+Time: 10.4280 - Value: 0.01785983
+Time: 11.0680 - Value: 0.01598501
+Time: 12.1670 - Value: 0.01338116
+Time: 13.4280 - Value: 0.01659374
+Time: 14.2840 - Value: 0.02741018
+Time: 14.7090 - Value: 0.02183501
+Time: 15.1400 - Value: 0.02482796
+Time: 15.5690 - Value: 0.03184517
+Time: 16.0000 - Value: 0.02457967
+Time: 16.8550 - Value: 0.02326950
+Time: 17.2800 - Value: 0.02127938
+Time: 17.7080 - Value: 0.01541584
+Time: 18.1400 - Value: 0.02690069
+Time: 18.5710 - Value: 0.02506375
+Time: 18.9990 - Value: 0.02838580
+Time: 19.4210 - Value: 0.01613804
+Time: 19.8590 - Value: 0.01879822
+Time: 20.2800 - Value: 0.01469531
+Time: 20.7110 - Value: 0.02920222
+Time: 21.1400 - Value: 0.02587588
+Time: 21.5710 - Value: 0.02539081
+Time: 21.9930 - Value: 0.01119258
+Time: 22.4250 - Value: 0.02818550
+Time: 22.8550 - Value: 0.02683026
+Time: 23.7110 - Value: 0.02252472
+Time: 24.1390 - Value: 0.02558235
+Time: 24.5680 - Value: 0.02386030
+Time: 24.9930 - Value: 0.01424254
+Time: 25.4310 - Value: 0.01573322
+Time: 25.8510 - Value: 0.01809510
+Time: 26.2850 - Value: 0.02502564
+Time: 26.7110 - Value: 0.02227828
+Time: 27.1400 - Value: 0.02656747
+Time: 28.1120 - Value: 0.00026726
+BIN 10 | Frequency Range: [ 430.66 - 473.73 ) hertz
+Period Median: 0.4300 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 33
+Total Periods: 50
+Period Confidence for this bin: 66.00 %
+Phase Median: 0.0890 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 8
+Total Phases: 50
+Phase Confidence for this Bin: 16.00 %
+Bin Average Expressivity: 0.00379509
+Bin Average Expressivity Normalized: 0.42532685
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00502050
+Time: 1.4290 - Value: 0.00495168
+Time: 1.8510 - Value: 0.01336168
+Time: 2.4910 - Value: 0.00332377
+Time: 3.1510 - Value: 0.00284779
+Time: 3.5670 - Value: 0.02133408
+Time: 4.2110 - Value: 0.01365845
+Time: 4.8600 - Value: 0.00536814
+Time: 5.2800 - Value: 0.01488221
+Time: 5.9200 - Value: 0.00458190
+Time: 6.5720 - Value: 0.00411271
+Time: 6.9930 - Value: 0.01553394
+Time: 7.6400 - Value: 0.01720662
+Time: 8.2910 - Value: 0.00674000
+Time: 8.7080 - Value: 0.01478937
+Time: 9.3550 - Value: 0.01571370
+Time: 10.4230 - Value: 0.01809826
+Time: 11.0710 - Value: 0.01229499
+Time: 11.7200 - Value: 0.00775586
+Time: 12.1400 - Value: 0.01518581
+Time: 13.8550 - Value: 0.02893419
+Time: 14.2800 - Value: 0.01528313
+Time: 14.7110 - Value: 0.02523810
+Time: 15.1390 - Value: 0.02185215
+Time: 15.5630 - Value: 0.00869174
+Time: 16.0000 - Value: 0.01805988
+Time: 16.8550 - Value: 0.02462451
+Time: 17.2800 - Value: 0.02399690
+Time: 17.7080 - Value: 0.01463812
+Time: 18.1400 - Value: 0.02521800
+Time: 18.5710 - Value: 0.01978749
+Time: 18.9990 - Value: 0.02626472
+Time: 19.4210 - Value: 0.01692186
+Time: 19.8510 - Value: 0.01633475
+Time: 20.2830 - Value: 0.02488226
+Time: 20.7110 - Value: 0.03272950
+Time: 21.1400 - Value: 0.02239881
+Time: 21.5630 - Value: 0.00811642
+Time: 21.9930 - Value: 0.01187471
+Time: 22.4250 - Value: 0.03170598
+Time: 22.8550 - Value: 0.02503967
+Time: 23.7110 - Value: 0.02310802
+Time: 24.1390 - Value: 0.02842278
+Time: 24.5680 - Value: 0.02083272
+Time: 24.9930 - Value: 0.01251866
+Time: 25.4210 - Value: 0.01026344
+Time: 25.8520 - Value: 0.02893193
+Time: 26.2850 - Value: 0.02003304
+Time: 26.7110 - Value: 0.02535612
+Time: 27.1400 - Value: 0.02602853
+Time: 28.1120 - Value: 0.00030008
+BIN 11 | Frequency Range: [ 473.73 - 516.80 ) hertz
+Period Median: 0.4290 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 27
+Total Periods: 46
+Period Confidence for this bin: 58.70 %
+Phase Median: 0.1250 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 32
+Total Phases: 46
+Phase Confidence for this Bin: 69.57 %
+Bin Average Expressivity: 0.00500562
+Bin Average Expressivity Normalized: 0.56099403
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00583029
+Time: 1.4290 - Value: 0.00566792
+Time: 1.8510 - Value: 0.01349643
+Time: 2.4910 - Value: 0.00353319
+Time: 3.1510 - Value: 0.01109943
+Time: 3.5670 - Value: 0.02119299
+Time: 4.2110 - Value: 0.01216546
+Time: 4.8600 - Value: 0.00742159
+Time: 5.2800 - Value: 0.01594821
+Time: 5.9200 - Value: 0.00485091
+Time: 6.5720 - Value: 0.00511311
+Time: 6.9930 - Value: 0.01507274
+Time: 7.6400 - Value: 0.01315561
+Time: 8.2910 - Value: 0.00806180
+Time: 8.7080 - Value: 0.01317938
+Time: 10.0040 - Value: 0.01507230
+Time: 10.4230 - Value: 0.01767701
+Time: 11.7200 - Value: 0.00858862
+Time: 12.1400 - Value: 0.01928684
+Time: 13.4400 - Value: 0.01649996
+Time: 13.8510 - Value: 0.01721024
+Time: 14.2840 - Value: 0.01695106
+Time: 14.7090 - Value: 0.01874176
+Time: 15.1400 - Value: 0.02054598
+Time: 15.5690 - Value: 0.03663796
+Time: 16.8550 - Value: 0.02298233
+Time: 17.2800 - Value: 0.02278800
+Time: 17.7120 - Value: 0.01857481
+Time: 18.3880 - Value: 0.01157827
+Time: 18.9930 - Value: 0.01694934
+Time: 19.8510 - Value: 0.01863666
+Time: 20.2830 - Value: 0.02211495
+Time: 20.7110 - Value: 0.03198195
+Time: 21.1400 - Value: 0.01855992
+Time: 21.5710 - Value: 0.01727443
+Time: 21.9930 - Value: 0.01380963
+Time: 22.4250 - Value: 0.03333208
+Time: 22.8550 - Value: 0.02067939
+Time: 23.7110 - Value: 0.02212188
+Time: 24.1390 - Value: 0.02883280
+Time: 24.5680 - Value: 0.01824475
+Time: 24.9930 - Value: 0.01107846
+Time: 25.4210 - Value: 0.01197899
+Time: 25.8520 - Value: 0.02846752
+Time: 26.7110 - Value: 0.02509306
+Time: 27.1400 - Value: 0.02316888
+Time: 28.1200 - Value: 0.00092330
+BIN 12 | Frequency Range: [ 516.80 - 559.86 ) hertz
+Period Median: 0.4320 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 25
+Total Periods: 49
+Period Confidence for this bin: 51.02 %
+Phase Median: 0.2370 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 1
+Total Phases: 49
+Phase Confidence for this Bin: 2.04 %
+Bin Average Expressivity: 0.00482420
+Bin Average Expressivity Normalized: 0.54066163
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00616008
+Time: 1.4290 - Value: 0.00444419
+Time: 1.8510 - Value: 0.01392856
+Time: 2.5000 - Value: 0.01075361
+Time: 3.1510 - Value: 0.02301375
+Time: 3.5670 - Value: 0.01638114
+Time: 4.2110 - Value: 0.01664007
+Time: 4.8600 - Value: 0.00943703
+Time: 5.2800 - Value: 0.01411374
+Time: 5.9200 - Value: 0.00492176
+Time: 6.5720 - Value: 0.00616223
+Time: 6.9930 - Value: 0.01175367
+Time: 7.6400 - Value: 0.01796351
+Time: 8.2910 - Value: 0.01259529
+Time: 8.7160 - Value: 0.01938219
+Time: 9.3550 - Value: 0.01802061
+Time: 10.0090 - Value: 0.02660003
+Time: 10.4280 - Value: 0.01905463
+Time: 11.0680 - Value: 0.01681875
+Time: 11.7200 - Value: 0.01261173
+Time: 12.1400 - Value: 0.01634449
+Time: 12.7920 - Value: 0.01240510
+Time: 13.4400 - Value: 0.03333575
+Time: 14.2840 - Value: 0.01318377
+Time: 14.7090 - Value: 0.01789193
+Time: 15.1400 - Value: 0.01617634
+Time: 15.5690 - Value: 0.02939967
+Time: 16.2210 - Value: 0.01610075
+Time: 16.8550 - Value: 0.01884749
+Time: 17.2800 - Value: 0.01900027
+Time: 17.7120 - Value: 0.01643735
+Time: 18.5690 - Value: 0.01573487
+Time: 18.9930 - Value: 0.01506550
+Time: 19.4270 - Value: 0.01577966
+Time: 19.8510 - Value: 0.01639733
+Time: 20.2830 - Value: 0.01721477
+Time: 20.7110 - Value: 0.02647428
+Time: 21.1400 - Value: 0.01522710
+Time: 21.5710 - Value: 0.01209324
+Time: 21.9930 - Value: 0.01402026
+Time: 22.4250 - Value: 0.02856632
+Time: 22.8550 - Value: 0.01575542
+Time: 23.7110 - Value: 0.01907182
+Time: 24.1390 - Value: 0.02509002
+Time: 24.5680 - Value: 0.01587491
+Time: 25.4270 - Value: 0.01533350
+Time: 25.8520 - Value: 0.02380735
+Time: 26.4990 - Value: 0.01347350
+Time: 27.1400 - Value: 0.01804976
+Time: 28.1200 - Value: 0.00199774
+BIN 13 | Frequency Range: [ 559.86 - 602.93 ) hertz
+Period Median: 0.4320 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 22
+Total Periods: 46
+Period Confidence for this bin: 47.83 %
+Phase Median: 0.2910 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 3
+Total Phases: 46
+Phase Confidence for this Bin: 6.52 %
+Bin Average Expressivity: 0.00393019
+Bin Average Expressivity Normalized: 0.44046745
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00607084
+Time: 1.4290 - Value: 0.00514036
+Time: 1.8510 - Value: 0.01254574
+Time: 2.4910 - Value: 0.00390744
+Time: 3.1510 - Value: 0.02617921
+Time: 3.5670 - Value: 0.01039542
+Time: 4.2110 - Value: 0.02189584
+Time: 4.8600 - Value: 0.01104496
+Time: 5.2800 - Value: 0.01040125
+Time: 5.9200 - Value: 0.00470746
+Time: 6.5720 - Value: 0.00545409
+Time: 7.0000 - Value: 0.01201540
+Time: 7.6350 - Value: 0.00967113
+Time: 8.2920 - Value: 0.01896495
+Time: 9.0310 - Value: 0.00883430
+Time: 9.4400 - Value: 0.01012481
+Time: 10.0090 - Value: 0.02593115
+Time: 10.5840 - Value: 0.00726396
+Time: 11.0680 - Value: 0.02321682
+Time: 11.7200 - Value: 0.01542495
+Time: 12.7790 - Value: 0.00604460
+Time: 13.4280 - Value: 0.00842275
+Time: 14.2840 - Value: 0.01290754
+Time: 14.7090 - Value: 0.01629749
+Time: 15.1400 - Value: 0.01255487
+Time: 15.5690 - Value: 0.01798984
+Time: 16.2070 - Value: 0.00632441
+Time: 16.8550 - Value: 0.01367047
+Time: 17.2800 - Value: 0.01464108
+Time: 17.7080 - Value: 0.01284742
+Time: 18.1400 - Value: 0.01353587
+Time: 18.5710 - Value: 0.00830278
+Time: 19.4210 - Value: 0.00822506
+Time: 20.2830 - Value: 0.01167616
+Time: 20.7110 - Value: 0.01782111
+Time: 21.1400 - Value: 0.01451325
+Time: 21.9930 - Value: 0.01198087
+Time: 22.4250 - Value: 0.01939953
+Time: 22.8550 - Value: 0.01233059
+Time: 23.7110 - Value: 0.01423743
+Time: 24.1390 - Value: 0.01765761
+Time: 24.5680 - Value: 0.01446905
+Time: 25.4270 - Value: 0.01111984
+Time: 25.8520 - Value: 0.01761962
+Time: 26.2850 - Value: 0.00768829
+Time: 26.7110 - Value: 0.01409646
+Time: 27.1400 - Value: 0.01284982
+Time: 28.1120 - Value: 0.00116205
+BIN 14 | Frequency Range: [ 602.93 - 646.00 ) hertz
+Period Median: 0.6380 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 15
+Total Periods: 41
+Period Confidence for this bin: 36.59 %
+Phase Median: 0.2950 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 4
+Total Phases: 41
+Phase Confidence for this Bin: 9.76 %
+Bin Average Expressivity: 0.00316984
+Bin Average Expressivity Normalized: 0.35525349
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00560696
+Time: 1.4290 - Value: 0.00526399
+Time: 1.8510 - Value: 0.00808997
+Time: 2.4910 - Value: 0.00374202
+Time: 3.1510 - Value: 0.01677111
+Time: 3.5670 - Value: 0.00631898
+Time: 4.2110 - Value: 0.02047371
+Time: 4.8600 - Value: 0.00968241
+Time: 5.2800 - Value: 0.00686080
+Time: 5.9200 - Value: 0.00463923
+Time: 6.5720 - Value: 0.00319688
+Time: 6.9930 - Value: 0.00506107
+Time: 7.6400 - Value: 0.02342787
+Time: 8.2910 - Value: 0.01236284
+Time: 9.0310 - Value: 0.00819869
+Time: 9.6830 - Value: 0.01232520
+Time: 11.0680 - Value: 0.02203087
+Time: 11.7200 - Value: 0.01220328
+Time: 12.7790 - Value: 0.00727250
+Time: 13.4280 - Value: 0.00909209
+Time: 14.2840 - Value: 0.01023985
+Time: 14.7090 - Value: 0.01269547
+Time: 15.1400 - Value: 0.01037140
+Time: 15.5690 - Value: 0.01081831
+Time: 16.2070 - Value: 0.00788283
+Time: 16.8550 - Value: 0.01096758
+Time: 17.2800 - Value: 0.01012721
+Time: 17.7080 - Value: 0.01101585
+Time: 18.5710 - Value: 0.00810573
+Time: 19.4210 - Value: 0.00727104
+Time: 20.2830 - Value: 0.01021860
+Time: 20.7110 - Value: 0.01015962
+Time: 21.1400 - Value: 0.01118561
+Time: 21.9930 - Value: 0.00876039
+Time: 22.4250 - Value: 0.01211997
+Time: 22.8550 - Value: 0.00951012
+Time: 23.7110 - Value: 0.01163857
+Time: 24.1390 - Value: 0.01018326
+Time: 24.5680 - Value: 0.01111921
+Time: 25.4270 - Value: 0.01006883
+Time: 25.8520 - Value: 0.01187487
+Time: 26.4990 - Value: 0.02137261
+Time: 27.1400 - Value: 0.01182465
+Time: 28.1120 - Value: 0.00112823
+BIN 15 | Frequency Range: [ 646.00 - 689.06 ) hertz
+Period Median: 0.4440 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 21
+Total Periods: 46
+Period Confidence for this bin: 45.65 %
+Phase Median: 0.2270 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 3
+Total Phases: 46
+Phase Confidence for this Bin: 6.52 %
+Bin Average Expressivity: 0.00248044
+Bin Average Expressivity Normalized: 0.27798957
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00467325
+Time: 1.4290 - Value: 0.00264165
+Time: 1.8510 - Value: 0.00460273
+Time: 2.2830 - Value: 0.00170943
+Time: 2.7230 - Value: 0.00276284
+Time: 3.1470 - Value: 0.00659844
+Time: 3.8910 - Value: 0.00276450
+Time: 4.3050 - Value: 0.00424582
+Time: 4.8650 - Value: 0.00705261
+Time: 5.2800 - Value: 0.00432392
+Time: 5.7200 - Value: 0.00137408
+Time: 6.1630 - Value: 0.00377433
+Time: 6.5800 - Value: 0.00419105
+Time: 6.9930 - Value: 0.00352172
+Time: 7.6400 - Value: 0.01503430
+Time: 8.2910 - Value: 0.00654058
+Time: 8.7160 - Value: 0.00542294
+Time: 9.3550 - Value: 0.01103353
+Time: 10.2130 - Value: 0.01270452
+Time: 10.8560 - Value: 0.00400407
+Time: 11.3000 - Value: 0.00489609
+Time: 11.7200 - Value: 0.00623351
+Time: 12.2680 - Value: 0.00776599
+Time: 12.7840 - Value: 0.00870270
+Time: 13.2200 - Value: 0.00875024
+Time: 13.6410 - Value: 0.00899152
+Time: 14.2800 - Value: 0.00752394
+Time: 14.7110 - Value: 0.00884286
+Time: 15.1390 - Value: 0.00691444
+Time: 15.6960 - Value: 0.00838010
+Time: 16.2110 - Value: 0.01067779
+Time: 16.8510 - Value: 0.01031000
+Time: 17.7110 - Value: 0.00744730
+Time: 18.1400 - Value: 0.00729001
+Time: 18.5710 - Value: 0.00658922
+Time: 19.1240 - Value: 0.00679112
+Time: 19.6440 - Value: 0.01191820
+Time: 20.2800 - Value: 0.01033955
+Time: 21.1400 - Value: 0.00760507
+Time: 21.9930 - Value: 0.00522277
+Time: 22.4250 - Value: 0.00750524
+Time: 23.0680 - Value: 0.01027771
+Time: 23.7080 - Value: 0.00985390
+Time: 24.5680 - Value: 0.00743254
+Time: 25.4270 - Value: 0.00749159
+Time: 25.8520 - Value: 0.00746385
+Time: 26.4990 - Value: 0.01209338
+Time: 27.1400 - Value: 0.01059364
+Time: 28.0000 - Value: 0.00162770
+BIN 16 | Frequency Range: [ 689.06 - 732.13 ) hertz
+Period Median: 0.4350 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 8
+Total Periods: 21
+Period Confidence for this bin: 38.10 %
+Phase Median: 0.1600 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 3
+Total Phases: 21
+Phase Confidence for this Bin: 14.29 %
+Bin Average Expressivity: 0.00290377
+Bin Average Expressivity Normalized: 0.32543376
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00358477
+Time: 1.4320 - Value: 0.00305772
+Time: 2.2830 - Value: 0.00251357
+Time: 2.7160 - Value: 0.00223613
+Time: 3.1510 - Value: 0.00245578
+Time: 3.6800 - Value: 0.00687122
+Time: 4.2110 - Value: 0.00604630
+Time: 4.8600 - Value: 0.00233665
+Time: 5.7170 - Value: 0.00291248
+Time: 6.1510 - Value: 0.00312158
+Time: 6.5770 - Value: 0.00257515
+Time: 7.1070 - Value: 0.00933386
+Time: 7.6790 - Value: 0.00624357
+Time: 8.5000 - Value: 0.01959146
+Time: 9.3550 - Value: 0.00637420
+Time: 9.7890 - Value: 0.00550473
+Time: 10.2110 - Value: 0.01946158
+Time: 11.0680 - Value: 0.00864796
+Time: 11.9210 - Value: 0.00768747
+Time: 13.1030 - Value: 0.00582402
+Time: 13.6410 - Value: 0.02375552
+Time: 14.5290 - Value: 0.00698088
+Time: 15.3510 - Value: 0.01115113
+Time: 16.8510 - Value: 0.00814701
+Time: 17.7170 - Value: 0.00604188
+Time: 18.7800 - Value: 0.01291138
+Time: 19.8510 - Value: 0.00643216
+Time: 20.2830 - Value: 0.00737481
+Time: 22.2080 - Value: 0.00782928
+Time: 23.2800 - Value: 0.00730928
+Time: 23.7110 - Value: 0.00707237
+Time: 24.8110 - Value: 0.00708121
+Time: 25.6400 - Value: 0.02439088
+Time: 27.1400 - Value: 0.00651700
+Time: 28.0000 - Value: 0.00409361
+BIN 17 | Frequency Range: [ 732.13 - 775.20 ) hertz
+Period Median: 0.6250 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 10
+Total Periods: 20
+Period Confidence for this bin: 50.00 %
+Phase Median: 0.2260 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 4
+Total Phases: 20
+Phase Confidence for this Bin: 20.00 %
+Bin Average Expressivity: 0.00342617
+Bin Average Expressivity Normalized: 0.38398057
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00257997
+Time: 1.4320 - Value: 0.00188908
+Time: 2.2830 - Value: 0.00281333
+Time: 2.7160 - Value: 0.00287607
+Time: 3.3510 - Value: 0.00950841
+Time: 3.9990 - Value: 0.00291972
+Time: 4.4310 - Value: 0.00217072
+Time: 5.0670 - Value: 0.01621620
+Time: 5.7170 - Value: 0.00357825
+Time: 6.1510 - Value: 0.00274260
+Time: 6.7760 - Value: 0.00089534
+Time: 7.6870 - Value: 0.00736953
+Time: 8.4970 - Value: 0.02350067
+Time: 9.6000 - Value: 0.00663970
+Time: 10.2110 - Value: 0.02455078
+Time: 11.9250 - Value: 0.02497191
+Time: 13.0270 - Value: 0.00615635
+Time: 13.4570 - Value: 0.00856845
+Time: 14.5290 - Value: 0.00808931
+Time: 15.3510 - Value: 0.01308233
+Time: 16.8510 - Value: 0.00766853
+Time: 17.7170 - Value: 0.00714572
+Time: 18.7800 - Value: 0.01473751
+Time: 19.4360 - Value: 0.00728613
+Time: 20.2800 - Value: 0.00716369
+Time: 22.2080 - Value: 0.00967723
+Time: 23.7080 - Value: 0.00705507
+Time: 25.6400 - Value: 0.02734726
+Time: 26.2910 - Value: 0.00900402
+Time: 26.7310 - Value: 0.00630793
+Time: 27.3510 - Value: 0.01656580
+Time: 28.0000 - Value: 0.00540106
+BIN 18 | Frequency Range: [ 775.20 - 818.26 ) hertz
+Period Median: 0.6360 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 10
+Total Periods: 20
+Period Confidence for this bin: 50.00 %
+Phase Median: 0.3070 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 1
+Total Phases: 20
+Phase Confidence for this Bin: 5.00 %
+Bin Average Expressivity: 0.00260064
+Bin Average Expressivity Normalized: 0.29146159
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00176333
+Time: 1.6400 - Value: 0.02002661
+Time: 2.2800 - Value: 0.00133978
+Time: 2.7110 - Value: 0.00127615
+Time: 3.3510 - Value: 0.00825408
+Time: 3.9990 - Value: 0.00194187
+Time: 4.4310 - Value: 0.00317950
+Time: 5.0670 - Value: 0.01306096
+Time: 5.7170 - Value: 0.00228770
+Time: 6.1430 - Value: 0.00220324
+Time: 6.7760 - Value: 0.00090928
+Time: 7.6710 - Value: 0.00459109
+Time: 8.4970 - Value: 0.02055862
+Time: 9.6000 - Value: 0.00921545
+Time: 10.2110 - Value: 0.01937056
+Time: 11.1000 - Value: 0.00408454
+Time: 11.9200 - Value: 0.00422811
+Time: 13.0270 - Value: 0.00740824
+Time: 13.4570 - Value: 0.01153101
+Time: 14.5350 - Value: 0.00512853
+Time: 15.1590 - Value: 0.00553793
+Time: 17.0710 - Value: 0.02714293
+Time: 17.9550 - Value: 0.00503548
+Time: 18.6010 - Value: 0.00537109
+Time: 20.4930 - Value: 0.01264155
+Time: 22.2110 - Value: 0.02514906
+Time: 23.9250 - Value: 0.02101181
+Time: 25.6470 - Value: 0.02333003
+Time: 27.3510 - Value: 0.01550306
+Time: 28.0000 - Value: 0.00403499
+BIN 19 | Frequency Range: [ 818.26 - 861.33 ) hertz
+Period Median: 0.5070 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 2
+Total Periods: 32
+Period Confidence for this bin: 6.25 %
+Phase Median: 0.2640 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 4
+Total Phases: 32
+Phase Confidence for this Bin: 12.50 %
+Bin Average Expressivity: 0.00149911
+Bin Average Expressivity Normalized: 0.16800933
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00114316
+Time: 1.6400 - Value: 0.01060768
+Time: 2.1710 - Value: 0.00127898
+Time: 2.6070 - Value: 0.00056652
+Time: 3.3490 - Value: 0.00386119
+Time: 3.9990 - Value: 0.00097722
+Time: 4.4210 - Value: 0.00050967
+Time: 5.0610 - Value: 0.00119870
+Time: 5.7120 - Value: 0.00093443
+Time: 6.1400 - Value: 0.00130120
+Time: 6.7760 - Value: 0.00079025
+Time: 7.2200 - Value: 0.00315373
+Time: 7.8840 - Value: 0.00749569
+Time: 8.5000 - Value: 0.00885498
+Time: 9.5970 - Value: 0.00658002
+Time: 10.2070 - Value: 0.00502403
+Time: 11.3110 - Value: 0.00476094
+Time: 11.9250 - Value: 0.01158586
+Time: 13.0270 - Value: 0.00533987
+Time: 13.4570 - Value: 0.00977592
+Time: 15.1510 - Value: 0.00349788
+Time: 15.5710 - Value: 0.00503614
+Time: 16.8840 - Value: 0.00479309
+Time: 17.3910 - Value: 0.00489113
+Time: 18.5760 - Value: 0.00386170
+Time: 19.0010 - Value: 0.00574242
+Time: 19.4210 - Value: 0.00426320
+Time: 20.2910 - Value: 0.00424042
+Time: 21.1710 - Value: 0.00392860
+Time: 22.0050 - Value: 0.00285950
+Time: 23.2880 - Value: 0.00388508
+Time: 23.7210 - Value: 0.00528585
+Time: 25.4330 - Value: 0.00291891
+Time: 25.8590 - Value: 0.00545587
+Time: 26.2850 - Value: 0.00433183
+Time: 27.1710 - Value: 0.00517266
+Time: 28.0000 - Value: 0.00169766
+BIN 20 | Frequency Range: [ 861.33 - 904.39 ) hertz
+Period Median: 0.4910 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 5
+Total Periods: 33
+Period Confidence for this bin: 15.15 %
+Phase Median: 0.1490 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 4
+Total Phases: 33
+Phase Confidence for this Bin: 12.12 %
+Bin Average Expressivity: 0.00121232
+Bin Average Expressivity Normalized: 0.13586868
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00081887
+Time: 1.6400 - Value: 0.00514912
+Time: 2.1710 - Value: 0.00129231
+Time: 2.7160 - Value: 0.00493309
+Time: 3.3510 - Value: 0.00401039
+Time: 3.8910 - Value: 0.00103553
+Time: 4.4200 - Value: 0.00034814
+Time: 5.0670 - Value: 0.00480213
+Time: 5.6130 - Value: 0.00077582
+Time: 6.1400 - Value: 0.00185843
+Time: 6.5770 - Value: 0.00155103
+Time: 6.9910 - Value: 0.00120092
+Time: 7.3930 - Value: 0.00355643
+Time: 7.8840 - Value: 0.00615048
+Time: 8.4550 - Value: 0.00351129
+Time: 9.3490 - Value: 0.00166453
+Time: 10.2110 - Value: 0.00560061
+Time: 10.6200 - Value: 0.00269841
+Time: 11.3150 - Value: 0.00643333
+Time: 11.8800 - Value: 0.00351267
+Time: 12.7800 - Value: 0.00159265
+Time: 13.2110 - Value: 0.00491386
+Time: 13.6400 - Value: 0.01252187
+Time: 15.1390 - Value: 0.00350025
+Time: 16.2110 - Value: 0.00286076
+Time: 16.8510 - Value: 0.00279585
+Time: 17.2800 - Value: 0.00424644
+Time: 17.7080 - Value: 0.00448461
+Time: 18.5570 - Value: 0.00335942
+Time: 19.4910 - Value: 0.00277618
+Time: 20.2800 - Value: 0.00283882
+Time: 20.7110 - Value: 0.00576236
+Time: 21.1150 - Value: 0.00404224
+Time: 22.0050 - Value: 0.00380307
+Time: 22.8550 - Value: 0.00311602
+Time: 23.2770 - Value: 0.00245825
+Time: 23.7080 - Value: 0.00300100
+Time: 24.1400 - Value: 0.00465236
+Time: 25.4210 - Value: 0.00432217
+Time: 26.3110 - Value: 0.00305081
+Time: 27.1400 - Value: 0.00230640
+Time: 27.9930 - Value: 0.00048460
+BIN 21 | Frequency Range: [ 904.39 - 947.46 ) hertz
+Period Median: 0.5330 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 9
+Total Periods: 34
+Period Confidence for this bin: 26.47 %
+Phase Median: 0.2570 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 6
+Total Phases: 34
+Phase Confidence for this Bin: 17.65 %
+Bin Average Expressivity: 0.00171457
+Bin Average Expressivity Normalized: 0.19215709
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00086618
+Time: 1.6400 - Value: 0.00352842
+Time: 2.1790 - Value: 0.00341357
+Time: 2.7160 - Value: 0.00518246
+Time: 3.3510 - Value: 0.00292485
+Time: 4.2110 - Value: 0.00185817
+Time: 5.0670 - Value: 0.00363539
+Time: 5.6130 - Value: 0.00200439
+Time: 6.1400 - Value: 0.00287353
+Time: 6.5770 - Value: 0.00203005
+Time: 6.9910 - Value: 0.00158163
+Time: 7.8600 - Value: 0.00398712
+Time: 8.4910 - Value: 0.00313171
+Time: 9.0400 - Value: 0.00474895
+Time: 9.5730 - Value: 0.00511008
+Time: 10.2110 - Value: 0.00609611
+Time: 11.2870 - Value: 0.00382809
+Time: 11.8870 - Value: 0.00277192
+Time: 12.4710 - Value: 0.00559568
+Time: 13.0490 - Value: 0.00497624
+Time: 13.4570 - Value: 0.00660663
+Time: 15.1390 - Value: 0.00385172
+Time: 15.5710 - Value: 0.00866463
+Time: 16.8510 - Value: 0.00471468
+Time: 17.2800 - Value: 0.00568853
+Time: 18.5800 - Value: 0.00409439
+Time: 18.9990 - Value: 0.00797641
+Time: 19.9850 - Value: 0.00447527
+Time: 20.7110 - Value: 0.00846300
+Time: 22.0000 - Value: 0.00341589
+Time: 22.4250 - Value: 0.00984345
+Time: 23.7110 - Value: 0.00554026
+Time: 24.1390 - Value: 0.00646093
+Time: 24.9270 - Value: 0.00500549
+Time: 25.3590 - Value: 0.00396955
+Time: 25.8520 - Value: 0.00605769
+Time: 27.1400 - Value: 0.00546868
+BIN 22 | Frequency Range: [ 947.46 - 990.53 ) hertz
+Period Median: 0.5080 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 6
+Total Periods: 25
+Period Confidence for this bin: 24.00 %
+Phase Median: 0.1730 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 4
+Total Phases: 25
+Phase Confidence for this Bin: 16.00 %
+Bin Average Expressivity: 0.00262957
+Bin Average Expressivity Normalized: 0.29470345
+HIGH SAMPLES
+Time: 0.7810 - Value: 0.00173696
+Time: 1.6400 - Value: 0.00258728
+Time: 2.1790 - Value: 0.00607236
+Time: 2.7160 - Value: 0.00452150
+Time: 3.3510 - Value: 0.00227179
+Time: 4.2110 - Value: 0.00250527
+Time: 5.0670 - Value: 0.00290850
+Time: 5.6130 - Value: 0.00345068
+Time: 6.1400 - Value: 0.00323722
+Time: 6.5770 - Value: 0.00299237
+Time: 6.9910 - Value: 0.00215080
+Time: 7.9240 - Value: 0.00407563
+Time: 8.7110 - Value: 0.01446492
+Time: 10.0670 - Value: 0.00703985
+Time: 11.2990 - Value: 0.00395958
+Time: 12.1400 - Value: 0.01933947
+Time: 13.3200 - Value: 0.01126539
+Time: 13.8600 - Value: 0.01445786
+Time: 15.1390 - Value: 0.00338069
+Time: 15.5710 - Value: 0.01756722
+Time: 16.8510 - Value: 0.00810095
+Time: 17.2910 - Value: 0.01421103
+Time: 18.9990 - Value: 0.01563418
+Time: 19.9850 - Value: 0.00818440
+Time: 20.7110 - Value: 0.01153727
+Time: 22.0050 - Value: 0.00435313
+Time: 22.4250 - Value: 0.01507725
+Time: 23.7110 - Value: 0.00832204
+Time: 24.1430 - Value: 0.00969082
+Time: 24.9200 - Value: 0.00788003
+Time: 25.3510 - Value: 0.00673297
+Time: 25.8590 - Value: 0.01304083
+Time: 27.2310 - Value: 0.01018443
+Time: 28.1120 - Value: 0.00017345
+BIN 23 | Frequency Range: [ 990.53 - 1033.59 ) hertz
+Period Median: 0.4280 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 14
+Total Periods: 34
+Period Confidence for this bin: 41.18 %
+Phase Median: 0.1670 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 21
+Total Phases: 34
+Phase Confidence for this Bin: 61.76 %
+Bin Average Expressivity: 0.00247650
+Bin Average Expressivity Normalized: 0.27754837
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00111752
+Time: 1.4320 - Value: 0.00344323
+Time: 1.8510 - Value: 0.00749749
+Time: 2.5000 - Value: 0.00315154
+Time: 3.1510 - Value: 0.00563649
+Time: 3.5670 - Value: 0.01005950
+Time: 4.2110 - Value: 0.00227573
+Time: 4.8600 - Value: 0.00336462
+Time: 5.2800 - Value: 0.00767931
+Time: 5.9200 - Value: 0.00098620
+Time: 6.5800 - Value: 0.00421613
+Time: 6.9930 - Value: 0.00749552
+Time: 7.8600 - Value: 0.00318769
+Time: 8.2910 - Value: 0.00640784
+Time: 8.7080 - Value: 0.00612851
+Time: 10.0040 - Value: 0.00609159
+Time: 10.4230 - Value: 0.00777418
+Time: 11.2990 - Value: 0.00356470
+Time: 11.7200 - Value: 0.00542067
+Time: 12.1400 - Value: 0.01787319
+Time: 13.3270 - Value: 0.00912416
+Time: 15.1510 - Value: 0.00670641
+Time: 15.5710 - Value: 0.01793464
+Time: 16.8510 - Value: 0.00753951
+Time: 17.2910 - Value: 0.01052590
+Time: 18.6010 - Value: 0.00717718
+Time: 19.0110 - Value: 0.01037915
+Time: 20.0920 - Value: 0.00723036
+Time: 20.7110 - Value: 0.01264351
+Time: 22.0050 - Value: 0.00674184
+Time: 22.4250 - Value: 0.01518059
+Time: 23.7110 - Value: 0.00723932
+Time: 24.1390 - Value: 0.00914918
+Time: 25.2400 - Value: 0.00664492
+Time: 25.8590 - Value: 0.01164200
+Time: 27.2310 - Value: 0.00898212
+Time: 28.1120 - Value: 0.00022293
+BIN 24 | Frequency Range: [ 1033.59 - 1076.66 ) hertz
+Period Median: 0.5730 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 7
+Total Periods: 41
+Period Confidence for this bin: 17.07 %
+Phase Median: 0.1290 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 5
+Total Phases: 41
+Phase Confidence for this Bin: 12.20 %
+Bin Average Expressivity: 0.00173370
+Bin Average Expressivity Normalized: 0.19430062
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00144294
+Time: 1.4320 - Value: 0.00549793
+Time: 1.8510 - Value: 0.00589680
+Time: 2.5000 - Value: 0.00324311
+Time: 3.1510 - Value: 0.01344831
+Time: 3.5670 - Value: 0.00827238
+Time: 4.2110 - Value: 0.00304087
+Time: 4.8600 - Value: 0.00471339
+Time: 5.2800 - Value: 0.00659262
+Time: 5.9200 - Value: 0.00112891
+Time: 6.5800 - Value: 0.01266344
+Time: 6.9930 - Value: 0.00628397
+Time: 7.8600 - Value: 0.00327122
+Time: 8.2910 - Value: 0.01259996
+Time: 8.7080 - Value: 0.00578616
+Time: 9.3550 - Value: 0.00315532
+Time: 10.0090 - Value: 0.01268925
+Time: 10.4280 - Value: 0.00993722
+Time: 11.2930 - Value: 0.00358667
+Time: 11.7200 - Value: 0.01080169
+Time: 12.1400 - Value: 0.01282125
+Time: 12.7800 - Value: 0.00409557
+Time: 13.2200 - Value: 0.00487959
+Time: 13.7930 - Value: 0.01150704
+Time: 14.3710 - Value: 0.00464349
+Time: 15.0200 - Value: 0.00244457
+Time: 15.5690 - Value: 0.01169841
+Time: 16.1120 - Value: 0.00407356
+Time: 16.8550 - Value: 0.00404235
+Time: 17.2800 - Value: 0.00731716
+Time: 17.7200 - Value: 0.00640227
+Time: 18.3810 - Value: 0.00344900
+Time: 18.9990 - Value: 0.01160164
+Time: 20.0910 - Value: 0.00445153
+Time: 21.1510 - Value: 0.00464096
+Time: 22.0000 - Value: 0.00266710
+Time: 22.4250 - Value: 0.01087148
+Time: 22.9690 - Value: 0.00374003
+Time: 23.7080 - Value: 0.00383594
+Time: 24.1400 - Value: 0.00836184
+Time: 24.7280 - Value: 0.00490348
+Time: 25.4330 - Value: 0.00752110
+Time: 25.8510 - Value: 0.00522379
+Time: 27.1510 - Value: 0.00451536
+Time: 28.1170 - Value: 0.00033456
+BIN 25 | Frequency Range: [ 1076.66 - 1119.73 ) hertz
+Period Median: 0.4560 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 13
+Total Periods: 35
+Period Confidence for this bin: 37.14 %
+Phase Median: 0.2680 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 8
+Total Phases: 35
+Phase Confidence for this Bin: 22.86 %
+Bin Average Expressivity: 0.00179781
+Bin Average Expressivity Normalized: 0.20148516
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00194931
+Time: 1.4290 - Value: 0.00365527
+Time: 2.0800 - Value: 0.00216599
+Time: 2.4920 - Value: 0.00166480
+Time: 3.1510 - Value: 0.01809308
+Time: 3.5670 - Value: 0.00555998
+Time: 4.1200 - Value: 0.00135495
+Time: 4.8600 - Value: 0.00670018
+Time: 5.2800 - Value: 0.00471511
+Time: 5.8320 - Value: 0.00096245
+Time: 6.2480 - Value: 0.00292536
+Time: 6.6570 - Value: 0.00623164
+Time: 7.6430 - Value: 0.00880004
+Time: 8.2920 - Value: 0.02207712
+Time: 9.3510 - Value: 0.00226574
+Time: 10.0090 - Value: 0.01846191
+Time: 10.6010 - Value: 0.00298042
+Time: 11.0680 - Value: 0.00602484
+Time: 11.7200 - Value: 0.01238190
+Time: 12.1400 - Value: 0.00691908
+Time: 12.5960 - Value: 0.00287155
+Time: 13.0050 - Value: 0.00424842
+Time: 13.4400 - Value: 0.01871982
+Time: 14.4040 - Value: 0.00467978
+Time: 15.1510 - Value: 0.01923859
+Time: 16.0360 - Value: 0.00298544
+Time: 16.8600 - Value: 0.00585468
+Time: 17.6110 - Value: 0.00364434
+Time: 18.5800 - Value: 0.01466903
+Time: 18.9990 - Value: 0.00646335
+Time: 19.4400 - Value: 0.00273472
+Time: 20.2910 - Value: 0.00977047
+Time: 20.7110 - Value: 0.00640483
+Time: 21.1560 - Value: 0.00512951
+Time: 22.0010 - Value: 0.00599484
+Time: 22.9110 - Value: 0.00282702
+Time: 23.7080 - Value: 0.00218528
+Time: 24.1400 - Value: 0.00571752
+Time: 24.7280 - Value: 0.00545558
+Time: 25.3240 - Value: 0.00400617
+Time: 26.3270 - Value: 0.00282243
+Time: 27.1450 - Value: 0.00423530
+Time: 28.1170 - Value: 0.00058267
+BIN 26 | Frequency Range: [ 1119.73 - 1162.79 ) hertz
+Period Median: 0.6440 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 11
+Total Periods: 29
+Period Confidence for this bin: 37.93 %
+Phase Median: 0.3490 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 7
+Total Phases: 29
+Phase Confidence for this Bin: 24.14 %
+Bin Average Expressivity: 0.00199758
+Bin Average Expressivity Normalized: 0.22387409
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00240080
+Time: 1.4290 - Value: 0.00342865
+Time: 2.0800 - Value: 0.00163766
+Time: 2.4920 - Value: 0.00210583
+Time: 3.1510 - Value: 0.01403031
+Time: 3.7930 - Value: 0.00131599
+Time: 4.2080 - Value: 0.00522949
+Time: 4.8570 - Value: 0.00211923
+Time: 5.5110 - Value: 0.00153260
+Time: 5.9230 - Value: 0.00551322
+Time: 6.5770 - Value: 0.01405057
+Time: 7.1630 - Value: 0.00275594
+Time: 7.6400 - Value: 0.01342757
+Time: 8.2910 - Value: 0.01849348
+Time: 9.3600 - Value: 0.01491057
+Time: 10.0040 - Value: 0.00848929
+Time: 10.8890 - Value: 0.00397310
+Time: 11.7200 - Value: 0.01510660
+Time: 12.6910 - Value: 0.00414135
+Time: 13.2200 - Value: 0.00886478
+Time: 13.6800 - Value: 0.01167638
+Time: 14.3030 - Value: 0.00448503
+Time: 15.1510 - Value: 0.01714618
+Time: 16.2110 - Value: 0.00998518
+Time: 16.8600 - Value: 0.00500284
+Time: 17.7280 - Value: 0.00408628
+Time: 18.5760 - Value: 0.00954460
+Time: 19.2910 - Value: 0.00397398
+Time: 20.2890 - Value: 0.00511174
+Time: 21.1430 - Value: 0.00389622
+Time: 22.0050 - Value: 0.01392864
+Time: 22.9870 - Value: 0.00462788
+Time: 23.7200 - Value: 0.00667261
+Time: 24.4360 - Value: 0.00335524
+Time: 24.8760 - Value: 0.00635613
+Time: 25.4330 - Value: 0.00807041
+Time: 26.2800 - Value: 0.00380976
+Time: 27.1510 - Value: 0.00581973
+Time: 28.1170 - Value: 0.00056788
+BIN 27 | Frequency Range: [ 1162.79 - 1205.86 ) hertz
+Period Median: 0.5540 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 5
+Total Periods: 37
+Period Confidence for this bin: 13.51 %
+Phase Median: 0.2490 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 3
+Total Phases: 37
+Phase Confidence for this Bin: 8.11 %
+Bin Average Expressivity: 0.00175186
+Bin Average Expressivity Normalized: 0.19633603
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00255690
+Time: 1.4320 - Value: 0.00365973
+Time: 1.8510 - Value: 0.00186604
+Time: 2.4050 - Value: 0.00042571
+Time: 2.8200 - Value: 0.00452606
+Time: 3.4710 - Value: 0.00179150
+Time: 3.8910 - Value: 0.00084306
+Time: 4.3050 - Value: 0.00441227
+Time: 4.8570 - Value: 0.00203071
+Time: 5.2800 - Value: 0.00165191
+Time: 5.8250 - Value: 0.00041488
+Time: 6.2510 - Value: 0.00432430
+Time: 6.9000 - Value: 0.00245774
+Time: 7.3370 - Value: 0.00264936
+Time: 7.9630 - Value: 0.00820192
+Time: 9.3550 - Value: 0.01393541
+Time: 10.0090 - Value: 0.00702305
+Time: 10.6370 - Value: 0.00327634
+Time: 11.0680 - Value: 0.01271562
+Time: 11.7200 - Value: 0.00876598
+Time: 12.3000 - Value: 0.00307826
+Time: 12.7840 - Value: 0.01146690
+Time: 13.2200 - Value: 0.01021117
+Time: 13.6710 - Value: 0.00921985
+Time: 14.3030 - Value: 0.00375654
+Time: 15.1510 - Value: 0.00961100
+Time: 15.8520 - Value: 0.00369987
+Time: 16.2910 - Value: 0.00720577
+Time: 16.8690 - Value: 0.00502099
+Time: 17.7330 - Value: 0.00370082
+Time: 18.5760 - Value: 0.00614702
+Time: 19.2910 - Value: 0.00428196
+Time: 20.2950 - Value: 0.00590948
+Time: 21.1600 - Value: 0.00424667
+Time: 22.0010 - Value: 0.00461535
+Time: 22.7200 - Value: 0.00376787
+Time: 23.7990 - Value: 0.00562794
+Time: 24.4910 - Value: 0.00314797
+Time: 25.4330 - Value: 0.00531708
+Time: 26.1400 - Value: 0.00354670
+Time: 28.1120 - Value: 0.00021317
+BIN 28 | Frequency Range: [ 1205.86 - 1248.93 ) hertz
+Period Median: 0.4400 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 18
+Total Periods: 35
+Period Confidence for this bin: 51.43 %
+Phase Median: 0.1970 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 5
+Total Phases: 35
+Phase Confidence for this Bin: 14.29 %
+Bin Average Expressivity: 0.00122809
+Bin Average Expressivity Normalized: 0.13763504
+HIGH SAMPLES
+Time: 0.5710 - Value: 0.00021951
+Time: 1.0000 - Value: 0.00256127
+Time: 1.4320 - Value: 0.00285970
+Time: 1.8510 - Value: 0.00123595
+Time: 2.3970 - Value: 0.00018241
+Time: 2.8190 - Value: 0.00363867
+Time: 3.3530 - Value: 0.00176907
+Time: 3.7930 - Value: 0.00054052
+Time: 4.2080 - Value: 0.00544566
+Time: 4.8650 - Value: 0.00431391
+Time: 5.2800 - Value: 0.00114222
+Time: 5.7120 - Value: 0.00040050
+Time: 6.1400 - Value: 0.00313225
+Time: 6.5770 - Value: 0.00409190
+Time: 6.9910 - Value: 0.00109602
+Time: 7.4690 - Value: 0.00234224
+Time: 7.9630 - Value: 0.00627365
+Time: 9.3490 - Value: 0.00330444
+Time: 10.6370 - Value: 0.00267227
+Time: 11.0680 - Value: 0.00936596
+Time: 11.7200 - Value: 0.00479489
+Time: 12.5000 - Value: 0.00230105
+Time: 13.1080 - Value: 0.00391111
+Time: 13.5710 - Value: 0.00665633
+Time: 14.3240 - Value: 0.00341922
+Time: 15.1530 - Value: 0.00385481
+Time: 15.5690 - Value: 0.00400159
+Time: 16.0550 - Value: 0.00267535
+Time: 17.7330 - Value: 0.00371772
+Time: 18.5960 - Value: 0.00293954
+Time: 19.5000 - Value: 0.00314908
+Time: 20.2910 - Value: 0.00245581
+Time: 20.7110 - Value: 0.00325481
+Time: 21.1610 - Value: 0.00432481
+Time: 21.9130 - Value: 0.00309224
+Time: 22.4250 - Value: 0.00357380
+Time: 22.8970 - Value: 0.00316599
+Time: 23.7110 - Value: 0.00246376
+Time: 24.3710 - Value: 0.00278994
+Time: 24.7800 - Value: 0.00658321
+Time: 25.4310 - Value: 0.00321259
+Time: 26.2800 - Value: 0.00241610
+Time: 27.1510 - Value: 0.00303192
+Time: 28.1110 - Value: 0.00012094
+BIN 29 | Frequency Range: [ 1248.93 - 1291.99 ) hertz
+Period Median: 0.4290 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 23
+Total Periods: 43
+Period Confidence for this bin: 53.49 %
+Phase Median: 0.1250 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 19
+Total Phases: 43
+Phase Confidence for this Bin: 44.19 %
+Bin Average Expressivity: 0.00091681
+Bin Average Expressivity Normalized: 0.10274951
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00191137
+Time: 1.4290 - Value: 0.00177804
+Time: 1.8510 - Value: 0.00097366
+Time: 2.4910 - Value: 0.00107157
+Time: 3.3510 - Value: 0.00140915
+Time: 3.8910 - Value: 0.00053993
+Time: 4.2960 - Value: 0.00065709
+Time: 5.0710 - Value: 0.00093831
+Time: 5.5000 - Value: 0.00027091
+Time: 5.9230 - Value: 0.00428920
+Time: 6.5770 - Value: 0.00210742
+Time: 6.9910 - Value: 0.00086099
+Time: 7.4690 - Value: 0.00150647
+Time: 7.8770 - Value: 0.00248226
+Time: 8.7870 - Value: 0.00176472
+Time: 9.3510 - Value: 0.00302004
+Time: 10.6560 - Value: 0.00176197
+Time: 11.0680 - Value: 0.00523036
+Time: 12.0400 - Value: 0.00151984
+Time: 12.4710 - Value: 0.00180263
+Time: 12.8960 - Value: 0.00322420
+Time: 13.3270 - Value: 0.00649159
+Time: 13.7550 - Value: 0.00904790
+Time: 14.2910 - Value: 0.00324540
+Time: 15.1400 - Value: 0.00210031
+Time: 15.5690 - Value: 0.00410002
+Time: 16.0110 - Value: 0.00262624
+Time: 16.8630 - Value: 0.00354754
+Time: 17.2800 - Value: 0.00282379
+Time: 17.7080 - Value: 0.00225633
+Time: 18.5710 - Value: 0.00200484
+Time: 18.9990 - Value: 0.00338285
+Time: 19.4400 - Value: 0.00302256
+Time: 20.2910 - Value: 0.00314898
+Time: 20.7110 - Value: 0.00371751
+Time: 21.1400 - Value: 0.00205823
+Time: 21.8880 - Value: 0.00167077
+Time: 22.8640 - Value: 0.00245663
+Time: 23.7110 - Value: 0.00203787
+Time: 24.1390 - Value: 0.00320448
+Time: 24.5680 - Value: 0.00248450
+Time: 25.4330 - Value: 0.00316166
+Time: 25.8510 - Value: 0.00292096
+Time: 26.2910 - Value: 0.00294251
+Time: 27.1400 - Value: 0.00291454
+Time: 28.1120 - Value: 0.00007796
+BIN 30 | Frequency Range: [ 1291.99 - 1335.06 ) hertz
+Period Median: 0.4550 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 13
+Total Periods: 38
+Period Confidence for this bin: 34.21 %
+Phase Median: 0.2070 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 3
+Total Phases: 38
+Phase Confidence for this Bin: 7.89 %
+Bin Average Expressivity: 0.00078653
+Bin Average Expressivity Normalized: 0.08814903
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00144531
+Time: 1.6400 - Value: 0.00218055
+Time: 2.1710 - Value: 0.00035387
+Time: 2.6070 - Value: 0.00031414
+Time: 3.3490 - Value: 0.00115607
+Time: 3.8950 - Value: 0.00040921
+Time: 4.4200 - Value: 0.00035083
+Time: 5.0670 - Value: 0.00212101
+Time: 5.6050 - Value: 0.00046306
+Time: 6.1400 - Value: 0.00172857
+Time: 6.5770 - Value: 0.00158264
+Time: 6.9910 - Value: 0.00071607
+Time: 7.6400 - Value: 0.00294921
+Time: 8.4970 - Value: 0.00166649
+Time: 8.9040 - Value: 0.00160743
+Time: 9.5670 - Value: 0.00300364
+Time: 11.0630 - Value: 0.00118447
+Time: 11.9250 - Value: 0.00156920
+Time: 12.3310 - Value: 0.00173415
+Time: 12.8960 - Value: 0.00348310
+Time: 13.3270 - Value: 0.00559575
+Time: 13.7550 - Value: 0.00770923
+Time: 14.2800 - Value: 0.00224495
+Time: 15.1390 - Value: 0.00177384
+Time: 15.5710 - Value: 0.00364250
+Time: 16.0250 - Value: 0.00319493
+Time: 16.8630 - Value: 0.00335491
+Time: 17.7110 - Value: 0.00210393
+Time: 18.3630 - Value: 0.00111354
+Time: 18.7840 - Value: 0.00235625
+Time: 19.4210 - Value: 0.00221420
+Time: 20.2910 - Value: 0.00324205
+Time: 20.7110 - Value: 0.00346167
+Time: 21.1400 - Value: 0.00231083
+Time: 21.8930 - Value: 0.00090382
+Time: 22.4250 - Value: 0.00372211
+Time: 22.8800 - Value: 0.00271533
+Time: 23.7150 - Value: 0.00286137
+Time: 24.5790 - Value: 0.00225546
+Time: 25.4210 - Value: 0.00100376
+Time: 25.8520 - Value: 0.00329409
+Time: 26.2910 - Value: 0.00240693
+Time: 27.1400 - Value: 0.00258148
+Time: 28.1120 - Value: 0.00006000
+BIN 31 | Frequency Range: [ 1335.06 - 1378.13 ) hertz
+Period Median: 0.4490 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 15
+Total Periods: 31
+Period Confidence for this bin: 48.39 %
+Phase Median: 0.2930 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 6
+Total Phases: 31
+Phase Confidence for this Bin: 19.35 %
+Bin Average Expressivity: 0.00066660
+Bin Average Expressivity Normalized: 0.07470764
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00104319
+Time: 1.6400 - Value: 0.00404681
+Time: 2.1790 - Value: 0.00058651
+Time: 2.6070 - Value: 0.00028336
+Time: 3.3490 - Value: 0.00139441
+Time: 3.8910 - Value: 0.00050652
+Time: 4.4200 - Value: 0.00036265
+Time: 5.0670 - Value: 0.00316634
+Time: 5.6050 - Value: 0.00051504
+Time: 6.1400 - Value: 0.00225131
+Time: 6.7810 - Value: 0.00355674
+Time: 7.6400 - Value: 0.00240501
+Time: 8.4970 - Value: 0.00307305
+Time: 9.3510 - Value: 0.00218131
+Time: 10.2130 - Value: 0.00184224
+Time: 11.0680 - Value: 0.00149239
+Time: 11.9210 - Value: 0.00228561
+Time: 12.3310 - Value: 0.00119634
+Time: 12.7800 - Value: 0.00169758
+Time: 13.2110 - Value: 0.00249853
+Time: 13.6760 - Value: 0.00527620
+Time: 14.2950 - Value: 0.00254186
+Time: 15.1400 - Value: 0.00106358
+Time: 15.5690 - Value: 0.00320131
+Time: 16.0110 - Value: 0.00217526
+Time: 16.8630 - Value: 0.00242748
+Time: 17.7110 - Value: 0.00181278
+Time: 18.5640 - Value: 0.00098779
+Time: 18.9990 - Value: 0.00289516
+Time: 19.4310 - Value: 0.00158213
+Time: 20.2890 - Value: 0.00186049
+Time: 21.1370 - Value: 0.00203580
+Time: 21.9510 - Value: 0.00120642
+Time: 22.4250 - Value: 0.00291955
+Time: 22.8600 - Value: 0.00194316
+Time: 23.7200 - Value: 0.00249555
+Time: 24.1400 - Value: 0.00272895
+Time: 24.5710 - Value: 0.00196313
+Time: 25.4210 - Value: 0.00112271
+Time: 25.8520 - Value: 0.00292105
+Time: 26.2910 - Value: 0.00170622
+Time: 27.1590 - Value: 0.00196401
+BIN 32 | Frequency Range: [ 1378.13 - 1421.19 ) hertz
+Period Median: 0.5920 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 7
+Total Periods: 24
+Period Confidence for this bin: 29.17 %
+Phase Median: 0.2990 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 3
+Total Phases: 24
+Phase Confidence for this Bin: 12.50 %
+Bin Average Expressivity: 0.00100446
+Bin Average Expressivity Normalized: 0.11257219
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00073962
+Time: 1.6400 - Value: 0.00794902
+Time: 2.7110 - Value: 0.00278893
+Time: 3.3510 - Value: 0.00281397
+Time: 4.2110 - Value: 0.00136453
+Time: 5.0670 - Value: 0.00490641
+Time: 5.9230 - Value: 0.00152952
+Time: 6.7810 - Value: 0.00610538
+Time: 7.8600 - Value: 0.00248945
+Time: 8.4970 - Value: 0.00530933
+Time: 9.3600 - Value: 0.00188715
+Time: 10.2110 - Value: 0.00542256
+Time: 11.2870 - Value: 0.00277840
+Time: 11.9200 - Value: 0.00284852
+Time: 12.9000 - Value: 0.00197102
+Time: 13.3650 - Value: 0.00407191
+Time: 13.7930 - Value: 0.00547448
+Time: 14.3790 - Value: 0.00358534
+Time: 15.0280 - Value: 0.00182432
+Time: 16.0110 - Value: 0.00307683
+Time: 16.8630 - Value: 0.00192128
+Time: 17.8000 - Value: 0.00261054
+Time: 18.5310 - Value: 0.00217788
+Time: 19.5000 - Value: 0.00245768
+Time: 20.0920 - Value: 0.00212869
+Time: 20.5000 - Value: 0.00683031
+Time: 21.1430 - Value: 0.00264212
+Time: 21.9510 - Value: 0.00210264
+Time: 22.9310 - Value: 0.00356640
+Time: 23.3990 - Value: 0.00244182
+Time: 23.9270 - Value: 0.00804391
+Time: 25.1630 - Value: 0.00242044
+Time: 25.6400 - Value: 0.00607192
+Time: 26.3570 - Value: 0.00288211
+Time: 27.2150 - Value: 0.00269918
+Time: 28.0000 - Value: 0.00071720
+BIN 33 | Frequency Range: [ 1421.19 - 1464.26 ) hertz
+Period Median: 0.5250 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 3
+Total Periods: 20
+Period Confidence for this bin: 15.00 %
+Phase Median: 0.2950 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 2
+Total Phases: 20
+Phase Confidence for this Bin: 10.00 %
+Bin Average Expressivity: 0.00169418
+Bin Average Expressivity Normalized: 0.18987207
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00052038
+Time: 1.6400 - Value: 0.01161749
+Time: 2.6110 - Value: 0.00095158
+Time: 3.3490 - Value: 0.00200502
+Time: 4.4210 - Value: 0.00061521
+Time: 5.0710 - Value: 0.01070238
+Time: 5.9280 - Value: 0.00127969
+Time: 6.7810 - Value: 0.00824164
+Time: 8.0230 - Value: 0.00440171
+Time: 8.4800 - Value: 0.00383657
+Time: 9.5910 - Value: 0.00442127
+Time: 10.2110 - Value: 0.00847483
+Time: 11.4510 - Value: 0.00432966
+Time: 11.9310 - Value: 0.00931411
+Time: 13.0150 - Value: 0.00482985
+Time: 13.6360 - Value: 0.00598945
+Time: 15.1000 - Value: 0.00347682
+Time: 16.9910 - Value: 0.00419818
+Time: 18.7800 - Value: 0.00572987
+Time: 19.9680 - Value: 0.00382167
+Time: 20.4930 - Value: 0.00642246
+Time: 21.7310 - Value: 0.00376879
+Time: 22.2000 - Value: 0.00442001
+Time: 23.4000 - Value: 0.00424283
+Time: 23.9200 - Value: 0.00364458
+Time: 25.1690 - Value: 0.00422486
+Time: 25.6400 - Value: 0.00887090
+Time: 27.3530 - Value: 0.01068893
+BIN 34 | Frequency Range: [ 1464.26 - 1507.32 ) hertz
+Period Median: 0.6000 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 5
+Total Periods: 26
+Period Confidence for this bin: 19.23 %
+Phase Median: 0.2400 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 2
+Total Phases: 26
+Phase Confidence for this Bin: 7.69 %
+Bin Average Expressivity: 0.00168586
+Bin Average Expressivity Normalized: 0.18893863
+HIGH SAMPLES
+Time: 0.7810 - Value: 0.00051649
+Time: 1.6400 - Value: 0.01198878
+Time: 2.6110 - Value: 0.00100377
+Time: 3.3490 - Value: 0.00210613
+Time: 4.2170 - Value: 0.00079576
+Time: 5.0710 - Value: 0.01109176
+Time: 6.0360 - Value: 0.00075976
+Time: 6.7810 - Value: 0.00840707
+Time: 7.8800 - Value: 0.00391155
+Time: 8.4800 - Value: 0.00352073
+Time: 9.5910 - Value: 0.00417263
+Time: 10.2110 - Value: 0.00814597
+Time: 11.3110 - Value: 0.00340333
+Time: 11.9250 - Value: 0.00763965
+Time: 12.9000 - Value: 0.00446754
+Time: 13.3520 - Value: 0.00546919
+Time: 13.7600 - Value: 0.00792257
+Time: 15.3600 - Value: 0.00455356
+Time: 16.0110 - Value: 0.00553464
+Time: 16.5400 - Value: 0.00410110
+Time: 17.0710 - Value: 0.01133866
+Time: 18.7840 - Value: 0.00808442
+Time: 19.4400 - Value: 0.00508977
+Time: 19.9680 - Value: 0.00438384
+Time: 20.4930 - Value: 0.00710390
+Time: 21.2270 - Value: 0.00496051
+Time: 22.1950 - Value: 0.00410987
+Time: 22.8690 - Value: 0.00603898
+Time: 23.4000 - Value: 0.00421922
+Time: 23.9200 - Value: 0.00471805
+Time: 25.6400 - Value: 0.00875355
+Time: 27.3530 - Value: 0.01132505
+BIN 35 | Frequency Range: [ 1507.32 - 1550.39 ) hertz
+Period Median: 0.6180 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 5
+Total Periods: 24
+Period Confidence for this bin: 20.83 %
+Phase Median: 0.1920 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 3
+Total Phases: 24
+Phase Confidence for this Bin: 12.50 %
+Bin Average Expressivity: 0.00109677
+Bin Average Expressivity Normalized: 0.12291761
+HIGH SAMPLES
+Time: 0.7810 - Value: 0.00037041
+Time: 1.6400 - Value: 0.00902249
+Time: 2.6110 - Value: 0.00056152
+Time: 3.3490 - Value: 0.00187768
+Time: 4.2110 - Value: 0.00072336
+Time: 5.0670 - Value: 0.00525584
+Time: 5.7110 - Value: 0.00110727
+Time: 6.1400 - Value: 0.00127502
+Time: 6.7800 - Value: 0.00505771
+Time: 7.8650 - Value: 0.00300012
+Time: 8.4830 - Value: 0.00166087
+Time: 9.5800 - Value: 0.00358079
+Time: 10.2070 - Value: 0.00282661
+Time: 11.2930 - Value: 0.00363634
+Time: 11.9200 - Value: 0.00192750
+Time: 13.0110 - Value: 0.00362158
+Time: 13.4430 - Value: 0.00566015
+Time: 14.3600 - Value: 0.00228881
+Time: 15.1480 - Value: 0.00377644
+Time: 15.5710 - Value: 0.00416139
+Time: 16.8690 - Value: 0.00383241
+Time: 17.7490 - Value: 0.00275018
+Time: 18.5760 - Value: 0.00375206
+Time: 19.1070 - Value: 0.00330016
+Time: 19.9680 - Value: 0.00333162
+Time: 20.4930 - Value: 0.00459334
+Time: 21.1790 - Value: 0.00329395
+Time: 22.0000 - Value: 0.00214845
+Time: 22.4250 - Value: 0.00458849
+Time: 22.8690 - Value: 0.00523035
+Time: 23.7150 - Value: 0.00345814
+Time: 24.5790 - Value: 0.00265460
+Time: 25.4390 - Value: 0.00387937
+Time: 26.3520 - Value: 0.00381944
+Time: 27.1510 - Value: 0.00509602
+BIN 36 | Frequency Range: [ 1550.39 - 1593.46 ) hertz
+Period Median: 0.4710 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 10
+Total Periods: 30
+Period Confidence for this bin: 33.33 %
+Phase Median: 0.2610 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 2
+Total Phases: 30
+Phase Confidence for this Bin: 6.67 %
+Bin Average Expressivity: 0.00077868
+Bin Average Expressivity Normalized: 0.08726878
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00019153
+Time: 1.6400 - Value: 0.00539604
+Time: 2.4920 - Value: 0.00030532
+Time: 3.1510 - Value: 0.00210415
+Time: 3.5670 - Value: 0.00140138
+Time: 4.2110 - Value: 0.00074056
+Time: 5.0670 - Value: 0.00361363
+Time: 5.6050 - Value: 0.00099747
+Time: 6.1400 - Value: 0.00100028
+Time: 6.5770 - Value: 0.00159508
+Time: 6.9990 - Value: 0.00142255
+Time: 7.6400 - Value: 0.00048021
+Time: 8.4970 - Value: 0.00151004
+Time: 8.9630 - Value: 0.00208296
+Time: 9.5790 - Value: 0.00465152
+Time: 11.0510 - Value: 0.00043975
+Time: 11.9210 - Value: 0.00193921
+Time: 12.3920 - Value: 0.00222583
+Time: 12.9470 - Value: 0.00357361
+Time: 13.3520 - Value: 0.00510346
+Time: 13.7810 - Value: 0.00682545
+Time: 14.3110 - Value: 0.00171896
+Time: 15.1400 - Value: 0.00093951
+Time: 15.5690 - Value: 0.00291768
+Time: 16.0110 - Value: 0.00345150
+Time: 16.8630 - Value: 0.00310875
+Time: 17.7230 - Value: 0.00177421
+Time: 18.5690 - Value: 0.00090116
+Time: 19.2490 - Value: 0.00257176
+Time: 20.2910 - Value: 0.00457404
+Time: 21.1560 - Value: 0.00127776
+Time: 22.0010 - Value: 0.00218627
+Time: 22.4250 - Value: 0.00342512
+Time: 22.8690 - Value: 0.00358161
+Time: 23.7150 - Value: 0.00338878
+Time: 24.5790 - Value: 0.00201088
+Time: 25.3480 - Value: 0.00088837
+Time: 25.8520 - Value: 0.00202648
+Time: 26.2850 - Value: 0.00247713
+Time: 27.1510 - Value: 0.00477147
+BIN 37 | Frequency Range: [ 1593.46 - 1636.52 ) hertz
+Period Median: 0.5410 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 6
+Total Periods: 30
+Period Confidence for this bin: 20.00 %
+Phase Median: 0.1950 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 3
+Total Phases: 30
+Phase Confidence for this Bin: 10.00 %
+Bin Average Expressivity: 0.00075195
+Bin Average Expressivity Normalized: 0.08427344
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00034069
+Time: 1.4320 - Value: 0.00184391
+Time: 2.1720 - Value: 0.00061433
+Time: 2.7110 - Value: 0.00148228
+Time: 3.1510 - Value: 0.00358815
+Time: 3.8000 - Value: 0.00056264
+Time: 4.2080 - Value: 0.00066515
+Time: 4.8650 - Value: 0.00301895
+Time: 5.6050 - Value: 0.00061720
+Time: 6.1400 - Value: 0.00082789
+Time: 6.5770 - Value: 0.00247513
+Time: 7.6430 - Value: 0.00055811
+Time: 8.2920 - Value: 0.00276921
+Time: 8.7630 - Value: 0.00168806
+Time: 9.5800 - Value: 0.00487665
+Time: 10.9710 - Value: 0.00041322
+Time: 11.3800 - Value: 0.00282538
+Time: 11.9210 - Value: 0.00132355
+Time: 12.3920 - Value: 0.00241599
+Time: 12.8410 - Value: 0.00259582
+Time: 13.2680 - Value: 0.00330734
+Time: 13.7000 - Value: 0.00458596
+Time: 14.3110 - Value: 0.00193198
+Time: 15.1400 - Value: 0.00125726
+Time: 15.7270 - Value: 0.00200444
+Time: 16.7840 - Value: 0.00244854
+Time: 17.7170 - Value: 0.00105413
+Time: 18.5600 - Value: 0.00071097
+Time: 19.1530 - Value: 0.00191794
+Time: 20.2910 - Value: 0.00422016
+Time: 21.1480 - Value: 0.00166333
+Time: 22.0000 - Value: 0.00121417
+Time: 22.5850 - Value: 0.00213047
+Time: 23.6400 - Value: 0.00241834
+Time: 24.5710 - Value: 0.00119616
+Time: 25.3480 - Value: 0.00067996
+Time: 26.0110 - Value: 0.00183792
+Time: 27.1510 - Value: 0.00366762
+Time: 28.1170 - Value: 0.00014552
+BIN 38 | Frequency Range: [ 1636.52 - 1679.59 ) hertz
+Period Median: 0.6230 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 11
+Total Periods: 30
+Period Confidence for this bin: 36.67 %
+Phase Median: 0.2630 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 2
+Total Phases: 30
+Phase Confidence for this Bin: 6.67 %
+Bin Average Expressivity: 0.00079679
+Bin Average Expressivity Normalized: 0.08929845
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00050326
+Time: 1.4400 - Value: 0.00343421
+Time: 2.0800 - Value: 0.00048693
+Time: 2.4920 - Value: 0.00062630
+Time: 3.1510 - Value: 0.00397788
+Time: 3.8000 - Value: 0.00058600
+Time: 4.2080 - Value: 0.00090149
+Time: 4.8650 - Value: 0.00341696
+Time: 5.5110 - Value: 0.00047867
+Time: 5.9230 - Value: 0.00093362
+Time: 6.5770 - Value: 0.00283404
+Time: 7.2000 - Value: 0.00070853
+Time: 7.6510 - Value: 0.00135977
+Time: 8.2920 - Value: 0.00310486
+Time: 8.8800 - Value: 0.00156636
+Time: 9.5790 - Value: 0.00380857
+Time: 10.9680 - Value: 0.00108822
+Time: 11.3750 - Value: 0.00270333
+Time: 11.9250 - Value: 0.00172446
+Time: 12.3920 - Value: 0.00171827
+Time: 12.9310 - Value: 0.00215976
+Time: 13.3360 - Value: 0.00388841
+Time: 13.8030 - Value: 0.00629072
+Time: 14.2910 - Value: 0.00213005
+Time: 15.1400 - Value: 0.00193138
+Time: 16.0200 - Value: 0.00271623
+Time: 16.7890 - Value: 0.00251916
+Time: 17.7200 - Value: 0.00241903
+Time: 18.5710 - Value: 0.00188558
+Time: 19.2510 - Value: 0.00185285
+Time: 20.2890 - Value: 0.00214187
+Time: 21.1430 - Value: 0.00185687
+Time: 22.0000 - Value: 0.00145795
+Time: 22.6910 - Value: 0.00227675
+Time: 23.6450 - Value: 0.00208962
+Time: 24.5790 - Value: 0.00237103
+Time: 25.4310 - Value: 0.00204625
+Time: 26.1050 - Value: 0.00186332
+Time: 27.1510 - Value: 0.00338331
+Time: 28.1170 - Value: 0.00017188
+BIN 39 | Frequency Range: [ 1679.59 - 1722.66 ) hertz
+Period Median: 0.5080 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 2
+Total Periods: 30
+Period Confidence for this bin: 6.67 %
+Phase Median: 0.2000 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 2
+Total Phases: 30
+Phase Confidence for this Bin: 6.67 %
+Bin Average Expressivity: 0.00079249
+Bin Average Expressivity Normalized: 0.08881710
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00063645
+Time: 1.6400 - Value: 0.00097680
+Time: 2.0770 - Value: 0.00044176
+Time: 2.4910 - Value: 0.00029792
+Time: 3.1510 - Value: 0.00279015
+Time: 3.7910 - Value: 0.00030835
+Time: 4.2110 - Value: 0.00190152
+Time: 4.8600 - Value: 0.00177901
+Time: 5.2800 - Value: 0.00089704
+Time: 5.7120 - Value: 0.00025447
+Time: 6.1400 - Value: 0.00139425
+Time: 6.5770 - Value: 0.00225704
+Time: 6.9990 - Value: 0.00097837
+Time: 7.6480 - Value: 0.00248221
+Time: 8.2990 - Value: 0.00304495
+Time: 9.3510 - Value: 0.00096125
+Time: 10.4600 - Value: 0.00154597
+Time: 10.9680 - Value: 0.00186154
+Time: 11.3750 - Value: 0.00298591
+Time: 12.5910 - Value: 0.00104340
+Time: 13.1230 - Value: 0.00292630
+Time: 13.5530 - Value: 0.00498025
+Time: 14.2910 - Value: 0.00315426
+Time: 15.1400 - Value: 0.00286688
+Time: 16.0000 - Value: 0.00176361
+Time: 16.7890 - Value: 0.00160242
+Time: 17.5030 - Value: 0.00167269
+Time: 17.9310 - Value: 0.00376952
+Time: 18.5710 - Value: 0.00257876
+Time: 19.4310 - Value: 0.00129153
+Time: 20.2890 - Value: 0.00151583
+Time: 20.9710 - Value: 0.00177512
+Time: 22.0010 - Value: 0.00267586
+Time: 22.8550 - Value: 0.00236222
+Time: 23.7110 - Value: 0.00215752
+Time: 24.4400 - Value: 0.00206829
+Time: 25.4310 - Value: 0.00245285
+Time: 26.2800 - Value: 0.00162566
+Time: 27.1400 - Value: 0.00165968
+Time: 28.1120 - Value: 0.00009851
+BIN 40 | Frequency Range: [ 1722.66 - 1765.72 ) hertz
+Period Median: 0.4380 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 14
+Total Periods: 32
+Period Confidence for this bin: 43.75 %
+Phase Median: 0.2110 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 4
+Total Phases: 32
+Phase Confidence for this Bin: 12.50 %
+Bin Average Expressivity: 0.00071660
+Bin Average Expressivity Normalized: 0.08031175
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00070789
+Time: 1.4320 - Value: 0.00158131
+Time: 1.8510 - Value: 0.00057929
+Time: 2.3970 - Value: 0.00011355
+Time: 2.8000 - Value: 0.00220987
+Time: 3.3530 - Value: 0.00082953
+Time: 3.7910 - Value: 0.00025472
+Time: 4.2110 - Value: 0.00272163
+Time: 5.1910 - Value: 0.00034110
+Time: 5.6050 - Value: 0.00040032
+Time: 6.0010 - Value: 0.00120155
+Time: 6.7810 - Value: 0.00099637
+Time: 7.1970 - Value: 0.00096076
+Time: 7.6400 - Value: 0.00241617
+Time: 9.3490 - Value: 0.00071086
+Time: 10.0040 - Value: 0.00219919
+Time: 10.4230 - Value: 0.00049365
+Time: 10.9150 - Value: 0.00176265
+Time: 12.5880 - Value: 0.00083894
+Time: 13.0330 - Value: 0.00237664
+Time: 13.4430 - Value: 0.00336460
+Time: 14.2910 - Value: 0.00342973
+Time: 15.1400 - Value: 0.00300133
+Time: 16.0000 - Value: 0.00262365
+Time: 16.8550 - Value: 0.00146133
+Time: 17.5000 - Value: 0.00156689
+Time: 17.9270 - Value: 0.00447315
+Time: 18.5690 - Value: 0.00270458
+Time: 19.4270 - Value: 0.00212956
+Time: 20.2830 - Value: 0.00171413
+Time: 20.7110 - Value: 0.00172958
+Time: 21.1480 - Value: 0.00222052
+Time: 22.0000 - Value: 0.00312435
+Time: 22.8550 - Value: 0.00239780
+Time: 23.7110 - Value: 0.00176467
+Time: 24.2590 - Value: 0.00172557
+Time: 24.7850 - Value: 0.00383574
+Time: 25.4310 - Value: 0.00330671
+Time: 26.2800 - Value: 0.00146251
+Time: 27.1400 - Value: 0.00175987
+Time: 28.1120 - Value: 0.00008096
+BIN 41 | Frequency Range: [ 1765.72 - 1808.79 ) hertz
+Period Median: 0.4400 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 13
+Total Periods: 34
+Period Confidence for this bin: 38.24 %
+Phase Median: 0.2480 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 7
+Total Phases: 34
+Phase Confidence for this Bin: 20.59 %
+Bin Average Expressivity: 0.00066098
+Bin Average Expressivity Normalized: 0.07407787
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00068407
+Time: 1.6400 - Value: 0.00057578
+Time: 2.1710 - Value: 0.00021599
+Time: 2.5760 - Value: 0.00076766
+Time: 3.3530 - Value: 0.00067969
+Time: 3.7930 - Value: 0.00015314
+Time: 4.2080 - Value: 0.00147587
+Time: 5.0710 - Value: 0.00044545
+Time: 5.6000 - Value: 0.00025457
+Time: 6.0110 - Value: 0.00112743
+Time: 6.7810 - Value: 0.00069081
+Time: 7.2230 - Value: 0.00192128
+Time: 7.6430 - Value: 0.00276381
+Time: 8.6520 - Value: 0.00205625
+Time: 9.3510 - Value: 0.00122597
+Time: 10.3240 - Value: 0.00032357
+Time: 10.7430 - Value: 0.00218290
+Time: 11.2910 - Value: 0.00273470
+Time: 12.0710 - Value: 0.00228987
+Time: 12.5880 - Value: 0.00062212
+Time: 13.0270 - Value: 0.00203542
+Time: 13.4480 - Value: 0.00317390
+Time: 14.2910 - Value: 0.00287203
+Time: 16.0000 - Value: 0.00203334
+Time: 16.8550 - Value: 0.00108440
+Time: 17.4310 - Value: 0.00121664
+Time: 17.9310 - Value: 0.00304766
+Time: 18.3630 - Value: 0.00256599
+Time: 19.4270 - Value: 0.00150390
+Time: 20.2830 - Value: 0.00112944
+Time: 20.7110 - Value: 0.00139245
+Time: 21.1480 - Value: 0.00233854
+Time: 21.7930 - Value: 0.00252314
+Time: 22.8600 - Value: 0.00194138
+Time: 23.6310 - Value: 0.00124372
+Time: 24.2910 - Value: 0.00146251
+Time: 24.7850 - Value: 0.00339410
+Time: 25.2250 - Value: 0.00288106
+Time: 26.2910 - Value: 0.00276575
+Time: 27.1350 - Value: 0.00077827
+Time: 28.1070 - Value: 0.00004521
+BIN 42 | Frequency Range: [ 1808.79 - 1851.86 ) hertz
+Period Median: 0.5380 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 11
+Total Periods: 38
+Period Confidence for this bin: 28.95 %
+Phase Median: 0.2030 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 6
+Total Phases: 38
+Phase Confidence for this Bin: 15.79 %
+Bin Average Expressivity: 0.00064750
+Bin Average Expressivity Normalized: 0.07256752
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00058528
+Time: 1.6400 - Value: 0.00049053
+Time: 2.1790 - Value: 0.00023794
+Time: 2.5850 - Value: 0.00038920
+Time: 3.3510 - Value: 0.00049282
+Time: 3.8910 - Value: 0.00034684
+Time: 4.4280 - Value: 0.00131620
+Time: 5.0670 - Value: 0.00056640
+Time: 5.6050 - Value: 0.00018840
+Time: 6.0110 - Value: 0.00033823
+Time: 6.7810 - Value: 0.00049952
+Time: 7.2190 - Value: 0.00134671
+Time: 7.6400 - Value: 0.00243696
+Time: 8.6430 - Value: 0.00251606
+Time: 9.3490 - Value: 0.00053378
+Time: 10.4280 - Value: 0.00049361
+Time: 11.0680 - Value: 0.00327551
+Time: 11.9840 - Value: 0.00216129
+Time: 12.5960 - Value: 0.00096724
+Time: 13.0150 - Value: 0.00131630
+Time: 13.4400 - Value: 0.00264863
+Time: 14.9270 - Value: 0.00254697
+Time: 15.5050 - Value: 0.00237802
+Time: 16.0110 - Value: 0.00176683
+Time: 16.8630 - Value: 0.00160209
+Time: 17.4200 - Value: 0.00180599
+Time: 17.9880 - Value: 0.00239516
+Time: 18.4450 - Value: 0.00214994
+Time: 18.9310 - Value: 0.00246940
+Time: 19.4400 - Value: 0.00142342
+Time: 20.2910 - Value: 0.00124827
+Time: 20.7110 - Value: 0.00126856
+Time: 21.1280 - Value: 0.00220969
+Time: 21.7910 - Value: 0.00247537
+Time: 22.8640 - Value: 0.00175007
+Time: 23.7200 - Value: 0.00119163
+Time: 24.2910 - Value: 0.00160820
+Time: 24.9330 - Value: 0.00244709
+Time: 26.2910 - Value: 0.00219734
+Time: 27.0400 - Value: 0.00090474
+BIN 43 | Frequency Range: [ 1851.86 - 1894.92 ) hertz
+Period Median: 0.4750 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 8
+Total Periods: 32
+Period Confidence for this bin: 25.00 %
+Phase Median: 0.2020 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 3
+Total Phases: 32
+Phase Confidence for this Bin: 9.38 %
+Bin Average Expressivity: 0.00070767
+Bin Average Expressivity Normalized: 0.07931096
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00045240
+Time: 1.8560 - Value: 0.00195926
+Time: 2.4910 - Value: 0.00031539
+Time: 3.5710 - Value: 0.00146830
+Time: 4.2080 - Value: 0.00092497
+Time: 5.2840 - Value: 0.00124871
+Time: 5.9200 - Value: 0.00037902
+Time: 6.9910 - Value: 0.00023716
+Time: 7.4000 - Value: 0.00141673
+Time: 7.8600 - Value: 0.00235855
+Time: 8.6430 - Value: 0.00144876
+Time: 9.0990 - Value: 0.00156142
+Time: 9.5730 - Value: 0.00308318
+Time: 10.2680 - Value: 0.00171667
+Time: 10.7430 - Value: 0.00162610
+Time: 11.2240 - Value: 0.00153288
+Time: 12.0710 - Value: 0.00131287
+Time: 12.5960 - Value: 0.00170056
+Time: 12.9990 - Value: 0.00193720
+Time: 13.4570 - Value: 0.00306477
+Time: 14.3400 - Value: 0.00198742
+Time: 14.9270 - Value: 0.00181680
+Time: 15.7890 - Value: 0.00182121
+Time: 16.6830 - Value: 0.00199378
+Time: 17.5200 - Value: 0.00217067
+Time: 18.3570 - Value: 0.00161799
+Time: 19.1240 - Value: 0.00216297
+Time: 20.0110 - Value: 0.00247644
+Time: 20.4150 - Value: 0.00288294
+Time: 21.2150 - Value: 0.00180735
+Time: 21.7880 - Value: 0.00186455
+Time: 22.4250 - Value: 0.00209959
+Time: 22.8910 - Value: 0.00182774
+Time: 24.2960 - Value: 0.00213491
+Time: 24.7190 - Value: 0.00220015
+Time: 25.7880 - Value: 0.00203446
+Time: 26.2200 - Value: 0.00303826
+Time: 26.9510 - Value: 0.00229287
+BIN 44 | Frequency Range: [ 1894.92 - 1937.99 ) hertz
+Period Median: 0.5590 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 2
+Total Periods: 34
+Period Confidence for this bin: 5.88 %
+Phase Median: 0.2550 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 5
+Total Phases: 34
+Phase Confidence for this Bin: 14.71 %
+Bin Average Expressivity: 0.00104329
+Bin Average Expressivity Normalized: 0.11692482
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00033362
+Time: 1.8560 - Value: 0.00220078
+Time: 2.4910 - Value: 0.00023448
+Time: 3.5710 - Value: 0.00194544
+Time: 4.2080 - Value: 0.00063850
+Time: 5.1840 - Value: 0.00011741
+Time: 5.9230 - Value: 0.00077869
+Time: 6.7810 - Value: 0.00054127
+Time: 7.2410 - Value: 0.00081033
+Time: 7.8600 - Value: 0.00219317
+Time: 8.6570 - Value: 0.00130472
+Time: 9.1000 - Value: 0.00312711
+Time: 9.5910 - Value: 0.00345786
+Time: 10.2680 - Value: 0.00319844
+Time: 11.2930 - Value: 0.00236702
+Time: 12.0890 - Value: 0.00078902
+Time: 12.5240 - Value: 0.00293154
+Time: 13.0050 - Value: 0.00346747
+Time: 13.4630 - Value: 0.00515932
+Time: 14.3400 - Value: 0.00208391
+Time: 14.9310 - Value: 0.00149108
+Time: 15.5710 - Value: 0.00210348
+Time: 16.3290 - Value: 0.00369064
+Time: 17.0480 - Value: 0.00329949
+Time: 18.7040 - Value: 0.00236032
+Time: 19.1110 - Value: 0.00319431
+Time: 19.9850 - Value: 0.00519759
+Time: 20.5440 - Value: 0.00678008
+Time: 21.1800 - Value: 0.00163237
+Time: 22.0090 - Value: 0.00181808
+Time: 22.4890 - Value: 0.00196638
+Time: 22.9910 - Value: 0.00405510
+Time: 23.9090 - Value: 0.00367587
+Time: 24.6290 - Value: 0.00297745
+Time: 25.5910 - Value: 0.00287342
+Time: 25.9930 - Value: 0.00501404
+Time: 26.9530 - Value: 0.00599211
+BIN 45 | Frequency Range: [ 1937.99 - 1981.05 ) hertz
+Period Median: 0.5520 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 4
+Total Periods: 30
+Period Confidence for this bin: 13.33 %
+Phase Median: 0.2630 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 5
+Total Phases: 30
+Phase Confidence for this Bin: 16.67 %
+Bin Average Expressivity: 0.00118316
+Bin Average Expressivity Normalized: 0.13259992
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00026112
+Time: 1.8560 - Value: 0.00198320
+Time: 2.4910 - Value: 0.00017685
+Time: 3.4710 - Value: 0.00011541
+Time: 3.9000 - Value: 0.00051778
+Time: 4.4280 - Value: 0.00077687
+Time: 5.0670 - Value: 0.00047777
+Time: 5.9230 - Value: 0.00068744
+Time: 6.7810 - Value: 0.00047043
+Time: 7.2400 - Value: 0.00095229
+Time: 7.8650 - Value: 0.00202331
+Time: 8.6600 - Value: 0.00103130
+Time: 9.0990 - Value: 0.00281737
+Time: 9.6510 - Value: 0.00425071
+Time: 10.9000 - Value: 0.00164335
+Time: 11.3050 - Value: 0.00311353
+Time: 12.1000 - Value: 0.00107379
+Time: 12.5310 - Value: 0.00321717
+Time: 12.9930 - Value: 0.00370601
+Time: 13.4600 - Value: 0.00558860
+Time: 14.3000 - Value: 0.00252174
+Time: 14.9360 - Value: 0.00163573
+Time: 15.5710 - Value: 0.00251297
+Time: 16.6800 - Value: 0.00376364
+Time: 18.7040 - Value: 0.00262256
+Time: 19.1110 - Value: 0.00393328
+Time: 19.9850 - Value: 0.00633189
+Time: 20.5440 - Value: 0.00732592
+Time: 21.1560 - Value: 0.00213002
+Time: 21.7910 - Value: 0.00151004
+Time: 22.4890 - Value: 0.00256667
+Time: 22.9910 - Value: 0.00453305
+Time: 23.7400 - Value: 0.00387051
+Time: 24.5000 - Value: 0.00359951
+Time: 25.8770 - Value: 0.00376987
+Time: 26.9530 - Value: 0.00689718
+BIN 46 | Frequency Range: [ 1981.05 - 2024.12 ) hertz
+Period Median: 0.4760 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 6
+Total Periods: 25
+Period Confidence for this bin: 24.00 %
+Phase Median: 0.2590 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 6
+Total Phases: 25
+Phase Confidence for this Bin: 24.00 %
+Bin Average Expressivity: 0.00090661
+Bin Average Expressivity Normalized: 0.10160618
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00022825
+Time: 1.8560 - Value: 0.00119509
+Time: 2.4910 - Value: 0.00013822
+Time: 3.5710 - Value: 0.00141664
+Time: 4.2080 - Value: 0.00044155
+Time: 5.0710 - Value: 0.00033976
+Time: 5.9200 - Value: 0.00033609
+Time: 6.7800 - Value: 0.00046546
+Time: 7.1910 - Value: 0.00084080
+Time: 7.8510 - Value: 0.00143784
+Time: 8.7160 - Value: 0.00163899
+Time: 9.1730 - Value: 0.00166441
+Time: 9.6480 - Value: 0.00404894
+Time: 11.2870 - Value: 0.00184335
+Time: 12.1400 - Value: 0.00163297
+Time: 12.6800 - Value: 0.00203353
+Time: 13.1110 - Value: 0.00334425
+Time: 13.5400 - Value: 0.00589319
+Time: 14.3030 - Value: 0.00211653
+Time: 15.2200 - Value: 0.00215100
+Time: 15.6960 - Value: 0.00192139
+Time: 16.6800 - Value: 0.00229322
+Time: 17.4000 - Value: 0.00280686
+Time: 18.3680 - Value: 0.00265829
+Time: 19.0000 - Value: 0.00300176
+Time: 19.9800 - Value: 0.00355089
+Time: 21.1560 - Value: 0.00211874
+Time: 22.0090 - Value: 0.00174412
+Time: 22.8150 - Value: 0.00189683
+Time: 23.7430 - Value: 0.00256750
+Time: 24.1510 - Value: 0.00241417
+Time: 25.6710 - Value: 0.00290575
+Time: 26.1250 - Value: 0.00483987
+Time: 26.8200 - Value: 0.00417015
+BIN 47 | Frequency Range: [ 2024.12 - 2067.19 ) hertz
+Period Median: 0.5290 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 7
+Total Periods: 33
+Period Confidence for this bin: 21.21 %
+Phase Median: 0.3200 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 7
+Total Phases: 33
+Phase Confidence for this Bin: 21.21 %
+Bin Average Expressivity: 0.00057990
+Bin Average Expressivity Normalized: 0.06499132
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00021469
+Time: 1.8560 - Value: 0.00036386
+Time: 2.4910 - Value: 0.00011927
+Time: 3.3510 - Value: 0.00037527
+Time: 3.8910 - Value: 0.00025826
+Time: 4.4200 - Value: 0.00038048
+Time: 5.0670 - Value: 0.00056272
+Time: 5.6050 - Value: 0.00021409
+Time: 6.1400 - Value: 0.00235639
+Time: 6.7810 - Value: 0.00066466
+Time: 7.1970 - Value: 0.00083341
+Time: 7.8510 - Value: 0.00154899
+Time: 9.3510 - Value: 0.00055689
+Time: 10.4310 - Value: 0.00074722
+Time: 11.2800 - Value: 0.00196847
+Time: 12.6800 - Value: 0.00110291
+Time: 13.1030 - Value: 0.00178730
+Time: 13.5710 - Value: 0.00542466
+Time: 14.3910 - Value: 0.00223296
+Time: 15.2200 - Value: 0.00159005
+Time: 15.9970 - Value: 0.00183917
+Time: 16.6400 - Value: 0.00108801
+Time: 17.2910 - Value: 0.00191747
+Time: 17.7310 - Value: 0.00231050
+Time: 18.5800 - Value: 0.00172152
+Time: 18.9990 - Value: 0.00261447
+Time: 19.5310 - Value: 0.00217956
+Time: 19.9600 - Value: 0.00246757
+Time: 20.3890 - Value: 0.00236096
+Time: 21.1560 - Value: 0.00174554
+Time: 22.0760 - Value: 0.00215392
+Time: 22.8550 - Value: 0.00169461
+Time: 23.2880 - Value: 0.00128224
+Time: 23.7150 - Value: 0.00098252
+Time: 24.1510 - Value: 0.00174295
+Time: 24.6810 - Value: 0.00218886
+Time: 25.1110 - Value: 0.00234813
+Time: 25.6710 - Value: 0.00230843
+Time: 26.3930 - Value: 0.00258588
+Time: 26.8190 - Value: 0.00304293
+Time: 27.2310 - Value: 0.00308455
+BIN 48 | Frequency Range: [ 2067.19 - 2110.25 ) hertz
+Period Median: 0.4480 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 13
+Total Periods: 30
+Period Confidence for this bin: 43.33 %
+Phase Median: 0.3240 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 8
+Total Phases: 30
+Phase Confidence for this Bin: 26.67 %
+Bin Average Expressivity: 0.00042155
+Bin Average Expressivity Normalized: 0.04724451
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00020115
+Time: 1.6400 - Value: 0.00059611
+Time: 2.4920 - Value: 0.00026386
+Time: 3.3510 - Value: 0.00053451
+Time: 4.2110 - Value: 0.00071299
+Time: 5.0670 - Value: 0.00067579
+Time: 5.9230 - Value: 0.00047021
+Time: 6.7810 - Value: 0.00092329
+Time: 7.1970 - Value: 0.00067073
+Time: 7.6400 - Value: 0.00086514
+Time: 9.3400 - Value: 0.00024720
+Time: 10.2110 - Value: 0.00075089
+Time: 10.6130 - Value: 0.00063556
+Time: 11.0710 - Value: 0.00077705
+Time: 12.4710 - Value: 0.00042769
+Time: 12.8840 - Value: 0.00076859
+Time: 13.3160 - Value: 0.00186726
+Time: 13.7790 - Value: 0.00366804
+Time: 14.3030 - Value: 0.00247791
+Time: 15.1410 - Value: 0.00094763
+Time: 15.9970 - Value: 0.00177466
+Time: 16.6400 - Value: 0.00086507
+Time: 17.0630 - Value: 0.00105948
+Time: 17.4970 - Value: 0.00104475
+Time: 18.3630 - Value: 0.00112223
+Time: 18.8110 - Value: 0.00154972
+Time: 19.2130 - Value: 0.00194657
+Time: 19.9600 - Value: 0.00205721
+Time: 20.3890 - Value: 0.00125876
+Time: 21.0510 - Value: 0.00101269
+Time: 22.0200 - Value: 0.00116481
+Time: 22.8550 - Value: 0.00105380
+Time: 23.4960 - Value: 0.00107622
+Time: 24.1480 - Value: 0.00153324
+Time: 24.5680 - Value: 0.00149208
+Time: 25.1110 - Value: 0.00171253
+Time: 25.5170 - Value: 0.00155019
+Time: 26.1710 - Value: 0.00134969
+Time: 26.8200 - Value: 0.00185774
+Time: 27.2290 - Value: 0.00250690
+BIN 49 | Frequency Range: [ 2110.25 - 2153.32 ) hertz
+Period Median: 0.5400 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 6
+Total Periods: 29
+Period Confidence for this bin: 20.69 %
+Phase Median: 0.3010 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 6
+Total Phases: 29
+Phase Confidence for this Bin: 20.69 %
+Bin Average Expressivity: 0.00048185
+Bin Average Expressivity Normalized: 0.05400267
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00018519
+Time: 1.6400 - Value: 0.00119170
+Time: 2.4920 - Value: 0.00028219
+Time: 3.3590 - Value: 0.00117832
+Time: 4.2110 - Value: 0.00075658
+Time: 5.0670 - Value: 0.00091953
+Time: 5.9230 - Value: 0.00047367
+Time: 6.7810 - Value: 0.00116232
+Time: 7.1970 - Value: 0.00078332
+Time: 7.8600 - Value: 0.00473824
+Time: 8.4970 - Value: 0.00125254
+Time: 9.3510 - Value: 0.00053483
+Time: 10.2130 - Value: 0.00132535
+Time: 10.7360 - Value: 0.00084912
+Time: 11.2870 - Value: 0.00517625
+Time: 12.5760 - Value: 0.00052693
+Time: 13.0050 - Value: 0.00173077
+Time: 13.4310 - Value: 0.00382393
+Time: 14.3030 - Value: 0.00238666
+Time: 15.1210 - Value: 0.00124787
+Time: 15.9970 - Value: 0.00179448
+Time: 16.6400 - Value: 0.00093847
+Time: 17.0710 - Value: 0.00120510
+Time: 17.6110 - Value: 0.00127118
+Time: 18.5710 - Value: 0.00156609
+Time: 19.1240 - Value: 0.00156885
+Time: 19.5310 - Value: 0.00115306
+Time: 19.9600 - Value: 0.00162925
+Time: 20.4000 - Value: 0.00099734
+Time: 21.1400 - Value: 0.00150577
+Time: 22.0010 - Value: 0.00155242
+Time: 22.8550 - Value: 0.00153175
+Time: 23.4960 - Value: 0.00093148
+Time: 24.1480 - Value: 0.00142799
+Time: 24.5680 - Value: 0.00166107
+Time: 25.1110 - Value: 0.00140840
+Time: 25.5230 - Value: 0.00159862
+Time: 26.1790 - Value: 0.00100947
+Time: 26.8190 - Value: 0.00161930
+Time: 27.3530 - Value: 0.00138265
+BIN 50 | Frequency Range: [ 2153.32 - 2196.39 ) hertz
+Period Median: 0.5340 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 7
+Total Periods: 23
+Period Confidence for this bin: 30.43 %
+Phase Median: 0.1350 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 2
+Total Phases: 23
+Phase Confidence for this Bin: 8.70 %
+Bin Average Expressivity: 0.00058982
+Bin Average Expressivity Normalized: 0.06610230
+HIGH SAMPLES
+Time: 0.5840 - Value: 0.00007460
+Time: 0.9910 - Value: 0.00024453
+Time: 1.6450 - Value: 0.00181342
+Time: 2.7110 - Value: 0.00222071
+Time: 3.3590 - Value: 0.00185611
+Time: 4.2110 - Value: 0.00062322
+Time: 4.8710 - Value: 0.00166019
+Time: 5.9280 - Value: 0.00050209
+Time: 6.7810 - Value: 0.00126074
+Time: 7.2710 - Value: 0.00135402
+Time: 7.8550 - Value: 0.00356717
+Time: 9.3510 - Value: 0.00047581
+Time: 10.2130 - Value: 0.00192917
+Time: 10.7360 - Value: 0.00136925
+Time: 11.2870 - Value: 0.00492954
+Time: 12.6000 - Value: 0.00062835
+Time: 13.0050 - Value: 0.00146752
+Time: 13.4310 - Value: 0.00362686
+Time: 15.1190 - Value: 0.00160819
+Time: 16.0000 - Value: 0.00182984
+Time: 16.8630 - Value: 0.00173602
+Time: 17.7110 - Value: 0.00194888
+Time: 18.2910 - Value: 0.00166504
+Time: 19.2320 - Value: 0.00145277
+Time: 20.0670 - Value: 0.00095436
+Time: 20.4970 - Value: 0.00221999
+Time: 21.0310 - Value: 0.00176808
+Time: 21.8760 - Value: 0.00164750
+Time: 22.8600 - Value: 0.00213246
+Time: 23.7150 - Value: 0.00189051
+Time: 24.5710 - Value: 0.00244532
+Time: 25.4310 - Value: 0.00184111
+Time: 26.2910 - Value: 0.00149358
+Time: 26.8190 - Value: 0.00127848
+Time: 27.2600 - Value: 0.00124671
+BIN 51 | Frequency Range: [ 2196.39 - 2239.45 ) hertz
+Period Median: 0.5690 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 3
+Total Periods: 15
+Period Confidence for this bin: 20.00 %
+Phase Median: 0.2880 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 2
+Total Phases: 15
+Phase Confidence for this Bin: 13.33 %
+Bin Average Expressivity: 0.00059521
+Bin Average Expressivity Normalized: 0.06670737
+HIGH SAMPLES
+Time: 0.5790 - Value: 0.00008699
+Time: 0.9950 - Value: 0.00065273
+Time: 1.6400 - Value: 0.00167383
+Time: 2.5080 - Value: 0.00039270
+Time: 3.3530 - Value: 0.00123714
+Time: 4.2110 - Value: 0.00044773
+Time: 5.0670 - Value: 0.00099286
+Time: 5.9230 - Value: 0.00057661
+Time: 6.7810 - Value: 0.00116385
+Time: 7.3110 - Value: 0.00112596
+Time: 7.8510 - Value: 0.00110985
+Time: 8.5000 - Value: 0.00166136
+Time: 9.3810 - Value: 0.00099765
+Time: 10.2170 - Value: 0.00163449
+Time: 11.2800 - Value: 0.00118815
+Time: 12.7080 - Value: 0.00101560
+Time: 13.2110 - Value: 0.00194338
+Time: 13.6400 - Value: 0.00332216
+Time: 15.1210 - Value: 0.00150264
+Time: 16.0150 - Value: 0.00169393
+Time: 16.8550 - Value: 0.00131432
+Time: 17.7230 - Value: 0.00186596
+Time: 18.2920 - Value: 0.00150348
+Time: 19.4790 - Value: 0.00172945
+Time: 20.1760 - Value: 0.00112563
+Time: 21.1610 - Value: 0.00214194
+Time: 22.0200 - Value: 0.00190367
+Time: 22.8550 - Value: 0.00150854
+Time: 23.7110 - Value: 0.00128560
+Time: 24.5710 - Value: 0.00210820
+Time: 25.4450 - Value: 0.00216974
+Time: 26.2910 - Value: 0.00190165
+Time: 27.0310 - Value: 0.00130212
+BIN 52 | Frequency Range: [ 2239.45 - 2282.52 ) hertz
+Period Median: 0.5980 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 8
+Total Periods: 25
+Period Confidence for this bin: 32.00 %
+Phase Median: 0.2030 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 5
+Total Phases: 25
+Phase Confidence for this Bin: 20.00 %
+Bin Average Expressivity: 0.00060507
+Bin Average Expressivity Normalized: 0.06781189
+HIGH SAMPLES
+Time: 0.5790 - Value: 0.00007596
+Time: 0.9950 - Value: 0.00070781
+Time: 1.6400 - Value: 0.00128462
+Time: 2.4920 - Value: 0.00019291
+Time: 3.3590 - Value: 0.00107557
+Time: 4.2110 - Value: 0.00063842
+Time: 5.0670 - Value: 0.00084067
+Time: 5.9230 - Value: 0.00057787
+Time: 6.7810 - Value: 0.00099153
+Time: 7.3880 - Value: 0.00076333
+Time: 7.8440 - Value: 0.00086471
+Time: 8.5310 - Value: 0.00112520
+Time: 8.9730 - Value: 0.00128126
+Time: 9.5710 - Value: 0.00355181
+Time: 11.0710 - Value: 0.00097653
+Time: 12.1600 - Value: 0.00129662
+Time: 12.7800 - Value: 0.00219682
+Time: 13.2280 - Value: 0.00245266
+Time: 13.6910 - Value: 0.00493533
+Time: 14.3310 - Value: 0.00162662
+Time: 14.9530 - Value: 0.00106266
+Time: 15.7210 - Value: 0.00158738
+Time: 16.2150 - Value: 0.00208639
+Time: 16.8750 - Value: 0.00194231
+Time: 17.7120 - Value: 0.00150690
+Time: 18.5690 - Value: 0.00140640
+Time: 19.1010 - Value: 0.00172511
+Time: 20.2910 - Value: 0.00213215
+Time: 21.1400 - Value: 0.00140850
+Time: 22.0090 - Value: 0.00113722
+Time: 22.5910 - Value: 0.00124940
+Time: 23.5440 - Value: 0.00173118
+Time: 24.5710 - Value: 0.00147413
+Time: 25.4390 - Value: 0.00134199
+Time: 26.0110 - Value: 0.00139652
+Time: 26.5000 - Value: 0.00227886
+Time: 27.1600 - Value: 0.00202506
+BIN 53 | Frequency Range: [ 2282.52 - 2325.59 ) hertz
+Period Median: 0.6200 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 8
+Total Periods: 23
+Period Confidence for this bin: 34.78 %
+Phase Median: 0.1840 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 2
+Total Phases: 23
+Phase Confidence for this Bin: 8.70 %
+Bin Average Expressivity: 0.00062732
+Bin Average Expressivity Normalized: 0.07030534
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00010381
+Time: 1.6400 - Value: 0.00085104
+Time: 2.4920 - Value: 0.00017813
+Time: 4.2080 - Value: 0.00036730
+Time: 5.9200 - Value: 0.00015667
+Time: 6.9990 - Value: 0.00113873
+Time: 7.8600 - Value: 0.00212169
+Time: 8.7330 - Value: 0.00138146
+Time: 9.3550 - Value: 0.00181724
+Time: 11.0680 - Value: 0.00102260
+Time: 12.1600 - Value: 0.00158555
+Time: 12.7800 - Value: 0.00210955
+Time: 13.2040 - Value: 0.00217466
+Time: 13.6710 - Value: 0.00367816
+Time: 14.3310 - Value: 0.00157746
+Time: 15.1400 - Value: 0.00165722
+Time: 15.7200 - Value: 0.00152979
+Time: 16.2150 - Value: 0.00304875
+Time: 16.8600 - Value: 0.00239600
+Time: 17.7080 - Value: 0.00158028
+Time: 18.5710 - Value: 0.00172952
+Time: 19.2230 - Value: 0.00156182
+Time: 19.6400 - Value: 0.00241972
+Time: 20.0590 - Value: 0.00191876
+Time: 20.5000 - Value: 0.00213015
+Time: 21.1370 - Value: 0.00125246
+Time: 21.8810 - Value: 0.00128232
+Time: 22.6430 - Value: 0.00179978
+Time: 23.5440 - Value: 0.00199819
+Time: 24.5710 - Value: 0.00151564
+Time: 25.3130 - Value: 0.00133991
+Time: 26.0720 - Value: 0.00189050
+Time: 26.4990 - Value: 0.00307510
+Time: 27.1400 - Value: 0.00172945
+BIN 54 | Frequency Range: [ 2325.59 - 2368.65 ) hertz
+Period Median: 0.5430 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 3
+Total Periods: 28
+Period Confidence for this bin: 10.71 %
+Phase Median: 0.2670 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 2
+Total Phases: 28
+Phase Confidence for this Bin: 7.14 %
+Bin Average Expressivity: 0.00056253
+Bin Average Expressivity Normalized: 0.06304448
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00014102
+Time: 1.8560 - Value: 0.00124364
+Time: 2.4910 - Value: 0.00010131
+Time: 3.5710 - Value: 0.00066765
+Time: 4.2080 - Value: 0.00031115
+Time: 5.2840 - Value: 0.00052820
+Time: 5.9200 - Value: 0.00007479
+Time: 6.9990 - Value: 0.00096417
+Time: 7.6400 - Value: 0.00081572
+Time: 8.8170 - Value: 0.00139304
+Time: 9.3600 - Value: 0.00136507
+Time: 10.2240 - Value: 0.00142497
+Time: 11.0710 - Value: 0.00125465
+Time: 12.1600 - Value: 0.00098892
+Time: 12.5880 - Value: 0.00129324
+Time: 13.1200 - Value: 0.00182192
+Time: 13.5510 - Value: 0.00363613
+Time: 15.1400 - Value: 0.00158866
+Time: 15.8290 - Value: 0.00167059
+Time: 16.3150 - Value: 0.00176787
+Time: 16.8000 - Value: 0.00183228
+Time: 17.7110 - Value: 0.00155876
+Time: 18.5710 - Value: 0.00133419
+Time: 19.4310 - Value: 0.00184944
+Time: 20.1710 - Value: 0.00188354
+Time: 21.1400 - Value: 0.00160397
+Time: 21.8800 - Value: 0.00130026
+Time: 22.6430 - Value: 0.00139500
+Time: 23.0730 - Value: 0.00233048
+Time: 23.6000 - Value: 0.00174006
+Time: 24.5310 - Value: 0.00113726
+Time: 25.3130 - Value: 0.00163354
+Time: 26.0720 - Value: 0.00146555
+Time: 26.4990 - Value: 0.00285820
+Time: 27.1510 - Value: 0.00220989
+BIN 55 | Frequency Range: [ 2368.65 - 2411.72 ) hertz
+Period Median: 0.5890 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 7
+Total Periods: 29
+Period Confidence for this bin: 24.14 %
+Phase Median: 0.2700 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 4
+Total Phases: 29
+Phase Confidence for this Bin: 13.79 %
+Bin Average Expressivity: 0.00063945
+Bin Average Expressivity Normalized: 0.07166543
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00016285
+Time: 1.8560 - Value: 0.00133114
+Time: 2.4910 - Value: 0.00013328
+Time: 3.5710 - Value: 0.00083743
+Time: 4.2080 - Value: 0.00029523
+Time: 5.2840 - Value: 0.00065261
+Time: 5.9200 - Value: 0.00007301
+Time: 6.9910 - Value: 0.00022643
+Time: 7.6400 - Value: 0.00074036
+Time: 8.6200 - Value: 0.00089451
+Time: 9.3070 - Value: 0.00179242
+Time: 11.0760 - Value: 0.00073662
+Time: 12.0490 - Value: 0.00076450
+Time: 12.7450 - Value: 0.00205978
+Time: 13.2280 - Value: 0.00404310
+Time: 13.6600 - Value: 0.00416002
+Time: 14.3910 - Value: 0.00140144
+Time: 15.1510 - Value: 0.00142695
+Time: 15.6800 - Value: 0.00164858
+Time: 16.1630 - Value: 0.00246415
+Time: 16.8040 - Value: 0.00283031
+Time: 18.4200 - Value: 0.00173304
+Time: 19.2190 - Value: 0.00193845
+Time: 19.8080 - Value: 0.00283620
+Time: 20.2330 - Value: 0.00206377
+Time: 21.2690 - Value: 0.00140082
+Time: 21.7910 - Value: 0.00138665
+Time: 22.5990 - Value: 0.00144909
+Time: 23.0200 - Value: 0.00213118
+Time: 23.6000 - Value: 0.00209739
+Time: 25.2450 - Value: 0.00154147
+Time: 26.4510 - Value: 0.00211805
+Time: 27.0310 - Value: 0.00238133
+BIN 56 | Frequency Range: [ 2411.72 - 2454.79 ) hertz
+Period Median: 0.5720 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 2
+Total Periods: 32
+Period Confidence for this bin: 6.25 %
+Phase Median: 0.2190 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 9
+Total Phases: 32
+Phase Confidence for this Bin: 28.13 %
+Bin Average Expressivity: 0.00069842
+Bin Average Expressivity Normalized: 0.07827397
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00015874
+Time: 1.8560 - Value: 0.00123486
+Time: 2.4910 - Value: 0.00012355
+Time: 2.8970 - Value: 0.00109992
+Time: 3.5710 - Value: 0.00078239
+Time: 4.2080 - Value: 0.00027977
+Time: 5.2840 - Value: 0.00065277
+Time: 5.9200 - Value: 0.00009717
+Time: 6.9910 - Value: 0.00031857
+Time: 7.4120 - Value: 0.00079867
+Time: 7.8650 - Value: 0.00212510
+Time: 8.6170 - Value: 0.00089090
+Time: 9.0230 - Value: 0.00170484
+Time: 9.5200 - Value: 0.00218679
+Time: 10.2310 - Value: 0.00219051
+Time: 11.2000 - Value: 0.00089453
+Time: 12.0490 - Value: 0.00112801
+Time: 12.7350 - Value: 0.00243988
+Time: 13.1450 - Value: 0.00361880
+Time: 13.5530 - Value: 0.00486516
+Time: 15.2120 - Value: 0.00147720
+Time: 15.6750 - Value: 0.00165660
+Time: 16.1550 - Value: 0.00288736
+Time: 16.8000 - Value: 0.00270205
+Time: 18.3880 - Value: 0.00171853
+Time: 19.1710 - Value: 0.00204237
+Time: 19.5950 - Value: 0.00231256
+Time: 20.3770 - Value: 0.00257896
+Time: 21.2690 - Value: 0.00138313
+Time: 21.9710 - Value: 0.00136950
+Time: 22.5310 - Value: 0.00229262
+Time: 23.1730 - Value: 0.00263169
+Time: 23.6600 - Value: 0.00296040
+Time: 25.2450 - Value: 0.00178317
+Time: 25.9590 - Value: 0.00230544
+Time: 26.6600 - Value: 0.00287543
+Time: 27.2320 - Value: 0.00268190
+BIN 57 | Frequency Range: [ 2454.79 - 2497.85 ) hertz
+Period Median: 0.6150 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 9
+Total Periods: 29
+Period Confidence for this bin: 31.03 %
+Phase Median: 0.3110 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 3
+Total Phases: 29
+Phase Confidence for this Bin: 10.34 %
+Bin Average Expressivity: 0.00055677
+Bin Average Expressivity Normalized: 0.06239885
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00013620
+Time: 1.8560 - Value: 0.00086994
+Time: 2.4910 - Value: 0.00009518
+Time: 3.5710 - Value: 0.00053767
+Time: 4.2080 - Value: 0.00024039
+Time: 5.2840 - Value: 0.00048602
+Time: 5.9200 - Value: 0.00009539
+Time: 6.9910 - Value: 0.00032467
+Time: 7.6480 - Value: 0.00081174
+Time: 8.6200 - Value: 0.00092630
+Time: 9.3070 - Value: 0.00130928
+Time: 9.7170 - Value: 0.00192669
+Time: 10.2290 - Value: 0.00156898
+Time: 10.8440 - Value: 0.00091387
+Time: 11.2870 - Value: 0.00083264
+Time: 12.1110 - Value: 0.00090857
+Time: 12.6110 - Value: 0.00154856
+Time: 13.0400 - Value: 0.00182247
+Time: 13.4430 - Value: 0.00399136
+Time: 15.1510 - Value: 0.00115667
+Time: 15.5930 - Value: 0.00151888
+Time: 16.1510 - Value: 0.00178418
+Time: 16.8040 - Value: 0.00183471
+Time: 17.5470 - Value: 0.00164618
+Time: 18.3910 - Value: 0.00147777
+Time: 19.4610 - Value: 0.00130843
+Time: 20.3770 - Value: 0.00205841
+Time: 21.1510 - Value: 0.00136957
+Time: 22.0000 - Value: 0.00116799
+Time: 22.5310 - Value: 0.00187427
+Time: 23.1800 - Value: 0.00169858
+Time: 23.6590 - Value: 0.00175691
+Time: 24.6030 - Value: 0.00144465
+Time: 25.2450 - Value: 0.00161102
+Time: 27.2310 - Value: 0.00232747
+BIN 58 | Frequency Range: [ 2497.85 - 2540.92 ) hertz
+Period Median: 0.4460 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 8
+Total Periods: 23
+Period Confidence for this bin: 34.78 %
+Phase Median: 0.3350 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 3
+Total Phases: 23
+Phase Confidence for this Bin: 13.04 %
+Bin Average Expressivity: 0.00049212
+Bin Average Expressivity Normalized: 0.05515349
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00010807
+Time: 1.8560 - Value: 0.00047192
+Time: 2.2920 - Value: 0.00016730
+Time: 2.7110 - Value: 0.00041335
+Time: 3.5710 - Value: 0.00032550
+Time: 4.2080 - Value: 0.00019710
+Time: 5.2840 - Value: 0.00030527
+Time: 5.7120 - Value: 0.00008409
+Time: 6.1330 - Value: 0.00006902
+Time: 6.9930 - Value: 0.00064938
+Time: 7.8710 - Value: 0.00170504
+Time: 9.3630 - Value: 0.00072281
+Time: 10.2290 - Value: 0.00073647
+Time: 10.6750 - Value: 0.00089276
+Time: 11.2910 - Value: 0.00202801
+Time: 12.4670 - Value: 0.00104483
+Time: 12.9000 - Value: 0.00164245
+Time: 13.3270 - Value: 0.00450299
+Time: 13.7550 - Value: 0.00472011
+Time: 14.4610 - Value: 0.00150733
+Time: 15.1510 - Value: 0.00181600
+Time: 16.0040 - Value: 0.00118355
+Time: 16.8630 - Value: 0.00103418
+Time: 17.5160 - Value: 0.00125247
+Time: 19.4310 - Value: 0.00086875
+Time: 20.2960 - Value: 0.00105989
+Time: 20.9110 - Value: 0.00148079
+Time: 22.0880 - Value: 0.00159245
+Time: 22.8690 - Value: 0.00107062
+Time: 23.7150 - Value: 0.00100371
+Time: 24.2800 - Value: 0.00117756
+Time: 25.4330 - Value: 0.00166335
+Time: 26.2910 - Value: 0.00101662
+Time: 27.1450 - Value: 0.00102674
+BIN 59 | Frequency Range: [ 2540.92 - 2583.98 ) hertz
+Period Median: 0.4500 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 16
+Total Periods: 30
+Period Confidence for this bin: 53.33 %
+Phase Median: 0.2750 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 8
+Total Phases: 30
+Phase Confidence for this Bin: 26.67 %
+Bin Average Expressivity: 0.00052199
+Bin Average Expressivity Normalized: 0.05850077
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00008195
+Time: 1.8560 - Value: 0.00029774
+Time: 2.2840 - Value: 0.00013562
+Time: 2.7040 - Value: 0.00009685
+Time: 3.5710 - Value: 0.00018697
+Time: 4.0000 - Value: 0.00011320
+Time: 4.4200 - Value: 0.00011465
+Time: 5.2800 - Value: 0.00017973
+Time: 5.7120 - Value: 0.00009112
+Time: 6.1330 - Value: 0.00007230
+Time: 6.9930 - Value: 0.00046268
+Time: 7.9160 - Value: 0.00176962
+Time: 9.0690 - Value: 0.00087952
+Time: 9.5730 - Value: 0.00136244
+Time: 10.4470 - Value: 0.00090816
+Time: 11.2910 - Value: 0.00167716
+Time: 12.4670 - Value: 0.00127939
+Time: 12.9200 - Value: 0.00183216
+Time: 13.3270 - Value: 0.00445493
+Time: 13.7800 - Value: 0.00559493
+Time: 14.4610 - Value: 0.00157885
+Time: 14.9110 - Value: 0.00159069
+Time: 16.0040 - Value: 0.00107781
+Time: 16.5400 - Value: 0.00113347
+Time: 16.9600 - Value: 0.00107649
+Time: 17.3720 - Value: 0.00124902
+Time: 17.8400 - Value: 0.00188226
+Time: 18.2750 - Value: 0.00162810
+Time: 19.5000 - Value: 0.00117100
+Time: 19.9770 - Value: 0.00151032
+Time: 20.4930 - Value: 0.00108364
+Time: 20.9110 - Value: 0.00177484
+Time: 23.0070 - Value: 0.00115748
+Time: 23.6710 - Value: 0.00095899
+Time: 24.2290 - Value: 0.00128035
+Time: 26.2110 - Value: 0.00111958
+Time: 27.1400 - Value: 0.00095714
+BIN 60 | Frequency Range: [ 2583.98 - 2627.05 ) hertz
+Period Median: 0.4680 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 8
+Total Periods: 32
+Period Confidence for this bin: 25.00 %
+Phase Median: 0.2760 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 4
+Total Phases: 32
+Phase Confidence for this Bin: 12.50 %
+Bin Average Expressivity: 0.00047123
+Bin Average Expressivity Normalized: 0.05281153
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00005708
+Time: 1.8560 - Value: 0.00022405
+Time: 2.2840 - Value: 0.00011594
+Time: 2.7040 - Value: 0.00008841
+Time: 3.5710 - Value: 0.00011671
+Time: 4.0000 - Value: 0.00012900
+Time: 4.4200 - Value: 0.00020157
+Time: 5.4990 - Value: 0.00009214
+Time: 5.9200 - Value: 0.00006296
+Time: 6.9910 - Value: 0.00015260
+Time: 7.8600 - Value: 0.00167435
+Time: 9.1200 - Value: 0.00094920
+Time: 9.5730 - Value: 0.00144576
+Time: 10.4800 - Value: 0.00091144
+Time: 11.2150 - Value: 0.00108378
+Time: 12.1600 - Value: 0.00119991
+Time: 12.6880 - Value: 0.00101930
+Time: 13.1030 - Value: 0.00165651
+Time: 13.5710 - Value: 0.00376816
+Time: 14.3910 - Value: 0.00160093
+Time: 15.2510 - Value: 0.00133465
+Time: 15.9250 - Value: 0.00116288
+Time: 16.5400 - Value: 0.00127203
+Time: 17.4110 - Value: 0.00145503
+Time: 17.8390 - Value: 0.00144872
+Time: 18.2710 - Value: 0.00128957
+Time: 19.3000 - Value: 0.00100039
+Time: 19.9600 - Value: 0.00101807
+Time: 20.3690 - Value: 0.00170517
+Time: 20.9390 - Value: 0.00109256
+Time: 21.4290 - Value: 0.00145008
+Time: 21.9280 - Value: 0.00121026
+Time: 23.0680 - Value: 0.00113572
+Time: 23.6760 - Value: 0.00120190
+Time: 24.7040 - Value: 0.00148727
+Time: 25.3590 - Value: 0.00149552
+Time: 26.2110 - Value: 0.00159155
+Time: 27.1400 - Value: 0.00124458
+BIN 61 | Frequency Range: [ 2627.05 - 2670.12 ) hertz
+Period Median: 0.4400 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 9
+Total Periods: 24
+Period Confidence for this bin: 37.50 %
+Phase Median: 0.2960 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 2
+Total Phases: 24
+Phase Confidence for this Bin: 8.33 %
+Bin Average Expressivity: 0.00045203
+Bin Average Expressivity Normalized: 0.05065985
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00003852
+Time: 1.8560 - Value: 0.00013303
+Time: 2.2840 - Value: 0.00005609
+Time: 2.7040 - Value: 0.00007239
+Time: 3.5710 - Value: 0.00012194
+Time: 4.0000 - Value: 0.00009913
+Time: 4.4200 - Value: 0.00027670
+Time: 5.2800 - Value: 0.00010665
+Time: 5.7120 - Value: 0.00007947
+Time: 6.1330 - Value: 0.00005860
+Time: 6.9930 - Value: 0.00026790
+Time: 7.5120 - Value: 0.00076080
+Time: 7.9520 - Value: 0.00157891
+Time: 8.7200 - Value: 0.00081706
+Time: 9.3310 - Value: 0.00116580
+Time: 11.2910 - Value: 0.00193048
+Time: 12.1710 - Value: 0.00075680
+Time: 12.7110 - Value: 0.00115094
+Time: 13.1600 - Value: 0.00194366
+Time: 13.5640 - Value: 0.00333664
+Time: 14.3920 - Value: 0.00134840
+Time: 15.1530 - Value: 0.00135944
+Time: 15.8360 - Value: 0.00117413
+Time: 17.5290 - Value: 0.00151812
+Time: 19.3410 - Value: 0.00142101
+Time: 20.8400 - Value: 0.00116832
+Time: 21.8310 - Value: 0.00108157
+Time: 22.7310 - Value: 0.00141513
+Time: 24.0560 - Value: 0.00159556
+Time: 24.5800 - Value: 0.00127937
+Time: 25.4710 - Value: 0.00131048
+Time: 26.2110 - Value: 0.00165435
+Time: 27.1400 - Value: 0.00137753
+BIN 62 | Frequency Range: [ 2670.12 - 2713.18 ) hertz
+Period Median: 0.4320 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 8
+Total Periods: 23
+Period Confidence for this bin: 34.78 %
+Phase Median: 0.1240 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 6
+Total Phases: 23
+Phase Confidence for this Bin: 26.09 %
+Bin Average Expressivity: 0.00047054
+Bin Average Expressivity Normalized: 0.05273481
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00003272
+Time: 1.8560 - Value: 0.00019174
+Time: 2.2840 - Value: 0.00007669
+Time: 2.7040 - Value: 0.00008855
+Time: 3.5710 - Value: 0.00016885
+Time: 4.0000 - Value: 0.00006892
+Time: 4.4200 - Value: 0.00031066
+Time: 5.2800 - Value: 0.00016308
+Time: 5.7120 - Value: 0.00006561
+Time: 6.1330 - Value: 0.00006270
+Time: 6.9930 - Value: 0.00024625
+Time: 7.8280 - Value: 0.00057446
+Time: 8.7210 - Value: 0.00068703
+Time: 9.5880 - Value: 0.00229052
+Time: 10.9910 - Value: 0.00056485
+Time: 12.1550 - Value: 0.00057029
+Time: 12.7110 - Value: 0.00169299
+Time: 13.1330 - Value: 0.00304586
+Time: 13.5400 - Value: 0.00307624
+Time: 15.1410 - Value: 0.00137380
+Time: 15.7510 - Value: 0.00125645
+Time: 17.5310 - Value: 0.00132343
+Time: 18.3910 - Value: 0.00100771
+Time: 19.2510 - Value: 0.00148205
+Time: 20.3280 - Value: 0.00198621
+Time: 21.1430 - Value: 0.00118305
+Time: 21.8130 - Value: 0.00087318
+Time: 22.4510 - Value: 0.00120000
+Time: 22.9430 - Value: 0.00166242
+Time: 23.8510 - Value: 0.00173858
+Time: 24.5800 - Value: 0.00183907
+Time: 25.4710 - Value: 0.00116978
+Time: 26.0510 - Value: 0.00117387
+BIN 63 | Frequency Range: [ 2713.18 - 2756.25 ) hertz
+Period Median: 0.5480 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 1
+Total Periods: 25
+Period Confidence for this bin: 4.00 %
+Phase Median: 0.2600 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 3
+Total Phases: 25
+Phase Confidence for this Bin: 12.00 %
+Bin Average Expressivity: 0.00036137
+Bin Average Expressivity Normalized: 0.04050026
+HIGH SAMPLES
+Time: 0.5790 - Value: 0.00004134
+Time: 0.9950 - Value: 0.00087927
+Time: 1.8560 - Value: 0.00034132
+Time: 2.2840 - Value: 0.00009886
+Time: 2.7040 - Value: 0.00012892
+Time: 3.5710 - Value: 0.00019697
+Time: 4.2080 - Value: 0.00010392
+Time: 5.2840 - Value: 0.00031863
+Time: 5.7120 - Value: 0.00006611
+Time: 6.1330 - Value: 0.00007963
+Time: 6.9930 - Value: 0.00026004
+Time: 7.6400 - Value: 0.00035469
+Time: 8.7110 - Value: 0.00036287
+Time: 9.5670 - Value: 0.00098226
+Time: 11.2800 - Value: 0.00084254
+Time: 12.1510 - Value: 0.00034404
+Time: 12.9200 - Value: 0.00193729
+Time: 13.3270 - Value: 0.00237691
+Time: 13.7550 - Value: 0.00394775
+Time: 14.3030 - Value: 0.00190807
+Time: 14.9590 - Value: 0.00065320
+Time: 15.8110 - Value: 0.00110615
+Time: 16.8550 - Value: 0.00117907
+Time: 17.7110 - Value: 0.00094617
+Time: 18.3910 - Value: 0.00064394
+Time: 19.0010 - Value: 0.00093436
+Time: 19.4400 - Value: 0.00119176
+Time: 20.2830 - Value: 0.00123758
+Time: 21.1400 - Value: 0.00140555
+Time: 21.9200 - Value: 0.00064348
+Time: 22.5550 - Value: 0.00099703
+Time: 22.9950 - Value: 0.00169242
+Time: 23.7110 - Value: 0.00178608
+Time: 24.5710 - Value: 0.00128621
+Time: 25.4210 - Value: 0.00063497
+Time: 26.0370 - Value: 0.00068918
+Time: 27.1670 - Value: 0.00130769
+BIN 64 | Frequency Range: [ 2756.25 - 2799.32 ) hertz
+Period Median: 0.4340 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 11
+Total Periods: 25
+Period Confidence for this bin: 44.00 %
+Phase Median: 0.1430 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 2
+Total Phases: 25
+Phase Confidence for this Bin: 8.00 %
+Bin Average Expressivity: 0.00027134
+Bin Average Expressivity Normalized: 0.03041008
+HIGH SAMPLES
+Time: 0.5790 - Value: 0.00003935
+Time: 0.9950 - Value: 0.00063817
+Time: 1.8560 - Value: 0.00050038
+Time: 2.2840 - Value: 0.00009819
+Time: 2.7040 - Value: 0.00013781
+Time: 3.5710 - Value: 0.00027969
+Time: 4.2080 - Value: 0.00011558
+Time: 5.2840 - Value: 0.00023579
+Time: 5.7050 - Value: 0.00004060
+Time: 6.1400 - Value: 0.00041802
+Time: 6.9910 - Value: 0.00022437
+Time: 7.3930 - Value: 0.00020544
+Time: 7.8490 - Value: 0.00035329
+Time: 8.7110 - Value: 0.00030016
+Time: 9.5670 - Value: 0.00065877
+Time: 11.0570 - Value: 0.00017442
+Time: 12.1400 - Value: 0.00027320
+Time: 12.5710 - Value: 0.00044508
+Time: 13.0050 - Value: 0.00124136
+Time: 13.4310 - Value: 0.00314845
+Time: 14.3030 - Value: 0.00156432
+Time: 14.9590 - Value: 0.00051676
+Time: 15.9970 - Value: 0.00148198
+Time: 16.8110 - Value: 0.00058280
+Time: 17.5030 - Value: 0.00057674
+Time: 18.3810 - Value: 0.00046899
+Time: 19.4400 - Value: 0.00088506
+Time: 19.8640 - Value: 0.00065201
+Time: 20.2710 - Value: 0.00053390
+Time: 20.9730 - Value: 0.00050664
+Time: 21.8030 - Value: 0.00056658
+Time: 22.7310 - Value: 0.00069262
+Time: 23.5310 - Value: 0.00087918
+Time: 24.5710 - Value: 0.00138975
+Time: 25.2450 - Value: 0.00054700
+Time: 26.2850 - Value: 0.00147326
+Time: 27.1400 - Value: 0.00128354
+BIN 65 | Frequency Range: [ 2799.32 - 2842.38 ) hertz
+Period Median: 0.4470 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 11
+Total Periods: 27
+Period Confidence for this bin: 40.74 %
+Phase Median: 0.2000 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 2
+Total Phases: 27
+Phase Confidence for this Bin: 7.41 %
+Bin Average Expressivity: 0.00035847
+Bin Average Expressivity Normalized: 0.04017510
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00004132
+Time: 1.8560 - Value: 0.00059790
+Time: 2.2840 - Value: 0.00008238
+Time: 2.7040 - Value: 0.00012899
+Time: 3.5710 - Value: 0.00036831
+Time: 4.2080 - Value: 0.00012444
+Time: 5.2840 - Value: 0.00021015
+Time: 5.7120 - Value: 0.00005483
+Time: 6.1330 - Value: 0.00007709
+Time: 6.9930 - Value: 0.00048498
+Time: 7.5910 - Value: 0.00056710
+Time: 8.0280 - Value: 0.00125087
+Time: 9.5600 - Value: 0.00038522
+Time: 10.3000 - Value: 0.00047710
+Time: 10.8230 - Value: 0.00053436
+Time: 11.2870 - Value: 0.00099701
+Time: 12.5110 - Value: 0.00059323
+Time: 12.9200 - Value: 0.00093069
+Time: 13.3520 - Value: 0.00265758
+Time: 13.7990 - Value: 0.00711373
+Time: 15.1390 - Value: 0.00164560
+Time: 15.9310 - Value: 0.00089711
+Time: 16.8190 - Value: 0.00061108
+Time: 17.5030 - Value: 0.00079505
+Time: 18.5000 - Value: 0.00075071
+Time: 19.2200 - Value: 0.00103134
+Time: 20.2000 - Value: 0.00094260
+Time: 20.9830 - Value: 0.00093443
+Time: 21.8030 - Value: 0.00083319
+Time: 22.8550 - Value: 0.00162959
+Time: 23.4440 - Value: 0.00079021
+Time: 23.8630 - Value: 0.00180014
+Time: 24.2800 - Value: 0.00082497
+Time: 25.2510 - Value: 0.00112703
+Time: 26.2850 - Value: 0.00182018
+Time: 27.1400 - Value: 0.00168199
+BIN 66 | Frequency Range: [ 2842.38 - 2885.45 ) hertz
+Period Median: 0.6360 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 5
+Total Periods: 22
+Period Confidence for this bin: 22.73 %
+Phase Median: 0.2830 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 4
+Total Phases: 22
+Phase Confidence for this Bin: 18.18 %
+Bin Average Expressivity: 0.00058264
+Bin Average Expressivity Normalized: 0.06529828
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00005087
+Time: 1.8560 - Value: 0.00060545
+Time: 2.5000 - Value: 0.00020295
+Time: 3.5710 - Value: 0.00032228
+Time: 4.2080 - Value: 0.00014700
+Time: 5.2840 - Value: 0.00028942
+Time: 5.9200 - Value: 0.00006227
+Time: 6.9910 - Value: 0.00028232
+Time: 7.9000 - Value: 0.00172033
+Time: 8.9470 - Value: 0.00109360
+Time: 9.5800 - Value: 0.00193164
+Time: 10.2990 - Value: 0.00096564
+Time: 11.2800 - Value: 0.00124065
+Time: 12.3750 - Value: 0.00112844
+Time: 12.8200 - Value: 0.00129019
+Time: 13.2480 - Value: 0.00299355
+Time: 13.6760 - Value: 0.00451258
+Time: 15.0760 - Value: 0.00131993
+Time: 15.9310 - Value: 0.00146682
+Time: 16.8190 - Value: 0.00121431
+Time: 17.5510 - Value: 0.00241718
+Time: 18.4960 - Value: 0.00202525
+Time: 18.9430 - Value: 0.00222924
+Time: 19.9850 - Value: 0.00199236
+Time: 21.1400 - Value: 0.00208188
+Time: 21.8880 - Value: 0.00142184
+Time: 22.5600 - Value: 0.00145324
+Time: 23.7150 - Value: 0.00224361
+Time: 24.2800 - Value: 0.00147922
+Time: 25.4880 - Value: 0.00215419
+Time: 26.2850 - Value: 0.00204627
+Time: 27.1400 - Value: 0.00254086
+BIN 67 | Frequency Range: [ 2885.45 - 2928.52 ) hertz
+Period Median: 0.6360 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 7
+Total Periods: 26
+Period Confidence for this bin: 26.92 %
+Phase Median: 0.2490 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 4
+Total Phases: 26
+Phase Confidence for this Bin: 15.38 %
+Bin Average Expressivity: 0.00072050
+Bin Average Expressivity Normalized: 0.08074816
+HIGH SAMPLES
+Time: 0.7770 - Value: 0.00005715
+Time: 1.8560 - Value: 0.00064782
+Time: 2.4910 - Value: 0.00004896
+Time: 3.5710 - Value: 0.00024428
+Time: 4.2080 - Value: 0.00019274
+Time: 5.2840 - Value: 0.00035712
+Time: 5.9200 - Value: 0.00006416
+Time: 6.8730 - Value: 0.00026756
+Time: 7.3110 - Value: 0.00131793
+Time: 7.8710 - Value: 0.00162697
+Time: 9.5810 - Value: 0.00169963
+Time: 10.2730 - Value: 0.00130809
+Time: 11.2800 - Value: 0.00151919
+Time: 12.3750 - Value: 0.00158160
+Time: 13.0150 - Value: 0.00163152
+Time: 13.4230 - Value: 0.00270689
+Time: 15.5890 - Value: 0.00171836
+Time: 17.5510 - Value: 0.00345305
+Time: 18.4960 - Value: 0.00294668
+Time: 19.0190 - Value: 0.00261946
+Time: 20.2010 - Value: 0.00283650
+Time: 21.1400 - Value: 0.00188365
+Time: 21.8510 - Value: 0.00144969
+Time: 22.5600 - Value: 0.00172522
+Time: 23.4400 - Value: 0.00195531
+Time: 23.9950 - Value: 0.00176324
+Time: 24.3930 - Value: 0.00198876
+Time: 25.0530 - Value: 0.00283057
+Time: 25.5910 - Value: 0.00310840
+Time: 26.8600 - Value: 0.00273838
+Time: 27.5110 - Value: 0.00289947
+BIN 68 | Frequency Range: [ 2928.52 - 2971.58 ) hertz
+Period Median: 0.6170 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 7
+Total Periods: 25
+Period Confidence for this bin: 28.00 %
+Phase Median: 0.2640 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 4
+Total Phases: 25
+Phase Confidence for this Bin: 16.00 %
+Bin Average Expressivity: 0.00059331
+Bin Average Expressivity Normalized: 0.06649365
+HIGH SAMPLES
+Time: 0.5840 - Value: 0.00008165
+Time: 0.9910 - Value: 0.00036788
+Time: 1.8510 - Value: 0.00028495
+Time: 2.4910 - Value: 0.00004994
+Time: 4.2080 - Value: 0.00023646
+Time: 5.2840 - Value: 0.00036837
+Time: 5.9200 - Value: 0.00006112
+Time: 6.9990 - Value: 0.00042834
+Time: 7.6160 - Value: 0.00080393
+Time: 8.7310 - Value: 0.00094842
+Time: 9.5710 - Value: 0.00142647
+Time: 11.0990 - Value: 0.00084406
+Time: 12.3750 - Value: 0.00105469
+Time: 12.8110 - Value: 0.00133764
+Time: 13.2400 - Value: 0.00216153
+Time: 13.6710 - Value: 0.00346023
+Time: 14.3510 - Value: 0.00118587
+Time: 15.2050 - Value: 0.00108133
+Time: 15.8520 - Value: 0.00132209
+Time: 17.5470 - Value: 0.00180415
+Time: 18.4910 - Value: 0.00210535
+Time: 19.0200 - Value: 0.00275259
+Time: 19.7710 - Value: 0.00223123
+Time: 20.6250 - Value: 0.00262510
+Time: 21.1430 - Value: 0.00131640
+Time: 21.8490 - Value: 0.00110234
+Time: 22.6610 - Value: 0.00145678
+Time: 23.7150 - Value: 0.00156073
+Time: 24.3840 - Value: 0.00173377
+Time: 25.0510 - Value: 0.00247639
+Time: 25.4590 - Value: 0.00213012
+Time: 26.1400 - Value: 0.00231482
+Time: 26.6280 - Value: 0.00212505
+Time: 27.1910 - Value: 0.00227967
+BIN 69 | Frequency Range: [ 2971.58 - 3014.65 ) hertz
+Period Median: 0.5180 seconds
+Period Median Threshold: 10.00 %
+Periods Within Median Threshold: 4
+Total Periods: 29
+Period Confidence for this bin: 13.79 %
+Phase Median: 0.3020 seconds
+Phase Median Threshold: 10.00 %
+Phases Within Threshold: 1
+Total Phases: 29
+Phase Confidence for this Bin: 3.45 %
+Bin Average Expressivity: 0.00038893
+Bin Average Expressivity Normalized: 0.04358897
+HIGH SAMPLES
+Time: 0.5950 - Value: 0.00008417
+Time: 1.0010 - Value: 0.00170283
+Time: 1.8560 - Value: 0.00033667
+Time: 2.4910 - Value: 0.00004617
+Time: 4.2080 - Value: 0.00024800
+Time: 5.2840 - Value: 0.00033766
+Time: 5.9200 - Value: 0.00005262
+Time: 6.9990 - Value: 0.00036660
+Time: 7.6480 - Value: 0.00059107
+Time: 8.7280 - Value: 0.00076392
+Time: 9.3510 - Value: 0.00058455
+Time: 11.0520 - Value: 0.00030730
+Time: 12.1550 - Value: 0.00042748
+Time: 12.5680 - Value: 0.00058098
+Time: 12.9930 - Value: 0.00101699
+Time: 13.4200 - Value: 0.00223856
+Time: 14.3560 - Value: 0.00091577
+Time: 14.9310 - Value: 0.00058349
+Time: 15.5890 - Value: 0.00106915
+Time: 16.0000 - Value: 0.00156611
+Time: 16.7050 - Value: 0.00099781
+Time: 17.5510 - Value: 0.00114645
+Time: 18.3880 - Value: 0.00166064
+Time: 19.0200 - Value: 0.00161816
+Time: 19.5310 - Value: 0.00143110
+Time: 20.1930 - Value: 0.00150572
+Time: 20.6250 - Value: 0.00149436
+Time: 21.1430 - Value: 0.00104377
+Time: 21.8490 - Value: 0.00054189
+Time: 22.3630 - Value: 0.00090477
+Time: 22.8000 - Value: 0.00091340
+Time: 23.7200 - Value: 0.00135416
+Time: 24.1970 - Value: 0.00130287
+Time: 24.6030 - Value: 0.00136985
+Time: 25.4390 - Value: 0.00150613
+Time: 26.3200 - Value: 0.00121538
+Time: 27.1800 - Value: 0.00161940

@@ -27,6 +27,18 @@ struct FFTBin_t
 	float timeIntoSong = 0.f;
 };
 
+enum eBeatDisplayMode
+{
+	MODE_NORMAL,
+	MODE_MOST_CONFIDENT_PERIOD,
+	MODE_MOST_CONFIDENT_PHASE,
+	MODE_MOST_EXPRESSIVE,
+	MODE_LEAST_CONFIDENT_PERIOD,
+	MODE_LEAST_CONFIDENT_PHASE,
+	MODE_LEAST_EXPRESSIVE,
+	NUM_BEAT_DISPLAY_MODES
+};
+
 struct FFTBinSet_t
 {
 	std::vector<FFTBin_t>		fftBinSamples;
@@ -86,6 +98,7 @@ private:
 
 	void RenderFFTGraph() const;
 	void RenderBeatPlayback() const;
+	void GetBeatIndicesToDisplay(int* out_beatIndices) const;
 
 	bool LoadSoundTrackAndPlay();
 
@@ -147,14 +160,15 @@ private:
 	int									m_numBinsToSaveUpTo = -1;
 	std::vector<FFTBinSet_t>			m_FFTBinSets;
 
-	// Beat Detection
 
 	// Rendering
 	float								m_fftMaxYAxis = 1.0f;
 	unsigned int						m_binsToDisplay = 128;
 	Mesh*								m_fftBarMesh = nullptr;
 	Mesh*								m_fftGridMesh = nullptr;
+
 	int									m_beatDisplayBinOffset = 0;
+	eBeatDisplayMode					m_beatDisplayMode = MODE_NORMAL;
 
 	// UI Settings
 	const float							m_graphHeight = 800.f;

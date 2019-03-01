@@ -83,17 +83,59 @@ void FFTSystem::ProcessInput()
 
 	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_LEFT_ARROW))
 	{
-		windowType--;
-		m_beatDisplayBinOffset--;
+		if (m_systemState == STATE_BEAT_DATA_PLAYBACK)
+		{
+			m_beatDisplayBinOffset--;
+		}
+		else if (m_systemState == STATE_COLLECTING_FFT_DATA)
+		{
+			windowType--;
+		}
 	}
 
 	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_RIGHT_ARROW))
 	{
-		windowType++;
-		m_beatDisplayBinOffset++;
+		if (m_systemState == STATE_BEAT_DATA_PLAYBACK)
+		{
+			m_beatDisplayBinOffset++;
+		}
+		else if (m_systemState == STATE_COLLECTING_FFT_DATA)
+		{
+			windowType++;
+		}
 	}
 
-	m_beatDisplayBinOffset = ClampInt(m_beatDisplayBinOffset, 0, (int)m_FFTBinSets.size());
+	m_beatDisplayBinOffset = ClampInt(m_beatDisplayBinOffset, 0, (int)m_FFTBinSets.size() - 4); // Display 4 windows at once
+
+	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_UP_ARROW))
+	{
+		if (m_systemState == STATE_BEAT_DATA_PLAYBACK)
+		{
+			int newValue = m_beatDisplayMode + 1;
+
+			if (newValue >= NUM_BEAT_DISPLAY_MODES)
+			{
+				newValue = 0;
+			}
+
+			m_beatDisplayMode = (eBeatDisplayMode)newValue;
+		}
+	}
+
+	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_DOWN_ARROW))
+	{
+		if (m_systemState == STATE_BEAT_DATA_PLAYBACK)
+		{
+			int newValue = m_beatDisplayMode - 1;
+
+			if (newValue < 0)
+			{
+				newValue = NUM_BEAT_DISPLAY_MODES - 1;
+			}
+
+			m_beatDisplayMode = (eBeatDisplayMode)newValue;
+		}
+	}
 
 	// There are only 6 window types, 0 through 5
 	if (windowType > 5)
@@ -646,7 +688,6 @@ void FFTSystem::UpdateBeatPlayback()
 	if (!IsPlaying())
 	{
 		bool songJustLoaded = LoadSoundTrackAndPlay();
-		SetupForFFTPlayback();
 
 		// This ensures we don't start our timer until the song is already loaded, not paying for the delay
 		if (songJustLoaded)
@@ -731,6 +772,78 @@ void FFTSystem::RenderFFTGraph() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the color used for the confidence when above certain thresholds
+// Top 10% gets green, else top 25% gets yellow, otherwise gets red
+//
+Rgba GetFontColorForConfidence(const std::vector<FFTBinSet_t>& binSets, float confidence, bool isPeriod)
+{
+	int numBins = (int)binSets.size();
+	int countGreaterThanGiven = 0;
+	int maxThresholdForGood = numBins / 10;
+	int maxThresholdForOkay = numBins / 4;
+
+	for (int binIndex = 0; binIndex < numBins; ++binIndex)
+	{
+		float confidenceToCompareTo = (isPeriod ? binSets[binIndex].periodConfidence : binSets[binIndex].phaseConfidence);
+
+		if (confidenceToCompareTo > confidence)
+		{
+			countGreaterThanGiven++;
+		}
+	}
+
+	Rgba color = Rgba::RED;
+
+	if (countGreaterThanGiven < maxThresholdForGood)
+	{
+		color = Rgba::GREEN;
+	}
+	else if (countGreaterThanGiven < maxThresholdForOkay)
+	{
+		color = Rgba::YELLOW;
+	}
+
+	return color;
+}
+
+
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Returns a string representing the mode given
+//
+std::string GetStringForBeatDisplayMode(eBeatDisplayMode mode)
+{
+	switch (mode)
+	{
+	case MODE_NORMAL:
+		return "NORMAL";
+		break;
+	case MODE_MOST_CONFIDENT_PERIOD:
+		return "MOST CONFIDENT PERIODS";
+		break;
+	case MODE_MOST_CONFIDENT_PHASE:
+		return "MOST CONFIDENT PHASES";
+		break;
+	case MODE_MOST_EXPRESSIVE:
+		return "MOST EXPRESSIVE";
+		break;
+	case MODE_LEAST_CONFIDENT_PERIOD:
+		return "LEAST CONFIDENT PERIODS";
+		break;
+	case MODE_LEAST_CONFIDENT_PHASE:
+		return "LEAST CONFIDENT PHASES";
+		break;
+	case MODE_LEAST_EXPRESSIVE:
+		return "LEAST EXPRESSIVE";
+		break;
+	case NUM_BEAT_DISPLAY_MODES:
+	default:
+		return "YOU SHOULDN'T BE HERE";
+		break;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Renders the beat playback visuals for testing
 //
 void FFTSystem::RenderBeatPlayback() const
@@ -747,13 +860,18 @@ void FFTSystem::RenderBeatPlayback() const
 	AABB2 uiBounds = renderer->GetUIBounds();
 	Vector2 uiDimensions = uiBounds.GetDimensions();
 
+	std::string modeText = Stringf("Display Mode: %s", GetStringForBeatDisplayMode(m_beatDisplayMode).c_str());
+
+	renderer->DrawTextInBox2D(modeText, uiBounds, Vector2(0.5f, 0.f), 20.f, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), m_fontColor);
 	AABB2 baseWindowBounds = AABB2(Vector2(0.f, 0.1f * uiDimensions.y), Vector2(0.25f * uiDimensions.x, 0.9f * uiDimensions.y));
 	Vector2 baseWindowDimensions = baseWindowBounds.GetDimensions();
 
-	int windowsToDisplay = 4;
-	
-	for (int binSetIndex = m_beatDisplayBinOffset; binSetIndex < MinInt(m_beatDisplayBinOffset + windowsToDisplay, (int) m_FFTBinSets.size()); ++binSetIndex)
+	int binIndicesToDisplay[4];
+	GetBeatIndicesToDisplay(binIndicesToDisplay);
+
+	for (int i = 0; i < 4; ++i)
 	{
+		int binSetIndex = binIndicesToDisplay[i];
 		AABB2 interiorWindowBounds = baseWindowBounds;
 		Vector2 interiorWindowDimensions = interiorWindowBounds.GetDimensions();
 
@@ -761,17 +879,54 @@ void FFTSystem::RenderBeatPlayback() const
 
 		const FFTBinSet_t& binSet = m_FFTBinSets[binSetIndex];
 
-		std::string infoText = Stringf("Period: %.3f\nPeriod Confidence: %.2f%%\nPhase: %.3f\nPhase Confidence: %.2f%%\nExpressivity: %.4f\nNormalized Expressivity: %.3f",
-			binSet.periodMedian, binSet.periodConfidence * 100.f, binSet.phaseMedian, binSet.phaseConfidence * 100.f, binSet.averageBinExpressivity, binSet.averageBinExpressivityNormalized);
-		std::string headingText = Stringf("BIN: %i\nFreq: [%.2f - %.2f)", binSetIndex, binSet.frequencyInterval.min, binSet.frequencyInterval.max);
-		
 		renderer->Draw2DQuad(baseWindowBounds, AABB2::UNIT_SQUARE_OFFCENTER, m_lineAndPanelColor, AssetDB::GetSharedMaterial("UI"));
 		renderer->Draw2DQuad(interiorWindowBounds, AABB2::UNIT_SQUARE_OFFCENTER, Rgba::BLACK, AssetDB::GetSharedMaterial("UI"));
+		
+		std::string headingText = Stringf("BIN: %i\nFreq: [%.2f - %.2f)", binSetIndex, binSet.frequencyInterval.min, binSet.frequencyInterval.max);
 		renderer->DrawTextInBox2D(headingText, interiorWindowBounds, Vector2(0.5f, 0.f), 20.f, TEXT_DRAW_SHRINK_TO_FIT, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), m_fontColor);
-		renderer->DrawTextInBox2D(infoText, interiorWindowBounds, Vector2(0.f, 1.0f), 20.f, TEXT_DRAW_SHRINK_TO_FIT, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), m_fontColor);
+
+		std::string infoText;
+
+		float fontHeight = 14.f;
+
+		// Normalized Expressivity
+		infoText = Stringf("Normalized Expressivity: %.3f", binSet.averageBinExpressivityNormalized);
+		renderer->DrawTextInBox2D(infoText, interiorWindowBounds, Vector2(0.f, 1.0f), fontHeight, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), m_fontColor);
+		interiorWindowBounds.Translate(0.f, fontHeight);
+
+		// Expressivity
+		infoText = Stringf("Expressivity: %.4f\n", binSet.averageBinExpressivity);
+		renderer->DrawTextInBox2D(infoText, interiorWindowBounds, Vector2(0.f, 1.0f), fontHeight, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), m_fontColor);
+		interiorWindowBounds.Translate(0.f, fontHeight);
+
+		// Phase Confidence
+		infoText = Stringf("Phase Confidence: %.2f%%", binSet.phaseConfidence * 100.f);
+		Rgba phaseConfidenceColor = GetFontColorForConfidence(m_FFTBinSets, binSet.phaseConfidence, false);
+		renderer->DrawTextInBox2D(infoText, interiorWindowBounds, Vector2(0.f, 1.0f), fontHeight, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), phaseConfidenceColor);
+		interiorWindowBounds.Translate(0.f, fontHeight);
+
+		// Phase
+		infoText = Stringf("Phase: %.3f\n", binSet.phaseMedian);
+		renderer->DrawTextInBox2D(infoText, interiorWindowBounds, Vector2(0.f, 1.0f), fontHeight, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), m_fontColor);
+		interiorWindowBounds.Translate(0.f, fontHeight);
+
+		// Period Confidence
+		infoText = Stringf("Period Confidence: %.2f%%", binSet.periodConfidence * 100.f);
+		Rgba periodConfidenceColor = GetFontColorForConfidence(m_FFTBinSets, binSet.periodConfidence, true);
+		renderer->DrawTextInBox2D(infoText, interiorWindowBounds, Vector2(0.f, 1.0f), fontHeight, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), periodConfidenceColor);
+		interiorWindowBounds.Translate(0.f, fontHeight);
+
+		// Period
+		infoText = Stringf("Period: %.3f", binSet.periodMedian);
+		renderer->DrawTextInBox2D(infoText, interiorWindowBounds, Vector2(0.f, 1.0f), fontHeight, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), m_fontColor);
+		interiorWindowBounds.Translate(0.f, fontHeight);
+	
 		
 		Vector2 indicatorPosition = interiorWindowBounds.mins + Vector2(interiorWindowDimensions.x * 0.45f, interiorWindowDimensions.y * 0.5f);
 		Vector2 indicatorDimensions = Vector2(interiorWindowDimensions.x * 0.3f);
+
+		// Scale indicator dimensions based on expressivity
+		indicatorDimensions *= binSet.averageBinExpressivityNormalized;
 
 		AABB2 beatIndicatorBounds = AABB2(indicatorPosition - 0.5f * indicatorDimensions, indicatorPosition + 0.5f * indicatorDimensions);
 
@@ -780,7 +935,7 @@ void FFTSystem::RenderBeatPlayback() const
 
 		Rgba color = Rgba::BLACK;
 
-		if (timeIntoPeriod < 0.05f) // At 60 fps, about a frame's worth
+		if (timeIntoPeriod < 0.05f)
 		{
 			color = Rgba::RED;
 		}
@@ -790,6 +945,98 @@ void FFTSystem::RenderBeatPlayback() const
 		baseWindowBounds.Translate(baseWindowDimensions.x, 0.f);
 	}
 }
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns an array of 4 indices for which bins to display on screen
+//
+void FFTSystem::GetBeatIndicesToDisplay(int* out_beatIndices) const
+{
+	// check for normal mode here
+	if (m_beatDisplayMode == MODE_NORMAL)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			out_beatIndices[i] = m_beatDisplayBinOffset + i;
+		}
+
+		return;
+	}
+
+	std::vector<float> valuesSorted;
+	std::vector<int> indicesSorted;
+	for (int binIndex = 0; binIndex < (int)m_FFTBinSets.size(); ++binIndex)
+	{
+		float currValue = 0.f;
+		bool checkIfCurrGreater = true;
+
+		switch (m_beatDisplayMode)
+		{
+		case MODE_MOST_CONFIDENT_PERIOD:
+			currValue = m_FFTBinSets[binIndex].periodConfidence;
+			checkIfCurrGreater = true;
+			break;
+		case MODE_MOST_CONFIDENT_PHASE:
+			currValue = m_FFTBinSets[binIndex].phaseConfidence;
+			checkIfCurrGreater = true;
+			break;
+		case MODE_MOST_EXPRESSIVE:
+			currValue = m_FFTBinSets[binIndex].averageBinExpressivity;
+			checkIfCurrGreater = true;
+			break;
+		case MODE_LEAST_CONFIDENT_PERIOD:
+			currValue = m_FFTBinSets[binIndex].periodConfidence;
+			checkIfCurrGreater = false;
+			break;
+		case MODE_LEAST_CONFIDENT_PHASE:
+			currValue = m_FFTBinSets[binIndex].phaseConfidence;
+			checkIfCurrGreater = false;
+			break;
+		case MODE_LEAST_EXPRESSIVE:
+			currValue = m_FFTBinSets[binIndex].averageBinExpressivity;
+			checkIfCurrGreater = false;
+			break;
+		default:
+			break;
+		}
+
+		bool inserted = false;
+		for (int sortedIndex = 0; sortedIndex < (int)indicesSorted.size(); ++sortedIndex)
+		{
+			bool passedCheck = false;
+
+			if (checkIfCurrGreater)
+			{
+				passedCheck = (valuesSorted[sortedIndex] < currValue);
+			}
+			else
+			{
+				passedCheck = (valuesSorted[sortedIndex] > currValue);
+			}
+
+			if (passedCheck)
+			{
+				valuesSorted.insert(valuesSorted.begin() + sortedIndex, currValue);
+				indicesSorted.insert(indicesSorted.begin() + sortedIndex, binIndex);
+				inserted = true;
+				break;
+			}
+		}
+
+		if (!inserted)
+		{
+			valuesSorted.push_back(currValue);
+			indicesSorted.push_back(binIndex);
+		}
+	}
+
+	// now take the 4 most confident
+	for (int i = 0; i < 4; ++i)
+	{
+		out_beatIndices[i] = indicesSorted[i];
+	}
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // Loads the sound from data and sets the given parameters on the FFTSystem
