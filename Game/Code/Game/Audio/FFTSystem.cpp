@@ -1346,7 +1346,7 @@ void FFTSystem::WriteFFTBinDataToFile()
 
 		for (int sampleIndex = 0; sampleIndex < numFFTSamplesInSpan; ++sampleIndex)
 		{
-			buffer += Stringf("Time: %.4f - Value: %.8f\n", currentBinSpan.fftBinSamples[sampleIndex].timeIntoSong, currentBinSpan.fftBinSamples[sampleIndex].binAverageOfAllChannels);
+			buffer += Stringf("Time: %.8f - Value: %.8f\n", currentBinSpan.fftBinSamples[sampleIndex].timeIntoSong, currentBinSpan.fftBinSamples[sampleIndex].binAverageOfAllChannels);
 		}
 	}
 
@@ -1558,7 +1558,7 @@ void FFTSystem::WriteFFTBeatAnalysisToFile()
 		buffer += Stringf("BIN %i | Frequency Range: [ %.2f - %.2f ) hertz\n", spanIndex, currentBinSpan.frequencyInterval.min, currentBinSpan.frequencyInterval.max);
 
 		// Period Median
-		buffer += Stringf("Period Median: %.4f seconds\n", currentBinSpan.periodMedian);
+		buffer += Stringf("Period Median: %.8f seconds\n", currentBinSpan.periodMedian);
 
 		// Period Median Threshold
 		buffer += Stringf("Period Median Threshold: %.2f %%\n", currentBinSpan.periodMedianThreshold * 100.f);
@@ -1570,10 +1570,10 @@ void FFTSystem::WriteFFTBeatAnalysisToFile()
 		buffer += Stringf("Total Periods: %i\n", currentBinSpan.totalPeriods);
 
 		// % Confidence in Period
-		buffer += Stringf("Period Confidence for this bin: %.2f %%\n", currentBinSpan.periodConfidence * 100.f);
+		buffer += Stringf("Period Confidence for this bin: %.4f %%\n", currentBinSpan.periodConfidence * 100.f);
 
 		// Phase Median
-		buffer += Stringf("Phase Median: %.4f seconds\n", currentBinSpan.phaseMedian);
+		buffer += Stringf("Phase Median: %.8f seconds\n", currentBinSpan.phaseMedian);
 
 		// Phase Median Threshold
 		buffer += Stringf("Phase Median Threshold: %.2f %%\n", currentBinSpan.phaseMedianThreshold * 100.f);
@@ -1585,7 +1585,7 @@ void FFTSystem::WriteFFTBeatAnalysisToFile()
 		buffer += Stringf("Total Phases: %i\n", currentBinSpan.totalPhases);
 
 		// Phase confidence
-		buffer += Stringf("Phase Confidence for this Bin: %.2f %%\n", currentBinSpan.phaseConfidence * 100.f);
+		buffer += Stringf("Phase Confidence for this Bin: %.4f %%\n", currentBinSpan.phaseConfidence * 100.f);
 		
 		// Expressivities
 		buffer += Stringf("Bin Average Expressivity: %.8f\n", currentBinSpan.averageBinExpressivity);
@@ -1598,7 +1598,7 @@ void FFTSystem::WriteFFTBeatAnalysisToFile()
 		{
 			if (currentBinSpan.fftBinSamples[sampleIndex].isHigh)
 			{
-				buffer += Stringf("Time: %.4f - Value: %.8f\n", currentBinSpan.fftBinSamples[sampleIndex].timeIntoSong, currentBinSpan.fftBinSamples[sampleIndex].binAverageOfAllChannels);
+				buffer += Stringf("Time: %.8f - Value: %.8f\n", currentBinSpan.fftBinSamples[sampleIndex].timeIntoSong, currentBinSpan.fftBinSamples[sampleIndex].binAverageOfAllChannels);
 			}
 		}
 	}
