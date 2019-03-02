@@ -86,6 +86,7 @@ void FFTSystem::ProcessInput()
 		if (m_systemState == STATE_BEAT_DATA_PLAYBACK)
 		{
 			m_beatDisplayBinOffset--;
+			m_beatDisplayBinOffset = ClampInt(m_beatDisplayBinOffset, 0, (int)m_FFTBinSets.size() - 4); // Display 4 windows at once
 		}
 		else if (m_systemState == STATE_COLLECTING_FFT_DATA)
 		{
@@ -98,14 +99,13 @@ void FFTSystem::ProcessInput()
 		if (m_systemState == STATE_BEAT_DATA_PLAYBACK)
 		{
 			m_beatDisplayBinOffset++;
+			m_beatDisplayBinOffset = ClampInt(m_beatDisplayBinOffset, 0, (int)m_FFTBinSets.size() - 4); // Display 4 windows at once
 		}
 		else if (m_systemState == STATE_COLLECTING_FFT_DATA)
 		{
 			windowType++;
 		}
 	}
-
-	m_beatDisplayBinOffset = ClampInt(m_beatDisplayBinOffset, 0, (int)m_FFTBinSets.size() - 4); // Display 4 windows at once
 
 	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_UP_ARROW))
 	{
@@ -835,6 +835,12 @@ std::string GetStringForBeatDisplayMode(eBeatDisplayMode mode)
 	case MODE_LEAST_EXPRESSIVE:
 		return "LEAST EXPRESSIVE";
 		break;
+	case BEST_QUALITY:
+		return "BEST QUALITY";
+		break;
+	case WORST_QUALITY:
+		return "WORST QUALITY";
+		break;
 	case NUM_BEAT_DISPLAY_MODES:
 	default:
 		return "YOU SHOULDN'T BE HERE";
@@ -889,6 +895,12 @@ void FFTSystem::RenderBeatPlayback() const
 
 		float fontHeight = 14.f;
 
+		// Quality
+				// Normalized Expressivity
+		infoText = Stringf("Quality: %.3f", binSet.averageBinExpressivityNormalized * binSet.periodConfidence);
+		renderer->DrawTextInBox2D(infoText, interiorWindowBounds, Vector2(0.f, 1.0f), fontHeight, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), m_fontColor);
+		interiorWindowBounds.Translate(0.f, fontHeight);
+
 		// Normalized Expressivity
 		infoText = Stringf("Normalized Expressivity: %.3f", binSet.averageBinExpressivityNormalized);
 		renderer->DrawTextInBox2D(infoText, interiorWindowBounds, Vector2(0.f, 1.0f), fontHeight, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), m_fontColor);
@@ -929,18 +941,49 @@ void FFTSystem::RenderBeatPlayback() const
 		indicatorDimensions *= binSet.averageBinExpressivityNormalized;
 
 		AABB2 beatIndicatorBounds = AABB2(indicatorPosition - 0.5f * indicatorDimensions, indicatorPosition + 0.5f * indicatorDimensions);
+		beatIndicatorBounds.Translate(0.f, 60.f);
 
 		float timeWithPhaseRemoved = secondsIntoSong - binSet.phaseMedian;
 		float timeIntoPeriod = ModFloat(timeWithPhaseRemoved, binSet.periodMedian);
 
-		Rgba color = Rgba::BLACK;
-
 		if (timeIntoPeriod < 0.05f)
 		{
-			color = Rgba::RED;
+			renderer->Draw2DQuad(beatIndicatorBounds, AABB2::UNIT_SQUARE_OFFCENTER, Rgba::RED, AssetDB::GetSharedMaterial("UI"));
+			renderer->DrawTextInBox2D("BEAT", beatIndicatorBounds, Vector2(0.5f), 50.f, TEXT_DRAW_SHRINK_TO_FIT, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), Rgba::WHITE);
 		}
 
-		renderer->Draw2DQuad(beatIndicatorBounds, AABB2::UNIT_SQUARE_OFFCENTER, color, AssetDB::GetSharedMaterial("UI"));
+
+		Vector2 qualityDimensions = Vector2(interiorWindowDimensions.x * 0.3f);
+		AABB2 qualityBackgroundBounds = AABB2(indicatorPosition - 0.5f * qualityDimensions, indicatorPosition + 0.5f * qualityDimensions);
+		qualityBackgroundBounds.Translate(0.f, -200.f);
+
+		renderer->Draw2DQuad(qualityBackgroundBounds, AABB2::UNIT_SQUARE_OFFCENTER, Rgba::WHITE, AssetDB::GetSharedMaterial("UI"));
+		
+		// Scale based on period confidence and expressivity
+		float fillWidth = qualityDimensions.x * binSet.periodConfidence;
+		float fillHeight = qualityDimensions.y * binSet.averageBinExpressivityNormalized;
+
+		AABB2 qualityFillBounds;
+		qualityFillBounds.mins = qualityBackgroundBounds.mins;
+		qualityFillBounds.maxs = qualityFillBounds.mins + Vector2(fillWidth, fillHeight);
+		
+		renderer->Draw2DQuad(qualityFillBounds, AABB2::UNIT_SQUARE_OFFCENTER, Rgba::RED, AssetDB::GetSharedMaterial("UI"));
+
+		AABB2 qualityTextBounds = qualityBackgroundBounds;
+		qualityTextBounds.Translate(0.f, 100.f);
+		renderer->DrawTextInBox2D("Quality", qualityTextBounds, Vector2(0.5f), 50.f, TEXT_DRAW_SHRINK_TO_FIT, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), m_fontColor);
+
+		AABB2 qualityXLabelBounds = qualityBackgroundBounds;
+		qualityXLabelBounds.Translate(0.f, -100.f);
+		qualityXLabelBounds.AddPaddingToSides(20.f, 0.f);
+
+		renderer->DrawTextInBox2D("Period Confidence", qualityXLabelBounds, Vector2(0.5f), 50.f, TEXT_DRAW_SHRINK_TO_FIT, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), m_fontColor);
+
+		AABB2 qualityYLabelBounds = qualityBackgroundBounds;
+		qualityYLabelBounds.Translate(-145.f, 0.f);
+		qualityYLabelBounds.AddPaddingToSides(-5.f, 0.f);
+
+		renderer->DrawTextInBox2D("Normalized\nExpressivity", qualityYLabelBounds, Vector2(0.5f), 50.f, TEXT_DRAW_SHRINK_TO_FIT, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), m_fontColor);
 
 		baseWindowBounds.Translate(baseWindowDimensions.x, 0.f);
 	}
@@ -958,6 +1001,7 @@ void FFTSystem::GetBeatIndicesToDisplay(int* out_beatIndices) const
 		for (int i = 0; i < 4; ++i)
 		{
 			out_beatIndices[i] = m_beatDisplayBinOffset + i;
+			ASSERT_OR_DIE(out_beatIndices[i] >= 0, "");
 		}
 
 		return;
@@ -994,6 +1038,14 @@ void FFTSystem::GetBeatIndicesToDisplay(int* out_beatIndices) const
 			break;
 		case MODE_LEAST_EXPRESSIVE:
 			currValue = m_FFTBinSets[binIndex].averageBinExpressivity;
+			checkIfCurrGreater = false;
+			break;
+		case BEST_QUALITY:
+			currValue = m_FFTBinSets[binIndex].averageBinExpressivityNormalized * m_FFTBinSets[binIndex].periodConfidence;
+			checkIfCurrGreater = true;
+			break;
+		case WORST_QUALITY:
+			currValue = m_FFTBinSets[binIndex].averageBinExpressivityNormalized * m_FFTBinSets[binIndex].periodConfidence;
 			checkIfCurrGreater = false;
 			break;
 		default:
@@ -1334,6 +1386,7 @@ void FFTSystem::CleanUp()
 	UpdateGridAndPanelMesh();
 
 	m_systemState = STATE_IDLE;
+	m_beatDisplayBinOffset = 0;
 }
 
 
