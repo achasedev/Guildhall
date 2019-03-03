@@ -2,5 +2,6 @@
 
 	<VoxelTerrain name="GrassFlat" file="Data/VoxelModels/Terrains/Grass/GrassFlat.qef"/>
 	<VoxelTerrain name="SandFlat" file="Data/VoxelModels/Terrains/Sand/SandFlat.qef"/>
+	<VoxelTerrain name="LunarFlat" file="Data/VoxelModels/Terrains/Lunar/LunarFlat.qef"/>
 
 </VoxelTerrains>

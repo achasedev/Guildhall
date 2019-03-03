@@ -1,0 +1,23 @@
+<Campaign name="Moon" music="Data/Audio/Music/Boss Battle #4 V1.wav" character_select_map="Moon0">
+
+	<Stage map="Moon1" enter="west">
+		<SpawnEvent type="off_screen" spawn_direction="north" spawn_mins="0, 192" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+	</Stage> 
+
+	<Stage map="Moon2" enter="west">
+		<SpawnEvent type="off_screen" spawn_direction="north" spawn_mins="0, 192" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+	</Stage> 
+
+	<Stage map="Moon3" enter="west">
+		<SpawnEvent type="off_screen" spawn_direction="north" spawn_mins="0, 192" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+	</Stage>
+
+	<Stage map="Moon4" enter="west">
+		<SpawnEvent type="off_screen" spawn_direction="north" spawn_mins="0, 192" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+	</Stage> 
+
+	<Stage map="Moon5" enter="west">
+		<SpawnEvent type="off_screen" spawn_direction="north" spawn_mins="0, 192" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
+	</Stage> 
+
+</Campaign>

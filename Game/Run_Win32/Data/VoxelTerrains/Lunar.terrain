@@ -1,0 +1,9 @@
+<VoxelTerrains type="Lunar">
+
+	<VoxelTerrain name="Lunar1" file="Data/VoxelModels/Terrains/Lunar/Lunar1.qef"/>
+	<VoxelTerrain name="Lunar2" file="Data/VoxelModels/Terrains/Lunar/Lunar2.qef"/>
+	<VoxelTerrain name="Lunar3" file="Data/VoxelModels/Terrains/Lunar/Lunar3.qef"/>
+	<VoxelTerrain name="Lunar4" file="Data/VoxelModels/Terrains/Lunar/Lunar4.qef"/>	
+	<VoxelTerrain name="Lunar5" file="Data/VoxelModels/Terrains/Lunar/Lunar5.qef"/>
+	
+</VoxelTerrains>

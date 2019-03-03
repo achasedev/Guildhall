@@ -112,6 +112,7 @@
 	<VoxelTerrains>
 		<VoxelTerrain file="Data/VoxelTerrains/Grass.terrain"/>
 		<VoxelTerrain file="Data/VoxelTerrains/Sand.terrain"/>
+		<VoxelTerrain file="Data/VoxelTerrains/Lunar.terrain"/>
 		<VoxelTerrain file="Data/VoxelTerrains/Flat.terrain"/>
 	</VoxelTerrains>
 
@@ -129,6 +130,13 @@
 		<Map file="Data/Maps/Desert/Desert3.map"/>
 		<Map file="Data/Maps/Desert/Desert4.map"/>
 		<Map file="Data/Maps/Desert/Desert5.map"/>
+
+		<Map file="Data/Maps/Moon/Moon0.map"/>
+		<Map file="Data/Maps/Moon/Moon1.map"/>
+		<Map file="Data/Maps/Moon/Moon2.map"/>
+		<Map file="Data/Maps/Moon/Moon3.map"/>
+		<Map file="Data/Maps/Moon/Moon4.map"/>
+		<Map file="Data/Maps/Moon/Moon5.map"/>
 	</Maps>
 
 	<!-- END MAPS -->
@@ -138,6 +146,7 @@
 	<Campaigns>
 		<Campaign file="Data/Campaigns/Forest.campaign"/>
 		<Campaign file="Data/Campaigns/Desert.campaign"/>
+		<Campaign file="Data/Campaigns/Moon.campaign"/>
 
 		<Campaign file="Data/Campaigns/Empty.campaign"/>
 
