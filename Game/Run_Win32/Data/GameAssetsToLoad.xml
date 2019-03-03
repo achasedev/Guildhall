@@ -112,6 +112,7 @@
 	<VoxelTerrains>
 		<VoxelTerrain file="Data/VoxelTerrains/Grass.terrain"/>
 		<VoxelTerrain file="Data/VoxelTerrains/Sand.terrain"/>
+		<VoxelTerrain file="Data/VoxelTerrains/Flat.terrain"/>
 	</VoxelTerrains>
 
 	<Maps>

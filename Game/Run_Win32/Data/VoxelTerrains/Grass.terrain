@@ -10,6 +10,5 @@
 	<VoxelTerrain name="Grass8" file="Data/VoxelModels/Terrains/Grass/Grass8.qef"/>
 	<VoxelTerrain name="Grass9" file="Data/VoxelModels/Terrains/Grass/Grass9.qef"/>
 	<VoxelTerrain name="Grass10" file="Data/VoxelModels/Terrains/Grass/Grass10.qef"/>
-	<VoxelTerrain name="GrassFlat" file="Data/VoxelModels/Terrains/Grass/GrassFlat.qef"/>
 
 </VoxelTerrains>

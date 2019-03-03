@@ -168,6 +168,52 @@ void Game::UpdateMusicCrossfade()
 
 
 //-----------------------------------------------------------------------------------------------
+// Increments the score displayed to count up to the actual score, for cool effect
+//
+void Game::UpdateDisplayedScore()
+{
+	if (AreMostlyEqual(m_actualScore, m_displayedScore, 0.0001f))
+	{
+		return;
+	}
+
+	float thresholdBeforeSlowingDown = 500.f;
+	float minRate = 300.f;
+	float maxRate = 1500.f;
+	float rate = 0.f;
+
+	float diff = AbsoluteValue(m_actualScore - m_displayedScore);
+	if (diff > thresholdBeforeSlowingDown)
+	{
+		rate = maxRate;
+	}
+	else
+	{
+		float rateScalar = RangeMapFloat(diff, 0.f, 1000.f, 0.f, 1.f);
+		rate = maxRate * rateScalar;
+
+		rate = ClampFloat(rate, minRate, maxRate);
+	}
+
+	if (m_actualScore < m_displayedScore)
+	{
+		rate *= -1.f;
+	}
+
+	float deltaScore = GetDeltaTime() * rate;
+
+	if (m_actualScore > m_displayedScore)
+	{
+		m_displayedScore = ClampFloat(m_displayedScore + deltaScore, 0.f, m_actualScore);
+	}
+	else
+	{
+		m_displayedScore = ClampFloat(m_displayedScore + deltaScore, m_actualScore, 9999999.f);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Loads the leaderboards from file, if one exists
 //
 void Game::LoadLeaderboardsFromFile()
@@ -382,6 +428,7 @@ void Game::Update()
 
 	// Update any music crossfades
 	UpdateMusicCrossfade();
+	UpdateDisplayedScore();
 }
 
 
@@ -554,7 +601,8 @@ CampaignManager* Game::GetCampaignManager()
 //
 void Game::ResetScore()
 {
-	s_instance->m_score = 0;
+	s_instance->m_actualScore = 0.f;
+	s_instance->m_displayedScore = 0.f;
 }
 
 
@@ -563,7 +611,7 @@ void Game::ResetScore()
 //
 void Game::AddPointsToScore(int pointsToAdd)
 {
-	s_instance->m_score = ClampInt(s_instance->m_score + pointsToAdd, 0, 9999999);
+	s_instance->m_actualScore = ClampFloat(s_instance->m_actualScore + (float) pointsToAdd, 0.f, 9999999.f);
 }
 
 
@@ -577,7 +625,7 @@ void Game::UpdateLeaderboardWithCurrentScore()
 
 	for (int scoreIndex = 0; scoreIndex < NUM_SCORES_PER_LEADERBOARD; ++scoreIndex)
 	{
-		if (board->m_scores[scoreIndex] <= s_instance->m_score)
+		if (board->m_scores[scoreIndex] <= s_instance->m_actualScore)
 		{
 			// Add the score in, pushing all lower scores down
 			for (int i = scoreIndex + 1; i < NUM_SCORES_PER_LEADERBOARD; ++i)
@@ -585,7 +633,7 @@ void Game::UpdateLeaderboardWithCurrentScore()
 				board->m_scores[i] = board->m_scores[i - 1];
 			}
 
-			board->m_scores[scoreIndex] = s_instance->m_score;
+			board->m_scores[scoreIndex] = RoundToNearestInt(s_instance->m_actualScore);
 			break;
 		}
 	}
@@ -597,7 +645,7 @@ void Game::UpdateLeaderboardWithCurrentScore()
 //
 int Game::GetScore()
 {
-	return s_instance->m_score;
+	return RoundToNearestInt(s_instance->m_actualScore);
 }
 
 
@@ -803,7 +851,7 @@ void Game::DrawPlayerHUD()
 //
 void Game::DrawScore()
 {
-	DrawHeading(Stringf("Score: %i", s_instance->m_score), IntVector3(128, 56, 252), Vector3(0.5f, 0.f, 0.f));
+	DrawHeading(Stringf("Score: %i", RoundToNearestInt(s_instance->m_displayedScore)), IntVector3(128, 56, 252), Vector3(0.5f, 0.f, 0.f));
 }
 
 

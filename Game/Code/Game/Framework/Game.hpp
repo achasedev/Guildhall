@@ -94,6 +94,7 @@ private:
 	Game(const Game& copy) = delete;
 
 	void UpdateMusicCrossfade();
+	void UpdateDisplayedScore();
 
 	void LoadLeaderboardsFromFile();
 	void WriteLeaderboardsToFile();
@@ -121,7 +122,9 @@ private:
 	VoxelFont* m_menuFont = nullptr;
 
 	// Gameplay
-	int	m_score = 0;
+	float	m_actualScore = 0.f;
+	float m_displayedScore = 0.f; // Stored as float to allow it to change independent of framerate, i.e. increase by 0.5 points this frame
+
 	Leaderboard m_leaderboards[NUM_LEADERBOARDS];
 
 	// Audio
