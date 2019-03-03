@@ -202,6 +202,8 @@ void Player::OnDeath()
 {
 	AnimatedEntity::OnDeath();
 
+	UnequipCurrentWeapon();
+
 	Game::GetWorld()->ParticalizeEntity(this);
 	Game::AddPointsToScore(PLAYER_DEATH_SCORE_PENALTY);
 

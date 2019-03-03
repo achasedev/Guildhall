@@ -1,0 +1,5 @@
+<VoxelTerrains type="Flat">
+
+	<VoxelTerrain name="GrassFlat" file="Data/VoxelModels/Terrains/Grass/GrassFlat.qef"/>
+
+</VoxelTerrains>
