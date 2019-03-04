@@ -184,8 +184,22 @@ void Game::Render() const
 
 	DebugRenderSystem::Draw2DText(text, windowBounds, 0.f, Rgba::DARK_GREEN, 20.f);
 
-	text = Stringf("Time of day: %.2f", m_world->GetTimeOfDay());
-	DebugRenderSystem::Draw2DText(text, windowBounds, 0.f, Rgba::DARK_GREEN, 20.f, Vector2(1.0f, 0.f));
+	float timeOfDayZeroToOne = m_world->GetTimeOfDay();
+	int secondsIntoDay = (int)(86400.f * timeOfDayZeroToOne);
+	int leftoverSeconds = secondsIntoDay % 60;
+	int minutesIntoDay = secondsIntoDay / 60;
+	int leftoverMinutes = minutesIntoDay % 60;
+	int hoursIntoDay = minutesIntoDay / 60;
+
+	int hourToDisplay = hoursIntoDay % 12;
+	if (hourToDisplay == 0)
+	{
+		hourToDisplay = 12;
+	}
+
+	std::string amPmText = (hoursIntoDay < 12 ? "am" : "pm");
+	std::string timeText = Stringf("Time of day: %i:%02i%s", hourToDisplay, leftoverMinutes, amPmText.c_str());
+	DebugRenderSystem::Draw2DText(timeText, windowBounds, 0.f, Rgba::DARK_GREEN, 20.f, Vector2(1.0f, 0.f));
 
 	// Screen reticle
 	renderer->SetCurrentCamera(renderer->GetUICamera());

@@ -28,7 +28,7 @@
 // Static Members
 //
 const Rgba World::WORLD_NOON_SKY_COLOR = Rgba(200, 230, 250);
-const Rgba World::WORLD_NIGHT_SKY_COLOR = Rgba(20, 20, 40);
+const Rgba World::WORLD_NIGHT_SKY_COLOR = Rgba(40, 40, 80);
 
 
 //-----------------------------------------------------------------------------------------------

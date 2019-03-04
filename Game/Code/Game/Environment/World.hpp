@@ -120,7 +120,7 @@ private:
 	static constexpr int			RAYCAST_STEPS_PER_BLOCK = 100;
 	static constexpr float			DEFAULT_RAYCAST_DISTANCE = 8.f;
 
-	static constexpr float			WORLD_DAY_TIME_SCALE = 43200.f / 4.f;
+	static constexpr float			WORLD_DAY_TIME_SCALE = 43200.f / 8.f;
 	static constexpr float			ONE_OVER_SECONDS_PER_DAY = 1.f / 86400.f;
 	static const Rgba				WORLD_NOON_SKY_COLOR;
 	static const Rgba				WORLD_NIGHT_SKY_COLOR;
