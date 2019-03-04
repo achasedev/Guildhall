@@ -20,7 +20,7 @@ const SpriteSheet* BlockType::s_spriteSheet = nullptr;
 //-----------------------------------------------------------------------------------------------
 // Loads the spritesheet for the blocks and creates the block types for use
 //
-void BlockType::InitializeTypes()
+void BlockType::InitializeBuiltInBlockTypes()
 {
 	// Set up the sprite sheet and material
 	Texture* spriteTexture = AssetDB::CreateOrGetTexture("Data/Images/Terrain_32x32.png");
@@ -96,6 +96,17 @@ void BlockType::InitializeTypes()
 	waterType.m_isFullyOpaque = true;
 	waterType.m_isSolid = true;
 
+	// Glowstone
+	BlockType glowType;
+	glowType.m_name = "Glowstone";
+	glowType.m_typeIndex = 7;
+	glowType.m_topUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(419);
+	glowType.m_sideUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(419);
+	glowType.m_bottomUVs = s_spriteSheet->GetTexUVsFromSpriteIndex(419);
+	glowType.m_isFullyOpaque = true;
+	glowType.m_isSolid = true;
+	glowType.m_internalLightLevel = 15;
+
 	// Add them
 	AddBlockType(airType);
 	AddBlockType(missingType);
@@ -104,6 +115,7 @@ void BlockType::InitializeTypes()
 	AddBlockType(stoneType);
 	AddBlockType(brickType);
 	AddBlockType(waterType);
+	AddBlockType(glowType);
 }
 
 

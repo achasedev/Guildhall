@@ -162,6 +162,21 @@ inline void Chunk::SetBlockTypeAtBlockIndex(int blockIndex, const BlockType* blo
 	Block& block = m_blocks[blockIndex];
 	block.SetType(blockType);
 
+	// Need to check if this block is now sky
+	if (!blockType->m_isFullyOpaque)
+	{
+		int indexAboveMe = blockIndex + Chunk::BLOCKS_PER_Z_LAYER;
+		if (indexAboveMe < Chunk::BLOCKS_PER_CHUNK)
+		{
+			Block& aboveBlock = m_blocks[indexAboveMe];
+			if (aboveBlock.IsPartOfSky())
+			{
+				block.SetIsPartOfSky(true);
+			}
+		}
+	}
+
+
 	// Dirty the mesh and adjacent neighbors if the block was on the XY-border of the chunk
 	m_isMeshDirty = true;
 

@@ -75,13 +75,19 @@ private:
 
 	// Lighting
 	void			AddBlockToDirtyLightingList(BlockLocator blockLocator);
+	BlockLocator	RemoveFrontBlockFromDirtyLightingList();
 	void			InitializeSkyBlocksForChunk(Chunk* chunk);
 	void			InitializeLightSourceBlocksForChunk(Chunk* chunk);
 	void			SetNeighborEdgeBlocksToDirtyForChunk(Chunk* chunk);
+	void			RecalculateLightingForBlock(BlockLocator blockLocator);
+
+	// Input-Related
+	void			DigBlock(BlockLocator blockToDig);
 
 	// Update
 	void			UpdateChunks();
 	void			UpdateRaycast();
+	void			UpdateLighting();
 
 	// Render
 	void			RenderChunks() const;

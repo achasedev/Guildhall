@@ -24,7 +24,7 @@ public:
 	inline const BlockType* GetType() const;
 
 	inline bool		IsPartOfSky() const;
-	inline bool		IsLightingDirty() const;
+	inline bool		IsInDirtyLightingList() const;
 	inline bool		IsFullyOpaque() const;
 	inline bool		IsVisible() const;
 	inline bool		IsSolid() const;
@@ -36,7 +36,7 @@ public:
 	// Mutators
 	inline void		SetType(const BlockType* blockType);
 	inline void		SetIsPartOfSky(bool isPartOfSky);
-	inline void		SetIsLightingDirty(bool isLightingDirty);
+	inline void		SetIsInDirtyLightingList(bool isInLightingList);
 	inline void		SetIsFullyOpaque(bool isFullyOpaque);
 	inline void		SetIsVisible(bool isVisible);
 	inline void		SetIsSolid(bool isSolid);
@@ -54,11 +54,11 @@ public:
 	static constexpr uint8_t BLOCK_OUTDOOR_LIGHT_MASK	= 0b11110000;
 	static constexpr uint8_t BLOCK_INDOOR_LIGHT_MASK	= 0b00001111;
 
-	static constexpr uint8_t BLOCK_BIT_IS_SKY			= 0b10000000;
-	static constexpr uint8_t BLOCK_BIT_IS_LIGHT_DIRTY	= 0b01000000;
-	static constexpr uint8_t BLOCK_BIT_IS_FULLY_OPAQUE	= 0b00100000;
-	static constexpr uint8_t BLOCK_BIT_IS_VISIBLE		= 0b00010000;
-	static constexpr uint8_t BLOCK_BIT_IS_SOLID			= 0b00001000;
+	static constexpr uint8_t BLOCK_BIT_IS_SKY					= 0b10000000;
+	static constexpr uint8_t BLOCK_BIT_IS_IN_DIRTY_LIGHT_LIST	= 0b01000000;
+	static constexpr uint8_t BLOCK_BIT_IS_FULLY_OPAQUE			= 0b00100000;
+	static constexpr uint8_t BLOCK_BIT_IS_VISIBLE				= 0b00010000;
+	static constexpr uint8_t BLOCK_BIT_IS_SOLID					= 0b00001000;
 
 
 private:
@@ -115,9 +115,9 @@ inline bool Block::IsPartOfSky() const
 //-----------------------------------------------------------------------------------------------
 // Returns true if this block has dirty lighting, meaning it is in the dirty lighting list
 //
-inline bool Block::IsLightingDirty() const
+inline bool Block::IsInDirtyLightingList() const
 {
-	return (m_flags & BLOCK_BIT_IS_LIGHT_DIRTY);
+	return (m_flags & BLOCK_BIT_IS_IN_DIRTY_LIGHT_LIST);
 }
 
 
@@ -153,7 +153,7 @@ inline bool Block::IsSolid() const
 //
 inline int Block::GetOutdoorLight() const
 {
-	return (m_light & BLOCK_OUTDOOR_LIGHT_MASK);
+	return ((m_light & BLOCK_OUTDOOR_LIGHT_MASK) >> 4);
 }
 
 
@@ -177,7 +177,7 @@ inline Rgba Block::GetLightingAsRGBChannels() const
 	float outdoorLighting = RangeMapFloat((float) outdoorLightingRaw, 0.f, (float)BLOCK_MAX_LIGHTING, 0.f, 1.0f);
 	float indoorLighting = RangeMapFloat((float) indoorLightingRaw, 0.f, (float)BLOCK_MAX_LIGHTING, 0.f, 1.0f);
 
-	return Rgba(outdoorLighting, indoorLighting, 0.5f, 1.0f);
+	return Rgba(indoorLighting, outdoorLighting, 0.5f, 1.0f);
 }
 
 
@@ -198,17 +198,17 @@ inline void	Block::SetIsPartOfSky(bool isPartOfSky)
 
 
 //-----------------------------------------------------------------------------------------------
-// Sets whether the lighting on this block is dirty and needs to be updated
+// Sets whether the lighting on this block is dirty and is in the world's dirty lighting list
 //
-inline void	Block::SetIsLightingDirty(bool isLightingDirty)
+inline void	Block::SetIsInDirtyLightingList(bool isLightingDirty)
 {
 	if (isLightingDirty)
 	{
-		m_flags |= BLOCK_BIT_IS_LIGHT_DIRTY;
+		m_flags |= BLOCK_BIT_IS_IN_DIRTY_LIGHT_LIST;
 	}
 	else
 	{
-		m_flags &= ~BLOCK_BIT_IS_LIGHT_DIRTY;
+		m_flags &= ~BLOCK_BIT_IS_IN_DIRTY_LIGHT_LIST;
 	}
 }
 

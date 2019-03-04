@@ -32,7 +32,7 @@ vec4 ApplyFog(vec4 finalColor, float fragDepth)
 //-----------------------------------------------------------------------------
 vec4 ApplyLighting(vec4 finalColor)
 {
-	return finalColor;
+	return finalColor * vec4(passLightValues.y, passLightValues.y, passLightValues.y, 1.0f);
 }
 
 

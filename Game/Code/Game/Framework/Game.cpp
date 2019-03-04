@@ -46,7 +46,7 @@ Game::Game()
 	m_world = new World();
 	
 	// Create the block types and load the texture
-	BlockType::InitializeTypes();
+	BlockType::InitializeBuiltInBlockTypes();
 
 	PopulateGameConfigBlackboard();
 }

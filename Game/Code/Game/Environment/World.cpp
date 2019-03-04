@@ -71,29 +71,29 @@ void World::ProcessInput()
 
 	if (m_lastRaycastResult.DidImpact())
 	{
-		BlockLocator hitBlock = m_lastRaycastResult.m_impactBlock;
+		BlockLocator hitBlockLocator = m_lastRaycastResult.m_impactBlock;
 
-		if (hitBlock.IsValid()) // Ensures we don't do anything outside of a chunk
+		if (hitBlockLocator.IsValid()) // Ensures we don't do anything outside of a chunk
 		{
 			// Dig a block
 			if (mouse.WasButtonJustPressed(MOUSEBUTTON_LEFT))
 			{
-				int indexOfHitBlock = hitBlock.GetBlockIndex();
-				Chunk* chunkContainingHit = hitBlock.GetChunk();
-
-				const BlockType* blockType = BlockType::GetTypeByIndex(BlockType::AIR_TYPE_INDEX);
-				chunkContainingHit->SetBlockTypeAtBlockIndex(indexOfHitBlock, blockType);
-				chunkContainingHit->SetNeedsToBeSavedToDisk(true);
+				DigBlock(hitBlockLocator);
 			}
 
 			// Place a block
 			if (mouse.WasButtonJustPressed(MOUSEBUTTON_RIGHT))
 			{
-				BlockLocator blockBeingPlaced = hitBlock.StepInCoordDirection(IntVector3(m_lastRaycastResult.m_impactNormal));
+				BlockLocator blockBeingPlaced = hitBlockLocator.StepInCoordDirection(IntVector3(m_lastRaycastResult.m_impactNormal));
 				Chunk* chunkContainingPlacedBlock = blockBeingPlaced.GetChunk();
 				int indexOfPlacedBlock = blockBeingPlaced.GetBlockIndex();
 
 				const BlockType* blockType = BlockType::GetTypeByIndex(m_blockTypeToPlace);
+				if (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT))
+				{
+					blockType = BlockType::GetTypeByName("Glowstone");
+				}
+
 				chunkContainingPlacedBlock->SetBlockTypeAtBlockIndex(indexOfPlacedBlock, blockType);
 				chunkContainingPlacedBlock->SetNeedsToBeSavedToDisk(true);
 			}
@@ -130,13 +130,14 @@ void World::Update()
 {
 	Game::GetGameCamera()->Update();
 
-	// Activate chunks within the range
-	CheckToActivateChunks();
-	CheckToBuildChunkMesh();
-	CheckToDeactivateChunks();
+	CheckToActivateChunks();	// Create chunks within activation range
+	CheckToDeactivateChunks();	// Save and remove a chunk if outside deactivation range
 
-	UpdateChunks();
-	UpdateRaycast();
+	UpdateLighting();			// Fix bad lighting on blocks that are dirty
+	CheckToBuildChunkMesh();	// Build a mesh if one needs to be rebuilt
+
+	UpdateChunks();				// General Update for chunks
+	UpdateRaycast();			// Update for debug raycast
 }
 
 
@@ -653,11 +654,27 @@ void World::AddBlockToDirtyLightingList(BlockLocator blockLocator)
 {
 	Block& block = blockLocator.GetBlock();
 
-	if (!block.IsLightingDirty())
+	if (!block.IsInDirtyLightingList())
 	{
-		block.SetIsLightingDirty(true);
-		m_dirtyLightingBlocks.push_front(blockLocator);
+		block.SetIsInDirtyLightingList(true);
+		m_dirtyLightingBlocks.push_back(blockLocator);
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Removes the block from the front of the dirty lighting list, and unflags it as being part
+// of the list
+//
+BlockLocator World::RemoveFrontBlockFromDirtyLightingList()
+{
+	ASSERT_OR_DIE(m_dirtyLightingBlocks.size() > 0, "Dirty list was empty!");
+
+	BlockLocator blockLocator = m_dirtyLightingBlocks.front();
+	m_dirtyLightingBlocks.pop_front();
+	blockLocator.GetBlock().SetIsInDirtyLightingList(false);
+
+	return blockLocator;
 }
 
 
@@ -864,6 +881,98 @@ void World::SetNeighborEdgeBlocksToDirtyForChunk(Chunk* chunk)
 
 
 //-----------------------------------------------------------------------------------------------
+// Recalculates and sets what this block's light value should be, and if there is a change
+// pushes all neighboring block in the dirty list to also be recalculated
+//
+void World::RecalculateLightingForBlock(BlockLocator blockLocator)
+{
+	BlockLocator eastBlockLocator = blockLocator.ToEast();
+	BlockLocator westBlockLocator = blockLocator.ToWest();
+	BlockLocator northBlockLocator = blockLocator.ToNorth();
+	BlockLocator southBlockLocator = blockLocator.ToSouth();
+	BlockLocator aboveBlockLocator = blockLocator.ToAbove();
+	BlockLocator belowBlockLocator = blockLocator.ToBelow();
+
+	Block& currBlock = blockLocator.GetBlock();
+	Block& eastBlock = eastBlockLocator.GetBlock();
+	Block& westBlock = westBlockLocator.GetBlock();
+	Block& northBlock = northBlockLocator.GetBlock();
+	Block& southBlock = southBlockLocator.GetBlock();
+	Block& aboveBlock = aboveBlockLocator.GetBlock();
+	Block& belowBlock = belowBlockLocator.GetBlock();
+
+	int currIndoorLight = currBlock.GetIndoorLight();
+	int currInternalLight = currBlock.GetType()->m_internalLightLevel;
+	int eastIndoorLight = eastBlock.GetIndoorLight();
+	int westIndoorLight = westBlock.GetIndoorLight();
+	int northIndoorLight = northBlock.GetIndoorLight();
+	int southIndoorLight = southBlock.GetIndoorLight();
+	int aboveIndoorLight = aboveBlock.GetIndoorLight();
+	int belowIndoorLight = belowBlock.GetIndoorLight();
+
+	int currOutdoorLight = currBlock.GetOutdoorLight();
+	int eastOutdoorLight = eastBlock.GetOutdoorLight();
+	int westOutdoorLight = westBlock.GetOutdoorLight();
+	int northOutdoorLight = northBlock.GetOutdoorLight();
+	int southOutdoorLight = southBlock.GetOutdoorLight();
+	int aboveOutdoorLight = aboveBlock.GetOutdoorLight();
+	int belowOutdoorLight = belowBlock.GetOutdoorLight();
+
+	int maxNeighborIndoorLight = Max(eastIndoorLight, westIndoorLight, northIndoorLight, southIndoorLight, aboveIndoorLight, belowIndoorLight);
+	int maxNeighborOutdoorLight = Max(eastOutdoorLight, westOutdoorLight, northOutdoorLight, southOutdoorLight, aboveOutdoorLight, belowOutdoorLight);
+
+	int expectedIndoorLight = currInternalLight;
+	if (!currBlock.IsFullyOpaque())
+	{
+		expectedIndoorLight = Max(maxNeighborIndoorLight - 1, currInternalLight);
+	}
+	
+	int expectedOutdoorLight = 0;
+	if (currBlock.IsPartOfSky())
+	{
+		expectedOutdoorLight = Block::BLOCK_MAX_LIGHTING;
+	}
+	else if (!currBlock.IsFullyOpaque())
+	{
+		expectedOutdoorLight = ClampInt(maxNeighborOutdoorLight - 1, 0, Block::BLOCK_MAX_LIGHTING);
+	}
+
+	bool currLightValuesWrong = (expectedIndoorLight != currIndoorLight || expectedOutdoorLight != currOutdoorLight);
+
+	if (currLightValuesWrong)
+	{
+		// Fix them
+		currBlock.SetIndoorLighting(expectedIndoorLight);
+		currBlock.SetOutdoorLighting(expectedOutdoorLight);;
+
+		// Dirty all neighbors
+ 		AddBlockToDirtyLightingList(eastBlockLocator);
+ 		AddBlockToDirtyLightingList(westBlockLocator);
+ 		AddBlockToDirtyLightingList(northBlockLocator);
+ 		AddBlockToDirtyLightingList(southBlockLocator);
+ 		AddBlockToDirtyLightingList(aboveBlockLocator);
+ 		AddBlockToDirtyLightingList(belowBlockLocator);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Digs a block by setting the block we're looking at to air
+//
+void World::DigBlock(BlockLocator blockToDig)
+{
+	int indexOfHitBlock = blockToDig.GetBlockIndex();
+	Chunk* chunkContainingHit = blockToDig.GetChunk();
+
+	const BlockType* blockType = BlockType::GetTypeByIndex(BlockType::AIR_TYPE_INDEX);
+	chunkContainingHit->SetBlockTypeAtBlockIndex(indexOfHitBlock, blockType);
+	chunkContainingHit->SetNeedsToBeSavedToDisk(true);
+	
+	AddBlockToDirtyLightingList(blockToDig);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Calls Update() on all chunks
 //
 void World::UpdateChunks()
@@ -892,6 +1001,19 @@ void World::UpdateRaycast()
 	}
 
 	m_lastRaycastResult = Raycast(m_raycastReferencePosition, m_raycastForward, DEFAULT_RAYCAST_DISTANCE);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Calculates all lighting changes for all blocks in the dirty block queue
+//
+void World::UpdateLighting()
+{
+	while (m_dirtyLightingBlocks.size() > 0)
+	{
+		BlockLocator blockLocator = RemoveFrontBlockFromDirtyLightingList();
+		RecalculateLightingForBlock(blockLocator);
+	}
 }
 
 

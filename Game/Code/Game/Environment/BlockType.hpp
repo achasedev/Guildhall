@@ -5,6 +5,7 @@
 /* Description: Class to represent data/constant attributes for a block kind
 /************************************************************************/
 #pragma once
+#include "Engine/Core/Rgba.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include <map>
 #include <string>
@@ -18,7 +19,7 @@ class BlockType
 public:
 	//-----Public Methods-----
 
-	static void InitializeTypes();
+	static void InitializeBuiltInBlockTypes();
 
 	static const BlockType* GetTypeByIndex(uint8_t index);
 	static const BlockType* GetTypeByName(const std::string& name);
@@ -42,6 +43,7 @@ public:
 	bool		m_isFullyOpaque = false;			// Does it fully obscure other blocks behind it?
 	bool		m_isSolid = false;					// Does it block raycasts and have collision?
 
+	Rgba		m_internalLightColor = Rgba::YELLOW;
 	int			m_internalLightLevel = 0;
 
 	static constexpr uint8_t AIR_TYPE_INDEX = 0;
