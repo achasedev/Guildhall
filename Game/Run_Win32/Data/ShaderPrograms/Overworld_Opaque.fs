@@ -14,16 +14,25 @@ layout(binding=9, std140) uniform fogUBO
 	float FOG_MAX_FACTOR;
 };
 
+
+layout(binding=10, std140) uniform lightColorUBO
+{
+	vec3 	INDOOR_LIGHT_COLOR;
+	float 	LIGHT_UBO_PADDING_0;
+	vec3 	OUTDOOR_LIGHT_COLOR;
+	float 	LIGHT_UBO_PADDING_1;
+};
+
 																											
 out vec4 outColor; 											
 	
 //-----------------------------------------------------------------------------
-vec4 ApplyFog(vec4 finalColor, float fragDepth)
+vec4 ApplyFog(vec4 finalColor, float fragDistanceFromCamera)
 {
-	float fogFactor = smoothstep(FOG_MIN_DISTANCE, FOG_MAX_DISTANCE, fragDepth);
+	float fogFactor = smoothstep(FOG_MIN_DISTANCE, FOG_MAX_DISTANCE, fragDistanceFromCamera);
 	fogFactor = FOG_MIN_FACTOR + (FOG_MAX_FACTOR - FOG_MIN_FACTOR) * fogFactor;
 
-	finalColor = mix(finalColor, vec4(1.f), fogFactor);
+	finalColor = mix(finalColor, vec4(OUTDOOR_LIGHT_COLOR, 1.0f), fogFactor);
 
 	return finalColor;
 }
@@ -32,7 +41,12 @@ vec4 ApplyFog(vec4 finalColor, float fragDepth)
 //-----------------------------------------------------------------------------
 vec4 ApplyLighting(vec4 finalColor)
 {
-	return finalColor * vec4(passLightValues.y, passLightValues.y, passLightValues.y, 1.0f);
+	vec4 indoorExposure = passLightValues.x * vec4(INDOOR_LIGHT_COLOR, 1.0f);
+	vec4 outdoorExposure = passLightValues.y * vec4(OUTDOOR_LIGHT_COLOR, 1.0f);
+
+	vec4 finalLightColor = max(indoorExposure, outdoorExposure);
+
+	return finalColor * finalLightColor;
 }
 
 
@@ -44,5 +58,6 @@ void main( void )
 	vec4 finalColor = diffuse;
 	vec4 finalColorWithLighting = ApplyLighting(finalColor);
 	
-	outColor = ApplyFog(finalColorWithLighting, passCameraPosition.z);	 				
+	float fragDistanceFromCamera = length(passCameraPosition);
+	outColor = ApplyFog(finalColorWithLighting, fragDistanceFromCamera);	 				
 }

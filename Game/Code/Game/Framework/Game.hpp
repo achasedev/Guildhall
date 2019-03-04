@@ -48,6 +48,7 @@ private:
 	Game(const Game& copy) = delete;
 
 	void PopulateGameConfigBlackboard();
+	void LoadAndInitializeAssets();
 
 
 private:

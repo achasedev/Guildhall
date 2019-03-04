@@ -56,8 +56,8 @@ public:
 	inline void				SetSouthNeighbor(Chunk* chunkToSouth);
 	inline void				SetIsMeshDirty(bool isMeshDirty);
 	inline void				SetNeedsToBeSavedToDisk(bool needsToBeSaved);
-	inline void				SetBlockTypeAtBlockIndex(int blockIndex, const BlockType* blockType);
-	inline void				SetBlockTypeAtBlockCoords(const IntVector3& blockCoords, const BlockType* blockType);
+	void					SetBlockTypeAtBlockIndex(int blockIndex, const BlockType* blockType);
+	void					SetBlockTypeAtBlockCoords(const IntVector3& blockCoords, const BlockType* blockType);
 
 	void					UpdateSkyFlagsForBlock(int blockIndex);
 

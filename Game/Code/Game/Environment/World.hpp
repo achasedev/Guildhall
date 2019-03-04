@@ -48,6 +48,7 @@ public:
 	BlockLocator	GetBlockLocatorThatContainsWorldPosition(const Vector3& position) const;
 	BlockLocator	GetBlockLocatorForFlooredPosition(const IntVector3& coords) const;
 	int				GetActiveChunkCount() const;
+	float			GetTimeOfDay() const;
 
 	RaycastResult_t Raycast(const Vector3& start, const Vector3& directionNormal, float maxDistance) const;
 
@@ -89,6 +90,7 @@ private:
 	void			UpdateChunks();
 	void			UpdateRaycast();
 	void			UpdateLighting();
+	void			UpdateTimeOfDay();
 
 	// Render
 	void			RenderChunks() const;
@@ -100,6 +102,10 @@ private:
 	std::map<IntVector2, Chunk*>	m_activeChunks;
 	std::deque<BlockLocator>		m_dirtyLightingBlocks;
 
+	Rgba							m_outdoorLightColor;
+	Rgba							m_indoorLightColor;
+	float							m_timeOfDayZeroToOne = 0.f; // 0.f is Midnight, 0.25f dawn, 0.5f noon, 0.75f dusk
+
 	// For Debugging
 	bool							m_raycastDetached = false;
 	Vector3							m_raycastReferencePosition; // Will be camera position when not detached
@@ -107,10 +113,16 @@ private:
 	RaycastResult_t					m_lastRaycastResult;
 	uint8_t							m_blockTypeToPlace = 7;
 
+	// Static constants
 	static constexpr int			SEA_LEVEL = 25;
 	static constexpr int			BASE_ELEVATION = 30;
 	static constexpr int			NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION = 10;
 	static constexpr int			RAYCAST_STEPS_PER_BLOCK = 100;
 	static constexpr float			DEFAULT_RAYCAST_DISTANCE = 8.f;
+
+	static constexpr float			WORLD_DAY_TIME_SCALE = 43200.f / 4.f;
+	static constexpr float			ONE_OVER_SECONDS_PER_DAY = 1.f / 86400.f;
+	static const Rgba				WORLD_NOON_SKY_COLOR;
+	static const Rgba				WORLD_NIGHT_SKY_COLOR;
 
 };

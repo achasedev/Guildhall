@@ -19,9 +19,17 @@
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/Utility/Blackboard.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
+#include "Engine/Rendering/Materials/Material.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"\
+
+//-----------------------------------------------------------------------------------------------
+// Static Members
+//
+const Rgba World::WORLD_NOON_SKY_COLOR = Rgba(200, 230, 250);
+const Rgba World::WORLD_NIGHT_SKY_COLOR = Rgba(20, 20, 40);
+
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -123,6 +131,7 @@ void World::Update()
 	CheckToActivateChunks();	// Create chunks within activation range
 	CheckToDeactivateChunks();	// Save and remove a chunk if outside deactivation range
 
+	UpdateTimeOfDay();			// Progresses the time of day, used for lighting
 	UpdateLighting();			// Fix bad lighting on blocks that are dirty, may flag a mesh as dirty
 	CheckToBuildChunkMesh();	// Build a mesh if one needs to be rebuilt
 
@@ -136,9 +145,11 @@ void World::Update()
 //
 void World::Render() const
 {
+	Renderer* renderer = Renderer::GetInstance();
+	renderer->ClearScreen(m_outdoorLightColor);
+
 	RenderChunks();
 
-	Renderer* renderer = Renderer::GetInstance();
 	Material* xRayMaterial = AssetDB::GetSharedMaterial("X_Ray");
 
 	if (m_raycastDetached)
@@ -313,6 +324,15 @@ BlockLocator World::GetBlockLocatorForFlooredPosition(const IntVector3& flooredP
 int World::GetActiveChunkCount() const
 {
 	return (int) m_activeChunks.size();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the time of day in the world
+//
+float World::GetTimeOfDay() const
+{
+	return m_timeOfDayZeroToOne;
 }
 
 
@@ -772,7 +792,7 @@ void World::InitializeLightSourceBlocksForChunk(Chunk* chunk)
 		Block& block = blockLocator.GetBlock();
 		const BlockType* blockType = block.GetType();
 
-		if (!block.IsFullyOpaque() && blockType->m_internalLightLevel > 0)
+		if (blockType->m_internalLightLevel > 0)
 		{
 			// Do not set the lighting of this block! Let the algorithm set it
 			AddBlockToDirtyLightingList(blockLocator);
@@ -1025,6 +1045,40 @@ void World::UpdateLighting()
 	{
 		BlockLocator blockLocator = RemoveFrontBlockFromDirtyLightingList();
 		RecalculateLightingForBlock(blockLocator);
+	}
+
+	// Update the colors of the sky and world
+	Material* material = AssetDB::GetSharedMaterial("Data/Materials/Overworld_Opaque.material");
+
+	// Making it stay the same darkness from dusk to dawn, increase from dawn to noon, decrease from noon to dusk
+	float t = ClampFloat(m_timeOfDayZeroToOne, 0.25f, 0.75f);
+	t = RangeMapFloat(t, 0.25f, 0.75f, 0.f, 1.f);
+	if (t > 0.5f)
+	{
+		t = 1.0 - t;
+	}
+
+	m_outdoorLightColor = Interpolate(WORLD_NIGHT_SKY_COLOR, WORLD_NOON_SKY_COLOR, t);
+	Vector4 colorAsFloats;
+	m_outdoorLightColor.GetAsFloats(colorAsFloats.x, colorAsFloats.y, colorAsFloats.z, colorAsFloats.w);
+	material->SetProperty("INDOOR_LIGHT_COLOR", Vector3(1.0f, 1.0f, 0.f));
+	material->SetProperty("OUTDOOR_LIGHT_COLOR", colorAsFloats.xyz());
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Updates the time of day in the world
+//
+void World::UpdateTimeOfDay()
+{
+	float realTimeSecondsPassed = Game::GetDeltaTime();
+	float gameTimeSecondsPassed = WORLD_DAY_TIME_SCALE * realTimeSecondsPassed;
+	float normalizedTimePassed = gameTimeSecondsPassed * ONE_OVER_SECONDS_PER_DAY;
+	m_timeOfDayZeroToOne += normalizedTimePassed;
+
+	if (m_timeOfDayZeroToOne >= 1.0f)
+	{
+		m_timeOfDayZeroToOne -= 1.0f;
 	}
 }
 

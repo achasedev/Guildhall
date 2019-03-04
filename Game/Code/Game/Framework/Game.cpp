@@ -49,6 +49,7 @@ Game::Game()
 	BlockType::InitializeBuiltInBlockTypes();
 
 	PopulateGameConfigBlackboard();
+	LoadAndInitializeAssets();
 }
 
 
@@ -67,6 +68,25 @@ void Game::PopulateGameConfigBlackboard()
 	const XMLElement* rootElement = document.RootElement();
 	const XMLElement* chunkElement = rootElement->FirstChildElement("Chunk");
 	m_gameConfigBlackboard->PopulateFromXmlElementAttributes(*chunkElement);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Loads and sets up initial asset values
+//
+void Game::LoadAndInitializeAssets()
+{
+	Material* overworldMaterial = AssetDB::CreateOrGetSharedMaterial("Data/Materials/Overworld_Opaque.material");
+
+	// Setup fog values to hide chunk activation
+	float chunkActivationRange = m_gameConfigBlackboard->GetValue("activation_range", DEFAULT_CHUNK_ACTIVATION_RANGE);
+	float fogMinDistance = chunkActivationRange * 0.6f;
+	float fogMaxDistance = chunkActivationRange * 0.9f;
+
+	overworldMaterial->SetProperty("FOG_MIN_FACTOR", 0.f);
+	overworldMaterial->SetProperty("FOG_MAX_FACTOR", 1.0f);
+	overworldMaterial->SetProperty("FOG_MAX_DISTANCE", fogMaxDistance);
+	overworldMaterial->SetProperty("FOG_MIN_DISTANCE", fogMinDistance);
 }
 
 
@@ -163,6 +183,9 @@ void Game::Render() const
 		m_gameConfigBlackboard->GetValue("activation_range", DEFAULT_CHUNK_ACTIVATION_RANGE), m_world->GetActiveChunkCount());
 
 	DebugRenderSystem::Draw2DText(text, windowBounds, 0.f, Rgba::DARK_GREEN, 20.f);
+
+	text = Stringf("Time of day: %.2f", m_world->GetTimeOfDay());
+	DebugRenderSystem::Draw2DText(text, windowBounds, 0.f, Rgba::DARK_GREEN, 20.f, Vector2(1.0f, 0.f));
 
 	// Screen reticle
 	renderer->SetCurrentCamera(renderer->GetUICamera());

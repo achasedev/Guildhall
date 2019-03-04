@@ -16,7 +16,7 @@ IntVector3 FloorPositionToIntegerCoords(const Vector3& position);
 
 // Camera
 constexpr float CAMERA_TRANSLATION_SPEED = 5.0f;
-constexpr float CAMERA_ROTATION_SPEED = 45.f;
+constexpr float CAMERA_ROTATION_SPEED = 180.f;
 
 // World
 constexpr float DEFAULT_CHUNK_ACTIVATION_RANGE = 200.f;
