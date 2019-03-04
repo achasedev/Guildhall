@@ -453,6 +453,71 @@ void Chunk::WriteToFile() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Updates the IsPartOfSky flags for the block at the given index
+//
+void Chunk::UpdateSkyFlagsForBlock(int blockIndex)
+{
+	Block& block = m_blocks[blockIndex];
+	const BlockType* blockType = block.GetType();
+
+	// Opaque block, need to set it as not sky and anything below it as not sky
+	if (blockType->m_isFullyOpaque)
+	{
+		bool wasPreviouslySky = block.IsPartOfSky();
+		block.SetIsPartOfSky(false);
+
+		if (wasPreviouslySky)
+		{
+			int indexBelowMe = blockIndex - Chunk::BLOCKS_PER_Z_LAYER;
+			while (indexBelowMe >= 0)
+			{
+				Block& belowBlock = m_blocks[indexBelowMe];
+				if (!belowBlock.IsFullyOpaque())
+				{
+					belowBlock.SetIsPartOfSky(false);
+				}
+				else
+				{
+					break;
+				}
+
+				indexBelowMe -= Chunk::BLOCKS_PER_Z_LAYER;
+			}
+		}
+	}
+	else
+	{
+		// Is not opaque, check if it should be sky and if so iterate downward
+		int indexAboveMe = blockIndex + Chunk::BLOCKS_PER_Z_LAYER;
+		if (indexAboveMe < Chunk::BLOCKS_PER_CHUNK)
+		{
+			Block& aboveBlock = m_blocks[indexAboveMe];
+			if (aboveBlock.IsPartOfSky())
+			{
+				block.SetIsPartOfSky(true);
+
+				int indexBelowMe = blockIndex - Chunk::BLOCKS_PER_Z_LAYER;
+				while (indexBelowMe >= 0)
+				{
+					Block& belowBlock = m_blocks[indexBelowMe];
+					if (!belowBlock.IsFullyOpaque())
+					{
+						belowBlock.SetIsPartOfSky(true);
+					}
+					else
+					{
+						break;
+					}
+
+					indexBelowMe -= Chunk::BLOCKS_PER_Z_LAYER;
+				}
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Pushes the vertices (and indices) into the meshbuilder for the block at the given coords
 // PUSHES THE BLOCK VERTICES IN WORLD SPACE
 //

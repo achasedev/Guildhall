@@ -85,17 +85,7 @@ void World::ProcessInput()
 			if (mouse.WasButtonJustPressed(MOUSEBUTTON_RIGHT))
 			{
 				BlockLocator blockBeingPlaced = hitBlockLocator.StepInCoordDirection(IntVector3(m_lastRaycastResult.m_impactNormal));
-				Chunk* chunkContainingPlacedBlock = blockBeingPlaced.GetChunk();
-				int indexOfPlacedBlock = blockBeingPlaced.GetBlockIndex();
-
-				const BlockType* blockType = BlockType::GetTypeByIndex(m_blockTypeToPlace);
-				if (input->IsKeyPressed(InputSystem::KEYBOARD_SHIFT))
-				{
-					blockType = BlockType::GetTypeByName("Glowstone");
-				}
-
-				chunkContainingPlacedBlock->SetBlockTypeAtBlockIndex(indexOfPlacedBlock, blockType);
-				chunkContainingPlacedBlock->SetNeedsToBeSavedToDisk(true);
+				PlaceBlock(blockBeingPlaced);
 			}
 		}
 	}
@@ -133,7 +123,7 @@ void World::Update()
 	CheckToActivateChunks();	// Create chunks within activation range
 	CheckToDeactivateChunks();	// Save and remove a chunk if outside deactivation range
 
-	UpdateLighting();			// Fix bad lighting on blocks that are dirty
+	UpdateLighting();			// Fix bad lighting on blocks that are dirty, may flag a mesh as dirty
 	CheckToBuildChunkMesh();	// Build a mesh if one needs to be rebuilt
 
 	UpdateChunks();				// General Update for chunks
@@ -952,6 +942,9 @@ void World::RecalculateLightingForBlock(BlockLocator blockLocator)
  		AddBlockToDirtyLightingList(southBlockLocator);
  		AddBlockToDirtyLightingList(aboveBlockLocator);
  		AddBlockToDirtyLightingList(belowBlockLocator);
+
+		// Dirty this mesh so it will be rebuilt with the correct light values
+		blockLocator.GetChunk()->SetIsMeshDirty(true);
 	}
 }
 
@@ -967,8 +960,27 @@ void World::DigBlock(BlockLocator blockToDig)
 	const BlockType* blockType = BlockType::GetTypeByIndex(BlockType::AIR_TYPE_INDEX);
 	chunkContainingHit->SetBlockTypeAtBlockIndex(indexOfHitBlock, blockType);
 	chunkContainingHit->SetNeedsToBeSavedToDisk(true);
-	
+	chunkContainingHit->UpdateSkyFlagsForBlock(indexOfHitBlock);
+
 	AddBlockToDirtyLightingList(blockToDig);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Changes the type of the block at the given locator based on the input and set block to place
+//
+void World::PlaceBlock(BlockLocator blockToChange)
+{
+	Chunk* chunkContainingPlacedBlock = blockToChange.GetChunk();
+	int indexOfPlacedBlock = blockToChange.GetBlockIndex();
+
+	const BlockType* blockType = BlockType::GetTypeByIndex(m_blockTypeToPlace);
+
+	chunkContainingPlacedBlock->SetBlockTypeAtBlockIndex(indexOfPlacedBlock, blockType);
+	chunkContainingPlacedBlock->SetNeedsToBeSavedToDisk(true);
+	chunkContainingPlacedBlock->UpdateSkyFlagsForBlock(indexOfPlacedBlock);
+
+	AddBlockToDirtyLightingList(blockToChange);
 }
 
 

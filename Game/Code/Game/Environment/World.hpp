@@ -83,6 +83,7 @@ private:
 
 	// Input-Related
 	void			DigBlock(BlockLocator blockToDig);
+	void			PlaceBlock(BlockLocator hitBlockLocator);
 
 	// Update
 	void			UpdateChunks();
@@ -104,7 +105,7 @@ private:
 	Vector3							m_raycastReferencePosition; // Will be camera position when not detached
 	Vector3							m_raycastForward;			// Will be the camera forward when not detached
 	RaycastResult_t					m_lastRaycastResult;
-	uint8_t							m_blockTypeToPlace = 5;
+	uint8_t							m_blockTypeToPlace = 7;
 
 	static constexpr int			SEA_LEVEL = 25;
 	static constexpr int			BASE_ELEVATION = 30;

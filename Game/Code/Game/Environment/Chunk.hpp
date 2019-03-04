@@ -59,6 +59,8 @@ public:
 	inline void				SetBlockTypeAtBlockIndex(int blockIndex, const BlockType* blockType);
 	inline void				SetBlockTypeAtBlockCoords(const IntVector3& blockCoords, const BlockType* blockType);
 
+	void					UpdateSkyFlagsForBlock(int blockIndex);
+
 	// Statics
 	static int				GetBlockIndexFromBlockCoords(const IntVector3& blockCoords);
 	static IntVector3		GetBlockCoordsFromBlockIndex(int blockIndex);
