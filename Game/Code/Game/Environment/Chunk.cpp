@@ -283,7 +283,7 @@ void Chunk::BuildMesh()
 	}
 	else
 	{
-		m_meshBuilder.UpdateMesh(*m_mesh);
+		m_meshBuilder.UpdateMesh<Vertex3D_PCU>(*m_mesh);
 	}
 
 	m_isMeshDirty = false;
