@@ -175,7 +175,7 @@ inline Rgba Block::GetLightingAsRGBChannels() const
 	int indoorLightingRaw = GetIndoorLight();
 
 	float outdoorLighting = RangeMapFloat((float) outdoorLightingRaw, 0.f, (float)BLOCK_MAX_LIGHTING, 0.f, 1.0f);
-	float indoorLighting = RangeMapFloat((float) indoorLightingRaw, 0.f, (float)BLOCK_MAX_LIGHTING, 0.f, 1.0f);
+	float indoorLighting = RangeMapFloat((float) (indoorLightingRaw + 1), 0.f, (float)(BLOCK_MAX_LIGHTING + 1), 0.f, 1.0f);
 
 	return Rgba(indoorLighting, outdoorLighting, 0.5f, 1.0f);
 }

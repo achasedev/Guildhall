@@ -27,8 +27,8 @@
 //-----------------------------------------------------------------------------------------------
 // Static Members
 //
-const Rgba World::WORLD_NOON_SKY_COLOR = Rgba(200, 230, 250);
-const Rgba World::WORLD_NIGHT_SKY_COLOR = Rgba(40, 40, 80);
+const Rgba World::WORLD_NOON_SKY_COLOR = Rgba(200, 230, 255);
+const Rgba World::WORLD_NIGHT_SKY_COLOR = Rgba(20, 20, 40);
 
 
 //-----------------------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ void World::Update()
 void World::Render() const
 {
 	Renderer* renderer = Renderer::GetInstance();
-	renderer->ClearScreen(m_outdoorLightColor);
+	renderer->ClearScreen(m_skyColor);
 
 	RenderChunks();
 
@@ -970,6 +970,22 @@ void World::RecalculateLightingForBlock(BlockLocator blockLocator)
 
 
 //-----------------------------------------------------------------------------------------------
+// Searches and removes all blocks in the dirty block queue that belong to the given chunk
+//
+void World::UndirtyAllBlocksInChunk(Chunk* chunk)
+{
+	for (int queueIndex = (int)m_dirtyLightingBlocks.size() - 1; queueIndex >= 0; --queueIndex)
+	{
+		BlockLocator currLocator = m_dirtyLightingBlocks[queueIndex];
+		if (currLocator.GetChunk() == chunk)
+		{
+			m_dirtyLightingBlocks.erase(m_dirtyLightingBlocks.begin() + queueIndex);
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Digs a block by setting the block we're looking at to air
 //
 void World::DigBlock(BlockLocator blockToDig)
@@ -994,7 +1010,16 @@ void World::PlaceBlock(BlockLocator blockToChange)
 	Chunk* chunkContainingPlacedBlock = blockToChange.GetChunk();
 	int indexOfPlacedBlock = blockToChange.GetBlockIndex();
 
-	const BlockType* blockType = BlockType::GetTypeByIndex(m_blockTypeToPlace);
+	InputSystem* input = InputSystem::GetInstance();
+	const BlockType* blockType = nullptr;
+	if (input->IsKeyPressed(InputSystem::KEYBOARD_CONTROL))
+	{
+		blockType = BlockType::GetTypeByIndex(m_ctrlRightClickBlockType);
+	}
+	else
+	{
+		blockType = BlockType::GetTypeByIndex(m_rightClickBlockType);
+	}
 
 	chunkContainingPlacedBlock->SetBlockTypeAtBlockIndex(indexOfPlacedBlock, blockType);
 	chunkContainingPlacedBlock->SetNeedsToBeSavedToDisk(true);
@@ -1052,17 +1077,21 @@ void World::UpdateLighting()
 
 	// Making it stay the same darkness from dusk to dawn, increase from dawn to noon, decrease from noon to dusk
 	float t = ClampFloat(m_timeOfDayZeroToOne, 0.25f, 0.75f);
-	t = RangeMapFloat(t, 0.25f, 0.75f, 0.f, 1.f);
-	if (t > 0.5f)
+	t = RangeMapFloat(t, 0.25f, 0.75f, 0.f, 2.f);
+	if (t > 1.f)
 	{
-		t = 1.0 - t;
+		t = 2.0f - t;
 	}
 
-	m_outdoorLightColor = Interpolate(WORLD_NIGHT_SKY_COLOR, WORLD_NOON_SKY_COLOR, t);
+
+	m_skyColor = Interpolate(WORLD_NIGHT_SKY_COLOR, WORLD_NOON_SKY_COLOR, t);
 	Vector4 colorAsFloats;
-	m_outdoorLightColor.GetAsFloats(colorAsFloats.x, colorAsFloats.y, colorAsFloats.z, colorAsFloats.w);
-	material->SetProperty("INDOOR_LIGHT_COLOR", Vector3(1.0f, 1.0f, 0.f));
+	m_skyColor.GetAsFloats(colorAsFloats.x, colorAsFloats.y, colorAsFloats.z, colorAsFloats.w);
+	material->SetProperty("SKY_COLOR", colorAsFloats.xyz());
 	material->SetProperty("OUTDOOR_LIGHT_COLOR", colorAsFloats.xyz());
+
+	m_indoorLightColor.GetAsFloats(colorAsFloats.x, colorAsFloats.y, colorAsFloats.z, colorAsFloats.w);
+	material->SetProperty("INDOOR_LIGHT_COLOR", colorAsFloats.xyz());
 }
 
 

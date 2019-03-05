@@ -21,6 +21,8 @@ layout(binding=10, std140) uniform lightColorUBO
 	float 	LIGHT_UBO_PADDING_0;
 	vec3 	OUTDOOR_LIGHT_COLOR;
 	float 	LIGHT_UBO_PADDING_1;
+	vec3 	SKY_COLOR;
+	float 	LIGHT_UBO_PADDING_2;
 };
 
 																											
@@ -32,7 +34,7 @@ vec4 ApplyFog(vec4 finalColor, float fragDistanceFromCamera)
 	float fogFactor = smoothstep(FOG_MIN_DISTANCE, FOG_MAX_DISTANCE, fragDistanceFromCamera);
 	fogFactor = FOG_MIN_FACTOR + (FOG_MAX_FACTOR - FOG_MIN_FACTOR) * fogFactor;
 
-	finalColor = mix(finalColor, vec4(OUTDOOR_LIGHT_COLOR, 1.0f), fogFactor);
+	finalColor = mix(finalColor, vec4(SKY_COLOR, 1.0f), fogFactor);
 
 	return finalColor;
 }

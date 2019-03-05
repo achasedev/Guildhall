@@ -14,13 +14,17 @@ Run the .exe or build the solution to start the game.
 
 Use WASD to move around on the horizontal XY plane.
 Use QE to move up and down along the vertical z axis.
+Hold Shift to move faster, or hold space to move more slowly.
+
 Rotate the camera using mouse look.
 
 Press Left Click when looking at a block to dig the block.
-Press Right Click when looking at a block face to place a block along that face.
+Press Right Click when looking at a block face to place a stone block along that face.
+Press and hold Control and Right click to place a glowstone block.
 
 Press 'U' to immediate deactivate all block (they will immediately reactivate in activation order)
 Press 'R' to lock the raycast and draw a debug raycast for testing. Press 'R' again to unlock the raycast.
+
 
 
 -----Extras-----

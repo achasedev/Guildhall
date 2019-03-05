@@ -80,8 +80,8 @@ void Game::LoadAndInitializeAssets()
 
 	// Setup fog values to hide chunk activation
 	float chunkActivationRange = m_gameConfigBlackboard->GetValue("activation_range", DEFAULT_CHUNK_ACTIVATION_RANGE);
-	float fogMinDistance = chunkActivationRange * 0.6f;
-	float fogMaxDistance = chunkActivationRange * 0.9f;
+	float fogMaxDistance = chunkActivationRange - 16.f;
+	float fogMinDistance = 0.5f * fogMaxDistance;
 
 	overworldMaterial->SetProperty("FOG_MIN_FACTOR", 0.f);
 	overworldMaterial->SetProperty("FOG_MAX_FACTOR", 1.0f);
@@ -186,7 +186,6 @@ void Game::Render() const
 
 	float timeOfDayZeroToOne = m_world->GetTimeOfDay();
 	int secondsIntoDay = (int)(86400.f * timeOfDayZeroToOne);
-	int leftoverSeconds = secondsIntoDay % 60;
 	int minutesIntoDay = secondsIntoDay / 60;
 	int leftoverMinutes = minutesIntoDay % 60;
 	int hoursIntoDay = minutesIntoDay / 60;

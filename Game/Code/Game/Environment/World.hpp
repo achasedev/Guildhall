@@ -81,6 +81,7 @@ private:
 	void			InitializeLightSourceBlocksForChunk(Chunk* chunk);
 	void			SetNeighborEdgeBlocksToDirtyForChunk(Chunk* chunk);
 	void			RecalculateLightingForBlock(BlockLocator blockLocator);
+	void			UndirtyAllBlocksInChunk(Chunk* chunk);
 
 	// Input-Related
 	void			DigBlock(BlockLocator blockToDig);
@@ -102,8 +103,9 @@ private:
 	std::map<IntVector2, Chunk*>	m_activeChunks;
 	std::deque<BlockLocator>		m_dirtyLightingBlocks;
 
-	Rgba							m_outdoorLightColor;
-	Rgba							m_indoorLightColor;
+	Rgba							m_skyColor;
+	Rgba							m_indoorLightColor = Rgba(1.0f, 1.0f, 0.f, 1.0f);
+	Rgba							m_outdoorLightColor = Rgba(1.0f, 0.9f, 0.8f, 1.0f);
 	float							m_timeOfDayZeroToOne = 0.f; // 0.f is Midnight, 0.25f dawn, 0.5f noon, 0.75f dusk
 
 	// For Debugging
@@ -111,7 +113,9 @@ private:
 	Vector3							m_raycastReferencePosition; // Will be camera position when not detached
 	Vector3							m_raycastForward;			// Will be the camera forward when not detached
 	RaycastResult_t					m_lastRaycastResult;
-	uint8_t							m_blockTypeToPlace = 7;
+
+	uint8_t							m_rightClickBlockType = 5;
+	uint8_t							m_ctrlRightClickBlockType = 7;
 
 	// Static constants
 	static constexpr int			SEA_LEVEL = 25;
@@ -120,7 +124,7 @@ private:
 	static constexpr int			RAYCAST_STEPS_PER_BLOCK = 100;
 	static constexpr float			DEFAULT_RAYCAST_DISTANCE = 8.f;
 
-	static constexpr float			WORLD_DAY_TIME_SCALE = 43200.f / 8.f;
+	static constexpr float			WORLD_DAY_TIME_SCALE = 1000.f;
 	static constexpr float			ONE_OVER_SECONDS_PER_DAY = 1.f / 86400.f;
 	static const Rgba				WORLD_NOON_SKY_COLOR;
 	static const Rgba				WORLD_NIGHT_SKY_COLOR;
