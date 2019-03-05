@@ -48,7 +48,9 @@ public:
 	BlockLocator	GetBlockLocatorThatContainsWorldPosition(const Vector3& position) const;
 	BlockLocator	GetBlockLocatorForFlooredPosition(const IntVector3& coords) const;
 	int				GetActiveChunkCount() const;
-	float			GetTimeOfDay() const;
+	float			GetTimeInDays() const;
+	float			GetTimeOfDayZeroToOne() const;
+	int				GetCurrentDayNumber() const;
 
 	RaycastResult_t Raycast(const Vector3& start, const Vector3& directionNormal, float maxDistance) const;
 
@@ -106,7 +108,8 @@ private:
 	Rgba							m_skyColor;
 	Rgba							m_indoorLightColor = Rgba(1.0f, 1.0f, 0.f, 1.0f);
 	Rgba							m_outdoorLightColor = Rgba(1.0f, 0.9f, 0.8f, 1.0f);
-	float							m_timeOfDayZeroToOne = 0.f; // 0.f is Midnight, 0.25f dawn, 0.5f noon, 0.75f dusk
+	float							m_timeInDays = 0.f; // 0.f is Midnight, 0.25f dawn, 0.5f noon, 0.75f dusk
+	float							m_currentTimeScale = DEFAULT_WORLD_DAY_TIME_SCALE;
 
 	// For Debugging
 	bool							m_raycastDetached = false;
@@ -124,7 +127,7 @@ private:
 	static constexpr int			RAYCAST_STEPS_PER_BLOCK = 100;
 	static constexpr float			DEFAULT_RAYCAST_DISTANCE = 8.f;
 
-	static constexpr float			WORLD_DAY_TIME_SCALE = 1000.f;
+	static constexpr float			DEFAULT_WORLD_DAY_TIME_SCALE = 200.f;
 	static constexpr float			ONE_OVER_SECONDS_PER_DAY = 1.f / 86400.f;
 	static const Rgba				WORLD_NOON_SKY_COLOR;
 	static const Rgba				WORLD_NIGHT_SKY_COLOR;

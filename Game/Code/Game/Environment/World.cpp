@@ -118,6 +118,16 @@ void World::ProcessInput()
 
 		m_activeChunks.clear();
 	}
+
+	// For increasing time scale
+	if (input->IsKeyPressed('T'))
+	{
+		m_currentTimeScale = DEFAULT_WORLD_DAY_TIME_SCALE * 50.f;
+	}
+	else
+	{
+		m_currentTimeScale = DEFAULT_WORLD_DAY_TIME_SCALE;
+	}
 }
 
 
@@ -330,9 +340,28 @@ int World::GetActiveChunkCount() const
 //-----------------------------------------------------------------------------------------------
 // Returns the time of day in the world
 //
-float World::GetTimeOfDay() const
+float World::GetTimeInDays() const
 {
-	return m_timeOfDayZeroToOne;
+	return m_timeInDays;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the time of the current day in the world, between 0 and 1
+// 0 is midnight, 0.25 is 6 am, 0.5 is noon, 0.75 is 6 pm
+//
+float World::GetTimeOfDayZeroToOne() const
+{
+	return ModFloat(m_timeInDays, 1.0f);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the current day number, the world starts on day 1
+//
+int World::GetCurrentDayNumber() const
+{
+	return (int)(m_timeInDays) + 1;
 }
 
 
@@ -1076,7 +1105,9 @@ void World::UpdateLighting()
 	Material* material = AssetDB::GetSharedMaterial("Data/Materials/Overworld_Opaque.material");
 
 	// Making it stay the same darkness from dusk to dawn, increase from dawn to noon, decrease from noon to dusk
-	float t = ClampFloat(m_timeOfDayZeroToOne, 0.25f, 0.75f);
+	float t = m_timeInDays - (float)((int)m_timeInDays);
+
+	t = ClampFloat(t, 0.25f, 0.75f);
 	t = RangeMapFloat(t, 0.25f, 0.75f, 0.f, 2.f);
 	if (t > 1.f)
 	{
@@ -1101,14 +1132,9 @@ void World::UpdateLighting()
 void World::UpdateTimeOfDay()
 {
 	float realTimeSecondsPassed = Game::GetDeltaTime();
-	float gameTimeSecondsPassed = WORLD_DAY_TIME_SCALE * realTimeSecondsPassed;
-	float normalizedTimePassed = gameTimeSecondsPassed * ONE_OVER_SECONDS_PER_DAY;
-	m_timeOfDayZeroToOne += normalizedTimePassed;
-
-	if (m_timeOfDayZeroToOne >= 1.0f)
-	{
-		m_timeOfDayZeroToOne -= 1.0f;
-	}
+	float gameTimeSecondsPassed = m_currentTimeScale * realTimeSecondsPassed;
+	float gameTimeDaysPassed = gameTimeSecondsPassed * ONE_OVER_SECONDS_PER_DAY;
+	m_timeInDays += gameTimeDaysPassed;
 }
 
 
