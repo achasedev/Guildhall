@@ -91,6 +91,19 @@ void Command_RunBeatPlayback(Command& cmd)
 }
 
 
+void Command_RescaleFFTAxes(Command& cmd)
+{
+	float newMaxY = 1.0f;
+	float newMaxX = 6000.f;
+	cmd.GetParam("y", newMaxY, &newMaxY);
+	cmd.GetParam("x", newMaxX, &newMaxX);
+
+	FFTSystem* fftSystem = Game::GetFFTSystem();
+	fftSystem->SetFFTGraphMaxXValue(newMaxX);
+	fftSystem->SetFFTGraphMaxYValue(newMaxY);
+}
+
+
 //-----------------------------------------------------------------------------------------------
 // Default constructor, initialize any game members here (private)
 //
@@ -112,17 +125,6 @@ Game::Game()
 
 	// FFT System
 	m_fftSystem = new FFTSystem();
-
-	//SoundID sound = m_fftSystem->CreateOrGetSound("Data/Audio/Music/DrumSet.mp3");
-// 	SoundID sound = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/50hz.mp3");
-// 	SoundID sound4 = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/200hz.mp3");
-// 	SoundID sound2 = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/1000hz.mp3");
-// 	SoundID sound3 = AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/5000hz.mp3");
-
-	//m_fftSystem->PlayMusicTrackForFFT(sound, 1.0f);
-// 	AudioSystem::GetInstance()->PlaySound(sound2, true);
-// 	AudioSystem::GetInstance()->PlaySound(sound3, true);
-// 	AudioSystem::GetInstance()->PlaySound(sound4, true);
 }
 
 	
@@ -163,6 +165,8 @@ void Game::Initialize()
 	Command::Register("fft_collect", "Collects FFT Data given the song by -f", Command_PlaySongForFFTAnalysis);
 	Command::Register("fft_analyze_beat", "Analyzed beats in fft data file given in -f", Command_PerformBeatAnalysis);
 	Command::Register("fft_play_beat", "Plays back the beat data for song name -n", Command_RunBeatPlayback);
+
+	Command::Register("fft_axis", "Sets the -x and -y max axis values for FFT", Command_RescaleFFTAxes);
 }
 
 
