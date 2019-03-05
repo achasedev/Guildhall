@@ -81,7 +81,7 @@ private:
 	BlockLocator	RemoveFrontBlockFromDirtyLightingList();
 	void			InitializeSkyBlocksForChunk(Chunk* chunk);
 	void			InitializeLightSourceBlocksForChunk(Chunk* chunk);
-	void			SetNeighborEdgeBlocksToDirtyForChunk(Chunk* chunk);
+	void			SetEdgeBlocksAsDirty(Chunk* chunk);
 	void			RecalculateLightingForBlock(BlockLocator blockLocator);
 	void			UndirtyAllBlocksInChunk(Chunk* chunk);
 	void			CalculateSkyColor();
