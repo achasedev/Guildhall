@@ -19,16 +19,18 @@
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/Utility/Blackboard.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
+#include "Engine/Core/Utility/SmoothNoise.hpp"
 #include "Engine/Rendering/Materials/Material.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
-#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"\
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Static Members
 //
-const Rgba World::WORLD_NOON_SKY_COLOR = Rgba(200, 230, 255);
-const Rgba World::WORLD_NIGHT_SKY_COLOR = Rgba(20, 20, 40);
+const Vector3 World::WORLD_NOON_SKY_COLOR = Vector3(0.784f, 0.902f, 1.0f); // (200, 230, 255) RGB
+const Vector3 World::WORLD_NIGHT_SKY_COLOR = Vector3(0.078f, 0.078f, 0.157f); // (20, 20, 40) RGB
+const Vector3 World::WORLD_INDOOR_LIGHT_COLOR = Vector3(1.0f, 1.0f, 0.f); // Yellow
 
 
 //-----------------------------------------------------------------------------------------------
@@ -1015,6 +1017,58 @@ void World::UndirtyAllBlocksInChunk(Chunk* chunk)
 
 
 //-----------------------------------------------------------------------------------------------
+// Finds the current sky color by interpolating between noon and midnight colors
+//
+void World::CalculateSkyColor()
+{
+	// Making it stay the same darkness from dusk to dawn, increase from dawn to noon, decrease from noon to dusk
+	float t = m_timeInDays - (float)((int)m_timeInDays);
+
+	t = ClampFloat(t, 0.25f, 0.75f);
+	t = RangeMapFloat(t, 0.25f, 0.75f, 0.f, 2.f);
+	if (t > 1.f)
+	{
+		t = 2.0f - t;
+	}
+
+	Vector3 baseColor = Interpolate(WORLD_NIGHT_SKY_COLOR, WORLD_NOON_SKY_COLOR, t);
+
+	// Use noise to add some lighting strikes
+	float noise = Compute1dPerlinNoise(m_timeInDays, 1.f, 9, 1.2f, 3.f);
+
+	//noise = RangeMapFloat(noise, -1.0f, 1.0f, 0.f, 1.f);
+	noise = ClampFloat(noise, 0.6f, 0.9f);
+	noise = RangeMapFloat(noise, 0.6f, 0.9f, 0.f, 0.8f);
+	
+	m_skyColor = Interpolate(baseColor, Vector3::ONES, noise);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Calculates the indoor color, which adds noise for a flickering effect
+//
+void World::CalculateIndoorLightColor()
+{
+	// Use noise to add some lighting strikes
+	float noise = Compute1dPerlinNoise(m_timeInDays, 1.f, 9, 1.0f, 3.f);
+
+	noise = RangeMapFloat(noise, -1.f, 1.f, 0.8f, 1.0f);
+	noise = ClampFloat(noise, 0.8f, 1.0f);
+
+	m_indoorLightColor = WORLD_INDOOR_LIGHT_COLOR * noise;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Calculates the outdoor light color (defaults to just being the sky color)
+//
+void World::CalculateOutdoorLightColor()
+{
+	m_outdoorLightColor = m_skyColor;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Digs a block by setting the block we're looking at to air
 //
 void World::DigBlock(BlockLocator blockToDig)
@@ -1101,28 +1155,17 @@ void World::UpdateLighting()
 		RecalculateLightingForBlock(blockLocator);
 	}
 
+	// Recalculate the colors
+	CalculateSkyColor();
+	CalculateIndoorLightColor();
+	CalculateOutdoorLightColor();
+
 	// Update the colors of the sky and world
 	Material* material = AssetDB::GetSharedMaterial("Data/Materials/Overworld_Opaque.material");
 
-	// Making it stay the same darkness from dusk to dawn, increase from dawn to noon, decrease from noon to dusk
-	float t = m_timeInDays - (float)((int)m_timeInDays);
-
-	t = ClampFloat(t, 0.25f, 0.75f);
-	t = RangeMapFloat(t, 0.25f, 0.75f, 0.f, 2.f);
-	if (t > 1.f)
-	{
-		t = 2.0f - t;
-	}
-
-
-	m_skyColor = Interpolate(WORLD_NIGHT_SKY_COLOR, WORLD_NOON_SKY_COLOR, t);
-	Vector4 colorAsFloats;
-	m_skyColor.GetAsFloats(colorAsFloats.x, colorAsFloats.y, colorAsFloats.z, colorAsFloats.w);
-	material->SetProperty("SKY_COLOR", colorAsFloats.xyz());
-	material->SetProperty("OUTDOOR_LIGHT_COLOR", colorAsFloats.xyz());
-
-	m_indoorLightColor.GetAsFloats(colorAsFloats.x, colorAsFloats.y, colorAsFloats.z, colorAsFloats.w);
-	material->SetProperty("INDOOR_LIGHT_COLOR", colorAsFloats.xyz());
+	material->SetProperty("SKY_COLOR", m_skyColor);
+	material->SetProperty("OUTDOOR_LIGHT_COLOR", m_outdoorLightColor);
+	material->SetProperty("INDOOR_LIGHT_COLOR", m_indoorLightColor);
 }
 
 

@@ -22,10 +22,10 @@ Press Left Click when looking at a block to dig the block.
 Press Right Click when looking at a block face to place a stone block along that face.
 Press and hold Control and Right click to place a glowstone block.
 
-Press 'U' to immediate deactivate all block (they will immediately reactivate in activation order)
+Press 'U' to immediate deactivate all chunks (they will immediately reactivate in activation order)
 Press 'R' to lock the raycast and draw a debug raycast for testing. Press 'R' again to unlock the raycast.
 
-
+Press and hold 'T' to increase the scale to 10000x real time.
 
 -----Extras-----
 

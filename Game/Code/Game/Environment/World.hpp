@@ -84,6 +84,9 @@ private:
 	void			SetNeighborEdgeBlocksToDirtyForChunk(Chunk* chunk);
 	void			RecalculateLightingForBlock(BlockLocator blockLocator);
 	void			UndirtyAllBlocksInChunk(Chunk* chunk);
+	void			CalculateSkyColor();
+	void			CalculateIndoorLightColor();
+	void			CalculateOutdoorLightColor();
 
 	// Input-Related
 	void			DigBlock(BlockLocator blockToDig);
@@ -105,10 +108,10 @@ private:
 	std::map<IntVector2, Chunk*>	m_activeChunks;
 	std::deque<BlockLocator>		m_dirtyLightingBlocks;
 
-	Rgba							m_skyColor;
-	Rgba							m_indoorLightColor = Rgba(1.0f, 1.0f, 0.f, 1.0f);
-	Rgba							m_outdoorLightColor = Rgba(1.0f, 0.9f, 0.8f, 1.0f);
-	float							m_timeInDays = 0.f; // 0.f is Midnight, 0.25f dawn, 0.5f noon, 0.75f dusk
+	Vector3							m_skyColor = Vector3(1.0f, 0.9f, 0.8f);
+	Vector3							m_indoorLightColor = Vector3(1.0f, 1.0f, 0.f);
+	Vector3							m_outdoorLightColor = Vector3(1.0f, 0.9f, 0.8f);
+	float							m_timeInDays = 0.f; // Cumulative, so 5.27 is 27% into the 6th day
 	float							m_currentTimeScale = DEFAULT_WORLD_DAY_TIME_SCALE;
 
 	// For Debugging
@@ -129,7 +132,8 @@ private:
 
 	static constexpr float			DEFAULT_WORLD_DAY_TIME_SCALE = 200.f;
 	static constexpr float			ONE_OVER_SECONDS_PER_DAY = 1.f / 86400.f;
-	static const Rgba				WORLD_NOON_SKY_COLOR;
-	static const Rgba				WORLD_NIGHT_SKY_COLOR;
+	static const Vector3			WORLD_NOON_SKY_COLOR;
+	static const Vector3			WORLD_NIGHT_SKY_COLOR;
+	static const Vector3			WORLD_INDOOR_LIGHT_COLOR;
 
 };
