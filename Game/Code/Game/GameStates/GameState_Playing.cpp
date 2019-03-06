@@ -189,8 +189,18 @@ void GameState_Playing::PerformControllerCheck()
 
 			if (controller.IsConnected() && controller.WasButtonJustPressed(XBOX_BUTTON_START))
 			{
-				// Player joined! Make them
-				const EntityDefinition* playerDef = EntityDefinition::GetRandomPlayerDefinition();
+				// Player joined! Make them a normal character if it's outside the character select,
+				// or a blank character otherwise
+				const EntityDefinition* playerDef = nullptr;
+				
+				if (Game::GetCampaignManager()->GetCurrentStageNumber() == 0)
+				{
+					playerDef = EntityDefinition::GetDefinition("PlayerUninitialized");
+				}
+				else
+				{
+					playerDef = EntityDefinition::GetRandomPlayerDefinition();
+				}
 
 				players[i] = new Player(playerDef, i);
 

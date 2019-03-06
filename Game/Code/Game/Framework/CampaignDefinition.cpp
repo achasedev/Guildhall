@@ -26,7 +26,7 @@ CampaignStage* CreateCharacterSelectStage(const MapDefinition* mapDefinition)
 	{
 		InitialStageSpawn_t spawn;
 		spawn.definition = selectVolumeDefs[i];
-		spawn.orientation = 270.f; // Face south
+		spawn.orientation = 180.f;
 		spawn.position = Vector2(20.f + (float)i * 50.f);
 
 		selectStage->m_initialSpawns.push_back(spawn);

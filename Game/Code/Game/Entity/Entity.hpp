@@ -74,6 +74,7 @@ public:
 	float							GetInverseMass() const;
 
 	bool							IsPlayer() const;
+	bool							IsCharacterSelectVolume() const;
 	bool							IsGrounded() const;
 	bool							IsSetToUpdate() const;
 	bool							ShouldCheckForGroundCollisions() const;

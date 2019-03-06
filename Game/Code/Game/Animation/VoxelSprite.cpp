@@ -1,4 +1,5 @@
 #include "Game/Animation/VoxelSprite.hpp"
+#include "Game/Entity/EntityDefinition.hpp"
 #include "Engine/Core/File.hpp"
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -390,6 +391,62 @@ VoxelSprite* VoxelSprite::CreateVoxelSpriteClone(const std::string& spriteName)
 	}
 
 	return nullptr;
+}
+
+#include "Engine/Core/Image.hpp"
+#include "Engine/Assets/AssetDB.hpp"
+
+//-----------------------------------------------------------------------------------------------
+// Creates a character select sprite for the given player and adds it to the registry
+//
+VoxelSprite* VoxelSprite::CreateCharacterSelectSpriteForPlayer(const EntityDefinition* playerDefinition)
+{
+//  	Image* image = AssetDB::CreateOrGetImage("Data/Images/CharacterSelectSprites/Nerd.png");
+//  	VoxelSprite* sprite = new VoxelSprite();
+// 	sprite->CreateFromColorStream((Rgba*)image->GetImageData(), IntVector3(image->GetTexelDimensions().x, 1, image->GetTexelDimensions().y), false);
+// 
+//  	return sprite;
+	const std::string playerName = playerDefinition->m_name;
+	const VoxelSprite* playerSprite = playerDefinition->m_defaultSprite;
+	IntVector3 playerSpriteDimensions = playerSprite->GetBaseDimensions();
+	IntVector3 characterSelectDimensions = IntVector3(playerSpriteDimensions.x, 1, playerSpriteDimensions.y); // A flat texture that sits on the ground
+	std::string characterSelectName = playerName + "_SelectVolume";
+
+	VoxelSprite* characterSelectSprite = new VoxelSprite();
+	characterSelectSprite->m_name = characterSelectName;
+	characterSelectSprite->m_dimensions = characterSelectDimensions;
+	characterSelectSprite->m_voxelColors = (Rgba*) malloc(sizeof(Rgba) * characterSelectDimensions.x * characterSelectDimensions.y * characterSelectDimensions.z);
+	characterSelectSprite->m_collisionBitRows = (uint32_t*)malloc(sizeof(uint32_t) * characterSelectDimensions.z);
+
+	for (int yIndex = 0; yIndex < playerSpriteDimensions.y; ++yIndex)
+	{
+		for (int xIndex = 0; xIndex < playerSpriteDimensions.x; ++xIndex)
+		{
+			int indexInCharacterSelectSprite = yIndex * characterSelectDimensions.x + xIndex;
+
+			bool colorSetFromPlayer = false;
+			for (int zIndex = 0; zIndex < playerSpriteDimensions.z; ++zIndex)
+			{
+				Rgba currColor = playerSprite->GetColorAtRelativeCoords(IntVector3(xIndex, yIndex, zIndex), -90.f);
+
+				if (currColor.a != 0)
+				{
+					characterSelectSprite->SetColorAtRelativeCoords(IntVector3(xIndex, 0, yIndex), 180.f, currColor);
+					colorSetFromPlayer = true;
+					break;
+				}
+			}
+
+			if (!colorSetFromPlayer)
+			{
+				characterSelectSprite->SetColorAtRelativeCoords(IntVector3(xIndex, 0, yIndex), 180.f, Rgba(0,0,0,0));
+			}
+		}
+	}
+
+	AddSpriteToRegistry(characterSelectSprite);
+
+	return characterSelectSprite;
 }
 
 

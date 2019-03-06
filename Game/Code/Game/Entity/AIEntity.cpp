@@ -45,7 +45,7 @@ void AIEntity::OnDeath()
 	m_eventSpawnedFrom->StopTrackingEntity(this);
 	Game::GetWorld()->ParticalizeEntity(this);
 
-	if (CheckRandomChance(1.0f))
+	if (CheckRandomChance(0.1f))
 	{
 		Weapon* drop = new Weapon(EntityDefinition::GetDefinition("Laser"));
 		

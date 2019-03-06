@@ -511,6 +511,15 @@ bool Entity::IsPlayer() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns whether this entity is a character select volume
+//
+bool Entity::IsCharacterSelectVolume() const
+{
+	return (m_definition->m_playerCharacterDefinition != nullptr);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns whether the entity is currently standing on something (0 Y velocity with gravity)
 //
 bool Entity::IsGrounded() const

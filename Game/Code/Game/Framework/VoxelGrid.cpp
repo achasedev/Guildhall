@@ -209,6 +209,25 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, Voxel
 		options.receivesShadows = false;
 		DrawVoxelSprite(indicatorSprite, indicatorPosition, 0.f, options);
 	}
+
+	// Draw additional text in the world for a character select volume
+	if (entity->IsCharacterSelectVolume())
+	{
+		IntVector3 drawCoordinate = position;
+		drawCoordinate += IntVector3(texture->GetBaseDimensions().x / 2, 0, -10);
+		std::string name = entity->GetEntityDefinition()->m_playerCharacterDefinition->m_name;
+
+		VoxelFontDraw_t fontOptions;
+		fontOptions.alignment = Vector3(0.5f, 0.f, 0.f);
+		fontOptions.glyphColors.push_back(Rgba::WHITE);
+		fontOptions.fillColor = Rgba(0, 0, 100, 255);
+		fontOptions.mode = VOXEL_FONT_FILL_FULL;
+		fontOptions.borderThickness = 1;
+		fontOptions.up = IntVector3(0, 0, 1);
+		fontOptions.font = Game::GetMenuFont();
+
+		DrawVoxelText(name, drawCoordinate, fontOptions);
+	}
 }
 
 

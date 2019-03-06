@@ -460,7 +460,14 @@ void EntityDefinition::LoadDefinitions(const std::string& filename)
 			volumeDefinitionTemp->m_physicsType = PHYSICS_TYPE_STATIC;
 			volumeDefinitionTemp->m_entityClass = ENTITY_CLASS_CHARACTERSELECTVOLUME;
 			volumeDefinitionTemp->m_playerCharacterDefinition = newDefinition;
-			volumeDefinitionTemp->m_defaultSprite = newDefinition->m_defaultSprite;
+
+			const VoxelSprite* playerSelectSprite = VoxelSprite::GetVoxelSprite(volumeName);
+			if (playerSelectSprite == nullptr)
+			{
+				playerSelectSprite = VoxelSprite::CreateCharacterSelectSpriteForPlayer(newDefinition);
+			}
+
+			volumeDefinitionTemp->m_defaultSprite = playerSelectSprite;
 
 			EntityDefinition::AddDefinition(volumeDefinitionTemp);
 		}

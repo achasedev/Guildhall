@@ -32,7 +32,7 @@ typedef Rgba(*VoxelFontColor_cb)(const IntVector3& localCoords, const IntVector3
 
 struct VoxelFontDraw_t
 {
-	const VoxelFont* font;
+	const VoxelFont* font = nullptr;
 
 	std::vector<Rgba> glyphColors;
 	eVoxelFontFill mode = VOXEL_FONT_FILL_NONE;

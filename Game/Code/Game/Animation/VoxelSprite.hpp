@@ -9,6 +9,7 @@
 #define TEXTURE_LEFTMOST_COLLISION_BIT (0x80000000)
 
 class Rgba;
+class EntityDefinition;
 
 class VoxelSprite
 {
@@ -44,6 +45,7 @@ public:
 	// Statics
 	static const VoxelSprite*	GetVoxelSprite(const std::string& spriteName);
 	static VoxelSprite*			CreateVoxelSpriteClone(const std::string& spriteName);
+	static VoxelSprite*			CreateCharacterSelectSpriteForPlayer(const EntityDefinition* playerDefinition);
 
 	static void					LoadSpriteFile(const std::string& filename);
 
