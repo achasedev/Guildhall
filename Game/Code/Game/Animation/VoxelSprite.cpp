@@ -409,7 +409,7 @@ VoxelSprite* VoxelSprite::CreateCharacterSelectSpriteForPlayer(const EntityDefin
 	const std::string playerName = playerDefinition->m_name;
 	const VoxelSprite* playerSprite = playerDefinition->m_defaultSprite;
 	IntVector3 playerSpriteDimensions = playerSprite->GetBaseDimensions();
-	IntVector3 characterSelectDimensions = IntVector3(playerSpriteDimensions.x, 1, playerSpriteDimensions.y); // A flat texture that sits on the ground
+	IntVector3 characterSelectDimensions = IntVector3(2 * playerSpriteDimensions.x, 1, 2 * playerSpriteDimensions.y); // A flat texture that sits on the ground
 	std::string characterSelectName = playerName + "_SelectVolume";
 
 	VoxelSprite* characterSelectSprite = new VoxelSprite();
@@ -431,7 +431,11 @@ VoxelSprite* VoxelSprite::CreateCharacterSelectSpriteForPlayer(const EntityDefin
 
 				if (currColor.a != 0)
 				{
-					characterSelectSprite->SetColorAtRelativeCoords(IntVector3(xIndex, 0, yIndex), 180.f, currColor);
+					characterSelectSprite->SetColorAtRelativeCoords(IntVector3(2 * xIndex, 0, 2 * yIndex), 180.f, currColor);
+					characterSelectSprite->SetColorAtRelativeCoords(IntVector3(2 * xIndex + 1, 0, 2 * yIndex), 180.f, currColor);
+					characterSelectSprite->SetColorAtRelativeCoords(IntVector3(2 * xIndex, 0, 2 * yIndex + 1), 180.f, currColor);
+					characterSelectSprite->SetColorAtRelativeCoords(IntVector3(2 * xIndex + 1, 0, 2 * yIndex + 1), 180.f, currColor);
+
 					colorSetFromPlayer = true;
 					break;
 				}
@@ -439,7 +443,10 @@ VoxelSprite* VoxelSprite::CreateCharacterSelectSpriteForPlayer(const EntityDefin
 
 			if (!colorSetFromPlayer)
 			{
-				characterSelectSprite->SetColorAtRelativeCoords(IntVector3(xIndex, 0, yIndex), 180.f, Rgba(0,0,0,0));
+				characterSelectSprite->SetColorAtRelativeCoords(IntVector3(2 * xIndex, 0, 2 * yIndex), 180.f, Rgba(0,0,0,0));
+				characterSelectSprite->SetColorAtRelativeCoords(IntVector3(2 * xIndex + 1, 0, 2 * yIndex), 180.f, Rgba(0,0,0,0));
+				characterSelectSprite->SetColorAtRelativeCoords(IntVector3(2 * xIndex, 0, 2 * yIndex + 1), 180.f, Rgba(0,0,0,0));
+				characterSelectSprite->SetColorAtRelativeCoords(IntVector3(2 * xIndex + 1, 0, 2 * yIndex + 1), 180.f, Rgba(0,0,0,0));
 			}
 		}
 	}

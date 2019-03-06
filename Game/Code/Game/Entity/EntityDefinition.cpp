@@ -530,7 +530,7 @@ void EntityDefinition::AddDefinition(const EntityDefinition* definition)
 	s_definitions[definition->m_name] = definition;
 }
 
-#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // Returns all Character select volume definitions loaded (should be at most 16)
 //
@@ -542,7 +542,7 @@ void EntityDefinition::GetAllCharacterSelectVolumeDefinitions(std::vector<const 
 
 	for (itr; itr != s_definitions.end(); itr++)
 	{
-		if (itr->second->m_entityClass == ENTITY_CLASS_CHARACTERSELECTVOLUME)
+		if (itr->second->m_entityClass == ENTITY_CLASS_CHARACTERSELECTVOLUME && itr->second->m_name != "PlayerUninitialized_SelectVolume")
 		{
 			out_definitions.push_back(itr->second);
 		}

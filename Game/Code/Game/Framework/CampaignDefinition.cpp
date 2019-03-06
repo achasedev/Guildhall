@@ -1,10 +1,10 @@
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Framework/MapDefinition.hpp"
 #include "Game/Framework/CampaignDefinition.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/XmlUtilities.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
-
 
 std::map<std::string, const CampaignDefinition*>  CampaignDefinition::s_campaignDefinitions;
 
@@ -22,14 +22,36 @@ CampaignStage* CreateCharacterSelectStage(const MapDefinition* mapDefinition)
 	std::vector<const EntityDefinition*> selectVolumeDefs;
 	EntityDefinition::GetAllCharacterSelectVolumeDefinitions(selectVolumeDefs);
 
-	for (int i = 0; i < (int) selectVolumeDefs.size(); ++i)
-	{
-		InitialStageSpawn_t spawn;
-		spawn.definition = selectVolumeDefs[i];
-		spawn.orientation = 180.f;
-		spawn.position = Vector2(20.f + (float)i * 50.f);
+	int numVolumesAlongX = 4;
+	int numVolumesAlongZ = 4;
+	float paddingFromEdgeOfMap = 10.f;
+	float stepPerX = (256.f - 2.f * paddingFromEdgeOfMap) / (float)numVolumesAlongX;
+	float stepPerZ = (256.f - 2.f * paddingFromEdgeOfMap) / (float)numVolumesAlongZ;
 
-		selectStage->m_initialSpawns.push_back(spawn);
+	Vector2 offsetToGridCellCenter = Vector2(stepPerX * 0.5f, stepPerZ * 0.5f);
+	Vector2 gridBottomLeft = Vector2(paddingFromEdgeOfMap); // Don't worry about Y, the map always snaps them to ground
+
+	for (int volumeGridZ = 0; volumeGridZ < numVolumesAlongZ; ++volumeGridZ)
+	{
+		for (int volumeGridX = 0; volumeGridX < numVolumesAlongX; ++volumeGridX)
+		{
+			int selectVolumeIndex = volumeGridZ * numVolumesAlongX + volumeGridX;
+			selectVolumeIndex = ClampInt(selectVolumeIndex, 0, (int)selectVolumeDefs.size() - 1);
+
+			const EntityDefinition* currVolume = selectVolumeDefs[selectVolumeIndex];
+			IntVector3 volumeDimensions = currVolume->GetDimensions();
+
+			InitialStageSpawn_t spawn;
+			spawn.definition = currVolume;
+			spawn.orientation = 180.f; // Makes then face upright
+
+			Vector2 gridCellBottomLeft = gridBottomLeft + Vector2((float)volumeGridX * stepPerX, (float)volumeGridZ * stepPerZ);
+			Vector2 gridCellCenter = gridCellBottomLeft + offsetToGridCellCenter;
+			Vector2 entityPosition = gridCellCenter - Vector2(volumeDimensions.x / 2, volumeDimensions.z / 2);
+			spawn.position = entityPosition;
+
+			selectStage->m_initialSpawns.push_back(spawn);
+		}
 	}
 
 	// We don't care about enter edge for this stage, since we don't use it
