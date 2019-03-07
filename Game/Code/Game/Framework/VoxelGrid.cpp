@@ -189,7 +189,7 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, Voxel
 		const Player* player = dynamic_cast<const Player*>(entity);
 
 		Weapon* weapon = player->GetCurrentWeapon();
-		IntVector3 weaponPosition = position + IntVector3(0, 12, 0);
+		IntVector3 weaponPosition = position + IntVector3(0, 14, 0);
 		const VoxelSprite* weaponTexture = weapon->GetTextureForUIRender();
 
 		if (weapon->GetEntityDefinition()->GetName() != "Pistol")
@@ -210,7 +210,7 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, Voxel
 		DrawVoxelSprite(indicatorSprite, indicatorPosition, 0.f, options);
 	}
 
-	// Draw additional text in the world for a character select volume
+	// Draw additional text in the world for a character select volume....also a hack
 	if (entity->IsCharacterSelectVolume())
 	{
 		IntVector3 drawCoordinate = position;

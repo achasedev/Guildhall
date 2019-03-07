@@ -1,3 +1,9 @@
+/************************************************************************/
+/* File: VoxelSprite.hpp
+/* Author: Andrew Chase
+/* Date: March 06th 2019
+/* Description: 
+/************************************************************************/
 #pragma once
 #include "Engine/Math/IntVector3.hpp"
 #include <map>
@@ -21,25 +27,25 @@ public:
 	VoxelSprite();
 	~VoxelSprite();
 
-	bool					CreateFromFile(const char* filename, bool createCollisionMatrix);
-	bool					CreateFromColorStream(const Rgba* colors, const IntVector3& dimensions, bool createCollisionMatrix);
-	VoxelSprite*			Clone() const;
+	bool						CreateFromFile(const char* filename, bool createCollisionMatrix);
+	bool						CreateFromColorStream(const Rgba* colors, const IntVector3& dimensions, bool createCollisionMatrix);
+	VoxelSprite*				Clone() const;
 
 	// Mutators
-	void			SetColorAtRelativeCoords(const IntVector3& relativeCoords, float relativeOrientation, const Rgba& color);
+	void						SetColorAtRelativeCoords(const IntVector3& relativeCoords, float relativeOrientation, const Rgba& color);
 
-	Rgba			GetColorAtIndex(unsigned int index) const;					// Does not account of orientation!!
-	void			SetColorAtIndex(unsigned int index, const Rgba& color);		// Does not account of orientation!!
+	Rgba						GetColorAtIndex(unsigned int index) const;					// Does not account of orientation!!
+	void						SetColorAtIndex(unsigned int index, const Rgba& color);		// Does not account of orientation!!
 
 	// Accessors
-	Rgba			GetColorAtRelativeCoords(const IntVector3& relativeCoords, float relativeOrientation) const;
-	IntVector3		GetBaseDimensions() const;
-	IntVector3		GetOrientedDimensions(float orientation) const;
-	unsigned int	GetVoxelCount() const;
-	uint32_t		GetCollisionByteForRow(int referenceY, int referenceZ, float referenceOrientation) const;
+	Rgba						GetColorAtRelativeCoords(const IntVector3& relativeCoords, float relativeOrientation) const;
+	IntVector3					GetBaseDimensions() const;
+	IntVector3					GetOrientedDimensions(float orientation) const;
+	unsigned int				GetVoxelCount() const;
+	uint32_t					GetCollisionByteForRow(int referenceY, int referenceZ, float referenceOrientation) const;
 
 	// Producers
-	bool			DoLocalCoordsHaveCollision(const IntVector3& coords) const;
+	bool						DoLocalCoordsHaveCollision(const IntVector3& coords) const;
 
 
 	// Statics

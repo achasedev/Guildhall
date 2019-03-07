@@ -19,6 +19,10 @@ Item::Item(const EntityDefinition* definition)
 {
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Update
+//
 void Item::Update()
 {
 	World* world = Game::GetWorld();
@@ -41,17 +45,29 @@ void Item::Update()
 	}
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// For being picked up/interactions
+//
 void Item::OnEntityCollision(Entity* other)
 {
 	Entity::OnEntityCollision(other);
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// When being picked up, is automatically "killed"
+//
 void Item::OnDeath()
 {
 	Entity::OnDeath();
 	Game::GetWorld()->ParticalizeEntity(this);
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// For a flyout effect that lands on the ground
+//
 void Item::OnSpawn()
 {
 	Entity::OnSpawn();
@@ -71,4 +87,3 @@ void Item::OnSpawn()
 
 	m_physicsComponent->SetVelocity(initialVelocity);
 }
-
