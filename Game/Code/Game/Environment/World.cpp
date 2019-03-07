@@ -130,6 +130,12 @@ void World::ProcessInput()
 	{
 		m_currentTimeScale = DEFAULT_WORLD_DAY_TIME_SCALE;
 	}
+
+	// For switching raycast method
+	if (input->WasKeyJustPressed('Y'))
+	{
+		m_useStepAndSampleRaycast = !m_useStepAndSampleRaycast;
+	}
 }
 
 
@@ -371,14 +377,33 @@ int World::GetCurrentDayNumber() const
 // Performs a raycast from the given start in the direction, stopping after an impact or at maxDistance,
 // whichever comes first
 //
-RaycastResult_t World::Raycast(const Vector3& start, const Vector3& directionNormal, float maxDistance) const
+RaycastResult_t World::RaycastWithStepAndSample(const Vector3& start, const Vector3& directionNormal, float maxDistance) const
 {
 	// Check if we're raycasting from inside a solid block - if so immediately return
+	IntVector3 lastPositionFloored = FloorPositionToIntegerCoords(start);
+	BlockLocator startBlock = GetBlockLocatorForFlooredPosition(lastPositionFloored);
 
+	if (startBlock.GetBlock().IsSolid())
+	{
+		RaycastResult_t impactResult;
+
+		impactResult.m_startPosition = start;
+		impactResult.m_direction = directionNormal;
+		impactResult.m_maxDistance = maxDistance;
+		impactResult.m_endPosition = start;
+		impactResult.m_impactPosition = start;
+		impactResult.m_impactFraction = 0.f;
+		impactResult.m_impactDistance = 0.f;
+		impactResult.m_impactBlock = startBlock;
+		impactResult.m_impactNormal = -1.f * directionNormal;
+
+		return impactResult;
+	}
+
+	// Didn't start in a solid block, so begin raycast
 	int totalSteps = (int) (maxDistance * (float)RAYCAST_STEPS_PER_BLOCK);
 	float stepSize = (1.f / (float)RAYCAST_STEPS_PER_BLOCK);
 	
-	IntVector3 lastPositionFloored = FloorPositionToIntegerCoords(start);
 
 	for (int stepIndex = 0; stepIndex < totalSteps; ++stepIndex)
 	{
@@ -468,6 +493,158 @@ RaycastResult_t World::Raycast(const Vector3& start, const Vector3& directionNor
 
 		// Update the last coords we were in
 		lastPositionFloored = currPositionFloored;
+	}
+
+	// No impact, so return a negative result
+	RaycastResult_t noHitResult;
+
+	noHitResult.m_startPosition = start;
+	noHitResult.m_direction = directionNormal;
+	noHitResult.m_maxDistance = maxDistance;
+	noHitResult.m_endPosition = start + (directionNormal * maxDistance);
+	noHitResult.m_impactPosition = noHitResult.m_endPosition;
+	noHitResult.m_impactFraction = 1.0f;
+	noHitResult.m_impactDistance = maxDistance;
+	noHitResult.m_impactBlock = GetBlockLocatorThatContainsWorldPosition(noHitResult.m_endPosition);
+	noHitResult.m_impactNormal = -1.0f * directionNormal;
+
+	return noHitResult;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Raycasts using a faster method by determining where x, y, and z world intercepts occur
+// along a parametrized ray
+//
+RaycastResult_t World::RaycastWithIntercepts(const Vector3& start, const Vector3& directionNormal, float maxDistance) const
+{
+	// Check if we're raycasting from inside a solid block - if so immediately return
+	IntVector3 startPositionFloored = FloorPositionToIntegerCoords(start);
+	BlockLocator startBlock = GetBlockLocatorForFlooredPosition(startPositionFloored);
+	IntVector3 startBlockCoords = startBlock.GetBlockCoords();
+
+	if (startBlock.GetBlock().IsSolid())
+	{
+		RaycastResult_t impactResult;
+
+		impactResult.m_startPosition = start;
+		impactResult.m_direction = directionNormal;
+		impactResult.m_maxDistance = maxDistance;
+		impactResult.m_endPosition = start;
+		impactResult.m_impactPosition = start;
+		impactResult.m_impactFraction = 0.f;
+		impactResult.m_impactDistance = 0.f;
+		impactResult.m_impactBlock = startBlock;
+		impactResult.m_impactNormal = -1.f * directionNormal;
+
+		return impactResult;
+	}
+
+	//---Didn't start in a solid block, so begin raycast---
+
+	// Compute total displacement as forwardDirection * maxDistance - to use for parametrization
+	Vector3 totalDisplacement = directionNormal * maxDistance;
+
+	// Compute parametric T values as xDeltaT = (1.f / abs(D.x))
+	// This is the "amount of T necessary to move one unit of x/y/z, avoiding divide by zeros
+	float xDeltaT = (totalDisplacement.x != 0.f ? (1.f / AbsoluteValue(totalDisplacement.x)) : 9999999999.f);
+	float yDeltaT = (totalDisplacement.y != 0.f ? (1.f / AbsoluteValue(totalDisplacement.y)) : 9999999999.f);
+	float zDeltaT = (totalDisplacement.z != 0.f ? (1.f / AbsoluteValue(totalDisplacement.z)) : 9999999999.f);
+
+	// Compute int tileStepX to be either + 1 or -1, depending on the direction of the ray
+	int blockStepDirectionX = (totalDisplacement.x > 0.f ? 1 : -1);
+	int blockStepDirectionY = (totalDisplacement.y > 0.f ? 1 : -1);
+	int blockStepDirectionZ = (totalDisplacement.z > 0.f ? 1 : -1);
+
+	// Before we begin moving through the algorithm, we need to get to the first edge of our current block, whether that be x, y or z
+
+	// block coordinate offset to get to the block in the right direction
+	int offsetLeadingEdgeX = (blockStepDirectionX + 1) / 2;
+	int offsetLeadingEdgeY = (blockStepDirectionY + 1) / 2;
+	int offsetLeadingEdgeZ = (blockStepDirectionZ + 1) / 2;
+
+	// Getting the float value if the first intersections for x, y, z
+	float firstXIntersection = (float)(startPositionFloored.x + offsetLeadingEdgeX);
+	float firstYIntersection = (float)(startPositionFloored.y + offsetLeadingEdgeY);
+	float firstZIntersection = (float)(startPositionFloored.z + offsetLeadingEdgeZ);
+
+	// How much t is necessary to get to these intersections
+	float tValueToNextXIntersection = AbsoluteValue(firstXIntersection - start.x) * xDeltaT;
+	float tValueToNextYIntersection = AbsoluteValue(firstYIntersection - start.y) * yDeltaT;
+	float tValueToNextZIntersection = AbsoluteValue(firstZIntersection - start.z) * zDeltaT;
+
+	// State during the raycast
+	float totalTTravelled = 0.f;
+	BlockLocator lastBlock = startBlock;
+
+	while (totalTTravelled < 1.0f)
+	{
+		// Get the min T intersection
+		float tTravelledThisStep = Min(tValueToNextXIntersection, tValueToNextYIntersection, tValueToNextZIntersection);
+		totalTTravelled += tTravelledThisStep;
+
+		// Check if we even reach the end (meaning no hit)
+		if (totalTTravelled >= 1.0f)
+		{	
+			break;
+		}
+
+		// Update current block to correspond to the new block
+		IntVector3 stepCoords;
+
+		if (tTravelledThisStep == tValueToNextXIntersection)
+		{
+			stepCoords = IntVector3(blockStepDirectionX, 0, 0);
+		}
+		else if (tTravelledThisStep == tValueToNextYIntersection)
+		{
+			stepCoords = IntVector3(0, blockStepDirectionY, 0);
+		}
+		else
+		{
+			stepCoords = IntVector3(0, 0, blockStepDirectionZ);
+		}
+
+		BlockLocator currBlock = lastBlock.StepInCoordDirection(stepCoords);
+
+		// if solid, return a hit result
+		if (currBlock.GetBlock().IsSolid())
+		{
+			RaycastResult_t impactResult;
+
+			impactResult.m_startPosition = start;
+			impactResult.m_direction = directionNormal;
+			impactResult.m_maxDistance = maxDistance;
+			impactResult.m_endPosition = start + (directionNormal * maxDistance);
+			impactResult.m_impactPosition = start + (totalDisplacement * totalTTravelled);
+			impactResult.m_impactFraction = totalTTravelled;
+			impactResult.m_impactDistance = totalTTravelled * totalDisplacement.GetLength();
+			impactResult.m_impactBlock = currBlock;
+			impactResult.m_impactNormal = -1.0f * Vector3(stepCoords);
+
+			return impactResult;
+		}
+
+		// else update all 3 running t values, ensuring we reset if we just crossed one
+		tValueToNextXIntersection -= tTravelledThisStep;
+		if (tValueToNextXIntersection <= 0.f)
+		{
+			tValueToNextXIntersection = xDeltaT;
+		}
+
+		tValueToNextYIntersection -= tTravelledThisStep;
+		if (tValueToNextYIntersection <= 0.f)
+		{
+			tValueToNextYIntersection = yDeltaT;
+		}
+
+		tValueToNextZIntersection -= tTravelledThisStep;
+		if (tValueToNextZIntersection <= 0.f)
+		{
+			tValueToNextZIntersection = zDeltaT;
+		}
+
+		lastBlock = currBlock;
 	}
 
 	// No impact, so return a negative result
@@ -1140,7 +1317,18 @@ void World::UpdateRaycast()
 		m_raycastForward = camera->GetCameraMatrix().GetIVector().xyz();
 	}
 
-	m_lastRaycastResult = Raycast(m_raycastReferencePosition, m_raycastForward, DEFAULT_RAYCAST_DISTANCE);
+	// Loop it a ton for performance testing
+	for (int i = 0; i < 10000; ++i)
+	{
+		if (m_useStepAndSampleRaycast)
+		{
+			m_lastRaycastResult = RaycastWithStepAndSample(m_raycastReferencePosition, m_raycastForward, DEFAULT_RAYCAST_DISTANCE);
+		}
+		else
+		{
+			m_lastRaycastResult = RaycastWithIntercepts(m_raycastReferencePosition, m_raycastForward, DEFAULT_RAYCAST_DISTANCE);
+		}
+	}
 }
 
 

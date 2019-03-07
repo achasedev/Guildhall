@@ -22,22 +22,22 @@ public:
 	bool operator==(const BlockLocator& compare) const;
 
 	// Accessors
-	inline Block&	GetBlock();
-	inline Chunk*	GetChunk();
-	inline int		GetBlockIndex() const;
-	 
-	inline bool		IsValid() const;
+	inline Block&		GetBlock();
+	inline Chunk*		GetChunk();
+	inline int			GetBlockIndex() const;
+	inline IntVector3	GetBlockCoords() const;
+	inline bool			IsValid() const;
 
 	// Producers
-	BlockLocator	ToEast() const;
-	BlockLocator	ToWest() const;
-	BlockLocator	ToNorth() const;
-	BlockLocator	ToSouth() const;
-	BlockLocator	ToAbove() const;
-	BlockLocator	ToBelow() const;
-	BlockLocator	StepInCoordDirection(const IntVector3& blockCoordOffset) const;
+	BlockLocator		ToEast() const;
+	BlockLocator		ToWest() const;
+	BlockLocator		ToNorth() const;
+	BlockLocator		ToSouth() const;
+	BlockLocator		ToAbove() const;
+	BlockLocator		ToBelow() const;
+	BlockLocator		StepInCoordDirection(const IntVector3& blockCoordOffset) const;
 
-	Vector3			GetBlockCenterWorldPosition() const;
+	Vector3				GetBlockCenterWorldPosition() const;
 
 
 private:

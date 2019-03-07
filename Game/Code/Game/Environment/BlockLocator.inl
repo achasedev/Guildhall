@@ -44,6 +44,20 @@ inline int BlockLocator::GetBlockIndex() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the block coordinates for this block within its chunk
+//
+inline IntVector3 BlockLocator::GetBlockCoords() const
+{
+	if (m_chunk == nullptr)
+	{
+		return IntVector3(0, 0, 0);
+	}
+
+	return m_chunk->GetBlockCoordsFromBlockIndex(m_blockIndex);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns whether this block locator is a valid locator
 //
 inline bool BlockLocator::IsValid() const

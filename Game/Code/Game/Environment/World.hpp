@@ -52,7 +52,8 @@ public:
 	float			GetTimeOfDayZeroToOne() const;
 	int				GetCurrentDayNumber() const;
 
-	RaycastResult_t Raycast(const Vector3& start, const Vector3& directionNormal, float maxDistance) const;
+	RaycastResult_t RaycastWithStepAndSample(const Vector3& start, const Vector3& directionNormal, float maxDistance) const;
+	RaycastResult_t RaycastWithIntercepts(const Vector3& start, const Vector3& directionNormal, float maxDistance) const;
 
 
 private:
@@ -116,6 +117,7 @@ private:
 
 	// For Debugging
 	bool							m_raycastDetached = false;
+	bool							m_useStepAndSampleRaycast = true;
 	Vector3							m_raycastReferencePosition; // Will be camera position when not detached
 	Vector3							m_raycastForward;			// Will be the camera forward when not detached
 	RaycastResult_t					m_lastRaycastResult;
