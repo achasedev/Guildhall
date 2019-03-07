@@ -1908,50 +1908,60 @@ VoxelOverlapResult_t PerformNarrowPhaseCheck(Entity* first, Entity* second, cons
 }
 
 
+//- C FUNCTION ----------------------------------------------------------------------------------
+// Returns the direction and final correction vector for the given collision
+//
+void GetCollisionDirectionAndCorrection(const Entity* first, const Entity* second, const VoxelOverlapResult_t& overlapResult, Vector3& out_correction, int& out_direction)
+{
+	Vector3 firstPosition = first->GetCenterPosition();
+	Vector3 secondPosition = second->GetCenterPosition();
+
+	Vector3 diff = (firstPosition - secondPosition);
+
+	// Assign the correction to be along a single axis, with that axis' correct magnitude
+	// Direction is determined based on the difference of the two entities
+	if (overlapResult.xOverlapf < overlapResult.zOverlapf)
+	{
+		if (overlapResult.xOverlapf <= overlapResult.yOverlapf)
+		{
+			float sign = (diff.x < 0.f ? -1.f : 1.f);
+			out_correction = Vector3(sign * (float)overlapResult.xOverlapf, 0.f, 0.f);
+			out_direction = 0;
+		}
+		else
+		{
+			float sign = (diff.y < 0.f ? -1.f : 1.f);
+			out_correction = Vector3(0.f, sign * (float)overlapResult.yOverlapf, 0.f);
+			out_direction = 1;
+		}
+	}
+	else
+	{
+		if (overlapResult.zOverlapf <= overlapResult.yOverlapf)
+		{
+			float sign = (diff.z < 0.f ? -1.f : 1.f);
+			out_correction = Vector3(0.f, 0.f, sign * (float)overlapResult.zOverlapf);
+			out_direction = 2;
+		}
+		else
+		{
+			float sign = (diff.y < 0.f ? -1.f : 1.f);
+			out_correction = Vector3(0.f, sign * (float)overlapResult.yOverlapf, 0.f);
+			out_direction = 1;
+		}
+	}
+}
+
+
 //- C FUNCTION ----------------------------------------------------------------------------------------------
 // Applies a corrective collision offset to both entities so they are no longer overlapping
 //
 void CalculateAndApplyCollisionCorrection(Entity* first, Entity* second, const VoxelOverlapResult_t& r)
 {
-	Vector3 firstPosition = first->GetPosition();
-	Vector3 secondPosition = second->GetPosition();
-
-	Vector3 diff = (firstPosition - secondPosition);
-	Vector3 absDiff = Vector3(AbsoluteValue(diff.x), AbsoluteValue(diff.y), AbsoluteValue(diff.z));
-
 	// Determine the correction offset by pushing across the least amount of overlap
 	Vector3 finalCorrection;
-	int direction = -1; // 0 for x, 1 for y, 2 for z
-	if (r.xOverlapf < r.zOverlapf)
-	{
-		if (r.xOverlapf <= r.yOverlapf)
-		{
-			float sign = (diff.x < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(sign * (float)r.xOverlapf, 0.f, 0.f);
-			direction = 0;
-		}
-		else
-		{
-			float sign = (diff.y < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(0.f, sign * (float)r.yOverlapf, 0.f);
-			direction = 1;
-		}
-	}
-	else
-	{
-		if (r.zOverlapf <= r.yOverlapf)
-		{
-			float sign = (diff.z < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(0.f, 0.f, sign * (float)r.zOverlapf);
-			direction = 2;
-		}
-		else
-		{
-			float sign = (diff.y < 0.f ? -1.f : 1.f);
-			finalCorrection = Vector3(0.f, sign * (float)r.yOverlapf, 0.f);
-			direction = 1;
-		}
-	}
+	int direction = -1; // Will be 0 for x, 1 for y, 2 for z - used for determining which velocities to cancel out
+	GetCollisionDirectionAndCorrection(first, second, r, finalCorrection, direction);
 
 	// Get the scalars that determine how they will share the correction
 	float firstScalar, secondScalar;
@@ -2016,35 +2026,6 @@ void CalculateAndApplyCollisionCorrection(Entity* first, Entity* second, const V
 				}
 			}
 		}
-	}
-
-	// Log a bunch of info for checking
-	if (first->IsPlayer() || second->IsPlayer() && first->GetPhysicsType() == PHYSICS_TYPE_STATIC || second->GetPhysicsType() == PHYSICS_TYPE_STATIC)
-	{
-		LogTaggedPrintf("GAME", "Collision hit");
-
-		LogTaggedPrintf("Game", "Positions: (First: (%.2f, %.2f, %.2f) | (Second: (%.2f, %.2f, %.2f)", firstPosPreCorrection.x, firstPosPreCorrection.y, firstPosPreCorrection.z, secondPosPreCorrection.x, secondPosPreCorrection.y, secondPosPreCorrection.z);
-
-		AABB3 firstBounds = first->GetWorldBounds();
-		AABB3 secondBounds = second->GetWorldBounds();
-
-		LogTaggedPrintf("GAME", "Bounds: (First: Mins(%.2f, %.2f, %.2f) Maxs(%.2f, %.2f, %.2f) | (Second: Mins(%.2f, %.2f, %.2f) Maxs(%.2f, %.2f, %.2f)", firstBounds.mins.x, firstBounds.mins.y, firstBounds.mins.z, firstBounds.maxs.x, firstBounds.maxs.y, firstBounds.maxs.z, secondBounds.mins.x, secondBounds.mins.y, secondBounds.mins.z, secondBounds.maxs.x, secondBounds.maxs.y, secondBounds.maxs.z);
-
-		LogTaggedPrintf("GAME", "Overlaps Amounts (Int): (%i, %i, %i)", r.xOverlapi, r.yOverlapi, r.zOverlapi);
-		LogTaggedPrintf("GAME", "Overlaps Amounts (Float): (%.2f, %.2f, %.2f)", r.xOverlapf, r.yOverlapf, r.zOverlapf);
-		LogTaggedPrintf("GAME", "Direction chosen: %i", direction);
-
-		LogTaggedPrintf("GAME", "First correction: Scalar = %.2f, Overall Correction = (%.2f, %.2f, %.2f), Final Applied =  (%.2f, %.2f, %.2f)", firstScalar, finalCorrection.x, finalCorrection.y, finalCorrection.z, firstFinalCorrection.x, firstFinalCorrection.y, firstFinalCorrection.z);
-		LogTaggedPrintf("GAME", "Second correction: Scalar = %.2f, Overall Correction = (%.2f, %.2f, %.2f), Final Applied =  (%.2f, %.2f, %.2f)", secondScalar, finalCorrection.x, finalCorrection.y, finalCorrection.z, secondFinalCorrection.x, secondFinalCorrection.y, secondFinalCorrection.z);
-	
-		first->ApplyCollisionCorrection();
-		second->ApplyCollisionCorrection();
-
-		Vector3 firstPos = first->GetPosition();
-		Vector3 secondPos = second->GetPosition();
-
-		LogTaggedPrintf("GAME", "Pushed First to (%.2f, %.2f, %.2f)", firstPos.x, firstPos.y, firstPos.z);
-		LogTaggedPrintf("GAME", "Pushed Second to (%.2f, %.2f, %.2f)", secondPos.x, secondPos.y, secondPos.z);
 	}
 }
 
