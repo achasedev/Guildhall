@@ -24,6 +24,7 @@ Press and hold Control and Right click to place a glowstone block.
 
 Press 'U' to immediate deactivate all chunks (they will immediately reactivate in activation order)
 Press 'R' to lock the raycast and draw a debug raycast for testing. Press 'R' again to unlock the raycast.
+Press 'Y' to toggle the raycast method from Step-and-Sample (slow) to Intercepts (fast)
 
 Press and hold 'T' to increase the scale to 10000x real time.
 
