@@ -401,11 +401,6 @@ VoxelSprite* VoxelSprite::CreateVoxelSpriteClone(const std::string& spriteName)
 //
 VoxelSprite* VoxelSprite::CreateCharacterSelectSpriteForPlayer(const EntityDefinition* playerDefinition)
 {
-//  	Image* image = AssetDB::CreateOrGetImage("Data/Images/CharacterSelectSprites/Nerd.png");
-//  	VoxelSprite* sprite = new VoxelSprite();
-// 	sprite->CreateFromColorStream((Rgba*)image->GetImageData(), IntVector3(image->GetTexelDimensions().x, 1, image->GetTexelDimensions().y), false);
-// 
-//  	return sprite;
 	const std::string playerName = playerDefinition->m_name;
 	const VoxelSprite* playerSprite = playerDefinition->m_defaultSprite;
 	IntVector3 playerSpriteDimensions = playerSprite->GetBaseDimensions();
@@ -422,8 +417,6 @@ VoxelSprite* VoxelSprite::CreateCharacterSelectSpriteForPlayer(const EntityDefin
 	{
 		for (int xIndex = 0; xIndex < playerSpriteDimensions.x; ++xIndex)
 		{
-			int indexInCharacterSelectSprite = yIndex * characterSelectDimensions.x + xIndex;
-
 			bool colorSetFromPlayer = false;
 			for (int zIndex = 0; zIndex < playerSpriteDimensions.z; ++zIndex)
 			{

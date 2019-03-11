@@ -1,0 +1,15 @@
+<VoxelAnimations>
+
+	<VoxelAnimation name="Chicken_idle" playmode="loop">
+		<Frame voxelsprite="Chicken_idle_0" duration="0.5"/>
+		<Frame voxelsprite="Chicken_idle_1" duration="0.5"/>
+	</VoxelAnimation>
+
+	<VoxelAnimation name="Chicken_walk" playmode="loop">
+		<Frame voxelsprite="Chicken_walk_0" duration="0.25"/>
+		<Frame voxelsprite="Chicken_idle_0" duration="0.25"/>
+		<Frame voxelsprite="Chicken_walk_1" duration="0.25"/>
+		<Frame voxelsprite="Chicken_idle_0" duration="0.25"/>
+	</VoxelAnimation>
+
+</VoxelAnimations>

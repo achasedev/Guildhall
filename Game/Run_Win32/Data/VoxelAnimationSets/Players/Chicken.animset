@@ -1,0 +1,11 @@
+<VoxelAnimationSet name="Chicken">
+
+	<Alias alias="idle">
+		<VoxelAnimation name="Chicken_idle"/>
+	</Alias>
+
+	<Alias alias="move">
+		<VoxelAnimation name="Chicken_walk"/>
+	</Alias>
+
+</VoxelAnimationSet>

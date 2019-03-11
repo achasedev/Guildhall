@@ -1,0 +1,8 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Chicken_idle_0" file="Data/VoxelModels/Players/Chicken/Chicken_idle_0.qef"/>
+	<VoxelSprite name="Chicken_idle_1" file="Data/VoxelModels/Players/Chicken/Chicken_idle_1.qef"/>
+	<VoxelSprite name="Chicken_walk_0" file="Data/VoxelModels/Players/Chicken/Chicken_walk_0.qef"/>
+	<VoxelSprite name="Chicken_walk_1" file="Data/VoxelModels/Players/Chicken/Chicken_walk_1.qef"/>
+
+</VoxelSprites>
