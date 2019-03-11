@@ -53,6 +53,7 @@
 		<VoxelSprite file="Data/VoxelSprites/Players/Chicken.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Andrew.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/OldWoman.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Players/Cereal.sprite"/>
 
 		<VoxelSprite file="Data/VoxelSprites/Players/PlayerIndicator.sprite"/>
 
