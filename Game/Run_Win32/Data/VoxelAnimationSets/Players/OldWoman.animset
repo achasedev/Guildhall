@@ -1,0 +1,11 @@
+<VoxelAnimationSet name="OldWoman">
+
+	<Alias alias="idle">
+		<VoxelAnimation name="OldWoman_idle"/>
+	</Alias>
+
+	<Alias alias="move">
+		<VoxelAnimation name="OldWoman_walk"/>
+	</Alias>
+
+</VoxelAnimationSet>

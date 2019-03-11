@@ -52,6 +52,7 @@
 		<VoxelSprite file="Data/VoxelSprites/Players/Mouse.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Chicken.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Andrew.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Players/OldWoman.sprite"/>
 
 		<VoxelSprite file="Data/VoxelSprites/Players/PlayerIndicator.sprite"/>
 
@@ -76,6 +77,7 @@
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Mouse.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Chicken.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Andrew.animset"/>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/OldWoman.animset"/>
 
 	</VoxelAnimationSets>
 
@@ -97,6 +99,7 @@
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Mouse.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Chicken.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Andrew.animation"/>
+		<VoxelAnimation file="Data/VoxelAnimations/Players/OldWoman.animation"/>
 
 	</VoxelAnimations>
 
