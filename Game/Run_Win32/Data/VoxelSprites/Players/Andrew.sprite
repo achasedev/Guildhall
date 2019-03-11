@@ -1,0 +1,8 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Andrew_idle_0" file="Data/VoxelModels/Players/Andrew/Andrew_idle_0.qef"/>
+	<VoxelSprite name="Andrew_idle_1" file="Data/VoxelModels/Players/Andrew/Andrew_idle_1.qef"/>
+	<VoxelSprite name="Andrew_walk_0" file="Data/VoxelModels/Players/Andrew/Andrew_walk_0.qef"/>
+	<VoxelSprite name="Andrew_walk_1" file="Data/VoxelModels/Players/Andrew/Andrew_walk_1.qef"/>
+
+</VoxelSprites>

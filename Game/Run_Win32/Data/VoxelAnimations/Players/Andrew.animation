@@ -1,0 +1,15 @@
+<VoxelAnimations>
+
+	<VoxelAnimation name="Andrew_idle" playmode="loop">
+		<Frame voxelsprite="Andrew_idle_0" duration="0.5"/>
+		<Frame voxelsprite="Andrew_idle_1" duration="0.5"/>
+	</VoxelAnimation>
+
+	<VoxelAnimation name="Andrew_walk" playmode="loop">
+		<Frame voxelsprite="Andrew_walk_0" duration="0.25"/>
+		<Frame voxelsprite="Andrew_idle_0" duration="0.25"/>
+		<Frame voxelsprite="Andrew_walk_1" duration="0.25"/>
+		<Frame voxelsprite="Andrew_idle_0" duration="0.25"/>
+	</VoxelAnimation>
+
+</VoxelAnimations>
