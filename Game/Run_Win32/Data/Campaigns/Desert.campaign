@@ -14,13 +14,13 @@
 
 	<Stage map="Desert3" enter="east">
 		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="20"/>
-		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Dog" spawn_rate="3" spawn_count_delay="15" spawn_time_delay="11.0" total_to_spawn="10"/>
+		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Hound" spawn_rate="3" spawn_count_delay="15" spawn_time_delay="11.0" total_to_spawn="10"/>
 	</Stage>
 
 	<Stage map="Desert4" enter="south">
 		<SpawnEvent type="off_screen" entity="Walker" direction="south" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="10"/>
 		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="3" spawn_count_delay="10" spawn_time_delay="1.0" total_to_spawn="20"/>
-		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Dog" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="11.0" total_to_spawn="10"/>
+		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Hound" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="11.0" total_to_spawn="10"/>
 	</Stage>
 
 

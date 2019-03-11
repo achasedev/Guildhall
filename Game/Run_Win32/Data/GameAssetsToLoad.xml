@@ -38,7 +38,7 @@
 		<!-- Zombies -->
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Walker.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Tank.sprite"/>
-		<VoxelSprite file="Data/VoxelSprites/Zombies/Dog.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Zombies/Hound.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Soldier.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Bunny.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Spider.sprite"/>
@@ -54,6 +54,7 @@
 		<VoxelSprite file="Data/VoxelSprites/Players/Andrew.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/OldWoman.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Cereal.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Players/Dog.sprite"/>
 
 		<VoxelSprite file="Data/VoxelSprites/Players/PlayerIndicator.sprite"/>
 
@@ -65,7 +66,7 @@
 		<!-- Zombies -->
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Walker.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Tank.animset"/>
-		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Dog.animset"/>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Hound.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Soldier.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Bunny.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Spider.animset"/>
@@ -79,6 +80,7 @@
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Chicken.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Andrew.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/OldWoman.animset"/>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Dog.animset"/>
 
 	</VoxelAnimationSets>
 
@@ -87,7 +89,7 @@
 		<!-- Zombies -->
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Walker.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Tank.animation"/>
-		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Dog.animation"/>
+		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Hound.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Soldier.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Bunny.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Spider.animation"/>
@@ -101,6 +103,7 @@
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Chicken.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Andrew.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Players/OldWoman.animation"/>
+		<VoxelAnimation file="Data/VoxelAnimations/Players/Dog.animation"/>
 
 	</VoxelAnimations>
 
@@ -166,7 +169,7 @@
 		<Campaign file="Data/Campaigns/AIZoos/Bunny.campaign"/>
 		<Campaign file="Data/Campaigns/AIZoos/Spider.campaign"/>
 		<Campaign file="Data/Campaigns/AIZoos/Smasher.campaign"/>
-		<Campaign file="Data/Campaigns/AIZoos/Dog.campaign"/>
+		<Campaign file="Data/Campaigns/AIZoos/Hound.campaign"/>
 		<Campaign file="Data/Campaigns/AIZoos/UFO.campaign"/>
 		<Campaign file="Data/Campaigns/AIZoos/AllAIZoo.campaign"/>
 	</Campaigns>

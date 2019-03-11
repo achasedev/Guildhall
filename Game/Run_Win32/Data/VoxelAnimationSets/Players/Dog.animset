@@ -5,7 +5,7 @@
 	</Alias>
 
 	<Alias alias="move">
-		<VoxelAnimation name="Dog_charge"/>
+		<VoxelAnimation name="Dog_walk"/>
 	</Alias>
 
 </VoxelAnimationSet>

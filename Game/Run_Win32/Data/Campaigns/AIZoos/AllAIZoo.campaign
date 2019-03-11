@@ -3,7 +3,7 @@
 	<Stage map="Forest1" enter="west">
 
 		<SpawnEvent type="from_ground" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="10"/>
-		<SpawnEvent type="from_ground" entity="Dog" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="5"/>
+		<SpawnEvent type="from_ground" entity="Hound" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="5"/>
 		<SpawnEvent type="off_screen" spawn_direction="east" entity="Tank" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="2"/>
 		<SpawnEvent type="off_screen" spawn_direction="north" entity="UFO" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
 		<SpawnEvent type="from_ground" entity="Smasher" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>

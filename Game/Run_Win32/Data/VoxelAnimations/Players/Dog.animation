@@ -1,0 +1,15 @@
+<VoxelAnimations>
+
+	<VoxelAnimation name="Dog_idle" playmode="loop">
+		<Frame voxelsprite="Dog_idle_0" duration="0.5"/>
+		<Frame voxelsprite="Dog_idle_1" duration="0.5"/>
+	</VoxelAnimation>
+
+	<VoxelAnimation name="Dog_walk" playmode="loop">
+		<Frame voxelsprite="Dog_walk_0" duration="0.25"/>
+		<Frame voxelsprite="Dog_idle_0" duration="0.25"/>
+		<Frame voxelsprite="Dog_walk_1" duration="0.25"/>
+		<Frame voxelsprite="Dog_idle_0" duration="0.25"/>
+	</VoxelAnimation>
+
+</VoxelAnimations>
