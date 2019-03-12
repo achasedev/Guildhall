@@ -98,4 +98,12 @@
 		</Physics>
 	</EntityDefinition>
 
+	<EntityDefinition name="Cola" initial_health="5">
+		<Movement max_acceleration="500.0" max_speed="50.0" max_deceleration="500.0" jump_impulse="80.0"/>
+		<Visuals animation_set="Cola" default_sprite="Cola_idle_0"/>
+		<Physics physics_type="dynamic" has_gravity="true">
+			<CollisionDefinition response="share_correction" layer="player"/>
+		</Physics>
+	</EntityDefinition>
+
 </EntityDefinitions>

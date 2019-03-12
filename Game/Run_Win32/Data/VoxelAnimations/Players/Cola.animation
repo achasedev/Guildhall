@@ -1,0 +1,13 @@
+<VoxelAnimations>
+
+	<VoxelAnimation name="Cola_idle" playmode="loop">
+		<Frame voxelsprite="Cola_idle_0" duration="0.5"/>
+		<Frame voxelsprite="Cola_idle_1" duration="0.5"/>
+	</VoxelAnimation>
+
+	<VoxelAnimation name="Cola_walk" playmode="loop">
+		<Frame voxelsprite="Cola_idle_0" duration="0.1"/>
+		<Frame voxelsprite="Cola_walk_0" duration="0.1"/>
+	</VoxelAnimation>
+
+</VoxelAnimations>

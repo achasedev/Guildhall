@@ -1,0 +1,7 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Cola_idle_0" file="Data/VoxelModels/Players/Cola/Cola_idle_0.qef"/>
+	<VoxelSprite name="Cola_idle_1" file="Data/VoxelModels/Players/Cola/Cola_idle_1.qef"/>
+	<VoxelSprite name="Cola_walk_0" file="Data/VoxelModels/Players/Cola/Cola_walk_0.qef"/>
+
+</VoxelSprites>
