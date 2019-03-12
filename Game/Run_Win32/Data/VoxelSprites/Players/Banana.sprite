@@ -1,0 +1,8 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Banana_idle_0" file="Data/VoxelModels/Players/Banana/Banana_idle_0.qef"/>
+	<VoxelSprite name="Banana_idle_1" file="Data/VoxelModels/Players/Banana/Banana_idle_1.qef"/>
+	<VoxelSprite name="Banana_walk_0" file="Data/VoxelModels/Players/Banana/Banana_walk_0.qef"/>
+	<VoxelSprite name="Banana_walk_1" file="Data/VoxelModels/Players/Banana/Banana_walk_1.qef"/>
+
+</VoxelSprites>

@@ -1,0 +1,15 @@
+<VoxelAnimations>
+
+	<VoxelAnimation name="Banana_idle" playmode="loop">
+		<Frame voxelsprite="Banana_idle_0" duration="0.5"/>
+		<Frame voxelsprite="Banana_idle_1" duration="0.5"/>
+	</VoxelAnimation>
+
+	<VoxelAnimation name="Banana_walk" playmode="loop">
+		<Frame voxelsprite="Banana_idle_0" duration="0.25"/>
+		<Frame voxelsprite="Banana_walk_0" duration="0.25"/>
+		<Frame voxelsprite="Banana_walk_1" duration="0.25"/>
+		<Frame voxelsprite="Banana_walk_0" duration="0.25"/>
+	</VoxelAnimation>
+
+</VoxelAnimations>

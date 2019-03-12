@@ -1,0 +1,11 @@
+<VoxelAnimationSet name="Banana">
+
+	<Alias alias="idle">
+		<VoxelAnimation name="Banana_idle"/>
+	</Alias>
+
+	<Alias alias="move">
+		<VoxelAnimation name="Banana_walk"/>
+	</Alias>
+
+</VoxelAnimationSet>
