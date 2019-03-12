@@ -56,6 +56,7 @@
 		<VoxelSprite file="Data/VoxelSprites/Players/Cereal.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Dog.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Banana.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Players/Rubik.sprite"/>
 
 		<VoxelSprite file="Data/VoxelSprites/Players/PlayerIndicator.sprite"/>
 
@@ -83,6 +84,7 @@
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/OldWoman.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Dog.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Banana.animset"/>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Rubik.animset"/>
 
 	</VoxelAnimationSets>
 
@@ -107,6 +109,7 @@
 		<VoxelAnimation file="Data/VoxelAnimations/Players/OldWoman.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Dog.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Banana.animation"/>
+		<VoxelAnimation file="Data/VoxelAnimations/Players/Rubik.animation"/>
 
 	</VoxelAnimations>
 

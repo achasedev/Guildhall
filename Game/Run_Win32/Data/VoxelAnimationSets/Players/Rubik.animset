@@ -1,0 +1,11 @@
+<VoxelAnimationSet name="Rubik">
+
+	<Alias alias="idle">
+		<VoxelAnimation name="Rubik_idle"/>
+	</Alias>
+
+	<Alias alias="move">
+		<VoxelAnimation name="Rubik_walk"/>
+	</Alias>
+
+</VoxelAnimationSet>

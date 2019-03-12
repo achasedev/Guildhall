@@ -1,0 +1,8 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Rubik_idle_0" file="Data/VoxelModels/Players/Rubik/Rubik_idle_0.qef"/>
+	<VoxelSprite name="Rubik_idle_1" file="Data/VoxelModels/Players/Rubik/Rubik_idle_1.qef"/>
+	<VoxelSprite name="Rubik_walk_0" file="Data/VoxelModels/Players/Rubik/Rubik_walk_0.qef"/>
+	<VoxelSprite name="Rubik_walk_1" file="Data/VoxelModels/Players/Rubik/Rubik_walk_1.qef"/>
+
+</VoxelSprites>
