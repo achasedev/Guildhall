@@ -85,6 +85,7 @@
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Dog.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Banana.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Rubik.animset"/>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Cereal.animset"/>
 
 	</VoxelAnimationSets>
 
@@ -110,6 +111,7 @@
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Dog.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Banana.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Rubik.animation"/>
+		<VoxelAnimation file="Data/VoxelAnimations/Players/Cereal.animation"/>
 
 	</VoxelAnimations>
 

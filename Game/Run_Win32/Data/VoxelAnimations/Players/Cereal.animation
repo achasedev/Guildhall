@@ -1,0 +1,15 @@
+<VoxelAnimations>
+
+	<VoxelAnimation name="Cereal_idle" playmode="loop">
+		<Frame voxelsprite="Cereal_idle_0" duration="0.5"/>
+		<Frame voxelsprite="Cereal_idle_1" duration="0.5"/>
+	</VoxelAnimation>
+
+	<VoxelAnimation name="Cereal_walk" playmode="loop">
+		<Frame voxelsprite="Cereal_walk_0" duration="0.25"/>
+		<Frame voxelsprite="Cereal_idle_0" duration="0.25"/>
+		<Frame voxelsprite="Cereal_walk_1" duration="0.25"/>
+		<Frame voxelsprite="Cereal_idle_0" duration="0.25"/>
+	</VoxelAnimation>
+
+</VoxelAnimations>

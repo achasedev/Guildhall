@@ -1,0 +1,11 @@
+<VoxelAnimationSet name="Cereal">
+
+	<Alias alias="idle">
+		<VoxelAnimation name="Cereal_idle"/>
+	</Alias>
+
+	<Alias alias="move">
+		<VoxelAnimation name="Cereal_walk"/>
+	</Alias>
+
+</VoxelAnimationSet>
