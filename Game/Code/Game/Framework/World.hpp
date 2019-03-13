@@ -83,16 +83,17 @@ public:
 	bool		IsEntityOnGround(const Entity* entity) const;
 	
 	// Utility
-	void					ParticalizeVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options);
-	void					ParticalizeEntity(Entity* entity);
-	void					ParticalizeAllEntities();
-	bool					IsEntityOnMap(const Entity* entity) const;
-	bool					AreCoordsOnMap(const IntVector2& coords) const;
-	bool					AreCoordsInWorld(const IntVector3& coords) const;
-	int						GetMapHeightForEntity(const Entity* entity) const;
-	int						GetMapHeightForBounds(const IntVector3& coordPosition, const IntVector2& dimensions) const;
-	int						GetMapHeightForPosition(const Vector2& position) const;
-	std::vector<Entity*>	GetEntitiesThatOverlapSphere(const Vector3& position, float radius) const;
+	void						ParticalizeVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options);
+	void						ParticalizeEntity(Entity* entity);
+	void						ParticalizeAllEntities();
+	bool						IsEntityOnMap(const Entity* entity) const;
+	bool						AreCoordsOnMap(const IntVector2& coords) const;
+	bool						AreCoordsInWorld(const IntVector3& coords) const;
+	int							GetMapHeightForEntity(const Entity* entity) const;
+	int							GetMapHeightForBounds(const IntVector3& coordPosition, const IntVector2& dimensions) const;
+	int							GetMapHeightForPosition(const Vector2& position) const;
+	std::vector<Entity*>		GetEntitiesThatOverlapSphere(const Vector3& position, float radius) const;
+	const std::vector<Entity*>&	GetAllEntities();
 
 
 private:

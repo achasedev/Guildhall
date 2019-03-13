@@ -31,11 +31,12 @@ public:
 private:
 	//-----Private Methods-----
 
-	int CreateProjectiles(std::vector<Projectile*>& out_projectiles) const;
-	int CreateProjectilesForFanSpread(std::vector<Projectile*>& out_projectiles) const;
-	int CreateProjectilesForRandomSpread(std::vector<Projectile*>& out_projectiles) const;
-	int CreateProjectilesForSourceSpread(std::vector<Projectile*>& out_projectiles) const;
-	int CreateProjectilesForNoSpread(std::vector<Projectile*>& out_projectiles) const;
+	int		CreateProjectiles(std::vector<Projectile*>& out_projectiles) const;
+	int		CreateProjectilesForFanSpread(std::vector<Projectile*>& out_projectiles) const;
+	int		CreateProjectilesForRandomSpread(std::vector<Projectile*>& out_projectiles) const;
+	int		CreateProjectilesForSourceSpread(std::vector<Projectile*>& out_projectiles) const;
+	int		CreateProjectilesForNoSpread(std::vector<Projectile*>& out_projectiles) const;
+	Vector3 FindBaseDirectionForAimAssist() const;
 
 
 private:

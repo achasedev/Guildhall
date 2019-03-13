@@ -76,7 +76,6 @@ void Weapon::OnUnequip()
 void Weapon::Shoot()
 {
 	ASSERT_OR_DIE(m_entityEquippedTo != nullptr, "Weapon fired when it doesn't have an entity owning it");
-	//ASSERT_OR_DIE(m_currAmmoCount > 0, "Weapon fired with no ammo");
 
 	// Check the shoot timer
 	if (!m_shootTimer.HasIntervalElapsed())
@@ -220,7 +219,7 @@ int Weapon::CreateProjectiles(std::vector<Projectile*>& out_projectiles) const
 //
 int Weapon::CreateProjectilesForFanSpread(std::vector<Projectile*>& out_projectiles) const
 {
-	Vector3 baseDirection = m_entityEquippedTo->GetForwardVector();
+	Vector3 baseDirection = FindBaseDirectionForAimAssist();
 	Vector3 baseSpawnPosition = m_entityEquippedTo->GetCenterPosition() + (baseDirection * WEAPON_FIRE_OFFSET);
 	eEntityTeam team = m_entityEquippedTo->GetTeam();
 	float projectileSpeed = m_definition->m_projectileDefinition->m_projectileSpeed;
@@ -259,7 +258,7 @@ int Weapon::CreateProjectilesForFanSpread(std::vector<Projectile*>& out_projecti
 //
 int Weapon::CreateProjectilesForRandomSpread(std::vector<Projectile*>& out_projectiles) const
 {
-	Vector3 baseDirection = m_entityEquippedTo->GetForwardVector();
+	Vector3 baseDirection = FindBaseDirectionForAimAssist();
 	Vector3 baseSpawnPosition = m_entityEquippedTo->GetCenterPosition() + (baseDirection * WEAPON_FIRE_OFFSET);
 	eEntityTeam team = m_entityEquippedTo->GetTeam();
 	float projectileSpeed = m_definition->m_projectileDefinition->m_projectileSpeed;
@@ -298,12 +297,12 @@ int Weapon::CreateProjectilesForRandomSpread(std::vector<Projectile*>& out_proje
 //
 int Weapon::CreateProjectilesForSourceSpread(std::vector<Projectile*>& out_projectiles) const
 {
-	Vector3 forwardDirection = m_entityEquippedTo->GetForwardVector();
+	Vector3 baseDirection = FindBaseDirectionForAimAssist();
 	Vector3 rightDirection = m_entityEquippedTo->GetRightVector();
 	Vector3 upDirection = m_entityEquippedTo->GetUpVector();
 
-	Vector3 baseSpawnPosition = m_entityEquippedTo->GetCenterPosition() + (forwardDirection * WEAPON_FIRE_OFFSET);
-	float finalOrientation = forwardDirection.xz().GetOrientationDegrees();
+	Vector3 baseSpawnPosition = m_entityEquippedTo->GetCenterPosition() + (baseDirection * WEAPON_FIRE_OFFSET);
+	float finalOrientation = baseDirection.xz().GetOrientationDegrees();
 
 	eEntityTeam team = m_entityEquippedTo->GetTeam();
 	float projectileSpeed = m_definition->m_projectileDefinition->m_projectileSpeed;
@@ -319,14 +318,14 @@ int Weapon::CreateProjectilesForSourceSpread(std::vector<Projectile*>& out_proje
 		float rightSpreadMagnitude = GetRandomFloatInRange(-maxSpread, maxSpread);
 		float forwardSpreadMagnitude = GetRandomFloatInRange(-maxSpread, maxSpread);
 
-		Vector3 spawnOffset = upDirection * upSpreadMagnitude + rightDirection * rightSpreadMagnitude + forwardDirection * 2.f * forwardSpreadMagnitude;
+		Vector3 spawnOffset = upDirection * upSpreadMagnitude + rightDirection * rightSpreadMagnitude + baseDirection * 2.f * forwardSpreadMagnitude;
 		Vector3 finalPosition = baseSpawnPosition + spawnOffset;
 
 		proj->SetPosition(finalPosition);
 		proj->SetOrientation(finalOrientation);
 		proj->SetTeam(team);
 
-		proj->GetPhysicsComponent()->SetVelocity(forwardDirection * projectileSpeed);
+		proj->GetPhysicsComponent()->SetVelocity(baseDirection * projectileSpeed);
 
 		out_projectiles.push_back(proj);
 	}
@@ -340,7 +339,7 @@ int Weapon::CreateProjectilesForSourceSpread(std::vector<Projectile*>& out_proje
 //
 int Weapon::CreateProjectilesForNoSpread(std::vector<Projectile*>& out_projectiles) const
 {
-	Vector3 baseDirection = m_entityEquippedTo->GetForwardVector();
+	Vector3 baseDirection = FindBaseDirectionForAimAssist();
 	Vector3 baseSpawnPosition = m_entityEquippedTo->GetCenterPosition() + (baseDirection * WEAPON_FIRE_OFFSET);
 	eEntityTeam team = m_entityEquippedTo->GetTeam();
 	float projectileSpeed = m_definition->m_projectileDefinition->m_projectileSpeed;
@@ -363,4 +362,67 @@ int Weapon::CreateProjectilesForNoSpread(std::vector<Projectile*>& out_projectil
 	}
 
 	return (int) out_projectiles.size();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the base direction that the shoot spread will be based off of
+//
+Vector3 Weapon::FindBaseDirectionForAimAssist() const
+{
+	eEntityTeam baseTeam = m_entityEquippedTo->GetTeam();
+	Vector3 basePosition = m_entityEquippedTo->GetCenterPosition();
+	Vector3 baseForward = m_entityEquippedTo->GetForwardVector();
+
+	const std::vector<Entity*>& entities = Game::GetWorld()->GetAllEntities();
+
+	int entityCount = (int)entities.size();
+	float maxDot = -1.f;
+	Vector3 positionOfBestTarget;
+	bool foundTarget = false;
+
+	// Find the enemy entity that is most in front of the shooter
+	for (int entityIndex = 0; entityIndex < entityCount; ++entityIndex)
+	{
+		const Entity* targetEntity = entities[entityIndex];
+
+		eEntityTeam targetTeam = targetEntity->GetTeam();
+		if (targetTeam == ENTITY_TEAM_UNASSIGNED || targetTeam == baseTeam)
+		{
+			continue;
+		}
+
+		Vector3 targetPosition = targetEntity->GetCenterPosition();
+		Vector3 displacementToTarget = (targetPosition - basePosition);
+		Vector3 directionToTarget = displacementToTarget.GetNormalized();
+
+		// Check if the entity is within the view cone
+		float minDotThreshold = CosDegrees(22.5f);
+		float currDot = DotProduct(baseForward, directionToTarget);
+
+		if (currDot > minDotThreshold && currDot > maxDot)
+		{
+			maxDot = currDot;
+			positionOfBestTarget = targetPosition;
+			foundTarget = true;
+		}
+	}
+
+	// Calculate the final direction by maintaining the same XZ forward direction,
+	// but incorporate a change in y to elevate to the target
+	Vector3 finalDirection;
+	if (foundTarget)
+	{
+		Vector3 displacementToBestTarget = (positionOfBestTarget - basePosition);
+		float projectionValue = DotProduct(baseForward, displacementToBestTarget);
+		finalDirection = baseForward * projectionValue;
+		finalDirection.y = displacementToBestTarget.y;
+		finalDirection.NormalizeAndGetLength();
+	}
+	else
+	{
+		finalDirection = baseForward;
+	}
+
+	return finalDirection;
 }

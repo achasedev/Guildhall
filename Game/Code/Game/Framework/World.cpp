@@ -524,6 +524,15 @@ std::vector<Entity*> World::GetEntitiesThatOverlapSphere(const Vector3& position
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns all entities in the world
+//
+const std::vector<Entity*>& World::GetAllEntities()
+{
+	return m_entities;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the voxel dimensions of the world
 //
 IntVector3 World::GetDimensions() const
