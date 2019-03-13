@@ -133,9 +133,6 @@ void AnimatedEntity::Move(const Vector2& direction, float speedLimit /*=0.f*/)
 
 	m_physicsComponent->AddForce(force);
 
-	// Reorient the entity
-	m_orientation = direction.GetOrientationDegrees();
-
 	m_animator->Play("move");
 }
 

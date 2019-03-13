@@ -208,6 +208,49 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, Voxel
 		options.castsShadows = false;
 		options.receivesShadows = false;
 		DrawVoxelSprite(indicatorSprite, indicatorPosition, 0.f, options);
+		
+		// Hack to draw player aim reticle
+		float reticleDistance = player->GetAimReticleDistance();
+
+		// Only render if it's outside the player
+		if (reticleDistance > 4.f)
+		{
+			Vector3 reticlePosition = entity->GetCenterPosition() + entity->GetForwardVector() * reticleDistance;
+			IntVector3 reticleCenterCoord = IntVector3(RoundToNearestInt(reticlePosition.x), RoundToNearestInt(reticlePosition.y), RoundToNearestInt(reticlePosition.z));
+
+			// Draw the reticle as a plus sign
+			IntVector3 upCoord = reticleCenterCoord + IntVector3(0, 0, 1);
+			IntVector3 downCoord = reticleCenterCoord + IntVector3(0, 0, -1);
+			IntVector3 leftCoord = reticleCenterCoord + IntVector3(-1, 0, 0);
+			IntVector3 rightCoord = reticleCenterCoord + IntVector3(1, 0, 0);
+
+			int upIndex = GetIndexForCoords(upCoord);
+			int downIndex = GetIndexForCoords(downCoord);
+			int leftIndex = GetIndexForCoords(leftCoord);
+			int rightIndex = GetIndexForCoords(rightCoord);
+
+			Rgba playerColor = player->GetPlayerColor();
+
+			if (upIndex != -1)
+			{
+				m_gridColors[upIndex] = playerColor;
+			}
+
+			if (downIndex != -1)
+			{
+				m_gridColors[downIndex] = playerColor;
+			}
+
+			if (leftIndex != -1)
+			{
+				m_gridColors[leftIndex] = playerColor;
+			}
+
+			if (rightIndex != -1)
+			{
+				m_gridColors[rightIndex] = playerColor;
+			}
+		}
 	}
 
 	// Draw additional text in the world for a character select volume....also a hack

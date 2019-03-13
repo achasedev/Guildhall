@@ -122,14 +122,18 @@ void Player::ProcessGameplayInput()
 	if (leftStick != Vector2::ZERO)
 	{
 		Move(leftStick);
+		m_orientation = leftStick.GetOrientationDegrees();
 	}
 
-	// Orientation
 	Vector2 rightStick = controller.GetCorrectedStickPosition(XBOX_STICK_RIGHT);
-
 	if (rightStick != Vector2::ZERO)
 	{
 		m_orientation = rightStick.GetOrientationDegrees();
+		m_aimReticleDistance = ClampFloat(m_aimReticleDistance + Game::GetDeltaTime() * AIM_RETICLE_MOVE_SPEED, 0.f, MAX_AIM_RETICLE_DISTANCE);
+	}
+	else
+	{
+		m_aimReticleDistance = ClampFloat(m_aimReticleDistance - Game::GetDeltaTime() * AIM_RETICLE_MOVE_SPEED, 0.f, MAX_AIM_RETICLE_DISTANCE);
 	}
 
 	// If we have no input or are moving too fast, decelerate
@@ -335,6 +339,15 @@ float Player::GetRespawnTimeRemaining() const
 bool Player::IsRespawning() const
 {
 	return (m_isMarkedForDelete && m_respawnTimer.GetTimeUntilIntervalEnds() > 0.f);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the distance the aim reticle should be from the player
+//
+float Player::GetAimReticleDistance() const
+{
+	return m_aimReticleDistance;
 }
 
 

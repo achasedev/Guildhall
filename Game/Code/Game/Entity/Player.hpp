@@ -48,6 +48,7 @@ public:
 	Weapon* GetCurrentWeapon() const;
 	float GetRespawnTimeRemaining() const;
 	bool IsRespawning() const;
+	float GetAimReticleDistance() const;
 
 	// Utility
 	static Rgba GetColorForPlayerID(int id);
@@ -59,12 +60,15 @@ private:
 	int m_playerID = -1;
 	Rgba m_color;
 
-	Stopwatch m_respawnTimer;
-	Weapon* m_currWeapon = nullptr;
+	Stopwatch	m_respawnTimer;
+	Weapon*		m_currWeapon = nullptr;
+	float		m_aimReticleDistance = 0.f;
 
-	static constexpr float RESPAWN_INTERVAL = 5.0f;
-	static constexpr float SCREENSHAKE_ADDED_ON_DEATH = 1.5f;
+	static constexpr float	RESPAWN_INTERVAL = 5.0f;
+	static constexpr float	SCREENSHAKE_ADDED_ON_DEATH = 1.5f;
 	static constexpr float	PLAYER_INVINCIBILITY_DURATION_FROM_HIT = 1.0f;
+	static constexpr float	MAX_AIM_RETICLE_DISTANCE = 10.f;
+	static constexpr float	AIM_RETICLE_MOVE_SPEED = 100.f;
 
 	static Rgba s_playerColors[4];
 

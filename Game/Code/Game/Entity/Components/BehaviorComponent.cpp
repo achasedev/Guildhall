@@ -138,6 +138,7 @@ void BehaviorComponent::MoveToClosestPlayer()
 	Vector3 directionToPlayer = (closestPlayerPosition - currPosition).GetNormalized();
 
 	m_owningEntity->Move(directionToPlayer.xz());
+	m_owningEntity->SetOrientation(directionToPlayer.xz().GetOrientationDegrees());
 	m_owningEntity->Decelerate();
 }
 
