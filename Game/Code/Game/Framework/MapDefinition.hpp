@@ -25,6 +25,8 @@ public:
 	std::string m_terrainType; // For randomization of terrains
 	std::string m_terrainName; // For specific terrains (if specified)
 
+	float m_gravityScale = 1.0f;
+
 	std::vector<MapAreaSpawn_t> m_initialSpawns; // For spawning entities on the map when it's initialized
 
 

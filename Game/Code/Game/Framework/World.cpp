@@ -114,19 +114,6 @@ World::~World()
 
 
 //-----------------------------------------------------------------------------------------------
-// Sets up the world to be ready for the main/character select menu
-//
-void World::InitializeForMenu()
-{
-	if (m_map != nullptr)
-	{
-		delete m_map;
-		m_map = nullptr;
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Initializes the grid and any other setup
 //
 void World::InititalizeForStage(const CampaignStage* stage)
@@ -201,7 +188,7 @@ void World::CleanUp()
 	}
 }
 
-#include "Engine/Input/InputSystem.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // Update
 //
@@ -579,6 +566,20 @@ eTransitionEdge World::GetDirectionToEnter() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the gravity scalar for the world currently
+//
+float World::GetCurrentGravityScale() const
+{
+	if (m_map != nullptr)
+	{
+		return m_map->GetGravityScale();
+	}
+
+	return 1.0f;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the coordinate that contains the position (round to nearest int)
 //
 IntVector3 World::GetCoordsForPosition(const Vector3& position) const
@@ -657,8 +658,6 @@ void World::IntializeMap(const MapDefinition* mapDefinition)
 
 	// Spawn the map entities
 	SpawnMapEntities(mapDefinition);
-
-	// Spawn the campaign entities (?)
 }
 
 

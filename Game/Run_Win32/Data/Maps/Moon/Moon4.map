@@ -1,4 +1,4 @@
-<Map name="Moon4" terrain_type="Lunar">
+<Map name="Moon4" terrain_type="Lunar" gravity_scale="0.5">
 
 
 </Map>

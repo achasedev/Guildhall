@@ -4,12 +4,13 @@
 /* Date: October 8th, 2018
 /* Description: Implementation of the PhysicsComponent class
 /************************************************************************/
-#include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/World.hpp"
+#include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
 // Default acceleration due to gravity
-#define GRAVITY_MAGNITUDE (200.f);
+#define BASE_GRAVITY_MAGNITUDE (200.f);
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -134,7 +135,8 @@ void PhysicsComponent::ApplyPhysicsStep()
 	// Apply force
 	if (m_affectedByGravity)
 	{
-		m_force += Vector3::MINUS_Y_AXIS * m_owningEntity->GetMass() * GRAVITY_MAGNITUDE;
+		float gravityScale = Game::GetWorld()->GetCurrentGravityScale();
+		m_force += Vector3::MINUS_Y_AXIS * m_owningEntity->GetMass() * gravityScale * BASE_GRAVITY_MAGNITUDE;
 	}
 
 	Vector3 acceleration = (m_force * m_owningEntity->GetInverseMass());

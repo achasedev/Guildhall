@@ -31,6 +31,9 @@ void MapDefinition::LoadMap(const std::string& mapFilePath)
 	mapDefinition->m_terrainType = ParseXmlAttribute(*rootElement, "terrain_type", mapDefinition->m_terrainType);
 	GUARANTEE_RECOVERABLE(!IsStringNullOrEmpty(mapDefinition->m_terrainType) || !IsStringNullOrEmpty(mapDefinition->m_terrainName), Stringf("No terrain type specified for map %s", mapFilePath.c_str()));
 
+	// Gravity scale
+	mapDefinition->m_gravityScale = ParseXmlAttribute(*rootElement, "gravity_scale", mapDefinition->m_gravityScale);
+
 	// Iterate over all initial spawn elements and store off the spawn info
 	// These spawns will be executed whenever a map is initialized from this definition
 	const XMLElement* spawnElement = rootElement->FirstChildElement("Spawn");

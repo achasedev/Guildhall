@@ -55,7 +55,6 @@ public:
 	World();
 	~World();
 
-	void InitializeForMenu();
 	void InititalizeForStage(const CampaignStage* stage);
 	void CleanUp();
 
@@ -77,6 +76,7 @@ public:
 	int					GetGroundElevationAtCoord(const IntVector2& coord) const;
 	int					GetCurrentMaxHeightOfmap() const;
 	eTransitionEdge		GetDirectionToEnter() const;
+	float				GetCurrentGravityScale() const;
 
 	// Producers
 	IntVector3	GetCoordsForPosition(const Vector3& position) const;
@@ -136,7 +136,7 @@ private:
 	eTransitionEdge m_enterEdge = EDGE_WEST;
 
 	// map
-	VoxelMap* m_map = nullptr;
+	VoxelMap*	m_map = nullptr;
 
 	std::vector<Entity*>	m_entities;
 	std::vector<Particle*>	m_particles;

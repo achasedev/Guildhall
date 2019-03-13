@@ -29,7 +29,8 @@ public:
 	// Accessors
 	int		GetHeightAtCoords(const IntVector2& coords);
 	Rgba	GetColorAtCoords(const IntVector3& coords);
-	
+	float	GetGravityScale() const;
+
 	
 private:
 	//-----Private Data-----

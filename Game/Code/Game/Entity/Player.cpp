@@ -133,7 +133,7 @@ void Player::ProcessGameplayInput()
 	}
 	else
 	{
-		m_aimReticleDistance = ClampFloat(m_aimReticleDistance - Game::GetDeltaTime() * AIM_RETICLE_MOVE_SPEED, 0.f, MAX_AIM_RETICLE_DISTANCE);
+		m_aimReticleDistance = 0.f;
 	}
 
 	// If we have no input or are moving too fast, decelerate

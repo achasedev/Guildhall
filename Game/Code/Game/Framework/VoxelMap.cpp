@@ -126,3 +126,12 @@ Rgba VoxelMap::GetColorAtCoords(const IntVector3& coords)
 {
 	return m_terrain->GetColorAtRelativeCoords(coords, 0.f);
 }
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the gravity scale for this map
+//
+float VoxelMap::GetGravityScale() const
+{
+	return m_mapDefinition->m_gravityScale;
+}
