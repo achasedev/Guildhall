@@ -321,7 +321,7 @@
     <ClCompile Include="Framework\CampaignDefinition.cpp" />
     <ClCompile Include="Framework\GameCamera.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
-    <ClCompile Include="Framework\Leaderboard.cpp" />
+    <ClCompile Include="Framework\LootTable.cpp" />
     <ClCompile Include="Framework\MapDefinition.cpp" />
     <ClCompile Include="Framework\Menu.cpp" />
     <ClCompile Include="Framework\PlayStates\PlayState.cpp" />
@@ -386,6 +386,7 @@
     <ClInclude Include="Framework\GameCamera.hpp" />
     <ClInclude Include="Framework\GameCommon.hpp" />
     <ClInclude Include="Framework\Leaderboard.hpp" />
+    <ClInclude Include="Framework\LootTable.hpp" />
     <ClInclude Include="Framework\MapDefinition.hpp" />
     <ClInclude Include="Framework\Menu.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState.hpp" />

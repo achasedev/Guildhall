@@ -151,9 +151,10 @@ public:
 	bool									m_isDestructible = false;
 	bool									m_isAnimated = false;
 
-	// AIEntity
+	// AIEntity/Enemies
 	const BehaviorComponent*				m_behaviorPrototype;
 	int										m_pointValue = 100;
+	std::string								m_lootTableName;
 
 	// Weapons
 	const EntityDefinition*					m_projectileDefinition = nullptr;

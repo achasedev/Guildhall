@@ -130,6 +130,11 @@
 
 	<!-- END ENTITIES -->
 
+	<!-- LOOT TABLES -->
+
+	<LootTables file="Data/LootTables.xml"/>
+
+	<!-- END LOOT TABLES -->
 
 	<!-- MAPS -->
 

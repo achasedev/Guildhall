@@ -6,6 +6,7 @@
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/VoxelMap.hpp"
+#include "Game/Framework/LootTable.hpp"
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
@@ -150,7 +151,7 @@ void GameState_Loading::LoadResources() const
 
 			soundElement = soundElement->NextSiblingElement("Sound");
 		}
-	}
+	}	
 }
 
 
@@ -243,6 +244,16 @@ void GameState_Loading::LoadVoxelResources() const
 			}	
 		}
 	}
+
+	// Loot Tables
+	{
+		const XMLElement* lootTableElement = rootElement->FirstChildElement("LootTables");
+		GUARANTEE_OR_DIE(lootTableElement != nullptr, "No LootTable element in GameAssetsToLoad.xml");
+
+		std::string fileName = ParseXmlAttribute(*lootTableElement, "file", "");
+		LootTable::LoadTables(fileName);
+	}
+
 
 	// Voxel Terrains
 	{

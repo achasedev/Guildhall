@@ -139,9 +139,6 @@
     <ClCompile Include="Animation\VoxelSprite.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Framework\Leaderboard.cpp">
-      <Filter>Architecture</Filter>
-    </ClCompile>
     <ClCompile Include="Framework\PlayStates\PlayState_Pause.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
@@ -191,6 +188,9 @@
       <Filter>Architecture</Filter>
     </ClCompile>
     <ClCompile Include="Entity\Components\BehaviorComponent_Kamikaze.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\LootTable.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
   </ItemGroup>
@@ -271,5 +271,6 @@
     <ClInclude Include="Entity\Components\BehaviorComponent_Smash.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_Bomber.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_Kamikaze.hpp" />
+    <ClInclude Include="Framework\LootTable.hpp" />
   </ItemGroup>
 </Project>

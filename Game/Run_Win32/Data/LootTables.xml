@@ -1,0 +1,17 @@
+<LootTables>
+
+	<LootTable name="Default" drop_chance="1.0">
+		<Weapon name="Flamethrower" chance="0.5"/>
+		<Weapon name="Shotgun" chance="0.5"/>
+	</LootTable>
+
+	<LootTable name="Elite" drop_chance="0.5">
+		<Weapon name="Flamethrower" chance="0.5"/>
+		<Weapon name="MissileLauncher" chance="0.5"/>
+	</LootTable>
+
+	<LootTable name="UFO" drop_chance="1.0">
+		<Weapon name="Laser" chance="1.0"/>
+	</LootTable>
+
+</LootTables>

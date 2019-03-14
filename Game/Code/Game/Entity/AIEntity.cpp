@@ -9,9 +9,11 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Entity/AIEntity.hpp"
 #include "Game/Framework/World.hpp"
+#include "Game/Framework/LootTable.hpp"
 #include "Game/Entity/Components/BehaviorComponent.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -45,27 +47,18 @@ void AIEntity::OnDeath()
 	m_eventSpawnedFrom->StopTrackingEntity(this);
 	Game::GetWorld()->ParticalizeEntity(this);
 
-	if (CheckRandomChance(0.1f))
+	// Check to drop something
+	const LootTable* lootTable = LootTable::GetTableByName(m_definition->m_lootTableName);
+	if (lootTable != nullptr)
 	{
-		Weapon* drop = new Weapon(EntityDefinition::GetDefinition("Laser"));
-		
-// 		float chance = GetRandomFloatZeroToOne();
-// 
-// 		if (chance > 0.5f)
-// 		{
-// 			drop = new Weapon(EntityDefinition::GetDefinition("Shotgun"));
-// 		}
-// 		else if (chance > 0.2f)
-// 		{
-// 			drop = new Weapon(EntityDefinition::GetDefinition("Flamethrower"));
-// 		}
-// 		else
-// 		{
-// 			drop = new Weapon(EntityDefinition::GetDefinition("MissileLauncher"));
-// 		}
+		const EntityDefinition* weaponDef = lootTable->GetWeaponDrop();
 
-		drop->SetPosition(GetCenterPosition());
-		Game::GetWorld()->AddEntity(drop);
+		if (weaponDef != nullptr)
+		{
+			Weapon* weaponDropped = new Weapon(weaponDef);
+			weaponDropped->SetPosition(GetCenterPosition());
+			Game::GetWorld()->AddEntity(weaponDropped);
+		}
 	}
 
 	if (GetTeam() == ENTITY_TEAM_ENEMY)

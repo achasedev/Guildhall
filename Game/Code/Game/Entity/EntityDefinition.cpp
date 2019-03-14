@@ -120,7 +120,10 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement, eEntityClass
 	ASSERT_OR_DIE(m_name.size() > 0, "Error: EntityDefinition lacks a name");
 
 	m_initialHealth = ParseXmlAttribute(entityElement, "initial_health", m_initialHealth);
+
+	// Enemies
 	m_pointValue = ParseXmlAttribute(entityElement, "points", m_pointValue);
+	m_lootTableName = ParseXmlAttribute(entityElement, "loot_table", "Default");
 
 	// Movement
 	const XMLElement* moveElement = entityElement.FirstChildElement("Movement");
