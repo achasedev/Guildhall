@@ -12,6 +12,7 @@
 
 class CampaignStage;
 class EntityDefinition;
+class EntitySpawnEvent;
 class CampaignDefinition;
 
 class CampaignManager
@@ -37,9 +38,11 @@ public:
 	int							GetEnemyCountLeftInStage() const;
 	int							GetEntityCountSpawnedThisStageSoFar() const;
 	float						GetTimeIntoStage() const;
+	float						GetCurrentDifficultyScale() const;
 
 	// Mutators
 	void						StartNextStage();
+	void						RescaleToNewDifficulty(float newDifficultyScale);
 
 	
 private:
@@ -61,6 +64,8 @@ private:
 	bool							m_currStageFinished = false;
 	int								m_currStageIndex = 0;
 	int								m_totalSpawnedThisStage = 0;
+
+	float							m_currentDifficultyScale = 1.0f;
 
 	// Data
 	const CampaignDefinition*		m_campaignDefinition = nullptr;

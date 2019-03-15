@@ -916,6 +916,37 @@ bool Game::AreAllPlayersInitialized()
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the difficulty scale for the current number of players
+//
+void Game::RescaleDifficultyBasedOnCurrentPlayerCount()
+{
+	int playerCount = GetCurrentPlayerCount();
+	float newDifficultyScale = 1.f;
+
+	switch (playerCount)
+	{
+	case 1:
+		newDifficultyScale = 1.f;
+		break;
+	case 2: 
+		newDifficultyScale = 2.f;
+		break;
+	case 3:
+		newDifficultyScale = 3.f;
+		break;
+	case 4:
+		newDifficultyScale = 4.f;
+		break;
+	default:
+		ERROR_AND_DIE("Bad player count");
+		break;
+	}
+
+	s_instance->m_campaignManager->RescaleToNewDifficulty(newDifficultyScale);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Plays the given background music
 //
 void Game::PlayBGM(const std::string& filename, bool fadeIn /*= true*/, bool loop /*= true*/)

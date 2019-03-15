@@ -80,6 +80,7 @@ public:
 	static void					DrawStageNumber();
 
 	static bool					AreAllPlayersInitialized();
+	static void					RescaleDifficultyBasedOnCurrentPlayerCount();
 
 	static void					PlayBGM(const std::string& filename, bool fadeIn = true, bool loop = true);
 	static void					SetBGMVolume(float newVolume, bool transitionTo = true);

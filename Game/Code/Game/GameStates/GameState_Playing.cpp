@@ -205,6 +205,9 @@ void GameState_Playing::PerformControllerCheck()
 				players[i] = new Player(playerDef, i);
 
 				Game::GetWorld()->AddEntity(players[i]);
+
+				// Rescale the campaign manager's difficulty
+				Game::RescaleDifficultyBasedOnCurrentPlayerCount();
 			}
 		}
 		else

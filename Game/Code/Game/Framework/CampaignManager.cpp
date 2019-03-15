@@ -73,6 +73,7 @@ void CampaignManager::CleanUp()
 
 	// Data
 	m_campaignDefinition = nullptr;
+	m_currentDifficultyScale = 1.0f;
 }
 
 
@@ -129,6 +130,22 @@ void CampaignManager::StartNextStage()
 
 	m_campaignDefinition->m_stages[m_currStageIndex]->CloneAllEventPrototypes(this, m_currentSpawnEvents);
 	m_stageTimer.Reset();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Changes the base difficulty and rescales the current event spawn count to immediately reflect it
+//
+void CampaignManager::RescaleToNewDifficulty(float newDifficultyScale)
+{
+	int eventCount = (int)m_currentSpawnEvents.size();
+
+	for (int eventIndex = 0; eventIndex < eventCount; ++eventIndex)
+	{
+		m_currentSpawnEvents[eventIndex]->RescaleToNewDifficulty(m_currentDifficultyScale, newDifficultyScale);
+	}
+
+	m_currentDifficultyScale = newDifficultyScale;
 }
 
 
@@ -198,6 +215,15 @@ int CampaignManager::GetEntityCountSpawnedThisStageSoFar() const
 float CampaignManager::GetTimeIntoStage() const
 {
 	return m_stageTimer.GetElapsedTime();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the difficulty scale that the manager is currently running at
+//
+float CampaignManager::GetCurrentDifficultyScale() const
+{
+	return m_currentDifficultyScale;
 }
 
 

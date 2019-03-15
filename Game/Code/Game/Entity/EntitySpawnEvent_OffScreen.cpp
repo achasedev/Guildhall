@@ -5,9 +5,9 @@
 /* Description: Implementation of the OffScreen spawn event
 /************************************************************************/
 #include "Game/Entity/AIEntity.hpp"
+#include "Game/Framework/CampaignManager.hpp"
 #include "Game/Entity/EntitySpawnEvent_OffScreen.hpp"
 #include "Engine/Math/MathUtils.hpp"
-
 
 //---C FUNCTION----------------------------------------------------------------------------------
 // Returns an AABB2 representing the spawn region that would cause enemies to come from the given
@@ -75,6 +75,9 @@ EntitySpawnEvent* EntitySpawnEvent_OffScreen::Clone(CampaignManager* manager) co
 {
 	EntitySpawnEvent_OffScreen* offScreenEvent = new EntitySpawnEvent_OffScreen(*this);
 	offScreenEvent->m_manager = manager;
+
+	// Ensure we set up the initial spawn counts to correspond to the difficulty
+	offScreenEvent->RescaleToNewDifficulty(1.0f, manager->GetCurrentDifficultyScale());
 
 	return offScreenEvent;
 }

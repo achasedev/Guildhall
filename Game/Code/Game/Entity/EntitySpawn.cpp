@@ -7,8 +7,10 @@
 #include "Game/Entity/EntitySpawnEvent_Default.hpp"
 #include "Game/Entity/EntitySpawnEvent_OffScreen.hpp"
 #include "Game/Entity/EntitySpawnEvent_FromGround.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
+
 
 //---C FUNCTION----------------------------------------------------------------------------------
 // Returns the enumeration for the spawn type given by the text
@@ -115,6 +117,17 @@ bool EntitySpawnEvent::IsEventTrackingThisEntity(AIEntity* entity)
 	}
 
 	return false;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Updates the current spawn counts to reflect the new difficulty scale
+//
+void EntitySpawnEvent::RescaleToNewDifficulty(float existingDifficultyScale, float newDifficultyScale)
+{
+	m_totalToSpawn		= Ceiling(((float)m_totalToSpawn)		/ existingDifficultyScale * newDifficultyScale);
+	m_spawnRate			= Ceiling(((float)m_spawnRate)			/ existingDifficultyScale * newDifficultyScale);
+	m_spawnCountDelay	= Ceiling(((float)m_spawnCountDelay)	/ existingDifficultyScale * newDifficultyScale);
 }
 
 

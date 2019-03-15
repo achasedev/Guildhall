@@ -1,5 +1,5 @@
+#include "Game/Framework/CampaignManager.hpp"
 #include "Game/Entity/EntitySpawnEvent_Default.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor from XML
@@ -40,6 +40,9 @@ EntitySpawnEvent* EntitySpawnEvent_Default::Clone(CampaignManager* manager) cons
 {
 	EntitySpawnEvent_Default* defaultEvent = new EntitySpawnEvent_Default(*this);
 	defaultEvent->m_manager = manager;
+
+	// Ensure we set up the initial spawn counts to correspond to the difficulty
+	defaultEvent->RescaleToNewDifficulty(1.0f, manager->GetCurrentDifficultyScale());
 
 	return defaultEvent;
 }

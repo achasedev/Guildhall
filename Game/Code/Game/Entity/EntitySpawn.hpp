@@ -85,6 +85,8 @@ public:
 	void						StopTrackingEntity(AIEntity* entity);
 	bool						IsEventTrackingThisEntity(AIEntity* entity);
 
+	// For difficulty rescaling
+	void						RescaleToNewDifficulty(float existingDifficultyScale, float newDifficultyScale);
 	static EntitySpawnEvent*	CreateSpawnEventForElement(const XMLElement& element);
 
 

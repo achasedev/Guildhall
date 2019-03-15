@@ -7,6 +7,7 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Entity/AIEntity.hpp"
+#include "Game/Framework/CampaignManager.hpp"
 #include "Game/Entity/EntitySpawnEvent_FromGround.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -107,6 +108,9 @@ EntitySpawnEvent* EntitySpawnEvent_FromGround::Clone(CampaignManager* manager) c
 {
 	EntitySpawnEvent_FromGround* groundSpawnEvent = new EntitySpawnEvent_FromGround(*this);
 	groundSpawnEvent->m_manager = manager;
+
+	// Ensure we set up the initial spawn counts to correspond to the difficulty
+	groundSpawnEvent->RescaleToNewDifficulty(1.0f, manager->GetCurrentDifficultyScale());
 
 	return groundSpawnEvent;
 }

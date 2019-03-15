@@ -8,6 +8,7 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Entity/AIEntity.hpp"
 #include "Game/Framework/World.hpp"
+#include "Game/Framework/CampaignManager.hpp"
 #include "Game/Entity/EntitySpawnEvent_Meteor.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -101,6 +102,9 @@ EntitySpawnEvent* EntitySpawnEvent_Meteor::Clone(CampaignManager* manager) const
 {
 	EntitySpawnEvent_Meteor* meteorEvent = new EntitySpawnEvent_Meteor(*this);
 	meteorEvent->m_manager = manager;
+
+	// Ensure we set up the initial spawn counts to correspond to the difficulty
+	meteorEvent->RescaleToNewDifficulty(1.0f, manager->GetCurrentDifficultyScale());
 
 	return meteorEvent;
 }
