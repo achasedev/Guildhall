@@ -905,29 +905,31 @@ void World::CheckEntityForGroundCollision(Entity* entity)
 
 	if (touchingGround)
 	{
-		// If we are through some ground, snap to it
-		if (mapHeight > 0)
-		{
-			// Call the event *before* we correct, to get the exact hit location
-			entity->OnGroundCollision();
+		bool isEntityWithinXZMapBounds = IsEntityOnMap(entity);
 
-			// Then snap to map height
-			position.y = (float) mapHeight;
-			entity->SetPosition(position);
-
-			PhysicsComponent* comp = entity->GetPhysicsComponent();
-			if (comp != nullptr)
-			{
-				comp->ZeroYVelocity();
-			}
-		}
-		else if (IsEntityOnMap(entity)) // This prevents entities from falling to their death if they're off the map
+		// If the entity is in a hole, kill the entity
+		if (isEntityWithinXZMapBounds && mapHeight == 0)
 		{
 			// Fell in a pit - let them fall until they're hidden, then kill them
 			IntVector3 dimensions = entity->GetOrientedDimensions();
 			if (position.y <= -(float)dimensions.y + 4)
 			{
 				entity->TakeDamage(99999);
+			}
+		}
+		else // This prevents entities from falling to their death if they're off the map as well
+		{
+			// Call the event *before* we correct, to get the exact hit location
+			entity->OnGroundCollision();
+
+			// Then snap to map height
+			position.y = (float)mapHeight;
+			entity->SetPosition(position);
+
+			PhysicsComponent* comp = entity->GetPhysicsComponent();
+			if (comp != nullptr)
+			{
+				comp->ZeroYVelocity();
 			}
 		}
 	}

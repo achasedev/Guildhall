@@ -45,7 +45,7 @@ void BehaviorComponent_Charge::Update()
 		break;
 	case STATE_JUMP:
 		// Check for landing
-		if (m_owningEntity->IsGrounded())
+		if (m_owningEntity->IsGrounded() || m_owningEntity->GetPosition().y < 0.f)
 		{
 			m_stateTimer.SetInterval(m_chargeDuration);
 			m_state = STATE_CHARGE;
