@@ -1,9 +1,9 @@
 <Map name="Forest3" terrain_type="Grass">
 
-	<Spawn definition="Tree1" count="11~15" spawn_start="20, 20" spawn_range="216, 216" overlap_type="area" orientation="-1.0"/>
-	<Spawn definition="Tree2" count="11~15" spawn_start="20, 20" spawn_range="216, 216" overlap_type="area" orientation="-1.0"/>
-	<Spawn definition="Tree3" count="5~10" spawn_start="20, 20" spawn_range="216, 216" overlap_type="area" orientation="-1.0"/>
-	<Spawn definition="Rock1" count="1" spawn_start="20, 20" spawn_range="216, 216" overlap_type="area" orientation="-1.0"/>
-	<Spawn definition="Rock2" count="2~3" spawn_start="20, 20" spawn_range="216, 216" overlap_type="area" orientation="-1.0"/>
+	<Spawn definition="Tree1" count="9~12" spawn_start="0, 0" spawn_range="40, 255" overlap_type="area" orientation="-1.0"/>
+	<Spawn definition="Tree2" count="9~12" spawn_start="0, 0" spawn_range="40, 255" overlap_type="area" orientation="-1.0"/>
+
+	<Spawn definition="Tree1" count="9~12" spawn_start="215, 0" spawn_range="40, 255" overlap_type="area" orientation="-1.0"/>
+	<Spawn definition="Tree2" count="9~12" spawn_start="215, 0" spawn_range="40, 255" overlap_type="area" orientation="-1.0"/>
 
 </Map>
