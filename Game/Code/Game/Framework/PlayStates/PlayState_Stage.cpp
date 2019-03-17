@@ -67,6 +67,8 @@ void PlayState_Stage::ProcessInput()
 //
 void PlayState_Stage::Update()
 {
+	PROFILE_LOG_SCOPE("Misc - Look at self time");
+
 	// Check the controllers
 	m_gameState->PerformControllerCheck();
 

@@ -108,8 +108,6 @@ void VoxelGrid::Initialize(const IntVector3& voxelDimensions)
 //
 void VoxelGrid::BuildMeshAndDraw()
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
-
 	// Rebuild the mesh
 	RebuildMesh();
 
@@ -123,8 +121,6 @@ void VoxelGrid::BuildMeshAndDraw()
 //
 void VoxelGrid::DrawDebugLineGrid()
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
-
 	// Draw
 
 	Renderer* renderer = Renderer::GetInstance();
@@ -150,7 +146,6 @@ void VoxelGrid::DrawDebugLineGrid()
 //
 void VoxelGrid::Clear()
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
 	memset(m_gridColors, 0, GetVoxelCount() * sizeof(Rgba));
 	memset(m_metaData, 0, GetVoxelCount() * sizeof(VoxelMetaData));
 }
@@ -175,8 +170,6 @@ void VoxelGrid::ColorVoxelAtCoords(const IntVector3& coords, const Rgba& color)
 //
 void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, VoxelDrawOptions_t options /*= VoxelDrawOptions_t()*/)
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
-
 	const VoxelSprite* texture = entity->GetVoxelSprite();
 	IntVector3 position = entity->GetCoordinatePosition() + offset;
 	float orientation = entity->GetOrientation();
@@ -322,8 +315,6 @@ void VoxelGrid::DrawEntityCollision(const Entity* entity, const IntVector3& offs
 //
 void VoxelGrid::DrawMap(VoxelMap* map, const IntVector3& offset)
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
-
 	for (int heightMapZ = 0; heightMapZ < m_dimensions.z; ++heightMapZ)
 	{
 		for (int heightMapX = 0; heightMapX < m_dimensions.x; ++heightMapX)
@@ -440,8 +431,6 @@ void VoxelGrid::DrawVoxelSprite(const VoxelSprite* voxelSprite, const IntVector3
 //
 void VoxelGrid::DebugDrawEntityCollision(const Entity* entity, const IntVector3& offset)
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
-
 	const VoxelSprite* texture = entity->GetVoxelSprite();
 	Vector3 position = entity->GetPosition();
 	IntVector3 dimensions = entity->GetOrientedDimensions();
@@ -770,8 +759,6 @@ void VoxelGrid::BuildDebugLineMesh()
 //
 void VoxelGrid::UpdateBuffers()
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
-
 	// Send down the color data
 	m_colorBuffer.CopyToGPU(GetVoxelCount() * sizeof(Rgba), m_gridColors);
 
@@ -789,8 +776,6 @@ void VoxelGrid::UpdateBuffers()
 //
 void VoxelGrid::RebuildMesh()
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
-
 	// Update the GPU-side buffers
 	UpdateBuffers();
 
@@ -817,7 +802,7 @@ void VoxelGrid::RebuildMesh()
 //
 void VoxelGrid::DrawGrid()
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
+	PROFILE_LOG_SCOPE("Second-Stage Render");
 
 	// Draw
 	Renderer* renderer = Renderer::GetInstance();

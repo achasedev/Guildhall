@@ -199,24 +199,29 @@ void World::Update()
 		m_drawCollisions = !m_drawCollisions;
 	}
 
-	PROFILE_LOG_SCOPE_FUNCTION();
+	{
+		PROFILE_LOG_SCOPE("Simulation");
+		// "Thinking" and other general updating (animation)
+		UpdateEntities();
+		UpdateParticles();
+	}
 
-	// "Thinking" and other general updating (animation)
-	UpdateEntities();
-	UpdateParticles();
+	{
+		PROFILE_LOG_SCOPE("Physics");
+		// Moving the entities (Forward Euler)
+		ApplyPhysicsStep();
+	}
 
-	// Moving the entities (Forward Euler)
-	ApplyPhysicsStep();
+	{
+		PROFILE_LOG_SCOPE("Collision");
+		// Collision
+		CheckDynamicEntityCollisions();
+		CheckStaticEntityCollisions();
+		CheckMapCollisions();
+	}
 
-	// Collision
-	CheckDynamicEntityCollisions();
-	CheckStaticEntityCollisions();
-	CheckMapCollisions();
-
-	// Clean Up
-	DeleteMarkedEntities();
-
-	RespawnDeadPlayers();
+		DeleteMarkedEntities();
+		RespawnDeadPlayers();
 }	
 
 
@@ -225,8 +230,6 @@ void World::Update()
 //
 void World::DrawToGrid()
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
-
 	DrawToGridWithOffset(IntVector3::ZERO);
 }
 
@@ -775,8 +778,6 @@ bool World::FindSpawnLocation(const MapAreaSpawn_t& spawnArea, IntAABB2& out_spa
 //
 void World::UpdateEntities()
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
-
 	int numEntities = (int)m_entities.size();
 
 	for (int i = 0; i < numEntities; ++i)
@@ -794,8 +795,6 @@ void World::UpdateEntities()
 //
 void World::UpdateParticles()
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
-
 	int numParticles = (int)m_particles.size();
 
 	for (int i = 0; i < numParticles; ++i)
@@ -1358,8 +1357,6 @@ void World::RespawnDeadPlayers()
 //
 void World::DrawStaticEntitiesToGrid(const IntVector3& offset)
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
-
 	VoxelGrid* grid = Game::GetVoxelGrid();
 
 	int numEntities = (int)m_entities.size();
@@ -1392,8 +1389,6 @@ void World::DrawStaticEntitiesToGrid(const IntVector3& offset)
 //
 void World::DrawDynamicEntitiesToGrid(const IntVector3& offset)
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
-
 	VoxelGrid* grid = Game::GetVoxelGrid();
 
 	int numEntities = (int)m_entities.size();

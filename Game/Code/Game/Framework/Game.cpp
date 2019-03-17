@@ -437,6 +437,8 @@ void Game::Update()
 //
 void Game::Render() const
 {
+	PROFILE_LOG_SCOPE("First-Stage Render (Look at self time)");
+
 	m_voxelGrid->Clear();
 
 	switch (m_gameStateState)

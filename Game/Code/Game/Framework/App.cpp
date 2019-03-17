@@ -147,8 +147,6 @@ void App::RunFrame()
 //
 void App::Update()
 {
-	PROFILE_LOG_SCOPE("App::Update");
-
 	// Update the console before game
 	if (DevConsole::IsDevConsoleOpen())
 	{
@@ -165,8 +163,6 @@ void App::Update()
 //
 void App::Render() const
 {
-	PROFILE_LOG_SCOPE_FUNCTION();
-
 	// Render the game
 	Game::GetInstance()->Render();
 
@@ -211,8 +207,6 @@ void App::RenderInitScreen() const
 //
 void App::ProcessInput()
 {
-	PROFILE_LOG_SCOPE("App::ProcessInput");
-
 	// Check to take a screenshot at the end of this frame
 	if (InputSystem::GetInstance()->WasKeyJustPressed(InputSystem::KEYBOARD_F8))
 	{
