@@ -33,7 +33,7 @@ void LootTable::LoadTables(const std::string& xmlPath)
 	{
 		LootTable* lootTable = new LootTable();
 		lootTable->m_name = ParseXmlAttribute(*tableElement, "name", lootTable->m_name);
-		lootTable->m_baseChanceToDropAnything = ParseXmlAttribute(*tableElement, "name", lootTable->m_baseChanceToDropAnything);
+		lootTable->m_baseChanceToDropAnything = ParseXmlAttribute(*tableElement, "chance", lootTable->m_baseChanceToDropAnything);
 		
 		// Get the weapon drops
 		const XMLElement* weaponElement = tableElement->FirstChildElement("Weapon");

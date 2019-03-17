@@ -2,7 +2,7 @@
 
 	<!-- Enemies (LOAD AFTER WEAPONS)-->
 
-	<EntityDefinition name="Walker" initial_health="2" points="300" loot_table="Default">
+	<EntityDefinition name="Walker" initial_health="2" points="300" loot_table="Walker">
 		<Movement max_acceleration="3000.0" max_speed="20.0" max_deceleration="100.0" jump_impulse="30.0"/>
 		<Visuals animation_set="Walker" default_sprite="Walker_idle_0"/>
 		<Physics physics_type="dynamic" has_gravity="true">
@@ -13,7 +13,7 @@
 		<Audio on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Death Screams\Human\sfx_deathscream_human6.wav"/>
 	</EntityDefinition>
 
-	<EntityDefinition name="Tank" initial_health="20" loot_table="Default">
+	<EntityDefinition name="Tank" initial_health="20" loot_table="Tank">
 		<Movement max_acceleration="2000.0" max_speed="12.0" max_deceleration="100.0" jump_impulse="50.0"/>
 		<Visuals animation_set="Tank" default_sprite="Tank_idle_0"/>
 		<Physics physics_type="dynamic" has_gravity="true">
@@ -23,7 +23,7 @@
 		<Audio on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Death Screams\Human\sfx_deathscream_human4.wav" on_damage_taken="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Death Screams\Human\sfx_deathscream_human5.wav"/>
 	</EntityDefinition>
 
-	<EntityDefinition name="Hound" initial_health="1" loot_table="Default">
+	<EntityDefinition name="Hound" initial_health="1" loot_table="Hound">
 		<Movement max_acceleration="3000.0" max_speed="10.0" max_deceleration="100.0" jump_impulse="50.0"/>
 		<Visuals animation_set="Hound" default_sprite="Hound_idle_0"/>
 		<Physics physics_type="dynamic" has_gravity="true">
@@ -33,7 +33,7 @@
 		<Audio on_death="Data\Audio\SFX\dog\dog-snarl.flac"/>
 	</EntityDefinition>
 
-	<EntityDefinition name="Soldier" initial_health="5" loot_table="Default">
+	<EntityDefinition name="Soldier" initial_health="5" loot_table="Soldier">
 		<Movement max_acceleration="2000.0" max_speed="20.0" 
 			max_deceleration="100.0" jump_impulse="10.0"/>
 		<Visuals animation_set="Soldier" default_sprite="Soldier_idle_0"/>
@@ -44,7 +44,7 @@
 		<Audio on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Death Screams\Human\sfx_deathscream_human6.wav"/>
 	</EntityDefinition>
 
-	<EntityDefinition name="Bunny" initial_health="1" points="500" loot_table="Default">
+	<EntityDefinition name="Bunny" initial_health="1" points="500" loot_table="Bunny">
 		<Movement max_acceleration="3000.0" max_speed="20.0" max_deceleration="100.0" jump_impulse="80.0"/>
 		<Visuals animation_set="Bunny" default_sprite="Bunny_idle_0"/>
 		<Physics physics_type="dynamic" has_gravity="true">
@@ -55,7 +55,7 @@
 		<Audio on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Death Screams\Human\sfx_deathscream_human6.wav"/>
 	</EntityDefinition>
 
-	<EntityDefinition name="Spider" initial_health="1" points="500" loot_table="Default">
+	<EntityDefinition name="Spider" initial_health="1" points="500" loot_table="Spider">
 		<Movement max_acceleration="3000.0" max_speed="40.0" max_deceleration="150.0" jump_impulse="30.0"/>
 		<Visuals animation_set="Spider" default_sprite="Spider_idle_0"/>
 		<Physics physics_type="dynamic" has_gravity="true">
@@ -77,7 +77,7 @@
 		<Audio custom="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Weird Sounds\sfx_sound_shutdown1.wav" on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\General Sounds\Weird Sounds\sfx_sound_nagger1.wav"/>
 	</EntityDefinition>
 
-	<EntityDefinition name="Smasher" initial_health="10" loot_table="Elite">
+	<EntityDefinition name="Smasher" initial_health="10" loot_table="Smasher">
 		<Movement max_acceleration="2000.0" max_speed="12.0" max_deceleration="100.0" jump_impulse="50.0"/>
 		<Visuals animation_set="Tank" default_sprite="Tank_idle_0"/>
 		<Physics physics_type="dynamic" has_gravity="false">

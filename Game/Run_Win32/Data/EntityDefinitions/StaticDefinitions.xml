@@ -109,11 +109,12 @@
 
 	<!-- Misc -->
 
-	<EntityDefinition name="Meteor" initial_health="0">
-		<Visuals default_sprite="Default"/>
+	<EntityDefinition name="Meteor" initial_health="50000">
+		<Visuals default_sprite="Meteor"/>
 		<Physics physics_type="static">
 			<CollisionDefinition response="no_correction" layer="world"/>
 		</Physics>
+		<Audio on_death="Data\Audio\SFX\The Essential Retro Video Game Sound Effects Collection [512 sounds] By Juhani Junkala\Explosions\Short\sfx_exp_short_hard2.wav"/>
 	</EntityDefinition>
 
 </EntityDefinitions>

@@ -1,15 +1,43 @@
 <LootTables>
 
-	<LootTable name="Default" drop_chance="1.0">
-		<Weapon name="PlasmaLauncher" chance="1.0"/>
+	<LootTable name="Walker" chance="0.1">
+		<Weapon name="Rifle" chance="0.5"/>
+		<Weapon name="Shotgun" chance="0.4"/>
+		<Weapon name="MissileLauncher" chance="0.1"/>
 	</LootTable>
 
-	<LootTable name="Elite" drop_chance="0.5">
-		<Weapon name="Flamethrower" chance="0.5"/>
+	<LootTable name="Tank" chance="0.75">
+		<Weapon name="PlasmaLauncher" chance="0.5"/>
 		<Weapon name="MissileLauncher" chance="0.5"/>
 	</LootTable>
 
-	<LootTable name="UFO" drop_chance="1.0">
+	<LootTable name="Hound" chance="0.5">
+		<Weapon name="Shotgun" chance="1.0"/>
+	</LootTable>
+
+	<LootTable name="Bunny" chance="0.5">
+		<Weapon name="Laser" chance="0.5"/>
+		<Weapon name="Rifle" chance="0.5"/>
+	</LootTable>
+
+	<LootTable name="Soldier" chance="0.5">
+		<Weapon name="Rifle" chance="0.5"/>
+		<Weapon name="Shotgun" chance="0.5"/>
+	</LootTable>
+
+	<LootTable name="Spider" chance="0.1">
+		<Weapon name="Rifle" chance="0.5"/>
+		<Weapon name="Shotgun" chance="0.4"/>
+		<Weapon name="PlasmaLauncher" chance="0.1"/>
+	</LootTable>
+
+	<LootTable name="Smasher" chance="0.1">
+		<Weapon name="Rifle" chance="0.5"/>
+		<Weapon name="Shotgun" chance="0.4"/>
+		<Weapon name="MissileLauncher" chance="0.1"/>
+	</LootTable>
+
+	<LootTable name="UFO" chance="1.0">
 		<Weapon name="Laser" chance="1.0"/>
 	</LootTable>
 

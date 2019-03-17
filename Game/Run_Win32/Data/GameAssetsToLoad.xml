@@ -39,6 +39,8 @@
 		<VoxelSprite file="Data/VoxelSprites/Environment/Desert/Cactus2.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Environment/Desert/Cactus3.sprite"/>
 
+		<VoxelSprite file="Data/VoxelSprites/Environment/Moon/Meteor.sprite"/>
+
 		<!-- Zombies -->
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Walker.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Tank.sprite"/>

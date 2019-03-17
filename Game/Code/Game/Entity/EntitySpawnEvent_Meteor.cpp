@@ -77,7 +77,7 @@ void EntitySpawnEvent_Meteor::Update()
 					entity->GetPhysicsComponent()->SetVelocity(velocity);
 				}
 
-				m_meteorEntity->SetMarkedForDelete(true);
+				m_meteorEntity->OnDeath();
 				m_meteorEntity = nullptr; // World will delete it for us
 				m_meteorFinished = true;
 			}
