@@ -11,6 +11,8 @@
 		<VoxelSprite file="Data/VoxelSprites/Missile.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/UFO_bomb.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/LaserShot.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Plasma.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/RifleBullet.sprite"/>
 
 		<!-- Weapons -->
 		<VoxelSprite file="Data/VoxelSprites/Pistol.sprite"/>
@@ -18,6 +20,8 @@
 		<VoxelSprite file="Data/VoxelSprites/Flamethrower.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/MissileLauncher.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Laser.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/PlasmaLauncher.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Rifle.sprite"/>
 
 		<!-- Environment -->
 		<VoxelSprite file="Data/VoxelSprites/Environment/Forest/Tree1.sprite"/>

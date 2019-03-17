@@ -1,8 +1,7 @@
 <LootTables>
 
 	<LootTable name="Default" drop_chance="1.0">
-		<Weapon name="Flamethrower" chance="0.5"/>
-		<Weapon name="Shotgun" chance="0.5"/>
+		<Weapon name="PlasmaLauncher" chance="1.0"/>
 	</LootTable>
 
 	<LootTable name="Elite" drop_chance="0.5">

@@ -10,6 +10,14 @@
 		<Projectile speed="200.0" damage="2" lifetime="0.7" hit_radius="1.0"/>
 	</EntityDefinition>
 
+	<EntityDefinition name="RifleBullet">
+		<Visuals default_sprite="RifleBullet"/>
+		<Physics physics_type="dynamic" has_gravity="false">
+			<CollisionDefinition response="ignore_correction" can_destroy_voxels="true" knockback="10.0"/>
+		</Physics>
+		<Projectile speed="250.0" damage="2" lifetime="1.0" hit_radius="2.0"/>
+	</EntityDefinition>
+
 	<EntityDefinition name="Shell">
 		<Visuals default_sprite="Shell"/>
 		<Physics physics_type="dynamic" has_gravity="false">
@@ -26,12 +34,20 @@
 		<Projectile speed="75.0" hit_radius="1.0" damage="1" lifetime="0.75"/>
 	</EntityDefinition>
 
+	<EntityDefinition name="Plasma">
+		<Visuals default_sprite="Plasma"/>
+		<Physics physics_type="dynamic" has_gravity="false">
+			<CollisionDefinition response="ignore_correction" can_destroy_voxels="true"/>
+		</Physics>
+		<Projectile speed="175.0" hit_radius="2.0" damage="1" lifetime="0.4"/>
+	</EntityDefinition>
+
 	<EntityDefinition name="LaserShot">
 		<Visuals default_sprite="LaserShot"/>
 		<Physics physics_type="dynamic" has_gravity="false">
 			<CollisionDefinition response="ignore_correction" can_destroy_voxels="true"/>
 		</Physics>
-		<Projectile speed="200.0" hit_radius="1.0" damage="1" lifetime="0.5"/>
+		<Projectile speed="300.0" hit_radius="2.0" damage="1" lifetime="0.5"/>
 	</EntityDefinition>
 
 	<EntityDefinition name="Missile">

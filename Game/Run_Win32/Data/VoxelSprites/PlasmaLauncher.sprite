@@ -1,0 +1,5 @@
+<VoxelSprites>
+
+	<VoxelSprite name="PlasmaLauncher" file="Data/VoxelModels/Weapons/PlasmaLauncher.qef"/>
+
+</VoxelSprites>
