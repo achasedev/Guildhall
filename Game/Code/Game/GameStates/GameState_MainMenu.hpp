@@ -22,10 +22,7 @@ enum eSubMenu
 {
 	SUB_MENU_MAIN,
 	SUB_MENU_CAMPAIGNS,
-	SUB_MENU_LEADERBOARD_1,
-	SUB_MENU_LEADERBOARD_2, 
-	SUB_MENU_LEADERBOARD_3, 
-	SUB_MENU_LEADERBOARD_4
+	SUB_MENU_LEADERBOARD,
 };
 
 class GameState_MainMenu : public GameState
@@ -47,6 +44,7 @@ public:
 	virtual void Render_Leave() const override;
 
 	void MoveToSubMenu(eSubMenu subMenu);
+	void SetLeaderboardDisplayParameters(int playerCountIndex, int leaderboardIndex);
 
 
 private:
@@ -60,6 +58,8 @@ private:
 	//-----Private Data-----
 
 	Menu*						m_currentMenu = nullptr;
+	int							m_playerCountScoreboardIndexBeingDisplayed = 0;
+	int							m_leaderboardIndexBeingDisplayed = 0;
 
 	IntVector3					m_menuStartCoord = IntVector3(128, 20, 160);
 	Vector3						m_defaultCameraPosition = Vector3(128.f, 100.f, 35.f);

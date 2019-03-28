@@ -54,6 +54,28 @@ void Menu::SetRightOption(MenuOption_cb callback, const std::string& args)
 
 
 //-----------------------------------------------------------------------------------------------
+// Sets the option for when "UP" is pressed with the menu active
+// WILL OVERRIDE ALL CURSOR INCREMENTS
+//
+void Menu::SetUpOption(MenuOption_cb callback, const std::string& args)
+{
+	m_upOption.callback = callback;
+	m_upOption.args = args;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the option for when "DOWN" is pressed with the menu active
+// WILL OVERRIDE ALL CURSOR INCREMENTS
+//
+void Menu::SetDownOption(MenuOption_cb callback, const std::string& args)
+{
+	m_downOption.callback = callback;
+	m_downOption.args = args;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Checks for menu input
 //
 void Menu::ProcessInput()
@@ -61,65 +83,83 @@ void Menu::ProcessInput()
 	XboxController& cont = InputSystem::GetPlayerOneController();
 	InputSystem* input = InputSystem::GetInstance();
 
-	// Moving down
+	// Down input
 	bool keyPressedDown = input->WasKeyJustPressed(InputSystem::KEYBOARD_DOWN_ARROW);
 	bool contPressedDown = cont.WasStickJustPressed(XBOX_STICK_LEFT) && cont.GetCorrectedStickPosition(XBOX_STICK_LEFT).y < 0.f;
 	contPressedDown = contPressedDown || cont.WasButtonJustPressed(XBOX_BUTTON_DPAD_DOWN);
 
 	if (keyPressedDown || contPressedDown)
 	{
-		bool done = false;
-		int oldPosition = m_cursorPosition;
-
-		while (!done)
+		// Check if we have an override for down first
+		if (m_downOption.callback != nullptr)
 		{
-			m_cursorPosition++;
-
-			if (m_cursorPosition > (int)(m_options.size()) - 1)
-			{
-				m_cursorPosition = 0;
-			}
-
-			if (m_options[m_cursorPosition].isSelectable)
-			{
-				done = true;
-			}
+			m_downOption.callback(m_mainMenu, m_downOption.args);
 		}
-
-		if (oldPosition != m_cursorPosition)
+		else
 		{
-			Game::PlaySystemSound("Menu_cursor");
+			// Else move the cursor, looking for the next available slot
+			bool done = false;
+			int oldPosition = m_cursorPosition;
+
+			while (!done)
+			{
+				m_cursorPosition++;
+
+				if (m_cursorPosition > (int)(m_options.size()) - 1)
+				{
+					m_cursorPosition = 0;
+				}
+
+				if (m_options[m_cursorPosition].isSelectable)
+				{
+					done = true;
+				}
+			}
+
+			if (oldPosition != m_cursorPosition)
+			{
+				Game::PlaySystemSound("Menu_cursor");
+			}
 		}
 	}
 
-	// Moving up
+	// Up input
 	bool keyPressedUp = input->WasKeyJustPressed(InputSystem::KEYBOARD_UP_ARROW);
 	bool contPressedUp = cont.WasStickJustPressed(XBOX_STICK_LEFT) && cont.GetCorrectedStickPosition(XBOX_STICK_LEFT).y > 0.f;
 	contPressedUp = contPressedUp || cont.WasButtonJustPressed(XBOX_BUTTON_DPAD_UP);
 
 	if (keyPressedUp || contPressedUp)
 	{
-		bool done = false;
-		int oldPosition = m_cursorPosition;
-
-		while (!done)
+		// Check for override
+		if (m_upOption.callback != nullptr)
 		{
-			m_cursorPosition--;
-
-			if (m_cursorPosition < 0)
-			{
-				m_cursorPosition = (int)(m_options.size()) - 1;
-			}
-
-			if (m_options[m_cursorPosition].isSelectable)
-			{
-				done = true;
-			}
+			m_upOption.callback(m_mainMenu, m_upOption.args);
 		}
-
-		if (oldPosition != m_cursorPosition)
+		else
 		{
-			Game::PlaySystemSound("Menu_cursor");
+			// Else move the cursor up, looking for a valid position
+			bool done = false;
+			int oldPosition = m_cursorPosition;
+
+			while (!done)
+			{
+				m_cursorPosition--;
+
+				if (m_cursorPosition < 0)
+				{
+					m_cursorPosition = (int)(m_options.size()) - 1;
+				}
+
+				if (m_options[m_cursorPosition].isSelectable)
+				{
+					done = true;
+				}
+			}
+
+			if (oldPosition != m_cursorPosition)
+			{
+				Game::PlaySystemSound("Menu_cursor");
+			}
 		}
 	}
 

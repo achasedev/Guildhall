@@ -63,8 +63,10 @@ public:
 	static void 				SetWorld(World* world);
 	static Player**				GetPlayers();
 	static int					GetCurrentPlayerCount();
-	static const Leaderboard&	GetLeaderboardByName(const std::string& leaderboardName);
-	static const Leaderboard&	GetLeaderboardForCurrentCampaign();
+	static Leaderboard&			GetLeaderboardByName(const std::string& leaderboardName);
+	static Leaderboard&			GetLeaderboardByIndex(int leaderboardIndex);
+	static Leaderboard&			GetLeaderboardForCurrentCampaign();
+	static bool					DoesLeaderboardExist(const std::string& leaderboardName);
 	static CampaignManager*		GetCampaignManager();
 
 	static void					ResetScore();
@@ -126,7 +128,7 @@ private:
 	float	m_actualScore = 0.f;
 	float m_displayedScore = 0.f; // Stored as float to allow it to change independent of framerate, i.e. increase by 0.5 points this frame
 
-	std::map<std::string, Leaderboard> m_campaignLeaderboards;
+	std::vector<Leaderboard> m_campaignLeaderboards;
 
 	// Audio
 	SoundPlaybackID		m_trackTendingToTarget = MISSING_SOUND_ID;

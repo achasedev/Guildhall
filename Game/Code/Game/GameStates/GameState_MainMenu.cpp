@@ -158,27 +158,22 @@ void GameState_MainMenu::Render_Enter() const
 //
 void LoadSubMenu(GameState_MainMenu* mainMenu, const std::string& args)
 {
-	if (args == "Main")
+	std::vector<std::string> tokens = Tokenize(args, ' ');
+	std::string& subMenuName = tokens[0];
+
+	if (subMenuName == "Main")
 	{
 		mainMenu->MoveToSubMenu(SUB_MENU_MAIN);
 	}
-	else if (args == "Leaderboard_1")
+	else if (subMenuName == "Leaderboard")
 	{
-		mainMenu->MoveToSubMenu(SUB_MENU_LEADERBOARD_1);
+		int playerCountIndex = StringToInt(tokens[1]);
+		int leaderboardIndex = StringToInt(tokens[2]);
+		mainMenu->SetLeaderboardDisplayParameters(playerCountIndex, leaderboardIndex);
+
+		mainMenu->MoveToSubMenu(SUB_MENU_LEADERBOARD);
 	}
-	else if (args == "Leaderboard_2")
-	{
-		mainMenu->MoveToSubMenu(SUB_MENU_LEADERBOARD_2);
-	}
-	else if (args == "Leaderboard_3")
-	{
-		mainMenu->MoveToSubMenu(SUB_MENU_LEADERBOARD_3);
-	}
-	else if (args == "Leaderboard_4")
-	{
-		mainMenu->MoveToSubMenu(SUB_MENU_LEADERBOARD_4);
-	}
-	else if (args == "Episodes")
+	else if (subMenuName == "Episodes")
 	{
 		mainMenu->MoveToSubMenu(SUB_MENU_CAMPAIGNS);
 	}
@@ -225,7 +220,7 @@ void GameState_MainMenu::MoveToSubMenu(eSubMenu subMenu)
 	{
 	case SUB_MENU_MAIN:
 		m_currentMenu->AddOption("Play",		true, LoadSubMenu, "Episodes");
-		m_currentMenu->AddOption("Leaderboard", true, LoadSubMenu, "Leaderboard_1");
+		m_currentMenu->AddOption("Leaderboard", true, LoadSubMenu, Stringf("Leaderboard %i %i", m_playerCountScoreboardIndexBeingDisplayed, m_leaderboardIndexBeingDisplayed));
 		m_currentMenu->AddOption("Quit",		true, QuitSelection, "");
 		break;
 	case SUB_MENU_CAMPAIGNS:
@@ -241,10 +236,10 @@ void GameState_MainMenu::MoveToSubMenu(eSubMenu subMenu)
 		m_currentMenu->AddOption("Back", true, LoadSubMenu, "Main");
 		break;
 	}
-	case SUB_MENU_LEADERBOARD_1:
+	case SUB_MENU_LEADERBOARD:
 	{
-		const Leaderboard& leaderboard = Game::GetLeaderboardByName("Forest");
-		const ScoreBoard& scoreboard = leaderboard.m_scoreboards[0];
+		const Leaderboard& leaderboard = Game::GetLeaderboardByIndex(m_leaderboardIndexBeingDisplayed);
+		const ScoreBoard& scoreboard = leaderboard.m_scoreboards[m_playerCountScoreboardIndexBeingDisplayed];
 
 		m_currentMenu->AddOption(leaderboard.m_name, false, nullptr, "");
 		m_currentMenu->AddOption(scoreboard.m_name, false, nullptr, "");
@@ -256,71 +251,17 @@ void GameState_MainMenu::MoveToSubMenu(eSubMenu subMenu)
 
 		m_currentMenu->AddOption("Back", true, LoadSubMenu, "Main");
 
-		m_currentMenu->SetLeftOption(LoadSubMenu, "Leaderboard_4");
-		m_currentMenu->SetRightOption(LoadSubMenu, "Leaderboard_2");
+		int leftPlayerCountIndex = (m_playerCountScoreboardIndexBeingDisplayed - 1 < 0 ? MAX_PLAYERS - 1 : m_playerCountScoreboardIndexBeingDisplayed - 1);
+		int rightPlayerCountIndex = (m_playerCountScoreboardIndexBeingDisplayed + 1 >= MAX_PLAYERS ? 0 : m_playerCountScoreboardIndexBeingDisplayed + 1);
+		
+		int numCampaigns = CampaignDefinition::GetCampaignCount();
+		int prevLeaderboardIndex = (m_leaderboardIndexBeingDisplayed - 1 < 0 ? numCampaigns - 1 : m_leaderboardIndexBeingDisplayed - 1);
+		int nextLeaderboardIndex = (m_leaderboardIndexBeingDisplayed + 1 >= numCampaigns ? 0 : m_leaderboardIndexBeingDisplayed + 1);
 
-		m_currentMenu->SetCursorPosition(7); // Set the cursor on the only selectable option
-	}
-		break;
-	case SUB_MENU_LEADERBOARD_2:
-	{
-		const Leaderboard& leaderboard = Game::GetLeaderboardByName("Forest");
-		const ScoreBoard& scoreboard = leaderboard.m_scoreboards[1];
-
-		m_currentMenu->AddOption(leaderboard.m_name, false, nullptr, "");
-		m_currentMenu->AddOption(scoreboard.m_name, false, nullptr, "");
-
-		for (int i = 0; i < NUM_SCORES_PER_SCOREBOARD; ++i)
-		{
-			m_currentMenu->AddOption(Stringf("%i", scoreboard.m_scores[i]), false, nullptr, "");
-		}
-
-		m_currentMenu->AddOption("Back", true, LoadSubMenu, "Main");
-
-		m_currentMenu->SetLeftOption(LoadSubMenu, "Leaderboard_1");
-		m_currentMenu->SetRightOption(LoadSubMenu, "Leaderboard_3");
-
-		m_currentMenu->SetCursorPosition(7); // Set the cursor on the only selectable option
-	}
-		break;
-	case SUB_MENU_LEADERBOARD_3:
-	{
-		const Leaderboard& leaderboard = Game::GetLeaderboardByName("Forest");
-		const ScoreBoard& scoreboard = leaderboard.m_scoreboards[2];
-
-		m_currentMenu->AddOption(leaderboard.m_name, false, nullptr, "");
-		m_currentMenu->AddOption(scoreboard.m_name, false, nullptr, "");
-
-		for (int i = 0; i < NUM_SCORES_PER_SCOREBOARD; ++i)
-		{
-			m_currentMenu->AddOption(Stringf("%i", scoreboard.m_scores[i]), false, nullptr, "");
-		}
-
-		m_currentMenu->AddOption("Back", true, LoadSubMenu, "Main");
-
-		m_currentMenu->SetLeftOption(LoadSubMenu, "Leaderboard_2");
-		m_currentMenu->SetRightOption(LoadSubMenu, "Leaderboard_4");
-
-		m_currentMenu->SetCursorPosition(7); // Set the cursor on the only selectable option
-	}
-		break;
-	case SUB_MENU_LEADERBOARD_4:
-	{
-		const Leaderboard& leaderboard = Game::GetLeaderboardByName("Forest");
-		const ScoreBoard& scoreboard = leaderboard.m_scoreboards[3];
-
-		m_currentMenu->AddOption(leaderboard.m_name, false, nullptr, "");
-		m_currentMenu->AddOption(scoreboard.m_name, false, nullptr, "");
-
-		for (int i = 0; i < NUM_SCORES_PER_SCOREBOARD; ++i)
-		{
-			m_currentMenu->AddOption(Stringf("%i", scoreboard.m_scores[i]), false, nullptr, "");
-		}
-
-		m_currentMenu->AddOption("Back", true, LoadSubMenu, "Main");
-
-		m_currentMenu->SetLeftOption(LoadSubMenu, "Leaderboard_3");
-		m_currentMenu->SetRightOption(LoadSubMenu, "Leaderboard_1");
+		m_currentMenu->SetLeftOption(LoadSubMenu, Stringf("Leaderboard %i %i", leftPlayerCountIndex, m_leaderboardIndexBeingDisplayed));
+		m_currentMenu->SetRightOption(LoadSubMenu, Stringf("Leaderboard %i %i", rightPlayerCountIndex, m_leaderboardIndexBeingDisplayed));
+		m_currentMenu->SetUpOption(LoadSubMenu, Stringf("Leaderboard %i %i", m_playerCountScoreboardIndexBeingDisplayed, prevLeaderboardIndex));
+		m_currentMenu->SetDownOption(LoadSubMenu, Stringf("Leaderboard %i %i", m_playerCountScoreboardIndexBeingDisplayed, nextLeaderboardIndex));
 
 		m_currentMenu->SetCursorPosition(7); // Set the cursor on the only selectable option
 	}
@@ -328,6 +269,16 @@ void GameState_MainMenu::MoveToSubMenu(eSubMenu subMenu)
 	default:
 		break;
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the display parameters for showing leaderboards on the main menu
+//
+void GameState_MainMenu::SetLeaderboardDisplayParameters(int playerCountIndex, int leaderboardIndex)
+{
+	m_playerCountScoreboardIndexBeingDisplayed = playerCountIndex;
+	m_leaderboardIndexBeingDisplayed = leaderboardIndex;
 }
 
 

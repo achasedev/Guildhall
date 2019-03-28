@@ -33,6 +33,8 @@ public:
 
 	void SetLeftOption(MenuOption_cb callback, const std::string& args);
 	void SetRightOption(MenuOption_cb callback, const std::string& args);
+	void SetUpOption(MenuOption_cb callback, const std::string& args);
+	void SetDownOption(MenuOption_cb callback, const std::string& args);
 
 	void ProcessInput();
 
@@ -58,4 +60,7 @@ private:
 	// Additional menu traversal
 	MenuOption_t m_leftOption;
 	MenuOption_t m_rightOption;
+	MenuOption_t m_upOption;
+	MenuOption_t m_downOption;
+
 };

@@ -201,7 +201,7 @@ void Game::LoadLeaderboardsFromFile()
 				leaderboard.m_scoreboards[i].m_name = scoreboardName;
 			}
 
-			m_campaignLeaderboards[leaderboardName] = leaderboard;
+			m_campaignLeaderboards.push_back(leaderboard);
 		}
 	}
 	else
@@ -242,7 +242,7 @@ void Game::LoadLeaderboardsFromFile()
 				leaderboard.m_scoreboards[scoreboardIndex] = scoreboard;
 			}
 
-			m_campaignLeaderboards[leaderboardName] = leaderboard;
+			m_campaignLeaderboards.push_back(leaderboard);
 		}
 
 		file.Close();
@@ -255,13 +255,11 @@ void Game::LoadLeaderboardsFromFile()
 		{
 			std::string leaderboardName = itr->first;
 			
-			bool leaderboardExists = m_campaignLeaderboards.find(leaderboardName) != m_campaignLeaderboards.end();
-
-			if (!leaderboardExists)
+			if (!DoesLeaderboardExist(leaderboardName))
 			{
 				Leaderboard leaderboard;
 				leaderboard.m_name = leaderboardName;
-				m_campaignLeaderboards[leaderboardName] = leaderboard;
+				m_campaignLeaderboards.push_back(leaderboard);
 			}
 		}
 	}
@@ -284,10 +282,10 @@ void Game::WriteLeaderboardsToFile()
 	}
 	else
 	{
-		std::map<std::string, Leaderboard>::const_iterator itr = m_campaignLeaderboards.begin();
-		for (itr; itr != m_campaignLeaderboards.end(); itr++)
+		int numLeaderboards = (int)m_campaignLeaderboards.size();
+		for (int leaderboardIndex = 0; leaderboardIndex < numLeaderboards; ++leaderboardIndex)
 		{
-			const Leaderboard& leaderboard = itr->second;
+			const Leaderboard& leaderboard = m_campaignLeaderboards[leaderboardIndex];
 
 			ASSERT_OR_DIE(leaderboard.m_name.size() > 0, "What the heck it was empty");
 
@@ -600,22 +598,57 @@ int Game::GetCurrentPlayerCount()
 //-----------------------------------------------------------------------------------------------
 // Returns the leaderboards for the game
 //
-const Leaderboard& Game::GetLeaderboardByName(const std::string& leaderboardName)
+Leaderboard& Game::GetLeaderboardByName(const std::string& leaderboardName)
 {
-	bool leaderboardExists = s_instance->m_campaignLeaderboards.find(leaderboardName) != s_instance->m_campaignLeaderboards.end();
-	ASSERT_OR_DIE(leaderboardExists, "Tried to get a leaderboard that doesn't exist");
+	int numLeaderboards = (int)s_instance->m_campaignLeaderboards.size();
+	for (int leaderboardIndex = 0; leaderboardIndex < numLeaderboards; ++leaderboardIndex)
+	{
+		Leaderboard& leaderboard = s_instance->m_campaignLeaderboards[leaderboardIndex];
+		if (leaderboard.m_name == leaderboardName)
+		{
+			return leaderboard;
+		}
+	}
 
-	return s_instance->m_campaignLeaderboards[leaderboardName];
+	ERROR_AND_DIE("Tried to get a leaderboard that doesn't exist");
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the leaderboard at the given index - used for displaying in order
+//
+Leaderboard& Game::GetLeaderboardByIndex(int leaderboardIndex)
+{
+	return s_instance->m_campaignLeaderboards[leaderboardIndex];
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Returns the leaderboard for the current campaign being played
 //
-const Leaderboard& Game::GetLeaderboardForCurrentCampaign()
+Leaderboard& Game::GetLeaderboardForCurrentCampaign()
 {
 	std::string currentLeaderboardName = s_instance->m_campaignManager->GetCurrentCampaignDefinition()->m_name;
 	return GetLeaderboardByName(currentLeaderboardName);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if the leaderboard exists, false otherwise
+//
+bool Game::DoesLeaderboardExist(const std::string& leaderboardName)
+{
+	int numLeaderboards = (int)s_instance->m_campaignLeaderboards.size();
+	for (int leaderboardIndex = 0; leaderboardIndex < numLeaderboards; ++leaderboardIndex)
+	{
+		Leaderboard& leaderboard = s_instance->m_campaignLeaderboards[leaderboardIndex];
+		if (leaderboard.m_name == leaderboardName)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 
@@ -655,11 +688,8 @@ void Game::UpdateLeaderboardWithCurrentScore()
 	// Get the leaderboard
 	const CampaignDefinition* campaignDefinition = s_instance->m_campaignManager->GetCurrentCampaignDefinition();
 	ASSERT_OR_DIE(campaignDefinition != nullptr, "Tried to update leaderboard with no campaign active");
-	
-	bool leaderboardExists = s_instance->m_campaignLeaderboards.find(campaignDefinition->m_name) != s_instance->m_campaignLeaderboards.end();
-	ASSERT_OR_DIE(leaderboardExists, "Tried to update a leaderboard that doesn't exist");
 
-	Leaderboard& leaderboard = s_instance->m_campaignLeaderboards[campaignDefinition->m_name];
+	Leaderboard& leaderboard = GetLeaderboardByName(campaignDefinition->m_name);
 	ScoreBoard& scoreboard = leaderboard.m_scoreboards[GetCurrentPlayerCount() - 1];
 
 	for (int scoreIndex = 0; scoreIndex < NUM_SCORES_PER_SCOREBOARD; ++scoreIndex)
