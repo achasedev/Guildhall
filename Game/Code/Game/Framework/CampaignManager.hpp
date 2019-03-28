@@ -39,6 +39,7 @@ public:
 	int							GetEntityCountSpawnedThisStageSoFar() const;
 	float						GetTimeIntoStage() const;
 	float						GetCurrentDifficultyScale() const;
+	const CampaignDefinition*	GetCurrentCampaignDefinition() const;
 
 	// Mutators
 	void						StartNextStage();

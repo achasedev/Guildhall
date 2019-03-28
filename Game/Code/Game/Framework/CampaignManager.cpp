@@ -228,6 +228,15 @@ float CampaignManager::GetCurrentDifficultyScale() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the definition of the campaign currently being played
+//
+const CampaignDefinition* CampaignManager::GetCurrentCampaignDefinition() const
+{
+	return m_campaignDefinition;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns whether the current stage is the last stage, for testing victory
 //
 bool CampaignManager::IsCurrentStageFinal() const

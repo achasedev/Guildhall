@@ -1,21 +1,322 @@
+ALL AI Zoo
 1 Player
-108500
-71000
-71000
-71000
-71000
+0
+0
+0
+0
+0
 2 Players
-34500
-29600
-29600
-29600
-29600
+0
+0
+0
+0
+0
 3 Players
-71000
-32500
-12800
-12800
-12800
+0
+0
+0
+0
+0
+4 Players
+0
+0
+0
+0
+0
+Bunny Zoo
+1 Player
+0
+0
+0
+0
+0
+2 Players
+0
+0
+0
+0
+0
+3 Players
+0
+0
+0
+0
+0
+4 Players
+0
+0
+0
+0
+0
+Desert
+1 Player
+0
+0
+0
+0
+0
+2 Players
+0
+0
+0
+0
+0
+3 Players
+0
+0
+0
+0
+0
+4 Players
+0
+0
+0
+0
+0
+Empty
+1 Player
+0
+0
+0
+0
+0
+2 Players
+0
+0
+0
+0
+0
+3 Players
+0
+0
+0
+0
+0
+4 Players
+0
+0
+0
+0
+0
+Forest
+1 Player
+600
+300
+300
+0
+0
+2 Players
+0
+0
+0
+0
+0
+3 Players
+0
+0
+0
+0
+0
+4 Players
+0
+0
+0
+0
+0
+Hound Zoo
+1 Player
+0
+0
+0
+0
+0
+2 Players
+0
+0
+0
+0
+0
+3 Players
+0
+0
+0
+0
+0
+4 Players
+0
+0
+0
+0
+0
+Moon
+1 Player
+0
+0
+0
+0
+0
+2 Players
+0
+0
+0
+0
+0
+3 Players
+0
+0
+0
+0
+0
+4 Players
+0
+0
+0
+0
+0
+Smasher Zoo
+1 Player
+0
+0
+0
+0
+0
+2 Players
+0
+0
+0
+0
+0
+3 Players
+0
+0
+0
+0
+0
+4 Players
+0
+0
+0
+0
+0
+Soldier Zoo
+1 Player
+0
+0
+0
+0
+0
+2 Players
+0
+0
+0
+0
+0
+3 Players
+0
+0
+0
+0
+0
+4 Players
+0
+0
+0
+0
+0
+Spider Zoo
+1 Player
+0
+0
+0
+0
+0
+2 Players
+0
+0
+0
+0
+0
+3 Players
+0
+0
+0
+0
+0
+4 Players
+0
+0
+0
+0
+0
+Tank Zoo
+1 Player
+0
+0
+0
+0
+0
+2 Players
+0
+0
+0
+0
+0
+3 Players
+0
+0
+0
+0
+0
+4 Players
+0
+0
+0
+0
+0
+UFO Zoo
+1 Player
+0
+0
+0
+0
+0
+2 Players
+0
+0
+0
+0
+0
+3 Players
+0
+0
+0
+0
+0
+4 Players
+0
+0
+0
+0
+0
+Walker Zoo
+1 Player
+0
+0
+0
+0
+0
+2 Players
+0
+0
+0
+0
+0
+3 Players
+0
+0
+0
+0
+0
 4 Players
 0
 0

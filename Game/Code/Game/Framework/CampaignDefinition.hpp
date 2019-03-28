@@ -15,8 +15,9 @@ class CampaignDefinition
 public:
 	//-----Public Methods-----
 
-	static void LoadCampaign(const std::string filePath);
-	static const CampaignDefinition* GetDefinitionByName(const std::string& name);
+	static void							LoadCampaign(const std::string filePath);
+	static const CampaignDefinition*	GetDefinitionByName(const std::string& name);
+	static int							GetCampaignCount();
 
 
 private:

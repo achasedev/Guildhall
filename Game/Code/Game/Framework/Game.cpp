@@ -14,6 +14,7 @@
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/CampaignManager.hpp"
 #include "Game/GameStates/GameState_Loading.hpp"
+#include "Game/Framework/CampaignDefinition.hpp"
 
 #include "Engine/Core/File.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -115,55 +116,6 @@ void Game::UpdateMusicCrossfade()
 			audio->SetSoundPlaybackVolume(m_trackTendingToZero, m_tendingZeroCurrentVolume);
 		}
 	}
-
-// 	if (s_instance->m_musicCrossfading)
-// 	{
-// 		float t = s_instance->m_targetMusicVolume * ClampFloatZeroToOne(s_instance->m_musicCrossfadeTimer.GetElapsedTimeNormalized());
-// 
-// 		AudioSystem* audio = AudioSystem::GetInstance();
-// 
-// 		if (s_instance->m_trackTendingToZero != MISSING_SOUND_ID)
-// 		{
-// 			audio->SetSoundPlaybackVolume(m_trackTendingToZero, t);
-// 		}
-// 
-// 		if (s_instance->m_trackTendingToTarget != MISSING_SOUND_ID)
-// 		{
-// 			audio->SetSoundPlaybackVolume(m_trackTendingToTarget, s_instance->m_targetMusicVolume - t);
-// 		}
-// 
-// 		if (t == s_instance->m_targetMusicVolume)
-// 		{
-// 			if (s_instance->m_trackTendingToTarget != MISSING_SOUND_ID)
-// 			{
-// 				audio->StopSound(m_trackTendingToTarget);
-// 			}
-// 
-// 			s_instance->m_trackTendingToTarget = s_instance->m_trackTendingToZero;
-// 			s_instance->m_trackTendingToZero = -1;
-// 
-// 			s_instance->m_musicCrossfadeTimer.Reset();
-// 			s_instance->m_musicCrossfading = false;
-// 		}
-// 	}
-// 
-// 	// Check volume
-// 	if (s_instance->m_tendingTargetCurrentVolume != s_instance->m_targetMusicVolume)
-// 	{
-// 		float delta = s_instance->m_gameClock->GetDeltaTime();
-// 
-// 		if (s_instance->m_tendingTargetCurrentVolume < s_instance->m_targetMusicVolume)
-// 		{
-// 			s_instance->m_tendingTargetCurrentVolume = ClampFloat(s_instance->m_tendingTargetCurrentVolume + delta, 0.f, s_instance->m_targetMusicVolume);
-// 		}
-// 		else
-// 		{
-// 			s_instance->m_tendingTargetCurrentVolume = ClampFloat(s_instance->m_tendingTargetCurrentVolume - delta, s_instance->m_targetMusicVolume, 1.0f);
-// 		}
-// 
-// 		AudioSystem* audio = AudioSystem::GetInstance();
-// 		audio->SetSoundPlaybackVolume(s_instance->m_trackTendingToTarget, s_instance->m_tendingTargetCurrentVolume);
-// 	}
 }
 
 
@@ -223,49 +175,95 @@ void Game::LoadLeaderboardsFromFile()
 
 	if (!success)
 	{
-		// Initialize all current leaderboards to 0
-		for (int leaderboardIndex = 0; leaderboardIndex < NUM_LEADERBOARDS; ++leaderboardIndex)
+		// If no leaderboard file is found, initialize all scores to zero through default construction
+		// Therefore, this *should* be called only after game assets are loaded!
+		std::map<std::string, const CampaignDefinition*>::const_iterator itr = CampaignDefinition::s_campaignDefinitions.begin();
+
+		for (itr; itr != CampaignDefinition::s_campaignDefinitions.end(); itr++)
 		{
-			Leaderboard& board = m_leaderboards[leaderboardIndex];
+			std::string leaderboardName = itr->first;
+			Leaderboard leaderboard;
+			leaderboard.m_name = leaderboardName;
 
-			if (leaderboardIndex == 0)
+			for (int i = 0; i < MAX_PLAYERS; ++i)
 			{
-				board.m_name = Stringf("%i Player", leaderboardIndex + 1);
+				std::string scoreboardName;
 
-			}
-			else
-			{
-				board.m_name = Stringf("%i Players", leaderboardIndex + 1);
+				if (i == 0)
+				{
+					scoreboardName = Stringf("%i Player", i + 1);
+				}
+				else
+				{
+					scoreboardName = Stringf("%i Players", i + 1);
+				}
+
+				leaderboard.m_scoreboards[i].m_name = scoreboardName;
 			}
 
-			for (int scoreIndex = 0; scoreIndex < NUM_SCORES_PER_LEADERBOARD; ++scoreIndex)
-			{
-				board.m_scores[scoreIndex] = 0;
-			}
+			m_campaignLeaderboards[leaderboardName] = leaderboard;
 		}
 	}
 	else
 	{
 		file.LoadFileToMemory();
 
-		// Read off each leaderboard
-		for (int leaderboardIndex = 0; leaderboardIndex < NUM_LEADERBOARDS; ++leaderboardIndex)
+		// Read off each leaderboard, one at a time
+		while (!file.IsAtEndOfFile())
 		{
-			Leaderboard& board = m_leaderboards[leaderboardIndex];
+			std::string leaderboardName;
+			file.GetNextLine(leaderboardName);
 
-			file.GetNextLine(board.m_name);
-
-			for (int scoreIndex = 0; scoreIndex < NUM_SCORES_PER_LEADERBOARD; ++scoreIndex)
+			if (leaderboardName.size() == 0)
 			{
-				std::string scoreText;
-				file.GetNextLine(scoreText);
-				int score = StringToInt(scoreText);
-
-				board.m_scores[scoreIndex] = score;
+				continue;
 			}
+
+			Leaderboard leaderboard;
+			leaderboard.m_name = leaderboardName;
+
+			for (int scoreboardIndex = 0; scoreboardIndex < MAX_PLAYERS; ++scoreboardIndex)
+			{
+				std::string scoreboardName;
+				file.GetNextLine(scoreboardName);
+
+				ScoreBoard scoreboard;
+				scoreboard.m_name = scoreboardName;
+				
+				for (int scoreIndex = 0; scoreIndex < NUM_SCORES_PER_SCOREBOARD; ++scoreIndex)
+				{
+					std::string scoreText;
+					file.GetNextLine(scoreText);
+					int score = StringToInt(scoreText);
+
+					scoreboard.m_scores[scoreIndex] = score;
+				}
+
+				leaderboard.m_scoreboards[scoreboardIndex] = scoreboard;
+			}
+
+			m_campaignLeaderboards[leaderboardName] = leaderboard;
 		}
 
 		file.Close();
+
+		// Safety check - if there is a campaign that exists without a leaderboard, make an empty one
+		// Shouldn't happen, unless the user tampers with the leaderboard text file
+		std::map<std::string, const CampaignDefinition*>::const_iterator itr = CampaignDefinition::s_campaignDefinitions.begin();
+
+		for (itr; itr != CampaignDefinition::s_campaignDefinitions.end(); itr++)
+		{
+			std::string leaderboardName = itr->first;
+			
+			bool leaderboardExists = m_campaignLeaderboards.find(leaderboardName) != m_campaignLeaderboards.end();
+
+			if (!leaderboardExists)
+			{
+				Leaderboard leaderboard;
+				leaderboard.m_name = leaderboardName;
+				m_campaignLeaderboards[leaderboardName] = leaderboard;
+			}
+		}
 	}
 }
 
@@ -286,17 +284,32 @@ void Game::WriteLeaderboardsToFile()
 	}
 	else
 	{
-		for (int leaderboardIndex = 0; leaderboardIndex < NUM_LEADERBOARDS; ++leaderboardIndex)
+		std::map<std::string, Leaderboard>::const_iterator itr = m_campaignLeaderboards.begin();
+		for (itr; itr != m_campaignLeaderboards.end(); itr++)
 		{
-			Leaderboard& board = m_leaderboards[leaderboardIndex];
+			const Leaderboard& leaderboard = itr->second;
 
-			file.Write(board.m_name.c_str(), board.m_name.size());
+			ASSERT_OR_DIE(leaderboard.m_name.size() > 0, "What the heck it was empty");
+
+			// Write the name of the set
+			file.Write(leaderboard.m_name.c_str(), leaderboard.m_name.size());
 			file.Write("\n", 1);
 
-			for (int scoreIndex = 0; scoreIndex < NUM_SCORES_PER_LEADERBOARD; ++scoreIndex)
+			// For each Leaderboard in the set
+			for (int scoreboardIndex = 0; scoreboardIndex < MAX_PLAYERS; ++scoreboardIndex)
 			{
-				std::string scoreText = Stringf("%i\n", board.m_scores[scoreIndex]);
-				file.Write(scoreText.c_str(), scoreText.size());
+				const ScoreBoard& scoreBoard = leaderboard.m_scoreboards[scoreboardIndex];
+
+				// Write the name of the board (player count)
+				file.Write(scoreBoard.m_name.c_str(), scoreBoard.m_name.size());
+				file.Write("\n", 1);
+
+				// Write out the scores of the leaderboard
+				for (int scoreIndex = 0; scoreIndex < NUM_SCORES_PER_SCOREBOARD; ++scoreIndex)
+				{
+					std::string scoreText = Stringf("%i\n", scoreBoard.m_scores[scoreIndex]);
+					file.Write(scoreText.c_str(), scoreText.size());
+				}
 			}
 		}
 
@@ -353,8 +366,6 @@ void Game::Initialize()
 
 	// Commands
 	Command::Register("killall", "Kills all entities", Command_KillAll);
-
-	s_instance->LoadLeaderboardsFromFile();
 }
 
 
@@ -589,9 +600,22 @@ int Game::GetCurrentPlayerCount()
 //-----------------------------------------------------------------------------------------------
 // Returns the leaderboards for the game
 //
-const Leaderboard* Game::GetLeaderboards()
+const Leaderboard& Game::GetLeaderboardByName(const std::string& leaderboardName)
 {
-	return s_instance->m_leaderboards;
+	bool leaderboardExists = s_instance->m_campaignLeaderboards.find(leaderboardName) != s_instance->m_campaignLeaderboards.end();
+	ASSERT_OR_DIE(leaderboardExists, "Tried to get a leaderboard that doesn't exist");
+
+	return s_instance->m_campaignLeaderboards[leaderboardName];
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the leaderboard for the current campaign being played
+//
+const Leaderboard& Game::GetLeaderboardForCurrentCampaign()
+{
+	std::string currentLeaderboardName = s_instance->m_campaignManager->GetCurrentCampaignDefinition()->m_name;
+	return GetLeaderboardByName(currentLeaderboardName);
 }
 
 
@@ -629,19 +653,26 @@ void Game::AddPointsToScore(int pointsToAdd)
 void Game::UpdateLeaderboardWithCurrentScore()
 {
 	// Get the leaderboard
-	Leaderboard* board = &s_instance->m_leaderboards[GetCurrentPlayerCount() - 1];
+	const CampaignDefinition* campaignDefinition = s_instance->m_campaignManager->GetCurrentCampaignDefinition();
+	ASSERT_OR_DIE(campaignDefinition != nullptr, "Tried to update leaderboard with no campaign active");
+	
+	bool leaderboardExists = s_instance->m_campaignLeaderboards.find(campaignDefinition->m_name) != s_instance->m_campaignLeaderboards.end();
+	ASSERT_OR_DIE(leaderboardExists, "Tried to update a leaderboard that doesn't exist");
 
-	for (int scoreIndex = 0; scoreIndex < NUM_SCORES_PER_LEADERBOARD; ++scoreIndex)
+	Leaderboard& leaderboard = s_instance->m_campaignLeaderboards[campaignDefinition->m_name];
+	ScoreBoard& scoreboard = leaderboard.m_scoreboards[GetCurrentPlayerCount() - 1];
+
+	for (int scoreIndex = 0; scoreIndex < NUM_SCORES_PER_SCOREBOARD; ++scoreIndex)
 	{
-		if (board->m_scores[scoreIndex] <= s_instance->m_actualScore)
+		if (scoreboard.m_scores[scoreIndex] <= s_instance->m_actualScore)
 		{
 			// Add the score in, pushing all lower scores down
-			for (int i = scoreIndex + 1; i < NUM_SCORES_PER_LEADERBOARD; ++i)
+			for (int i = NUM_SCORES_PER_SCOREBOARD - 1; i > scoreIndex; --i)
 			{
-				board->m_scores[i] = board->m_scores[i - 1];
+				scoreboard.m_scores[i] = scoreboard.m_scores[i - 1];
 			}
 
-			board->m_scores[scoreIndex] = RoundToNearestInt(s_instance->m_actualScore);
+			scoreboard.m_scores[scoreIndex] = RoundToNearestInt(s_instance->m_actualScore);
 			break;
 		}
 	}

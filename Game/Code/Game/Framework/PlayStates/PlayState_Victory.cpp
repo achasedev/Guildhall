@@ -144,16 +144,20 @@ void PlayState_Victory::Render() const
 	// Draw the leaderboard
 	IntVector3 drawPosition = IntVector3(128, 40, 160);
 
-	const Leaderboard& board = Game::GetLeaderboards()[Game::GetCurrentPlayerCount() - 1];
+	const Leaderboard& leaderboard = Game::GetLeaderboardForCurrentCampaign();
+	const ScoreBoard& scoreboard = leaderboard.m_scoreboards[Game::GetCurrentPlayerCount() - 1];
 
-	Game::GetVoxelGrid()->DrawVoxelText(board.m_name, drawPosition, options);
+	Game::GetVoxelGrid()->DrawVoxelText(leaderboard.m_name, drawPosition, options);
+	drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
+
+	Game::GetVoxelGrid()->DrawVoxelText(scoreboard.m_name, drawPosition, options);
 	drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
 
 	bool currentScoreRendered = false;
 	Rgba flashColor;
-	for (int i = 0; i < NUM_SCORES_PER_LEADERBOARD; ++i)
+	for (int i = 0; i < NUM_SCORES_PER_SCOREBOARD; ++i)
 	{
-		if (!currentScoreRendered && board.m_scores[i] == Game::GetScore())
+		if (!currentScoreRendered && scoreboard.m_scores[i] == Game::GetScore())
 		{
 			float time = m_transitionTimer.GetElapsedTime();
 			float t = 0.5f * (SinDegrees(1000.f * time) + 1.0f);
@@ -168,7 +172,7 @@ void PlayState_Victory::Render() const
 			options.glyphColors[0] = m_leaderboardTextColor;
 		}
 
-		Game::GetVoxelGrid()->DrawVoxelText(Stringf("%i", board.m_scores[i]), drawPosition, options);
+		Game::GetVoxelGrid()->DrawVoxelText(Stringf("%i", scoreboard.m_scores[i]), drawPosition, options);
 		drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
 	}
 

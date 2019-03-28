@@ -23,7 +23,6 @@ class VoxelFont;
 
 #define MAX_PLAYERS (4)
 #define PLAYER_DEATH_SCORE_PENALTY (-2000)
-#define NUM_LEADERBOARDS (4)
 
 enum eGameStateState
 {
@@ -64,7 +63,8 @@ public:
 	static void 				SetWorld(World* world);
 	static Player**				GetPlayers();
 	static int					GetCurrentPlayerCount();
-	static const Leaderboard*	GetLeaderboards();
+	static const Leaderboard&	GetLeaderboardByName(const std::string& leaderboardName);
+	static const Leaderboard&	GetLeaderboardForCurrentCampaign();
 	static CampaignManager*		GetCampaignManager();
 
 	static void					ResetScore();
@@ -126,7 +126,7 @@ private:
 	float	m_actualScore = 0.f;
 	float m_displayedScore = 0.f; // Stored as float to allow it to change independent of framerate, i.e. increase by 0.5 points this frame
 
-	Leaderboard m_leaderboards[NUM_LEADERBOARDS];
+	std::map<std::string, Leaderboard> m_campaignLeaderboards;
 
 	// Audio
 	SoundPlaybackID		m_trackTendingToTarget = MISSING_SOUND_ID;

@@ -125,6 +125,15 @@ const CampaignDefinition* CampaignDefinition::GetDefinitionByName(const std::str
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the number of campaigns currently loaded from disk
+//
+int CampaignDefinition::GetCampaignCount()
+{
+	return (int)s_campaignDefinitions.size();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Adds the given campaign definition to the registry, checking for duplicate names
 //
 void CampaignDefinition::AddDefinitionToRegistry(const CampaignDefinition* definition)

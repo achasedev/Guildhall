@@ -243,12 +243,15 @@ void GameState_MainMenu::MoveToSubMenu(eSubMenu subMenu)
 	}
 	case SUB_MENU_LEADERBOARD_1:
 	{
-		const Leaderboard* boards = Game::GetLeaderboards();
-		m_currentMenu->AddOption(boards[0].m_name, false, nullptr, "");
+		const Leaderboard& leaderboard = Game::GetLeaderboardByName("Forest");
+		const ScoreBoard& scoreboard = leaderboard.m_scoreboards[0];
 
-		for (int i = 0; i < NUM_SCORES_PER_LEADERBOARD; ++i)
+		m_currentMenu->AddOption(leaderboard.m_name, false, nullptr, "");
+		m_currentMenu->AddOption(scoreboard.m_name, false, nullptr, "");
+
+		for (int i = 0; i < NUM_SCORES_PER_SCOREBOARD; ++i)
 		{
-			m_currentMenu->AddOption(Stringf("%i", boards[0].m_scores[i]), false, nullptr, "");
+			m_currentMenu->AddOption(Stringf("%i", scoreboard.m_scores[i]), false, nullptr, "");
 		}
 
 		m_currentMenu->AddOption("Back", true, LoadSubMenu, "Main");
@@ -256,17 +259,20 @@ void GameState_MainMenu::MoveToSubMenu(eSubMenu subMenu)
 		m_currentMenu->SetLeftOption(LoadSubMenu, "Leaderboard_4");
 		m_currentMenu->SetRightOption(LoadSubMenu, "Leaderboard_2");
 
-		m_currentMenu->SetCursorPosition(6); // Set the cursor on the only selectable option
+		m_currentMenu->SetCursorPosition(7); // Set the cursor on the only selectable option
 	}
 		break;
 	case SUB_MENU_LEADERBOARD_2:
 	{
-		const Leaderboard* boards = Game::GetLeaderboards();
-		m_currentMenu->AddOption(boards[1].m_name, false, nullptr, "");
+		const Leaderboard& leaderboard = Game::GetLeaderboardByName("Forest");
+		const ScoreBoard& scoreboard = leaderboard.m_scoreboards[1];
 
-		for (int i = 0; i < NUM_SCORES_PER_LEADERBOARD; ++i)
+		m_currentMenu->AddOption(leaderboard.m_name, false, nullptr, "");
+		m_currentMenu->AddOption(scoreboard.m_name, false, nullptr, "");
+
+		for (int i = 0; i < NUM_SCORES_PER_SCOREBOARD; ++i)
 		{
-			m_currentMenu->AddOption(Stringf("%i", boards[1].m_scores[i]), false, nullptr, "");
+			m_currentMenu->AddOption(Stringf("%i", scoreboard.m_scores[i]), false, nullptr, "");
 		}
 
 		m_currentMenu->AddOption("Back", true, LoadSubMenu, "Main");
@@ -274,17 +280,20 @@ void GameState_MainMenu::MoveToSubMenu(eSubMenu subMenu)
 		m_currentMenu->SetLeftOption(LoadSubMenu, "Leaderboard_1");
 		m_currentMenu->SetRightOption(LoadSubMenu, "Leaderboard_3");
 
-		m_currentMenu->SetCursorPosition(6); // Set the cursor on the only selectable option
+		m_currentMenu->SetCursorPosition(7); // Set the cursor on the only selectable option
 	}
 		break;
 	case SUB_MENU_LEADERBOARD_3:
 	{
-		const Leaderboard* boards = Game::GetLeaderboards();
-		m_currentMenu->AddOption(boards[2].m_name, false, nullptr, "");
+		const Leaderboard& leaderboard = Game::GetLeaderboardByName("Forest");
+		const ScoreBoard& scoreboard = leaderboard.m_scoreboards[2];
 
-		for (int i = 0; i < NUM_SCORES_PER_LEADERBOARD; ++i)
+		m_currentMenu->AddOption(leaderboard.m_name, false, nullptr, "");
+		m_currentMenu->AddOption(scoreboard.m_name, false, nullptr, "");
+
+		for (int i = 0; i < NUM_SCORES_PER_SCOREBOARD; ++i)
 		{
-			m_currentMenu->AddOption(Stringf("%i", boards[2].m_scores[i]), false, nullptr, "");
+			m_currentMenu->AddOption(Stringf("%i", scoreboard.m_scores[i]), false, nullptr, "");
 		}
 
 		m_currentMenu->AddOption("Back", true, LoadSubMenu, "Main");
@@ -292,17 +301,20 @@ void GameState_MainMenu::MoveToSubMenu(eSubMenu subMenu)
 		m_currentMenu->SetLeftOption(LoadSubMenu, "Leaderboard_2");
 		m_currentMenu->SetRightOption(LoadSubMenu, "Leaderboard_4");
 
-		m_currentMenu->SetCursorPosition(6); // Set the cursor on the only selectable option
+		m_currentMenu->SetCursorPosition(7); // Set the cursor on the only selectable option
 	}
 		break;
 	case SUB_MENU_LEADERBOARD_4:
 	{
-		const Leaderboard* boards = Game::GetLeaderboards();
-		m_currentMenu->AddOption(boards[3].m_name, false, nullptr, "");
+		const Leaderboard& leaderboard = Game::GetLeaderboardByName("Forest");
+		const ScoreBoard& scoreboard = leaderboard.m_scoreboards[3];
 
-		for (int i = 0; i < NUM_SCORES_PER_LEADERBOARD; ++i)
+		m_currentMenu->AddOption(leaderboard.m_name, false, nullptr, "");
+		m_currentMenu->AddOption(scoreboard.m_name, false, nullptr, "");
+
+		for (int i = 0; i < NUM_SCORES_PER_SCOREBOARD; ++i)
 		{
-			m_currentMenu->AddOption(Stringf("%i", boards[3].m_scores[i]), false, nullptr, "");
+			m_currentMenu->AddOption(Stringf("%i", scoreboard.m_scores[i]), false, nullptr, "");
 		}
 
 		m_currentMenu->AddOption("Back", true, LoadSubMenu, "Main");
@@ -310,7 +322,7 @@ void GameState_MainMenu::MoveToSubMenu(eSubMenu subMenu)
 		m_currentMenu->SetLeftOption(LoadSubMenu, "Leaderboard_3");
 		m_currentMenu->SetRightOption(LoadSubMenu, "Leaderboard_1");
 
-		m_currentMenu->SetCursorPosition(6); // Set the cursor on the only selectable option
+		m_currentMenu->SetCursorPosition(7); // Set the cursor on the only selectable option
 	}
 		break;
 	default:

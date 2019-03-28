@@ -152,6 +152,9 @@ void GameState_Loading::LoadResources() const
 			soundElement = soundElement->NextSiblingElement("Sound");
 		}
 	}	
+
+	// Leaderboards
+	Game::GetInstance()->LoadLeaderboardsFromFile();
 }
 
 
