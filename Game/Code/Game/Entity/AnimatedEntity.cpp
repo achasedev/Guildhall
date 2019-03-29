@@ -133,6 +133,11 @@ void AnimatedEntity::Move(const Vector2& direction, float speedLimit /*=0.f*/)
 
 	m_physicsComponent->AddForce(force);
 
+	if (currLateralSpeed > speedLimit)
+	{
+		Decelerate();
+	}
+
 	m_animator->Play("move");
 }
 

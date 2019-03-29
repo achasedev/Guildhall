@@ -27,8 +27,8 @@ GameState_MainMenu::GameState_MainMenu()
 {
 	MoveToSubMenu(SUB_MENU_MAIN);
 
-	m_emitters[0] = new VoxelEmitter(50.f, 2.0f, Vector3(64.f, 8.f, 160.f), Vector3(0.f, 100.f, 0.f), 20.f);
-	m_emitters[1] = new VoxelEmitter(50.f, 2.0f, Vector3(192.f, 8.f, 160.f), Vector3(0.f, 100.f, 0.f), 20.f);
+	m_emitters[0] = new VoxelEmitter(100.f, 2.0f, Vector3(28.f, 24.f, 254.f), Vector3(0.f, 100.f, 0.f), 20.f);
+	m_emitters[1] = new VoxelEmitter(100.f, 2.0f, Vector3(225.f, 24.f, 254.f), Vector3(0.f, 100.f, 0.f), 20.f);
 }
 
 
@@ -102,12 +102,21 @@ void GameState_MainMenu::Render() const
 	options.glyphColors.push_back(Rgba::BLUE);
 	options.fillColor = Rgba::BLUE;
 	options.font = menuFont;
-	options.scale = IntVector3(1, 1, 1);
+	options.scale = IntVector3(2, 2, 2);
 	options.up = IntVector3(0, 1, 0);
-	options.alignment = Vector3(0.5f, 0.5f, 0.5f);
+	options.alignment = Vector3(0.5f, 0.f, 0.5f);
 	options.borderThickness = 0;
 
-	Game::GetVoxelGrid()->DrawVoxelText("BACKGROUND TEXT", IntVector3(128, 8, 255), options);
+	options.colorFunction = GetColorForWaveEffect;
+
+	VoxelFontColorWaveArgs_t colorArgs;
+	colorArgs.direction = IntVector3(1, 0, 0);
+	colorArgs.speed = 1.0f;
+
+	options.colorFunctionArgs = &colorArgs;
+	options.offsetFunction = GetOffsetForFontWaveEffect;
+
+	Game::GetVoxelGrid()->DrawVoxelText("VOXEL HEROES", IntVector3(128, 24, 255), options);
 }
 
 
@@ -119,6 +128,9 @@ void GameState_MainMenu::Render_Leave() const
 	Render();
 }
 
+#include "Game/Entity/AIEntity.hpp"
+#include "Game/Entity/Components/BehaviorComponent_Wander.hpp"
+#include "Game/Framework/MapDefinition.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Called when the game transitions into this state, before the first running update
@@ -129,6 +141,25 @@ bool GameState_MainMenu::Enter()
 
 	AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/Theme Song 8-bit V1 _looping.wav");
 	Game::PlayBGM("Data/Audio/Music/Theme Song 8-bit V1 _opening.wav", true, false);
+
+	World* world = Game::GetWorld();
+	const MapDefinition* mapDef = MapDefinition::GetRandomDefinition();
+	world->IntializeMap(mapDef);
+
+	std::vector<const EntityDefinition*> playerDefs = EntityDefinition::GetAllPlayerDefinitions();
+
+	int numPlayers = (int)playerDefs.size();
+	for (int playerIndex = 0; playerIndex < numPlayers; ++playerIndex)
+	{
+		AIEntity* newEntity = new AIEntity(playerDefs[playerIndex]);
+
+		newEntity->SetBehaviorComponent(new BehaviorComponent_Wander());
+
+		newEntity->SetPosition(Vector3(GetRandomFloatInRange(0.f, 240.f), 64.f, GetRandomFloatInRange(0.f, 240.f)));
+		newEntity->SetOrientation(GetRandomFloatInRange(0.f, 360.f));
+
+		world->AddEntity(newEntity);
+	}
 
 	return true;
 }

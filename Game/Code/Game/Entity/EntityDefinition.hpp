@@ -117,11 +117,12 @@ public:
 	int					GetInitialHealth() const;
 	const VoxelSprite*	GetDefaultSprite() const;
 
-	static void						LoadDefinitions(const std::string& filename);
-	static const EntityDefinition*	GetDefinition(const std::string& defName);
-	static const EntityDefinition*	GetRandomPlayerDefinition();
-	static void						AddDefinition(const EntityDefinition* definition);
-	static void						GetAllCharacterSelectVolumeDefinitions(std::vector<const EntityDefinition*>& out_definitions);
+	static void									LoadDefinitions(const std::string& filename);
+	static const EntityDefinition*				GetDefinition(const std::string& defName);
+	static const EntityDefinition*				GetRandomPlayerDefinition();
+	static std::vector<const EntityDefinition*> GetAllPlayerDefinitions();
+	static void									AddDefinition(const EntityDefinition* definition);
+	static void									GetAllCharacterSelectVolumeDefinitions(std::vector<const EntityDefinition*>& out_definitions);
 
 
 public:

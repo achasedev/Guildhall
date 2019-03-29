@@ -1,4 +1,5 @@
 #include "Engine/Math/IntAABB2.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Game/Framework/MapDefinition.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
@@ -109,6 +110,25 @@ const MapDefinition* MapDefinition::GetDefinitionByName(const std::string& mapNa
 	}
 
 	return nullptr;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns a map definition randomly from the registry
+//
+const MapDefinition* MapDefinition::GetRandomDefinition()
+{
+	int numDefs = s_definitions.size();
+	int randomIndex = GetRandomIntLessThan(numDefs);
+
+	std::map<std::string, const MapDefinition*>::const_iterator itr = s_definitions.begin();
+	
+	for (int i = 0; i < randomIndex; ++i)
+	{
+		itr++;
+	}
+
+	return itr->second;
 }
 
 

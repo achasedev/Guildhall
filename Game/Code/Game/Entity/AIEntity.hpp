@@ -23,6 +23,7 @@ public:
 	virtual void OnSpawn() override;
 
 	void SetSpawnEvent(EntitySpawnEvent* spawnEvent);
+	void SetBehaviorComponent(BehaviorComponent* newBehavior);
 
 
 private:

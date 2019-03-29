@@ -56,6 +56,7 @@ public:
 	~World();
 
 	void InititalizeForStage(const CampaignStage* stage);
+	void IntializeMap(const MapDefinition* mapDefinition);
 	void CleanUp();
 
 	void Update();
@@ -99,7 +100,6 @@ public:
 private:
 	//-----Private Methods-----
 
-	void IntializeMap(const MapDefinition* mapDefinition);
 	void SpawnMapEntities(const MapDefinition* mapDefinition);
 		bool FindSpawnLocation(const MapAreaSpawn_t& spawnArea, IntAABB2& out_spawnedArea, 
 			const std::vector<IntAABB2>& areaOccupiedAreas, std::vector<IntAABB2>& globalOccupiedAreas);

@@ -303,6 +303,7 @@
     <ClCompile Include="Entity\Components\BehaviorComponent_ShootDirect.cpp" />
     <ClCompile Include="Entity\Components\BehaviorComponent_Smash.cpp" />
     <ClCompile Include="Entity\Components\BehaviorComponent_SwarmAndAvoid.cpp" />
+    <ClCompile Include="Entity\Components\BehaviorComponent_Wander.cpp" />
     <ClCompile Include="Entity\Entity.cpp" />
     <ClCompile Include="Entity\EntityDefinition.cpp" />
     <ClCompile Include="Entity\AnimatedEntity.cpp" />
@@ -365,6 +366,7 @@
     <ClInclude Include="Entity\Components\BehaviorComponent_ShootDirect.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_Smash.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_SwarmAndAvoid.hpp" />
+    <ClInclude Include="Entity\Components\BehaviorComponent_Wander.hpp" />
     <ClInclude Include="Entity\Entity.hpp" />
     <ClInclude Include="Entity\EntityDefinition.hpp" />
     <ClInclude Include="Entity\AnimatedEntity.hpp" />

@@ -5,6 +5,7 @@
 /* Description: Implementation of the Entity class
 /************************************************************************/
 #include "Game/Entity/Entity.hpp"
+#include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Entity/Particle.hpp"
@@ -506,7 +507,10 @@ float Entity::GetInverseMass() const
 //
 bool Entity::IsPlayer() const
 {
-	return m_definition->m_entityClass == ENTITY_CLASS_PLAYER;
+	bool definitionIsPlayer = m_definition->m_entityClass == ENTITY_CLASS_PLAYER;
+	bool objectIsPlayerClass = dynamic_cast<const Player*>(this) != nullptr;
+
+	return (definitionIsPlayer && objectIsPlayerClass);
 }
 
 

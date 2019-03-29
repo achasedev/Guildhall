@@ -193,6 +193,9 @@
     <ClCompile Include="Framework\LootTable.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\Components\BehaviorComponent_Wander.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -272,5 +275,6 @@
     <ClInclude Include="Entity\Components\BehaviorComponent_Bomber.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_Kamikaze.hpp" />
     <ClInclude Include="Framework\LootTable.hpp" />
+    <ClInclude Include="Entity\Components\BehaviorComponent_Wander.hpp" />
   </ItemGroup>
 </Project>

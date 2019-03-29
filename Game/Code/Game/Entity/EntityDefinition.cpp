@@ -502,9 +502,21 @@ const EntityDefinition* EntityDefinition::GetDefinition(const std::string& defNa
 const EntityDefinition* EntityDefinition::GetRandomPlayerDefinition()
 {
 	// Get all possible player definitions
+	std::vector<const EntityDefinition*> playerDefs = GetAllPlayerDefinitions();
 
+	// Pick a random one and return
+	int randomIndex = GetRandomIntLessThan((int) playerDefs.size());
+
+	return playerDefs[randomIndex];
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns all EntityDefinitions loaded that are of the player class entity type
+//
+std::vector<const EntityDefinition*> EntityDefinition::GetAllPlayerDefinitions()
+{
 	std::vector<const EntityDefinition*> playerDefs;
-
 	std::map <std::string, const EntityDefinition*>::const_iterator itr = s_definitions.begin();
 
 	for (itr; itr != s_definitions.end(); itr++)
@@ -515,10 +527,7 @@ const EntityDefinition* EntityDefinition::GetRandomPlayerDefinition()
 		}
 	}
 
-	// Pick a random one and return
-	int randomIndex = GetRandomIntLessThan((int) playerDefs.size());
-
-	return playerDefs[randomIndex];
+	return playerDefs;
 }
 
 

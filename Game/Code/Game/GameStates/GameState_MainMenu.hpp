@@ -61,7 +61,7 @@ private:
 	int							m_playerCountScoreboardIndexBeingDisplayed = 0;
 	int							m_leaderboardIndexBeingDisplayed = 0;
 
-	IntVector3					m_menuStartCoord = IntVector3(128, 20, 160);
+	IntVector3					m_menuStartCoord = IntVector3(128, 40, 128);
 	Vector3						m_defaultCameraPosition = Vector3(128.f, 100.f, 35.f);
 
 	VoxelEmitter* m_emitters[2];

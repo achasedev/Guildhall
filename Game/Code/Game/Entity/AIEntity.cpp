@@ -22,8 +22,11 @@ AIEntity::AIEntity(const EntityDefinition* definition)
 	: AnimatedEntity(definition)
 {
 	// Initialize the Behavior Component
-	m_behaviorComponent = definition->CloneBehaviorPrototype();
-	m_behaviorComponent->Initialize(this);
+	if (definition->m_behaviorPrototype != nullptr)
+	{
+		m_behaviorComponent = definition->CloneBehaviorPrototype();
+		m_behaviorComponent->Initialize(this);
+	}
 }
 
 
@@ -44,7 +47,12 @@ void AIEntity::OnDeath()
 {
 	AnimatedEntity::OnDeath();
 
-	m_eventSpawnedFrom->StopTrackingEntity(this);
+	if (m_eventSpawnedFrom != nullptr)
+	{
+		m_eventSpawnedFrom->StopTrackingEntity(this);
+		m_eventSpawnedFrom = nullptr;
+	}
+
 	Game::GetWorld()->ParticalizeEntity(this);
 
 	// Check to drop something
@@ -94,4 +102,23 @@ void AIEntity::OnSpawn()
 void AIEntity::SetSpawnEvent(EntitySpawnEvent* spawnEvent)
 {
 	m_eventSpawnedFrom = spawnEvent;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the behavior component of this entity to the one given and initializes it
+//
+void AIEntity::SetBehaviorComponent(BehaviorComponent* newBehavior)
+{
+	if (m_behaviorComponent != nullptr)
+	{
+		delete m_behaviorComponent;
+	}
+
+	m_behaviorComponent = newBehavior;
+
+	if (m_behaviorComponent != nullptr)
+	{
+		m_behaviorComponent->Initialize(this);
+	}
 }

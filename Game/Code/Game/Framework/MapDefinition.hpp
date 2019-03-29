@@ -13,9 +13,10 @@ class MapDefinition
 public:
 	//-----Public Methods-----
 
-	static void		LoadMap(const std::string& mapFilePath);
-	static const	MapDefinition* GetDefinitionByName(const std::string& mapName);
-	
+	static void					LoadMap(const std::string& mapFilePath);
+	static const MapDefinition* GetDefinitionByName(const std::string& mapName);
+	static const MapDefinition* GetRandomDefinition();
+
 
 public:
 	//-----Public Data-----
