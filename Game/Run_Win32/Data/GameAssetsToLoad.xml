@@ -64,6 +64,7 @@
 		<VoxelSprite file="Data/VoxelSprites/Players/Banana.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Rubik.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Cola.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Players/Zombie.sprite"/>
 
 		<VoxelSprite file="Data/VoxelSprites/Players/PlayerIndicator.sprite"/>
 
@@ -94,6 +95,7 @@
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Rubik.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Cereal.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Cola.animset"/>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Zombie.animset"/>
 
 	</VoxelAnimationSets>
 
@@ -121,6 +123,7 @@
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Rubik.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Cereal.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Cola.animation"/>
+		<VoxelAnimation file="Data/VoxelAnimations/Players/Zombie.animation"/>
 
 	</VoxelAnimations>
 
@@ -187,8 +190,6 @@
 		<Campaign file="Data/Campaigns/Forest.campaign"/>
 		<Campaign file="Data/Campaigns/Desert.campaign"/>
 		<Campaign file="Data/Campaigns/Moon.campaign"/>
-
-
 	</Campaigns>
 
 	<!-- END CAMPAIGNS -->

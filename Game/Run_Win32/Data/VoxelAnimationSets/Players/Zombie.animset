@@ -1,0 +1,11 @@
+<VoxelAnimationSet name="Zombie">
+
+	<Alias alias="idle">
+		<VoxelAnimation name="Zombie_idle"/>
+	</Alias>
+
+	<Alias alias="move">
+		<VoxelAnimation name="Zombie_walk"/>
+	</Alias>
+
+</VoxelAnimationSet>

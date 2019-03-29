@@ -1,0 +1,8 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Zombie_idle_0" file="Data/VoxelModels/Players/Zombie/Zombie_idle_0.qef"/>
+	<VoxelSprite name="Zombie_idle_1" file="Data/VoxelModels/Players/Zombie/Zombie_idle_1.qef"/>
+	<VoxelSprite name="Zombie_walk_0" file="Data/VoxelModels/Players/Zombie/Zombie_walk_0.qef"/>
+	<VoxelSprite name="Zombie_walk_1" file="Data/VoxelModels/Players/Zombie/Zombie_walk_1.qef"/>
+
+</VoxelSprites>

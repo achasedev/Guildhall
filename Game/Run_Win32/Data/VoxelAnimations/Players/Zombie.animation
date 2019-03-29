@@ -1,0 +1,15 @@
+<VoxelAnimations>
+
+	<VoxelAnimation name="Zombie_idle" playmode="loop">
+		<Frame voxelsprite="Zombie_idle_0" duration="0.5"/>
+		<Frame voxelsprite="Zombie_idle_1" duration="0.5"/>
+	</VoxelAnimation>
+
+	<VoxelAnimation name="Zombie_walk" playmode="loop">
+		<Frame voxelsprite="Zombie_walk_0" duration="0.25"/>
+		<Frame voxelsprite="Zombie_idle_0" duration="0.25"/>
+		<Frame voxelsprite="Zombie_walk_1" duration="0.25"/>
+		<Frame voxelsprite="Zombie_idle_0" duration="0.25"/>
+	</VoxelAnimation>
+
+</VoxelAnimations>
