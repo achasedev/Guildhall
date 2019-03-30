@@ -42,8 +42,8 @@ void Weapon::OnEntityCollision(Entity* other)
 
 		if (m_definition->m_onPickupSound != MISSING_SOUND_ID)
 		{
-			AudioSystem* audio = AudioSystem::GetInstance();
-			audio->PlaySound(m_definition->m_onPickupSound);
+			GameAudioSystem* audio = Game::GetGameAudioSystem();
+			audio->PlayGameSound(SOUND_TYPE_OTHER, m_definition->m_onPickupSound);
 		}
 
 		Game::GetWorld()->RemoveEntity(this);

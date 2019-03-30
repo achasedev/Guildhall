@@ -12,12 +12,15 @@ enum eGameSoundType
 {
 	SOUND_TYPE_ENEMY,
 	SOUND_TYPE_WEAPON,
+	SOUND_TYPE_OTHER
 };
 
 class GameAudioSystem : public AudioSystem
 {
 public:
 	//-----Public Methods-----
+
+	GameAudioSystem();
 
 	virtual void BeginFrame() override;
 
@@ -41,7 +44,10 @@ private:
 	//-----Private Data-----
 
 	// Statics
-	static constexpr int NUM_ENEMY_CHANNELS = 4;
+	static constexpr int NUM_ENEMY_CHANNELS = 8;
+	static constexpr int NUM_WEAPON_CHANNELS = 8;
+	static constexpr int NUM_OTHER_CHANNELS = 8;
+	static constexpr int MAX_DUPLICATE_CONCURRENT_SOUNDS = 3;
 	static constexpr float MUSIC_CROSSFADE_DURATION = 1.0f;
 
 	// Music
@@ -58,5 +64,7 @@ private:
 	std::map<std::string, SoundID> m_systemSounds;
 
 	FMOD::Channel* m_enemyChannels[NUM_ENEMY_CHANNELS];
+	FMOD::Channel* m_weaponChannels[NUM_WEAPON_CHANNELS];
+	FMOD::Channel* m_otherChannels[NUM_OTHER_CHANNELS];
 
 };
