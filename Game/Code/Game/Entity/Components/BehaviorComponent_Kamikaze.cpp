@@ -8,9 +8,11 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Entity/AIEntity.hpp"
+#include "Game/Framework/GameAudioSystem.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Kamikaze.hpp"
 #include "Engine/Math/MathUtils.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Update - moves to the targeted player and blows up when close enough
@@ -125,8 +127,8 @@ void BehaviorComponent_Kamikaze::UpdateTicking()
 		m_owningEntity->SetColorOverride(Rgba::RED);
 
 		// Play the tick sound
-		AudioSystem* audio = AudioSystem::GetInstance();
-		audio->PlaySound(m_owningEntity->GetEntityDefinition()->m_customSound);
+		GameAudioSystem* audio = Game::GetGameAudioSystem();
+		audio->PlayGameSound(SOUND_TYPE_ENEMY, m_owningEntity->GetEntityDefinition()->m_customSound);
 	}
 
 	m_normalizedTimeLastFrame = t;

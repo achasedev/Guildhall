@@ -10,10 +10,11 @@
 #include "Game/Framework/World.hpp"
 #include "Game/Entity/Projectile.hpp"
 #include "Game/Framework/GameCommon.hpp"
+#include "Game/Framework/GameAudioSystem.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Engine/Math/MathUtils.hpp"
-#include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -102,8 +103,8 @@ void Weapon::Shoot()
 	// Play shoot sound
 	if (m_definition->m_onShootSound != MISSING_SOUND_ID)
 	{
-		AudioSystem* audio = AudioSystem::GetInstance();
-		audio->PlaySound(m_definition->m_onShootSound);
+		GameAudioSystem* audio = Game::GetGameAudioSystem();
+		audio->PlayGameSound(SOUND_TYPE_WEAPON, m_definition->m_onShootSound);
 	}
 }
 

@@ -4,8 +4,10 @@
 /* Date: October 8th, 2018
 /* Description: Implementation of the EntityDefinition class
 /************************************************************************/
+#include "Game/Framework/Game.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
+#include "Game/Framework/GameAudioSystem.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Smash.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Charge.hpp"
@@ -19,6 +21,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
+
 
 // Global map for all entity definitions
 std::map<std::string, const EntityDefinition*> EntityDefinition::s_definitions;
@@ -139,7 +142,7 @@ EntityDefinition::EntityDefinition(const XMLElement& entityElement, eEntityClass
 	const XMLElement* audioElement = entityElement.FirstChildElement("Audio");
 	if (audioElement != nullptr)
 	{
-		AudioSystem* audio = AudioSystem::GetInstance();
+		GameAudioSystem* audio = Game::GetGameAudioSystem();
 
 		std::string onSpawnSoundPath = ParseXmlAttribute(*audioElement, "on_spawn", "");
 		if (!IsStringNullOrEmpty(onSpawnSoundPath))

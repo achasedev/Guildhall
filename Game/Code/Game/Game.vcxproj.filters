@@ -196,6 +196,9 @@
     <ClCompile Include="Entity\Components\BehaviorComponent_Wander.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\GameAudioSystem.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -276,5 +279,6 @@
     <ClInclude Include="Entity\Components\BehaviorComponent_Kamikaze.hpp" />
     <ClInclude Include="Framework\LootTable.hpp" />
     <ClInclude Include="Entity\Components\BehaviorComponent_Wander.hpp" />
+    <ClInclude Include="Framework\GameAudioSystem.hpp" />
   </ItemGroup>
 </Project>

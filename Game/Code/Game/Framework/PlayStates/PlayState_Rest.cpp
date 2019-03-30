@@ -10,6 +10,7 @@
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/CampaignManager.hpp"
+#include "Game/Framework/GameAudioSystem.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Framework/PlayStates/PlayState_Rest.hpp"
@@ -18,6 +19,7 @@
 #include "Game/Framework/PlayStates/PlayState_ControllerConnect.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/Clock.hpp"
+
 
 #define TRANSITION_EDGE_SIZE (12)
 
@@ -377,7 +379,7 @@ void PlayState_Rest::Update()
 
 		m_gameState->TransitionToPlayState(new PlayState_Stage());
 
-		Game::PlaySystemSound("Stage_transition");
+		Game::GetGameAudioSystem()->PlaySystemSound("Stage_transition");
 	}
 	else
 	{

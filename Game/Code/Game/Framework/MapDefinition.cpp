@@ -118,7 +118,7 @@ const MapDefinition* MapDefinition::GetDefinitionByName(const std::string& mapNa
 //
 const MapDefinition* MapDefinition::GetRandomDefinition()
 {
-	int numDefs = s_definitions.size();
+	int numDefs = (int)s_definitions.size();
 	int randomIndex = GetRandomIntLessThan(numDefs);
 
 	std::map<std::string, const MapDefinition*>::const_iterator itr = s_definitions.begin();

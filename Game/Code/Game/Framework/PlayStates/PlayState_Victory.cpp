@@ -7,11 +7,13 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/VoxelFont.hpp"
+#include "Game/Framework/GameAudioSystem.hpp"
 #include "Game/GameStates/GameState_MainMenu.hpp"
 #include "Game/Framework/PlayStates/PlayState_Victory.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Input/InputSystem.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -71,7 +73,7 @@ bool PlayState_Victory::Enter()
 	if (m_transitionTimer.HasIntervalElapsed())
 	{
 		Game::UpdateLeaderboardWithCurrentScore();
-		Game::PlayBGM("Data/Audio/Music/Victory.wav");
+		Game::GetGameAudioSystem()->PlayBGM("Data/Audio/Music/Victory.wav");
 	}
 
 	return m_transitionTimer.HasIntervalElapsed();

@@ -9,7 +9,6 @@
 #include <vector>
 #include "Game/Framework/Leaderboard.hpp"
 #include "Engine/Math/Vector2.hpp"
-#include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Time/Stopwatch.hpp"
 
 class Clock;
@@ -20,6 +19,7 @@ class Player;
 class GameState;
 class VoxelGrid;
 class VoxelFont;
+class GameAudioSystem;
 
 #define MAX_PLAYERS (4)
 #define PLAYER_DEATH_SCORE_PENALTY (-2000)
@@ -68,6 +68,7 @@ public:
 	static Leaderboard&			GetLeaderboardForCurrentCampaign();
 	static bool					DoesLeaderboardExist(const std::string& leaderboardName);
 	static CampaignManager*		GetCampaignManager();
+	static GameAudioSystem*		GetGameAudioSystem();
 
 	static void					ResetScore();
 	static void					AddPointsToScore(int pointsToAdd);
@@ -84,10 +85,6 @@ public:
 	static bool					AreAllPlayersInitialized();
 	static void					RescaleDifficultyBasedOnCurrentPlayerCount();
 
-	static void					PlayBGM(const std::string& filename, bool fadeIn = true, bool loop = true);
-	static void					SetBGMVolume(float newVolume, bool transitionTo = true);
-	static void					PlaySystemSound(const std::string& systemSoundName);
-
 
 private:
 	//-----Private Methods-----
@@ -96,7 +93,6 @@ private:
 	~Game();
 	Game(const Game& copy) = delete;
 
-	void UpdateMusicCrossfade();
 	void UpdateDisplayedScore();
 
 	void LoadLeaderboardsFromFile();
@@ -124,25 +120,13 @@ private:
 	VoxelFont* m_hudFont = nullptr;
 	VoxelFont* m_menuFont = nullptr;
 
-	// Gameplay
+	// Leaderboards and score
 	float	m_actualScore = 0.f;
 	float m_displayedScore = 0.f; // Stored as float to allow it to change independent of framerate, i.e. increase by 0.5 points this frame
-
 	std::vector<Leaderboard> m_campaignLeaderboards;
 
 	// Audio
-	SoundPlaybackID		m_trackTendingToTarget = MISSING_SOUND_ID;
-	SoundPlaybackID		m_trackTendingToZero = MISSING_SOUND_ID;
-	Stopwatch			m_musicCrossfadeTimer;
-	bool				m_musicCrossfading = false;
-
-	float				m_targetMusicVolume = 1.0f;
-	float				m_tendingTargetCurrentVolume = 0.f;
-	float				m_tendingZeroCurrentVolume = 0.f;
-
-	static constexpr float MUSIC_CROSSFADE_DURATION = 1.0f;
-
-	std::map<std::string, SoundID> m_systemSounds;
+	GameAudioSystem* m_audioSystem = nullptr;
 
 	static Game* s_instance;			// The singleton Game instance
 

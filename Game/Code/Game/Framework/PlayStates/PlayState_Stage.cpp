@@ -8,6 +8,7 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/GameCamera.hpp"
+#include "Game/Framework/GameAudioSystem.hpp"
 #include "Game/Framework/CampaignManager.hpp"
 #include "Game/Framework/PlayStates/PlayState_Stage.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
@@ -17,6 +18,7 @@
 #include "Game/Framework/PlayStates/PlayState_Defeat.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/Clock.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -104,7 +106,7 @@ bool PlayState_Stage::Enter()
 	// Do stuff
 	if (m_transitionTimer.HasIntervalElapsed())
 	{
-		Game::PlaySystemSound("Stage_start");
+		Game::GetGameAudioSystem()->PlaySystemSound("Stage_start");
 
 		Game::GetCampaignManager()->StartNextStage();
 		return true;
@@ -119,26 +121,12 @@ bool PlayState_Stage::Enter()
 //
 bool PlayState_Stage::Leave()
 {
-	// Cool effect - set the clock time scale
-// 	float timeScale = 1.0f;
-// 
-// 	if (m_transitionTimer.GetElapsedTimeNormalized() < 0.5f)
-// 	{
-// 		timeScale = ClampFloatZeroToOne(1.1f - GetFractionInRange(m_transitionTimer.GetElapsedTime(), 0.f, 0.5f * STAGE_TRANSITION_OUT_TIME));
-// 	}
-// 	else
-// 	{
-// 		timeScale = ClampFloatZeroToOne(GetFractionInRange(m_transitionTimer.GetElapsedTime(), 0.5f * STAGE_TRANSITION_OUT_TIME, STAGE_TRANSITION_OUT_TIME) + 0.1f);
-// 	}
-// 
-// 	Game::GetGameClock()->SetScale(timeScale);
-
 	UpdateWorldAndCamera();
 
 	// Do stuff
 	if (m_transitionTimer.HasIntervalElapsed())
 	{
-		Game::PlaySystemSound("Stage_finish");
+		Game::GetGameAudioSystem()->PlaySystemSound("Stage_finish");
 
 		//Game::GetGameClock()->SetScale(1.0f);
 		return true;

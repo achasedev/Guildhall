@@ -12,6 +12,7 @@
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Framework/GameCamera.hpp"
+#include "Game/Framework/GameAudioSystem.hpp"
 #include "Game/Framework/CampaignManager.hpp"
 #include "Game/Framework/CampaignDefinition.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
@@ -90,7 +91,7 @@ bool GameState_Playing::Enter()
 	Game::ResetScore();
 
 	// Start the music
-	Game::PlayBGM(m_campaignBeingPlayed->m_backgroundMusicTrack);
+	Game::GetGameAudioSystem()->PlayBGM(m_campaignBeingPlayed->m_backgroundMusicTrack);
 
 	TransitionToPlayState(new PlayState_Rest());
 

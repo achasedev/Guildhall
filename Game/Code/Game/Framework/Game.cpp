@@ -13,6 +13,7 @@
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/CampaignManager.hpp"
+#include "Game/Framework/GameAudioSystem.hpp"
 #include "Game/GameStates/GameState_Loading.hpp"
 #include "Game/Framework/CampaignDefinition.hpp"
 
@@ -72,50 +73,9 @@ Game::Game()
 	{
 		m_players[i] = nullptr;
 	}
-}
 
-
-//-----------------------------------------------------------------------------------------------
-// Checks if there's currently a crossfade in the music, and adjust volumes accordingly
-//
-void Game::UpdateMusicCrossfade()
-{
-	// Check volume
-	if (m_trackTendingToTarget != MISSING_SOUND_ID && m_tendingTargetCurrentVolume != m_targetMusicVolume)
-	{
-		float delta = m_gameClock->GetDeltaTime();
-
-		if (m_tendingTargetCurrentVolume < m_targetMusicVolume)
-		{
-			m_tendingTargetCurrentVolume = ClampFloat(m_tendingTargetCurrentVolume + delta, 0.f, s_instance->m_targetMusicVolume);
-		}
-		else
-		{
-			m_tendingTargetCurrentVolume = ClampFloat(m_tendingTargetCurrentVolume - delta, s_instance->m_targetMusicVolume, 1.0f);
-		}
-
-		AudioSystem* audio = AudioSystem::GetInstance();
-		audio->SetSoundPlaybackVolume(m_trackTendingToTarget, m_tendingTargetCurrentVolume);
-	}
-
-	if (m_trackTendingToZero != MISSING_SOUND_ID)
-	{
-		float delta = s_instance->m_gameClock->GetDeltaTime();
-
-		s_instance->m_tendingZeroCurrentVolume = ClampFloatZeroToOne(s_instance->m_tendingZeroCurrentVolume - delta);
-
-		AudioSystem* audio = AudioSystem::GetInstance();
-
-		if (m_tendingZeroCurrentVolume == 0.f)
-		{
-			audio->StopSound(m_trackTendingToZero);
-			m_trackTendingToZero = MISSING_SOUND_ID;
-		}
-		else
-		{
-			audio->SetSoundPlaybackVolume(m_trackTendingToZero, m_tendingZeroCurrentVolume);
-		}
-	}
+	// Audio
+	m_audioSystem = new GameAudioSystem();
 }
 
 
@@ -338,6 +298,9 @@ Game::~Game()
 
 	delete m_menuFont;
 	m_menuFont = nullptr;
+
+	delete m_audioSystem;
+	m_audioSystem = nullptr;
 }
 
 
@@ -399,6 +362,8 @@ void Game::ProcessInput()
 //
 void Game::Update()
 {
+	m_audioSystem->BeginFrame();
+
 	if (m_gameStateState == GAME_STATE_TRANSITIONING_OUT)
 	{
 		// Update on leave of the current state
@@ -436,7 +401,6 @@ void Game::Update()
 	m_gameCamera->UpdateBasedOnState();
 
 	// Update any music crossfades
-	UpdateMusicCrossfade();
 	UpdateDisplayedScore();
 }
 
@@ -658,6 +622,15 @@ bool Game::DoesLeaderboardExist(const std::string& leaderboardName)
 CampaignManager* Game::GetCampaignManager()
 {
 	return s_instance->m_campaignManager;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the audio system used by the game for balancing and playing sounds
+//
+GameAudioSystem* Game::GetGameAudioSystem()
+{
+	return s_instance->m_audioSystem;
 }
 
 
@@ -1012,79 +985,6 @@ void Game::RescaleDifficultyBasedOnCurrentPlayerCount()
 	}
 
 	s_instance->m_campaignManager->RescaleToNewDifficulty(newDifficultyScale);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Plays the given background music
-//
-void Game::PlayBGM(const std::string& filename, bool fadeIn /*= true*/, bool loop /*= true*/)
-{
-	AudioSystem* audio = AudioSystem::GetInstance();
-
-	SoundID nextSong = AudioSystem::GetInstance()->CreateOrGetSound(filename);
-
-	if (fadeIn)
-	{		
-		if (s_instance->m_trackTendingToZero != MISSING_SOUND_ID)
-		{
-			audio->StopSound(s_instance->m_trackTendingToZero);
-		}
-
-		s_instance->m_trackTendingToZero = s_instance->m_trackTendingToTarget;
-		s_instance->m_tendingZeroCurrentVolume = s_instance->m_tendingTargetCurrentVolume;
-
-		s_instance->m_tendingTargetCurrentVolume = 0.f;
-		s_instance->m_trackTendingToTarget = audio->PlaySound(nextSong, loop, s_instance->m_tendingTargetCurrentVolume);
-	}
-	else
-	{
-		if (s_instance->m_trackTendingToZero != MISSING_SOUND_ID)
-		{
-			audio->StopSound(s_instance->m_trackTendingToZero);
-			s_instance->m_trackTendingToZero = MISSING_SOUND_ID;
-			s_instance->m_tendingZeroCurrentVolume = 0.f;
-		}
-
-		if (s_instance->m_trackTendingToTarget != MISSING_SOUND_ID)
-		{
-			audio->StopSound(s_instance->m_trackTendingToTarget);
-		}
-
-		s_instance->m_tendingTargetCurrentVolume = s_instance->m_targetMusicVolume;
-		s_instance->m_trackTendingToTarget = audio->PlaySound(nextSong, loop, s_instance->m_tendingTargetCurrentVolume);
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Sets the volume that the background music should be at, and will tranition towards it
-// If transitionTo is false, the bgm is immediately set to that volume
-//
-void Game::SetBGMVolume(float newVolume, bool transitionTo /*= true*/)
-{
-	s_instance->m_targetMusicVolume = newVolume;
-
-	if (!transitionTo)
-	{
-		s_instance->m_tendingTargetCurrentVolume = newVolume;
-		AudioSystem::GetInstance()->SetSoundPlaybackVolume(s_instance->m_trackTendingToTarget, s_instance->m_targetMusicVolume);
-	}
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Plays the system sound given by the systemSoundName
-//
-void Game::PlaySystemSound(const std::string& systemSoundName)
-{
-	bool soundExists = s_instance->m_systemSounds.find(systemSoundName) != s_instance->m_systemSounds.end();
-
-	if (soundExists)
-	{
-		AudioSystem* audio = AudioSystem::GetInstance();
-		audio->PlaySound(s_instance->m_systemSounds[systemSoundName]);
-	}
 }
 
 

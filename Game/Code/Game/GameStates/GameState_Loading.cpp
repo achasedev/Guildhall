@@ -14,6 +14,7 @@
 #include "Game/Framework/MapDefinition.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Animation/VoxelAnimation.hpp"
+#include "Game/Framework/GameAudioSystem.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
 #include "Game/GameStates/GameState_Loading.hpp"
 #include "Game/Framework/CampaignDefinition.hpp"
@@ -27,7 +28,6 @@
 #include "Engine/Rendering/Core/RenderScene.hpp"
 #include "Engine/Rendering/Materials/Material.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -134,7 +134,7 @@ void GameState_Loading::LoadResources() const
 	if (rootElement != nullptr)
 	{
 		const XMLElement* soundElement = rootElement->FirstChildElement("Sound");
-		AudioSystem* audio = AudioSystem::GetInstance();
+		GameAudioSystem* audio = Game::GetGameAudioSystem();
 
 		while (soundElement != nullptr)
 		{
@@ -147,7 +147,7 @@ void GameState_Loading::LoadResources() const
 			SoundID soundID = audio->CreateOrGetSound(soundFilePath);
 			GUARANTEE_OR_DIE(soundID != MISSING_SOUND_ID, Stringf("Couldn't find sound file %s", soundFilePath.c_str()).c_str());
 
-			Game::s_instance->m_systemSounds[soundName] = soundID;
+			audio->AddSystemSound(soundName, soundID);
 
 			soundElement = soundElement->NextSiblingElement("Sound");
 		}

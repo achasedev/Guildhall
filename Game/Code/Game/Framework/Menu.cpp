@@ -5,6 +5,7 @@
 /* Description: Implementation of the Menu class
 /************************************************************************/
 #include "Game/Framework/Menu.hpp"
+#include "Game/Framework/GameAudioSystem.hpp"
 #include "Game/GameStates/GameState_MainMenu.hpp"
 #include "Engine/Input/InputSystem.hpp"
 
@@ -118,7 +119,7 @@ void Menu::ProcessInput()
 
 			if (oldPosition != m_cursorPosition)
 			{
-				Game::PlaySystemSound("Menu_cursor");
+				Game::GetGameAudioSystem()->PlaySystemSound("Menu_cursor");
 			}
 		}
 	}
@@ -158,7 +159,7 @@ void Menu::ProcessInput()
 
 			if (oldPosition != m_cursorPosition)
 			{
-				Game::PlaySystemSound("Menu_cursor");
+				Game::GetGameAudioSystem()->PlaySystemSound("Menu_cursor");
 			}
 		}
 	}
@@ -186,7 +187,7 @@ void Menu::ProcessInput()
 	// Selection
 	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_SPACEBAR) || cont.WasButtonJustPressed(XBOX_BUTTON_START) || cont.WasButtonJustPressed(XBOX_BUTTON_A))
 	{
-		Game::PlaySystemSound("Menu_confirm");
+		Game::GetGameAudioSystem()->PlaySystemSound("Menu_confirm");
 
 		ProcessCurrentMenuSelection();
 	}

@@ -9,15 +9,20 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/Menu.hpp"
 #include "Game/Framework/World.hpp"
+#include "Game/Entity/AIEntity.hpp"
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/VoxelGrid.hpp"
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Animation/VoxelEmitter.hpp"
+#include "Game/Framework/MapDefinition.hpp"
+#include "Game/Framework/GameAudioSystem.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 #include "Game/Framework/CampaignDefinition.hpp"
 #include "Game/GameStates/GameState_MainMenu.hpp"
+#include "Game/Entity/Components/BehaviorComponent_Wander.hpp"
 #include "Engine/Input/InputSystem.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Default constructor
@@ -78,10 +83,12 @@ void GameState_MainMenu::Update()
 
 	Game::GetWorld()->Update();
 
+	GameAudioSystem* audio = Game::GetGameAudioSystem();
+
 	// Also Update the music from the intro - hack
-	if (AudioSystem::GetInstance()->IsSoundFinished(Game::s_instance->m_trackTendingToTarget))
+	if (audio->IsBackgroundMusicFinished())
 	{
-		Game::PlayBGM("Data/Audio/Music/Theme Song 8-bit V1 _looping.wav", false);
+		audio->PlayBGM("Data/Audio/Music/Theme Song 8-bit V1 _looping.wav", false);
 	}
 }
 
@@ -128,26 +135,26 @@ void GameState_MainMenu::Render_Leave() const
 	Render();
 }
 
-#include "Game/Entity/AIEntity.hpp"
-#include "Game/Entity/Components/BehaviorComponent_Wander.hpp"
-#include "Game/Framework/MapDefinition.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Called when the game transitions into this state, before the first running update
 //
 bool GameState_MainMenu::Enter()
 {
-	Game::SetBGMVolume(1.0f);
+	// Start the intro music
+	GameAudioSystem* audio = Game::GetGameAudioSystem();
+	audio->SetBGMVolume(1.0f);
+	audio->CreateOrGetSound("Data/Audio/Music/Theme Song 8-bit V1 _looping.wav");
+	audio->PlayBGM("Data/Audio/Music/Theme Song 8-bit V1 _opening.wav", true, false);
 
-	AudioSystem::GetInstance()->CreateOrGetSound("Data/Audio/Music/Theme Song 8-bit V1 _looping.wav");
-	Game::PlayBGM("Data/Audio/Music/Theme Song 8-bit V1 _opening.wav", true, false);
-
+	// Add the ground
 	World* world = Game::GetWorld();
 	const MapDefinition* mapDef = MapDefinition::GetRandomDefinition();
 	world->IntializeMap(mapDef);
 
 	std::vector<const EntityDefinition*> playerDefs = EntityDefinition::GetAllPlayerDefinitions();
 
+	// Add the wandering player characters
 	int numPlayers = (int)playerDefs.size();
 	for (int playerIndex = 0; playerIndex < numPlayers; ++playerIndex)
 	{

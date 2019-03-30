@@ -14,6 +14,7 @@
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
 #include "Game/Animation/VoxelAnimator.hpp"
+#include "Game/Framework/GameAudioSystem.hpp"
 #include "Game/Animation/VoxelAnimationSet.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 
@@ -22,7 +23,6 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
-
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 
 // Player colors
@@ -211,7 +211,7 @@ void Player::OnDeath()
 	Game::GetWorld()->ParticalizeEntity(this);
 	Game::AddPointsToScore(PLAYER_DEATH_SCORE_PENALTY);
 
-	Game::PlaySystemSound("Player_death");
+	Game::GetGameAudioSystem()->PlaySystemSound("Player_death");
 	Game::GetGameCamera()->AddScreenShake(SCREENSHAKE_ADDED_ON_DEATH);
 
 	// Start the respawn process
@@ -231,7 +231,7 @@ void Player::OnSpawn()
 		EquipWeapon(new Weapon(EntityDefinition::GetDefinition("Pistol")));
 	}
 
-	Game::PlaySystemSound("Player_respawn");
+	Game::GetGameAudioSystem()->PlaySystemSound("Player_respawn");
 }
 
 

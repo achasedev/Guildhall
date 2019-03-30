@@ -11,6 +11,7 @@
 #include "Game/Entity/Particle.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Game/Animation/VoxelSprite.hpp"
+#include "Game/Framework/GameAudioSystem.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Assets/AssetDB.hpp"
@@ -276,8 +277,8 @@ void Entity::OnDamageTaken(int damageAmount)
 	{
 		if (m_definition->m_onDamageTakenSound != MISSING_SOUND_ID)
 		{
-			AudioSystem* audio = AudioSystem::GetInstance();
-			audio->PlaySound(m_definition->m_onDamageTakenSound);
+			GameAudioSystem* audio = Game::GetGameAudioSystem();
+			audio->PlayGameSound(SOUND_TYPE_ENEMY, m_definition->m_onDamageTakenSound);
 		}
 	}
 }
@@ -292,8 +293,8 @@ void Entity::OnDeath()
 
 	if (m_definition->m_onDeathSound != MISSING_SOUND_ID)
 	{
-		AudioSystem* audio = AudioSystem::GetInstance();
-		audio->PlaySound(m_definition->m_onDeathSound);
+		GameAudioSystem* audio = Game::GetGameAudioSystem();
+		audio->PlayGameSound(SOUND_TYPE_ENEMY, m_definition->m_onDeathSound);
 	}
 }
 
@@ -305,8 +306,8 @@ void Entity::OnSpawn()
 {
 	if (m_definition->m_onSpawnSound != MISSING_SOUND_ID)
 	{
-		AudioSystem* audio = AudioSystem::GetInstance();
-		audio->PlaySound(m_definition->m_onSpawnSound);
+		GameAudioSystem* audio = Game::GetGameAudioSystem();
+		audio->PlayGameSound(SOUND_TYPE_ENEMY, m_definition->m_onSpawnSound);
 	}
 }
 

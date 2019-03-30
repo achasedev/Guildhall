@@ -8,12 +8,14 @@
 #include "Game/Framework/Game.hpp"
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/VoxelFont.hpp"
+#include "Game/Framework/GameAudioSystem.hpp"
 #include "Game/GameStates/GameState_Playing.hpp"
 #include "Game/GameStates/GameState_MainMenu.hpp"
 #include "Game/Framework/PlayStates/PlayState_Pause.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/Clock.hpp"
 #include "Engine/Input/InputSystem.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Constructor
@@ -89,8 +91,10 @@ bool PlayState_Pause::Enter()
 
 	if (!pauseEntered)
 	{
-		Game::PlaySystemSound("Pause_enter");
-		Game::SetBGMVolume(0.2f);
+		GameAudioSystem* audio = Game::GetGameAudioSystem();
+
+		audio->PlaySystemSound("Pause_enter");
+		audio->SetBGMVolume(0.2f);
 		pauseEntered = true;
 	}
 
@@ -176,8 +180,11 @@ bool PlayState_Pause::Leave()
 	if (finishedLeaving)
 	{
 		isParticalized = false;
-		Game::PlaySystemSound("Pause_leave");
-		Game::SetBGMVolume(1.0f);
+
+		GameAudioSystem* audio = Game::GetGameAudioSystem();
+
+		audio->PlaySystemSound("Pause_leave");
+		audio->SetBGMVolume(1.0f);
 	}
 
 	return finishedLeaving;

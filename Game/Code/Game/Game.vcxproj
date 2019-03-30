@@ -320,6 +320,7 @@
     <ClCompile Include="Entity\Weapon.cpp" />
     <ClCompile Include="Framework\App.cpp" />
     <ClCompile Include="Framework\CampaignDefinition.cpp" />
+    <ClCompile Include="Framework\GameAudioSystem.cpp" />
     <ClCompile Include="Framework\GameCamera.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
     <ClCompile Include="Framework\LootTable.cpp" />
@@ -385,6 +386,7 @@
     <ClInclude Include="Framework\CampaignDefinition.hpp" />
     <ClInclude Include="Framework\EngineBuildPreferences.hpp" />
     <ClInclude Include="Framework\Game.hpp" />
+    <ClInclude Include="Framework\GameAudioSystem.hpp" />
     <ClInclude Include="Framework\GameCamera.hpp" />
     <ClInclude Include="Framework\GameCommon.hpp" />
     <ClInclude Include="Framework\Leaderboard.hpp" />
