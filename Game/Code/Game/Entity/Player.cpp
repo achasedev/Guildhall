@@ -209,7 +209,9 @@ void Player::OnDeath()
 	UnequipCurrentWeapon();
 
 	Game::GetWorld()->ParticalizeEntity(this);
-	Game::AddPointsToScore(PLAYER_DEATH_SCORE_PENALTY);
+
+	int currentScore = Game::GetScore();
+	Game::AddPointsToScore(-currentScore / 2);
 
 	Game::GetGameAudioSystem()->PlaySystemSound("Player_death");
 	Game::GetGameCamera()->AddScreenShake(SCREENSHAKE_ADDED_ON_DEATH);

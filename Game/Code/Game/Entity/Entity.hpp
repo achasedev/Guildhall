@@ -79,7 +79,8 @@ public:
 	bool							IsSetToUpdate() const;
 	bool							ShouldCheckForGroundCollisions() const;
 	bool							ShouldCheckForEdgeCollisions() const;
-	
+	bool							ShouldRender() const;
+
 	bool							ShouldRenderWithColorOverride();
 	Rgba							GetAndResetColorOverride();
 
@@ -125,6 +126,7 @@ protected:
 	bool					m_shouldCheckForGroundCollisions = true;
 	bool					m_shouldCheckForEdgeCollisions = true;
 
+	bool					m_shouldRender = true;
 	bool					m_renderWithColorOverride = false;
 	Rgba					m_spriteColorOverride = Rgba::WHITE;
 

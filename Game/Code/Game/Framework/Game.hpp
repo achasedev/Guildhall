@@ -22,7 +22,6 @@ class VoxelFont;
 class GameAudioSystem;
 
 #define MAX_PLAYERS (4)
-#define PLAYER_DEATH_SCORE_PENALTY (-2000)
 
 enum eGameStateState
 {

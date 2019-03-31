@@ -561,6 +561,15 @@ bool Entity::ShouldCheckForEdgeCollisions() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns whether this entity should be rendered next frame
+//
+bool Entity::ShouldRender() const
+{
+	return m_shouldRender;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns true if the entity just took damage and needs to render a white silouette the next frame
 // Sets the value to false if it is true to avoid rendering the flash for more than a frame
 //

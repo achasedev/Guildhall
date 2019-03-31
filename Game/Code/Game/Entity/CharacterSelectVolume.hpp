@@ -14,18 +14,12 @@ public:
 	
 	CharacterSelectVolume(const EntityDefinition* definition);
 	virtual void OnEntityCollision(Entity* other) override;
+	virtual void Update() override;
 
-	
-public:
-	//-----Public Data-----
-	
-
-private:
-	//-----Private Methods-----
-	
 	
 private:
 	//-----Private Data-----
 	
-	
+	Player* m_playerThatChoseMe = nullptr;
+
 };

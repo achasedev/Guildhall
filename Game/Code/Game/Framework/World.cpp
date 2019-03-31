@@ -1363,7 +1363,9 @@ void World::DrawStaticEntitiesToGrid(const IntVector3& offset)
 
 	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
 	{
-		if (m_entities[entityIndex]->GetPhysicsType() == PHYSICS_TYPE_STATIC && !m_entities[entityIndex]->IsMarkedForDelete())
+		Entity* entity = m_entities[entityIndex];
+
+		if (entity->GetPhysicsType() == PHYSICS_TYPE_STATIC && !entity->IsMarkedForDelete() && entity->ShouldRender())
 		{
 			if (m_drawCollisions)
 			{
@@ -1395,7 +1397,9 @@ void World::DrawDynamicEntitiesToGrid(const IntVector3& offset)
 
 	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
 	{
-		if (m_entities[entityIndex]->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC && !m_entities[entityIndex]->IsMarkedForDelete())
+		Entity* entity = m_entities[entityIndex];
+
+		if (entity->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC && !entity->IsMarkedForDelete() && entity->ShouldRender())
 		{
 			Rgba whiteReplacement = Rgba::WHITE;
 			if (m_entities[entityIndex]->IsPlayer())
