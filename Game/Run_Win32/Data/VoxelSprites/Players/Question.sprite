@@ -1,0 +1,8 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Question_idle_0" file="Data/VoxelModels/Players/Question/Question_idle_0.qef"/>
+	<VoxelSprite name="Question_idle_1" file="Data/VoxelModels/Players/Question/Question_idle_1.qef"/>
+	<VoxelSprite name="Question_walk_0" file="Data/VoxelModels/Players/Question/Question_walk_0.qef"/>
+	<VoxelSprite name="Question_walk_1" file="Data/VoxelModels/Players/Question/Question_walk_1.qef"/>
+
+</VoxelSprites>

@@ -1,0 +1,11 @@
+<VoxelAnimationSet name="Question">
+
+	<Alias alias="idle">
+		<VoxelAnimation name="Question_idle"/>
+	</Alias>
+
+	<Alias alias="move">
+		<VoxelAnimation name="Question_walk"/>
+	</Alias>
+
+</VoxelAnimationSet>

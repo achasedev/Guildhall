@@ -67,6 +67,7 @@
 		<VoxelSprite file="Data/VoxelSprites/Players/Zombie.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Robot.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Gun.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Players/Question.sprite"/>
 
 		<VoxelSprite file="Data/VoxelSprites/Players/PlayerIndicator.sprite"/>
 
@@ -100,6 +101,7 @@
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Zombie.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Robot.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Gun.animset"/>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Question.animset"/>
 
 	</VoxelAnimationSets>
 
@@ -130,6 +132,7 @@
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Zombie.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Robot.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Gun.animation"/>
+		<VoxelAnimation file="Data/VoxelAnimations/Players/Question.animation"/>
 
 	</VoxelAnimations>
 
