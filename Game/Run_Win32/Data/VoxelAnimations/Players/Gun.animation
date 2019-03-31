@@ -1,0 +1,15 @@
+<VoxelAnimations>
+
+	<VoxelAnimation name="Gun_idle" playmode="loop">
+		<Frame voxelsprite="Gun_idle_0" duration="0.5"/>
+		<Frame voxelsprite="Gun_idle_1" duration="0.5"/>
+	</VoxelAnimation>
+
+	<VoxelAnimation name="Gun_walk" playmode="loop">
+		<Frame voxelsprite="Gun_walk_0" duration="0.25"/>
+		<Frame voxelsprite="Gun_idle_0" duration="0.25"/>
+		<Frame voxelsprite="Gun_walk_1" duration="0.25"/>
+		<Frame voxelsprite="Gun_idle_0" duration="0.25"/>
+	</VoxelAnimation>
+
+</VoxelAnimations>

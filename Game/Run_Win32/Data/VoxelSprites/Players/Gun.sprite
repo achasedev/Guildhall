@@ -1,0 +1,8 @@
+<VoxelSprites>
+
+	<VoxelSprite name="Gun_idle_0" file="Data/VoxelModels/Players/Gun/Gun_idle_0.qef"/>
+	<VoxelSprite name="Gun_idle_1" file="Data/VoxelModels/Players/Gun/Gun_idle_1.qef"/>
+	<VoxelSprite name="Gun_walk_0" file="Data/VoxelModels/Players/Gun/Gun_walk_0.qef"/>
+	<VoxelSprite name="Gun_walk_1" file="Data/VoxelModels/Players/Gun/Gun_walk_1.qef"/>
+
+</VoxelSprites>

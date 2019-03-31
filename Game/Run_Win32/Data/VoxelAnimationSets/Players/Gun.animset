@@ -1,0 +1,11 @@
+<VoxelAnimationSet name="Gun">
+
+	<Alias alias="idle">
+		<VoxelAnimation name="Gun_idle"/>
+	</Alias>
+
+	<Alias alias="move">
+		<VoxelAnimation name="Gun_walk"/>
+	</Alias>
+
+</VoxelAnimationSet>
