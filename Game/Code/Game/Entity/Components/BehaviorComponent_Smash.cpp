@@ -10,6 +10,7 @@
 #include "Game/Framework/World.hpp"
 #include "Game/Entity/AIEntity.hpp"
 #include "Game/Entity/Projectile.hpp"
+#include "Game/Animation/VoxelAnimator.hpp"
 #include "Game/Entity/EntityDefinition.hpp"
 #include "Game/Entity/Components/PhysicsComponent.hpp"
 #include "Game/Entity/Components/BehaviorComponent_Smash.hpp"
@@ -82,6 +83,8 @@ void BehaviorComponent_Smash::OnEntityCollision(Entity* other)
 		if (m_state == STATE_SMASHING)
 		{
 			Vector3 knockback = (other->GetCenterPosition() - m_owningEntity->GetCenterPosition()).GetNormalized();
+			knockback.y = 0.f;
+
 			other->TakeDamage(m_damageOnSmash, knockback * m_smashKnockBackMagnitude);
 		}
 		else
@@ -105,6 +108,12 @@ void BehaviorComponent_Smash::UpdateWaitingOnGround()
 		m_hoverDirection = (m_hoverTarget - m_owningEntity->GetCenterPosition()).GetNormalized();
 
 		m_state = STATE_MOVING_TO_HOVER_TARGET;
+
+		VoxelAnimator* animator = m_owningEntity->GetAnimator();
+		if (animator != nullptr)
+		{
+			animator->Play("idle");
+		}
 	}
 }
 
@@ -115,11 +124,16 @@ void BehaviorComponent_Smash::UpdateWaitingOnGround()
 void BehaviorComponent_Smash::UpdateMovingToHoverTarget()
 {
 	float deltaTime = Game::GetDeltaTime();
+	m_hoverDirection = (m_hoverTarget - m_owningEntity->GetCenterPosition()).GetNormalized();
+
 	Vector3 translation = m_hoverDirection * HOVER_TRANSLATION_SPEED * deltaTime;
+
 	m_owningEntity->AddPositionOffset(translation);
 
 	float thresholdSquared = TRANSLATION_THRESHOLD_ACCURACY * TRANSLATION_THRESHOLD_ACCURACY;
+	Vector3 centerPosition = m_owningEntity->GetCenterPosition();
 	float distanceToTargetSquared = (m_hoverTarget - m_owningEntity->GetCenterPosition()).GetLengthSquared();
+
 
 	if (distanceToTargetSquared < thresholdSquared)
 	{
@@ -127,6 +141,12 @@ void BehaviorComponent_Smash::UpdateMovingToHoverTarget()
 
 		m_waitTimer.SetInterval(HOVER_WAIT_TIME);
 		m_state = STATE_HOVERING;
+
+		VoxelAnimator* animator = m_owningEntity->GetAnimator();
+		if (animator != nullptr)
+		{
+			animator->Play("smash");
+		}
 	}
 }
 

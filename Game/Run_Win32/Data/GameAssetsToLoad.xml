@@ -44,6 +44,7 @@
 		<!-- Zombies -->
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Walker.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Tank.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Zombies/Smasher.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Hound.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Soldier.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Zombies/Bunny.sprite"/>
@@ -79,6 +80,7 @@
 		<!-- Zombies -->
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Walker.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Tank.animset"/>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Smasher.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Hound.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Soldier.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Zombies/Bunny.animset"/>
@@ -110,6 +112,7 @@
 		<!-- Zombies -->
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Walker.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Tank.animation"/>
+		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Smasher.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Hound.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Soldier.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Zombies/Bunny.animation"/>

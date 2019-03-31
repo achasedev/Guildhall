@@ -1,11 +1,15 @@
-<VoxelAnimationSet name="Tank">
+<VoxelAnimationSet name="Smasher">
 
 	<Alias alias="idle">
-		<VoxelAnimation name="Tank_idle"/>
+		<VoxelAnimation name="Smasher_idle"/>
 	</Alias>
 
 	<Alias alias="move">
-		<VoxelAnimation name="Tank_walk"/>
+		<VoxelAnimation name="Smasher_idle"/>
+	</Alias>
+
+	<Alias alias="smash">
+		<VoxelAnimation name="Smasher_smash"/>
 	</Alias>
 
 </VoxelAnimationSet>

@@ -1,10 +1,6 @@
 <VoxelSprites>
 
 	<VoxelSprite name="Smasher_idle_0" file="Data/VoxelModels/Zombies/Smasher/Smasher_idle_0.qef"/>
+	<VoxelSprite name="Smasher_smash_0" file="Data/VoxelModels/Zombies/Smasher/Smasher_smash_0.qef"/>
 
-	<VoxelSprite name="Smasher_walk_0" file="Data/VoxelModels/Zombies/Smasher/Smasher_walk_0.qef"/>
-	<VoxelSprite name="Smasher_walk_1" file="Data/VoxelModels/Zombies/Smasher/Smasher_walk_1.qef"/>
-	<VoxelSprite name="Smasher_walk_2" file="Data/VoxelModels/Zombies/Smasher/Smasher_walk_2.qef"/>
-	<VoxelSprite name="Smasher_walk_3" file="Data/VoxelModels/Zombies/Smasher/Smasher_walk_3.qef"/>
-	
 </VoxelSprites>

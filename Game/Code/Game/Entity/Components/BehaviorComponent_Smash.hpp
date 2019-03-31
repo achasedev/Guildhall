@@ -56,5 +56,5 @@ private:
 	static constexpr float HOVER_WAIT_TIME = 1.0f;
 	static constexpr float GROUND_WAIT_TIME = 2.0f;
 	static constexpr float HOVER_TRANSLATION_SPEED = 150.f;
-	static constexpr float TRANSLATION_THRESHOLD_ACCURACY = 2.0f;
+	static constexpr float TRANSLATION_THRESHOLD_ACCURACY = 4.0f;
 };

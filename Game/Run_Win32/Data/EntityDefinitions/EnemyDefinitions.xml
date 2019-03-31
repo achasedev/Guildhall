@@ -79,7 +79,7 @@
 
 	<EntityDefinition name="Smasher" initial_health="10" loot_table="Smasher">
 		<Movement max_acceleration="2000.0" max_speed="12.0" max_deceleration="100.0" jump_impulse="50.0"/>
-		<Visuals animation_set="Tank" default_sprite="Tank_idle_0"/>
+		<Visuals animation_set="Smasher" default_sprite="Smasher_idle_0"/>
 		<Physics physics_type="dynamic" has_gravity="false">
 			<CollisionDefinition response="no_correction" layer="enemy" can_destroy_voxels="true"/>
 		</Physics>

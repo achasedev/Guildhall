@@ -1,6 +1,6 @@
 Desert
 1 Player
-0
+500
 0
 0
 0
