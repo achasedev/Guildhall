@@ -177,7 +177,7 @@ void AnimatedEntity::Decelerate()
 
 		m_physicsComponent->AddForce(finalForce);
 
-		if (m_physicsComponent->GetVelocity().GetLengthSquared() <= 0.1f)
+		if (m_physicsComponent->GetVelocity().GetLengthSquared() <= 0.5f)
 		{
 			m_animator->Play("idle");
 		}

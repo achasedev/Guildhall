@@ -65,6 +65,7 @@
 		<VoxelSprite file="Data/VoxelSprites/Players/Rubik.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Cola.sprite"/>
 		<VoxelSprite file="Data/VoxelSprites/Players/Zombie.sprite"/>
+		<VoxelSprite file="Data/VoxelSprites/Players/Robot.sprite"/>
 
 		<VoxelSprite file="Data/VoxelSprites/Players/PlayerIndicator.sprite"/>
 
@@ -96,6 +97,7 @@
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Cereal.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Cola.animset"/>
 		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Zombie.animset"/>
+		<VoxelAnimationSet file="Data/VoxelAnimationSets/Players/Robot.animset"/>
 
 	</VoxelAnimationSets>
 
@@ -124,6 +126,7 @@
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Cereal.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Cola.animation"/>
 		<VoxelAnimation file="Data/VoxelAnimations/Players/Zombie.animation"/>
+		<VoxelAnimation file="Data/VoxelAnimations/Players/Robot.animation"/>
 
 	</VoxelAnimations>
 
