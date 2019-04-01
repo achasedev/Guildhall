@@ -24,7 +24,8 @@ public:
 	virtual void Render() const;
 
 	// Accessors
-	AABB3 GetWorldPhysicsBounds() const;
+	AABB3	GetWorldPhysicsBounds() const;
+	bool	IsMarkedForDelete() const;
 
 
 private:
@@ -42,7 +43,8 @@ private:
 	//-----Private Member Data-----
 
 	float			m_ageSeconds = 0.f;
-	Vector3			m_position = Vector3::ZERO;
+	bool			m_isMarkedForDelete = false;
+	Vector3			m_position = Vector3(10.f, 10.f, 50.f);
 	float			m_xyOrientationDegrees = 0.f;
 
 	AABB3			m_localPhysicsBounds = AABB3(ENTITY_DEFAULT_LOCAL_PHYSICS_BACK_LEFT_BOTTOM, ENTITY_DEFAULT_LOCAL_PHYSICS_FRONT_RIGHT_TOP);

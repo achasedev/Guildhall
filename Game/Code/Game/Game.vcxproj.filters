@@ -43,6 +43,12 @@
     <ClCompile Include="Environment\BlockLocator.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Entity\Entity.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\Player.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -63,6 +69,8 @@
     <ClInclude Include="Environment\BlockType.hpp" />
     <ClInclude Include="Framework\GameCamera.hpp" />
     <ClInclude Include="Environment\BlockLocator.hpp" />
+    <ClInclude Include="Entity\Entity.hpp" />
+    <ClInclude Include="Entity\Player.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Environment\BlockLocator.inl" />

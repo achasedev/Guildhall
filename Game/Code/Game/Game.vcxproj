@@ -378,6 +378,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Entity\Entity.cpp" />
+    <ClCompile Include="Entity\Player.cpp" />
     <ClCompile Include="Environment\Block.cpp" />
     <ClCompile Include="Environment\BlockLocator.cpp" />
     <ClCompile Include="Environment\BlockType.cpp" />
@@ -390,6 +392,8 @@
     <ClCompile Include="Framework\Game.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Entity\Entity.hpp" />
+    <ClInclude Include="Entity\Player.hpp" />
     <ClInclude Include="Environment\Block.hpp" />
     <ClInclude Include="Environment\BlockLocator.hpp" />
     <ClInclude Include="Environment\BlockType.hpp" />

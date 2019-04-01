@@ -27,6 +27,7 @@ struct RaycastResult_t
 };
 
 class Chunk;
+class Entity;
 
 class World
 {
@@ -98,24 +99,36 @@ private:
 	void			UpdateRaycast();
 	void			UpdateLighting();
 	void			UpdateTimeOfDay();
+	void			UpdateEntities();
 
 	// Render
 	void			RenderChunks() const;
+	void			RenderEntities() const;
+
+	// Misc
+	void			DeleteEntitiesMarkedForDelete();
 
 
 private:
 	//-----Private Data-----
 	
+	// Chunks
 	std::map<IntVector2, Chunk*>	m_activeChunks;
-	std::deque<BlockLocator>		m_dirtyLightingBlocks;
 
+	// Lighting
+	std::deque<BlockLocator>		m_dirtyLightingBlocks;
 	Vector3							m_skyColor = Vector3(1.0f, 0.9f, 0.8f);
 	Vector3							m_indoorLightColor = Vector3(1.0f, 1.0f, 0.f);
 	Vector3							m_outdoorLightColor = Vector3(1.0f, 0.9f, 0.8f);
+
+	// World Global
 	float							m_timeInDays = 0.f; // Cumulative, so 5.27 is 27% into the 6th day
 	float							m_currentTimeScale = DEFAULT_WORLD_DAY_TIME_SCALE;
 
-	// For Debugging
+	// Entities
+	std::vector<Entity*>			m_entities;
+
+	// Debugging
 	bool							m_raycastDetached = false;
 	bool							m_useStepAndSampleRaycast = true;
 	Vector3							m_raycastReferencePosition; // Will be camera position when not detached

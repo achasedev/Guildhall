@@ -4,6 +4,7 @@
 /* Date: February 9th 2019
 /* Description: Implementation of the World class
 /************************************************************************/
+#include "Game/Entity/Entity.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Environment/World.hpp"
 #include "Game/Environment/Chunk.hpp"
@@ -25,6 +26,7 @@
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
+
 //-----------------------------------------------------------------------------------------------
 // Static Members
 //
@@ -38,6 +40,9 @@ const Vector3 World::WORLD_INDOOR_LIGHT_COLOR = Vector3(1.0f, 1.0f, 0.f); // Yel
 //
 World::World()
 {
+	Entity* testEntity = new Entity();
+
+	m_entities.push_back(testEntity);
 }
 
 
@@ -146,15 +151,18 @@ void World::Update()
 {
 	Game::GetGameCamera()->Update();
 
-	CheckToActivateChunks();	// Create chunks within activation range
-	CheckToDeactivateChunks();	// Save and remove a chunk if outside deactivation range
+	CheckToActivateChunks();			// Create chunks within activation range
+	CheckToDeactivateChunks();			// Save and remove a chunk if outside deactivation range
 
-	UpdateTimeOfDay();			// Progresses the time of day, used for lighting
-	UpdateLighting();			// Fix bad lighting on blocks that are dirty, may flag a mesh as dirty
-	CheckToBuildChunkMesh();	// Build a mesh if one needs to be rebuilt
+	UpdateTimeOfDay();					// Progresses the time of day, used for lighting
+	UpdateLighting();					// Fix bad lighting on blocks that are dirty, may flag a mesh as dirty
+	CheckToBuildChunkMesh();			// Build a mesh if one needs to be rebuilt
 
-	UpdateChunks();				// General Update for chunks
-	UpdateRaycast();			// Update for debug raycast
+	UpdateChunks();						// General Update for chunks
+	UpdateRaycast();					// Update for debug raycast
+
+	UpdateEntities();					// General update for all entities
+	DeleteEntitiesMarkedForDelete();	// Removed entities marked for removal
 }
 
 
@@ -167,6 +175,7 @@ void World::Render() const
 	renderer->ClearScreen(m_skyColor);
 
 	RenderChunks();
+	RenderEntities();
 
 	Material* xRayMaterial = AssetDB::GetSharedMaterial("X_Ray");
 
@@ -1367,6 +1376,25 @@ void World::UpdateTimeOfDay()
 
 
 //-----------------------------------------------------------------------------------------------
+// Updates all entities in the world
+//
+void World::UpdateEntities()
+{
+	int numEntities = (int)m_entities.size();
+
+	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
+	{
+		Entity* currEntity = m_entities[entityIndex];
+
+		if (!currEntity->IsMarkedForDelete())
+		{
+			currEntity->Update();
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Calls Render() on all the chunk
 //
 void World::RenderChunks() const
@@ -1376,6 +1404,46 @@ void World::RenderChunks() const
 	for (chunkItr; chunkItr != m_activeChunks.end(); chunkItr++)
 	{
 		chunkItr->second->Render();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Renders all entities
+//
+void World::RenderEntities() const
+{
+	int numEntities = (int)m_entities.size();
+
+	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
+	{
+		Entity* currEntity = m_entities[entityIndex];
+		ASSERT_OR_DIE(!currEntity->IsMarkedForDelete(), "Marked entity made it to render");
+
+		currEntity->Render();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Removes and deletes all entities marked for delete in the entity list
+// **Should be done at the end of World::Update()**
+//
+void World::DeleteEntitiesMarkedForDelete()
+{
+	for (int entityIndex = (int)m_entities.size() - 1; entityIndex >= 0; --entityIndex)
+	{
+		Entity* currEntity = m_entities[entityIndex];
+
+		if (currEntity->IsMarkedForDelete())
+		{
+			// Fast replace to prevent shifting
+			int lastIndex = (int)m_entities.size() - 1;
+			m_entities[entityIndex] = m_entities[lastIndex];
+			m_entities.erase(m_entities.begin() + lastIndex);
+
+			delete currEntity;
+		}
 	}
 }
 

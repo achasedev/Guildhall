@@ -48,3 +48,12 @@ AABB3 Entity::GetWorldPhysicsBounds() const
 {
 	return m_localPhysicsBounds.GetTranslated(m_position);
 }
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether this entity should be deleted at the end of this frame
+//
+bool Entity::IsMarkedForDelete() const
+{
+	return m_isMarkedForDelete;
+}
