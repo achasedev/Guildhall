@@ -167,6 +167,25 @@ void World::Update()
 
 
 //-----------------------------------------------------------------------------------------------
+// Applies physics to all entities
+//
+void World::ApplyPhysicsStep()
+{
+	int numEntities = (int)m_entities.size();
+
+	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
+	{
+		Entity* currEntity = m_entities[entityIndex];
+
+		if (!currEntity->IsMarkedForDelete())
+		{
+			currEntity->ApplyPhysicsStep();
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Renders all chunks to the screen
 //
 void World::Render() const

@@ -24,6 +24,37 @@ void Entity::Update()
 
 
 //-----------------------------------------------------------------------------------------------
+// Applies the net force/impulses/acceleration/velocity to the entity
+//
+void Entity::ApplyPhysicsStep()
+{
+	float deltaSeconds = Game::GetDeltaTime();
+
+	// Apply Force
+	Vector3 accelerationFromForce = (m_force / m_mass) * deltaSeconds;
+	m_acceleration += accelerationFromForce;
+	m_force = Vector3::ZERO;
+
+	// Apply Impulse
+	Vector3 accelerationFromImpulse = (m_impulse / m_mass) * deltaSeconds;
+	m_acceleration += accelerationFromImpulse;
+	m_impulse = Vector3::ZERO;
+
+	// Apply Gravity
+	if (m_physicsMode == PHYSICS_MODE_WALKING)
+	{
+		m_acceleration += (Vector3::MINUS_Z_AXIS * GRAVITY_ACCELERATION) * deltaSeconds;
+	}
+
+	// Apply Acceleration
+	m_velocity += m_acceleration * deltaSeconds;
+
+	// Apply Velocity
+	m_position += m_velocity * deltaSeconds;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Render
 //
 void Entity::Render() const
@@ -47,13 +78,4 @@ void Entity::Render() const
 AABB3 Entity::GetWorldPhysicsBounds() const
 {
 	return m_localPhysicsBounds.GetTranslated(m_position);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns whether this entity should be deleted at the end of this frame
-//
-bool Entity::IsMarkedForDelete() const
-{
-	return m_isMarkedForDelete;
 }

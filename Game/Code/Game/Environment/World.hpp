@@ -39,6 +39,7 @@ public:
 
 	void ProcessInput();
 	void Update();
+	void ApplyPhysicsStep();
 	void Render() const;
 
 	IntVector2		GetChunkCoordsForChunkThatContainsPosition(const Vector2& position) const;
