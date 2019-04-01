@@ -39,7 +39,6 @@ public:
 
 	void ProcessInput();
 	void Update();
-	void ApplyPhysicsStep();
 	void Render() const;
 
 	IntVector2		GetChunkCoordsForChunkThatContainsPosition(const Vector2& position) const;
@@ -102,6 +101,14 @@ private:
 	void			UpdateTimeOfDay();
 	void			UpdateEntities();
 
+	// Physics and Collision
+	void			ApplyPhysicsStep();
+	void			CheckForEntityChunkCollisions();
+	void			CheckAndCorrectEntityChunkCollision(Entity* entity);
+	void			GetAllBlocksThatBoundsOccupies(const AABB3& entityWorldBounds, std::vector<BlockLocator>& out_occupiedBlocks);
+	bool			GetValidCorrectiveSuggestion(const AABB3& entityBounds, BlockLocator& blockLocator, Vector3& out_suggestion);
+	void			ApplyCollisionCorrectionToEntity(Entity* entity, const Vector3& correction);
+
 	// Render
 	void			RenderChunks() const;
 	void			RenderEntities() const;
@@ -145,11 +152,14 @@ private:
 	static constexpr int			NOISE_MAX_DEVIATION_FROM_BASE_ELEVATION = 10;
 	static constexpr int			RAYCAST_STEPS_PER_BLOCK = 100;
 	static constexpr float			DEFAULT_RAYCAST_DISTANCE = 8.f;
-
+	
 	static constexpr float			DEFAULT_WORLD_DAY_TIME_SCALE = 200.f;
 	static constexpr float			ONE_OVER_SECONDS_PER_DAY = 1.f / 86400.f;
 	static const Vector3			WORLD_NOON_SKY_COLOR;
 	static const Vector3			WORLD_NIGHT_SKY_COLOR;
 	static const Vector3			WORLD_INDOOR_LIGHT_COLOR;
+
+	static constexpr int			WORLD_MAX_CORRECTIVE_ITERATIONS = 3;
+	static constexpr float			WORLD_MAX_SINGLE_CORRECTION_MAGNITUDE = 5.f;
 
 };

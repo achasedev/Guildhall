@@ -9,6 +9,7 @@
 
 class Block;
 class Chunk;
+class AABB3;
 
 class BlockLocator
 {
@@ -38,6 +39,7 @@ public:
 	BlockLocator		StepInCoordDirection(const IntVector3& blockCoordOffset) const;
 
 	Vector3				GetBlockCenterWorldPosition() const;
+	AABB3				GetBlockWorldBounds() const;
 
 
 private:

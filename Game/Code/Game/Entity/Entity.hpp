@@ -27,10 +27,13 @@ public:
 	// Mutators
 	inline void		AddForce(const Vector3& force);
 	inline void		AddImpulse(const Vector3& impulse);
+	inline void		AddVelocity(const Vector3& velocity);
+	inline void		AddPositionOffset(const Vector3& offsetTranslation);
 
 	// Accessors
 	AABB3			GetWorldPhysicsBounds() const;
 	inline bool		IsMarkedForDelete() const;
+	inline Vector3	GetVelocity() const;
 
 
 private:
@@ -86,9 +89,36 @@ inline void Entity::AddImpulse(const Vector3& impulse)
 
 
 //-----------------------------------------------------------------------------------------------
+// Adds the given velocity to the existing velocity
+//
+inline void	Entity::AddVelocity(const Vector3& velocity)
+{
+	m_velocity += velocity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Translates the entity by offsetTranslation
+//
+inline void	Entity::AddPositionOffset(const Vector3& offsetTranslation)
+{
+	m_position += offsetTranslation;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns whether this entity should be deleted at the end of this frame
 //
 inline bool Entity::IsMarkedForDelete() const
 {
 	return m_isMarkedForDelete;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the velocity of the entity
+//
+Vector3 Entity::GetVelocity() const
+{
+	return m_velocity;
 }

@@ -36,7 +36,7 @@ void Entity::ApplyPhysicsStep()
 	m_force = Vector3::ZERO;
 
 	// Apply Impulse
-	Vector3 accelerationFromImpulse = (m_impulse / m_mass) * deltaSeconds;
+	Vector3 accelerationFromImpulse = (m_impulse / m_mass);
 	m_acceleration += accelerationFromImpulse;
 	m_impulse = Vector3::ZERO;
 

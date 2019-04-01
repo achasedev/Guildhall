@@ -141,6 +141,12 @@ void World::ProcessInput()
 	{
 		m_useStepAndSampleRaycast = !m_useStepAndSampleRaycast;
 	}
+
+	// For testing physics
+	if (input->WasKeyJustPressed('I'))
+	{
+		m_entities[0]->AddImpulse(Vector3(0.f, 0.f, 10.f));
+	}
 }
 
 
@@ -162,6 +168,8 @@ void World::Update()
 	UpdateRaycast();					// Update for debug raycast
 
 	UpdateEntities();					// General update for all entities
+	ApplyPhysicsStep();					// Applies forces, impulses, accelerations, velocities
+	CheckForEntityChunkCollisions();	// Checks for collisions between entities and the world
 	DeleteEntitiesMarkedForDelete();	// Removed entities marked for removal
 }
 
@@ -180,6 +188,25 @@ void World::ApplyPhysicsStep()
 		if (!currEntity->IsMarkedForDelete())
 		{
 			currEntity->ApplyPhysicsStep();
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks for collisions between entities and the world
+//
+void World::CheckForEntityChunkCollisions()
+{
+	int numEntities = (int)m_entities.size();
+
+	for (int entityIndex = 0; entityIndex < numEntities; ++entityIndex)
+	{
+		Entity* currEntity = m_entities[entityIndex];
+
+		if (!currEntity->IsMarkedForDelete())
+		{
+			CheckAndCorrectEntityChunkCollision(currEntity);
 		}
 	}
 }
@@ -1410,6 +1437,217 @@ void World::UpdateEntities()
 			currEntity->Update();
 		}
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks for collisions between the given entity and the chunks in the world and corrects them
+//
+void World::CheckAndCorrectEntityChunkCollision(Entity* entity)
+{
+	ASSERT_OR_DIE(entity != nullptr && !entity->IsMarkedForDelete(), "Bad entity checked for collision");
+
+	// Iteration for loop
+	for (int iterationCount = 0; iterationCount < WORLD_MAX_CORRECTIVE_ITERATIONS; ++iterationCount)
+	{
+		// Get all the blocks that this entity occupies
+		AABB3 entityWorldBounds = entity->GetWorldPhysicsBounds();
+		std::vector<BlockLocator> occupiedBlocks;
+		GetAllBlocksThatBoundsOccupies(entityWorldBounds, occupiedBlocks);
+
+		// For each block, get their valid suggestion
+		int numBlocks = (int)occupiedBlocks.size();
+		bool foundSomeSuggestion = false;
+		float minCorrectionMagnitudeSquared = 10000.f;
+		Vector3 minValidCorrection = Vector3::ZERO;
+
+		for (int blockIndex = 0; blockIndex < numBlocks; ++blockIndex)
+		{
+			Vector3 currValidCorrectionSuggestion;
+			bool currGaveSuggestion = GetValidCorrectiveSuggestion(entityWorldBounds, occupiedBlocks[blockIndex], currValidCorrectionSuggestion);
+
+			foundSomeSuggestion = foundSomeSuggestion || currGaveSuggestion;
+
+			if (currGaveSuggestion)
+			{
+				float currLengthSquared = currValidCorrectionSuggestion.GetLengthSquared();
+
+				if (currLengthSquared < minCorrectionMagnitudeSquared)
+				{
+					minValidCorrection = currValidCorrectionSuggestion;
+					minCorrectionMagnitudeSquared = currLengthSquared;
+				}
+			}
+		}
+
+		// If no suggestion, we're done
+		if (!foundSomeSuggestion)
+		{
+			return;
+		}
+
+		// Ignore corrections that are too large
+		if (minCorrectionMagnitudeSquared > WORLD_MAX_SINGLE_CORRECTION_MAGNITUDE * WORLD_MAX_SINGLE_CORRECTION_MAGNITUDE)
+		{
+			ConsoleErrorf("Couldn't correct entity, magnitude was %.2f", Sqrt(minCorrectionMagnitudeSquared));
+			return;
+		}
+
+		// Apply it and repeat to ensure there isn't another collision
+		ApplyCollisionCorrectionToEntity(entity, minValidCorrection);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Used for corrective collision, returns all blocks that the given entity occupies to determine
+// how to correct
+//
+void World::GetAllBlocksThatBoundsOccupies(const AABB3& entityWorldBounds, std::vector<BlockLocator>& out_occupiedBlocks)
+{
+	IntVector3 minCoords = FloorPositionToIntegerCoords(entityWorldBounds.mins);
+	IntVector3 maxCoords = FloorPositionToIntegerCoords(entityWorldBounds.maxs);
+
+	for (int z = minCoords.z; z <= maxCoords.z; ++z)
+	{
+		for (int y = minCoords.y; y <= maxCoords.y; ++y)
+		{
+			for (int x = minCoords.x; x <= maxCoords.x; ++x)
+			{
+				IntVector3 flooredPosition = IntVector3(x, y, z);
+				out_occupiedBlocks.push_back(GetBlockLocatorForFlooredPosition(flooredPosition));
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the best valid suggestion that this block suggests to move the entity
+// Returns false if no valid suggestion or no correction needed
+//
+bool World::GetValidCorrectiveSuggestion(const AABB3& entityBounds, BlockLocator& blockLocator, Vector3& out_suggestion)
+{
+	// Check if this block is solid, since we already know we intersect it
+	if (!blockLocator.IsValid() || !blockLocator.GetBlock().IsSolid())
+	{
+		return false;
+	}
+
+	// Get all suggestions
+	AABB3 blockBounds = blockLocator.GetBlockWorldBounds();
+
+	float eastSuggestionMagnitude	= 9999999.f;
+	float westSuggestionMagnitude	= 9999999.f;
+	float northSuggestionMagnitude	= 9999999.f;
+	float southSuggestionMagnitude	= 9999999.f;
+	float upSuggestionMagnitude		= 9999999.f;
+	float downSuggestionMagnitude	= 9999999.f;
+
+	BlockLocator eastBlock	= blockLocator.ToEast();
+	BlockLocator westBlock	= blockLocator.ToWest();
+	BlockLocator northBlock = blockLocator.ToNorth();
+	BlockLocator southBlock = blockLocator.ToSouth();
+	BlockLocator upBlock	= blockLocator.ToAbove();
+	BlockLocator downBlock	= blockLocator.ToBelow();
+
+	bool eastValid	= eastBlock.IsValid() && !eastBlock.GetBlock().IsSolid();
+	bool westValid	= westBlock.IsValid() && !westBlock.GetBlock().IsSolid();
+	bool northValid = northBlock.IsValid() && !northBlock.GetBlock().IsSolid();
+	bool southValid = southBlock.IsValid() && !southBlock.GetBlock().IsSolid();
+	bool upValid	= upBlock.IsValid() && !upBlock.GetBlock().IsSolid();
+	bool downValid	= downBlock.IsValid() && !downBlock.GetBlock().IsSolid();
+
+	// If we're completely trapped on all sides, don't do anything
+	bool noValidMoves = !(eastValid || westValid || northValid || southValid || upValid || downValid);
+
+	if (noValidMoves)
+	{
+		ConsoleErrorf("Entity is stuck with no valid moves!");
+		return false;
+	}
+
+	if (eastValid)
+	{
+		eastSuggestionMagnitude = entityBounds.mins.x - blockBounds.maxs.x;
+		if (eastSuggestionMagnitude < 0.f)
+		{
+			eastSuggestionMagnitude = blockBounds.maxs.x - entityBounds.mins.x;
+		}
+	}
+
+	if (westValid)
+	{
+		westSuggestionMagnitude = entityBounds.maxs.x - blockBounds.mins.x;
+		if (westSuggestionMagnitude < 0.f)
+		{
+			westSuggestionMagnitude = blockBounds.mins.x - entityBounds.maxs.x;
+		}
+	}
+
+	if (northValid)
+	{
+		northSuggestionMagnitude = entityBounds.mins.y - blockBounds.maxs.y;
+		if (northSuggestionMagnitude < 0.f)
+		{
+			northSuggestionMagnitude = blockBounds.maxs.y - entityBounds.mins.y;
+		}
+	}
+
+	if (southValid)
+	{
+		southSuggestionMagnitude = entityBounds.maxs.y - blockBounds.mins.y;
+		if (southSuggestionMagnitude < 0.f)
+		{
+			southSuggestionMagnitude = blockBounds.mins.y - entityBounds.maxs.y;
+		}
+	}
+
+	if (upValid)
+	{
+		upSuggestionMagnitude = entityBounds.mins.z - blockBounds.maxs.z;
+		if (upSuggestionMagnitude < 0.f)
+		{
+			upSuggestionMagnitude = blockBounds.maxs.z - entityBounds.mins.z;
+		}
+	}
+
+	if (downValid)
+	{
+		downSuggestionMagnitude = entityBounds.maxs.z - blockBounds.mins.z;
+		if (downSuggestionMagnitude < 0.f)
+		{
+			downSuggestionMagnitude = blockBounds.mins.z - entityBounds.maxs.z;
+		}
+	}
+
+
+	// Take the min
+	float finalMagnitude = Min(eastSuggestionMagnitude, westSuggestionMagnitude, northSuggestionMagnitude, southSuggestionMagnitude, upSuggestionMagnitude, downSuggestionMagnitude);
+
+	if		(finalMagnitude == eastSuggestionMagnitude)		{ out_suggestion = Vector3::X_AXIS * finalMagnitude; }
+	else if (finalMagnitude == westSuggestionMagnitude)		{ out_suggestion = Vector3::MINUS_X_AXIS * finalMagnitude; }
+	else if (finalMagnitude == northSuggestionMagnitude)	{ out_suggestion = Vector3::Y_AXIS * finalMagnitude; }
+	else if (finalMagnitude == southSuggestionMagnitude)	{ out_suggestion = Vector3::MINUS_Y_AXIS * finalMagnitude; }
+	else if (finalMagnitude == upSuggestionMagnitude)		{ out_suggestion = Vector3::Z_AXIS * finalMagnitude; }
+	else													{ out_suggestion = Vector3::MINUS_Z_AXIS * finalMagnitude; }
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Applies the correction to the entity and also zeros out their velocity along that axis
+//
+void World::ApplyCollisionCorrectionToEntity(Entity* entity, const Vector3& correction)
+{
+	entity->AddPositionOffset(correction);
+
+	// Zero out the velocity ???
+	Vector3 correctionDirection = correction.GetNormalized();
+	Vector3 velocityAlongCorrection = DotProduct(entity->GetVelocity(), correctionDirection) * correctionDirection;
+
+	entity->AddVelocity(-1.f * velocityAlongCorrection);
 }
 
 

@@ -257,3 +257,17 @@ Vector3 BlockLocator::GetBlockCenterWorldPosition() const
 
 	return blockCenterPosition;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the world bounds of the block
+//
+AABB3 BlockLocator::GetBlockWorldBounds() const
+{
+	Vector3 chunkOrigin = m_chunk->GetOriginWorldPosition();
+	IntVector3 blockCoords = m_chunk->GetBlockCoordsFromBlockIndex(m_blockIndex);
+	Vector3 blockMins = chunkOrigin + blockCoords.GetAsFloats();
+	Vector3 blockMaxs = blockMins + Vector3::ONES;
+
+	return AABB3(blockMins, blockMaxs);
+}

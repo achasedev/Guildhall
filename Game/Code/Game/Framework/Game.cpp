@@ -156,7 +156,6 @@ void Game::ProcessInput()
 void Game::Update()
 {
 	m_world->Update();
-	m_world->ApplyPhysicsStep();
 }
 
 
