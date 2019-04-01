@@ -74,3 +74,26 @@ void GameCamera::Update()
 	m_frameTranslation = Vector3::ZERO;
 	m_frameRotation = Vector3::ZERO;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+// Attaches the camera to the given entity so it will update and track it
+//
+void GameCamera::AttachToEntity(Entity* entity, eCameraMode mode)
+{
+	ASSERT_OR_DIE(entity != nullptr, "Camera attached to null entity");
+	ASSERT_OR_DIE(mode != CAMERA_MODE_DETACHED, "Attach to entity called with detached mode");
+	
+	m_entityAttachedTo = entity;
+	m_cameraMode = mode;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Detaches the camera from any entity it may be attached to
+//
+void GameCamera::Detach()
+{
+	m_entityAttachedTo = nullptr;
+	m_cameraMode = CAMERA_MODE_DETACHED;
+}

@@ -1317,17 +1317,14 @@ void World::UpdateRaycast()
 		m_raycastForward = camera->GetCameraMatrix().GetIVector().xyz();
 	}
 
-	// Loop it a ton for performance testing
-	for (int i = 0; i < 10000; ++i)
+	// Raycast on the current selected method
+	if (m_useStepAndSampleRaycast)
 	{
-		if (m_useStepAndSampleRaycast)
-		{
-			m_lastRaycastResult = RaycastWithStepAndSample(m_raycastReferencePosition, m_raycastForward, DEFAULT_RAYCAST_DISTANCE);
-		}
-		else
-		{
-			m_lastRaycastResult = RaycastWithIntercepts(m_raycastReferencePosition, m_raycastForward, DEFAULT_RAYCAST_DISTANCE);
-		}
+		m_lastRaycastResult = RaycastWithStepAndSample(m_raycastReferencePosition, m_raycastForward, DEFAULT_RAYCAST_DISTANCE);
+	}
+	else
+	{
+		m_lastRaycastResult = RaycastWithIntercepts(m_raycastReferencePosition, m_raycastForward, DEFAULT_RAYCAST_DISTANCE);
 	}
 }
 
