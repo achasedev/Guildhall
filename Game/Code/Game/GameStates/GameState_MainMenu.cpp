@@ -32,8 +32,8 @@ GameState_MainMenu::GameState_MainMenu()
 {
 	MoveToSubMenu(SUB_MENU_MAIN);
 
-	m_emitters[0] = new VoxelEmitter(100.f, 2.0f, Vector3(28.f, 24.f, 254.f), Vector3(0.f, 100.f, 0.f), 20.f);
-	m_emitters[1] = new VoxelEmitter(100.f, 2.0f, Vector3(225.f, 24.f, 254.f), Vector3(0.f, 100.f, 0.f), 20.f);
+	m_emitters[0] = new VoxelEmitter(100.f, 2.0f, Vector3(20.f, 24.f, 254.f), Vector3(0.f, 100.f, 0.f), 20.f);
+	m_emitters[1] = new VoxelEmitter(100.f, 2.0f, Vector3(230.f, 24.f, 254.f), Vector3(0.f, 100.f, 0.f), 20.f);
 }
 
 
@@ -123,7 +123,8 @@ void GameState_MainMenu::Render() const
 	options.colorFunctionArgs = &colorArgs;
 	options.offsetFunction = GetOffsetForFontWaveEffect;
 
-	Game::GetVoxelGrid()->DrawVoxelText("VOXEL HEROES", IntVector3(128, 24, 255), options);
+	Game::GetVoxelGrid()->DrawVoxelText("UNDEAD VOXEL", IntVector3(128, 36, 255), options);
+	Game::GetVoxelGrid()->DrawVoxelText("ARCADE", IntVector3(128, 16, 255), options);
 }
 
 

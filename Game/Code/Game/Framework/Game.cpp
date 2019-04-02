@@ -410,23 +410,25 @@ void Game::Update()
 //
 void Game::Render() const
 {
-	PROFILE_LOG_SCOPE("First-Stage Render (Look at self time)");
-
-	m_voxelGrid->Clear();
-
-	switch (m_gameStateState)
 	{
-	case GAME_STATE_TRANSITIONING_IN:
-		m_currentState->Render_Enter();
-		break;
-	case GAME_STATE_UPDATING:
-		m_currentState->Render();
-		break;
-	case GAME_STATE_TRANSITIONING_OUT:
-		m_currentState->Render_Leave();
-		break;
-	default:
-		break;
+		PROFILE_LOG_SCOPE("Draw to Grid");
+
+		m_voxelGrid->Clear();
+
+		switch (m_gameStateState)
+		{
+		case GAME_STATE_TRANSITIONING_IN:
+			m_currentState->Render_Enter();
+			break;
+		case GAME_STATE_UPDATING:
+			m_currentState->Render();
+			break;
+		case GAME_STATE_TRANSITIONING_OUT:
+			m_currentState->Render_Leave();
+			break;
+		default:
+			break;
+		}
 	}
 
 	m_voxelGrid->BuildMeshAndDraw();

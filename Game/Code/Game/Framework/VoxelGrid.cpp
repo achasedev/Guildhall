@@ -779,13 +779,20 @@ void VoxelGrid::RebuildMesh()
 	// Update the GPU-side buffers
 	UpdateBuffers();
 
-	// Execute the build step
-	m_computeShader->Execute(m_dimensions.x / 8, m_dimensions.y / 8, m_dimensions.z / 8);
+	unsigned int* offset;
+	unsigned int faceOffset;
 
-	// Get the vertex and index count from the buffer
-	unsigned int* offset = (unsigned int*) m_countBuffer.MapBufferData();
-	unsigned int faceOffset = offset[0];
-	m_countBuffer.UnmapBufferData();
+	{
+		PROFILE_LOG_SCOPE("Compute and MapBufferData");
+
+		// Execute the build step
+		m_computeShader->Execute(m_dimensions.x / 8, m_dimensions.y / 8, m_dimensions.z / 8);
+
+		// Get the vertex and index count from the buffer
+		offset = (unsigned int*)m_countBuffer.MapBufferData();
+		faceOffset = offset[0];
+		m_countBuffer.UnmapBufferData();
+	}
 
 	// Get the counts
 	unsigned int vertexCount = faceOffset * 4;
@@ -802,7 +809,7 @@ void VoxelGrid::RebuildMesh()
 //
 void VoxelGrid::DrawGrid()
 {
-	PROFILE_LOG_SCOPE("Second-Stage Render");
+	PROFILE_LOG_SCOPE("Render Grid to Screen");
 
 	// Draw
 	Renderer* renderer = Renderer::GetInstance();

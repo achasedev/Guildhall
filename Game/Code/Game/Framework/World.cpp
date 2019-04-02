@@ -200,14 +200,14 @@ void World::Update()
 	}
 
 	{
-		PROFILE_LOG_SCOPE("Simulation");
+		PROFILE_LOG_SCOPE("Update Simulation");
 		// "Thinking" and other general updating (animation)
 		UpdateEntities();
 		UpdateParticles();
 	}
 
 	{
-		PROFILE_LOG_SCOPE("Physics");
+		PROFILE_LOG_SCOPE("Physics Step: ALL");
 		// Moving the entities (Forward Euler)
 		ApplyPhysicsStep();
 	}
@@ -244,17 +244,27 @@ void World::DrawToGridWithOffset(const IntVector3& offset)
 	// Color in the ground, if there is one
 	if (m_map != nullptr)
 	{
+		PROFILE_LOG_SCOPE("DRAW: Terrain");
 		grid->DrawMap(m_map, offset);
 	}
 
-	// Color in static geometry
-	DrawStaticEntitiesToGrid(offset);
+	{
+		// Color in static geometry
+		PROFILE_LOG_SCOPE("DRAW: Static Entities");
+		DrawStaticEntitiesToGrid(offset);
+	}
 
-	// Color in each entity (shouldn't overlap, this is after physics step)
-	DrawDynamicEntitiesToGrid(offset);
+	{
+		// Color in each entity (shouldn't overlap, this is after physics step)
+		PROFILE_LOG_SCOPE("DRAW: Dynamic Entities");
+		DrawDynamicEntitiesToGrid(offset);
+	}
 
-	// Color in the particles
-	DrawParticlesToGrid(offset);
+	{
+		// Color in the particles
+		PROFILE_LOG_SCOPE("DRAW: Particles");
+		DrawParticlesToGrid(offset);
+	}
 }
 
 
@@ -812,26 +822,34 @@ void World::UpdateParticles()
 //
 void World::ApplyPhysicsStep()
 {
-	int numDynamics = (int)m_entities.size();
-
-	for (int i = 0; i < numDynamics; ++i)
 	{
-		Entity* currDynamic = m_entities[i];
+		PROFILE_LOG_SCOPE("Physics Step: Dynamic Entities");
 
-		if (currDynamic->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC && !currDynamic->IsMarkedForDelete() && currDynamic->IsPhysicsEnabled())
+		int numDynamics = (int)m_entities.size();
+
+		for (int i = 0; i < numDynamics; ++i)
 		{
-			m_entities[i]->GetPhysicsComponent()->ApplyPhysicsStep();
+			Entity* currDynamic = m_entities[i];
+
+			if (currDynamic->GetPhysicsType() == PHYSICS_TYPE_DYNAMIC && !currDynamic->IsMarkedForDelete() && currDynamic->IsPhysicsEnabled())
+			{
+				m_entities[i]->GetPhysicsComponent()->ApplyPhysicsStep();
+			}
 		}
 	}
 
-	// Apply it to particles too
-	int numParticles = (int)m_particles.size();
-
-	for (int i = 0; i < numParticles; ++i)
 	{
-		if (!m_particles[i]->IsMarkedForDelete() && m_particles[i]->IsPhysicsEnabled())
+		PROFILE_LOG_SCOPE("Physics Step: Particles");
+
+		// Apply it to particles too
+		int numParticles = (int)m_particles.size();
+
+		for (int i = 0; i < numParticles; ++i)
 		{
-			m_particles[i]->GetPhysicsComponent()->ApplyPhysicsStep();
+			if (!m_particles[i]->IsMarkedForDelete() && m_particles[i]->IsPhysicsEnabled())
+			{
+				m_particles[i]->GetPhysicsComponent()->ApplyPhysicsStep();
+			}
 		}
 	}
 }
@@ -1028,6 +1046,8 @@ void World::DestroyPartOfMap(const IntVector3& hitCoordinate, float radius /*= 0
 //
 void World::CheckStaticEntityCollisions()
 {
+	PROFILE_LOG_SCOPE_FUNCTION();
+
 	for (int dynamicIndex = 0; dynamicIndex < (int)m_entities.size(); ++dynamicIndex)
 	{
 		Entity* dynamicEntity = m_entities[dynamicIndex];
@@ -1063,6 +1083,8 @@ void World::CheckStaticEntityCollisions()
 //
 void World::CheckMapCollisions()
 {
+	PROFILE_LOG_SCOPE_FUNCTION();
+
 	CheckGroundCollisions();
 	CheckEdgeCollisions();
 }
@@ -1177,6 +1199,8 @@ void World::CheckEdgeCollisions()
 //
 void World::CheckDynamicEntityCollisions()
 {
+	PROFILE_LOG_SCOPE_FUNCTION();
+
 	bool collisionDetectedOverall = true;
 	for (int iteration = 0; iteration < (int)DYNAMIC_COLLISION_MAX_ITERATION_COUNT; ++iteration)
 	{
