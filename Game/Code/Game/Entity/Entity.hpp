@@ -27,13 +27,17 @@ public:
 	// Mutators
 	inline void		AddForce(const Vector3& force);
 	inline void		AddImpulse(const Vector3& impulse);
+	inline void		AddAcceleration(const Vector3& acceleration);
 	inline void		AddVelocity(const Vector3& velocity);
 	inline void		AddPositionOffset(const Vector3& offsetTranslation);
+	inline void		SetIsOnGround(bool isOnGround);
 
 	// Accessors
 	AABB3			GetWorldPhysicsBounds() const;
 	inline bool		IsMarkedForDelete() const;
 	inline Vector3	GetVelocity() const;
+	inline Vector3	GetAcceleration() const;
+	inline bool		IsOnGround() const;
 
 
 private:
@@ -46,7 +50,9 @@ private:
 	static const Vector3 ENTITY_DEFAULT_LOCAL_PHYSICS_BACK_LEFT_BOTTOM;
 	static const Vector3 ENTITY_DEFAULT_LOCAL_PHYSICS_FRONT_RIGHT_TOP;
 
-	static constexpr float GRAVITY_ACCELERATION = 9.8f;
+	static constexpr float ENTITY_GRAVITY_ACCELERATION = 9.8f;
+	static constexpr float ENTITY_GROUND_FRICTION_DECELERATION = 20.0f;
+	static constexpr float ENTITY_AIR_DRAG_DECELERATION = 1.f;
 
 
 private:
@@ -61,7 +67,8 @@ private:
 	AABB3			m_localPhysicsBounds = AABB3(ENTITY_DEFAULT_LOCAL_PHYSICS_BACK_LEFT_BOTTOM, ENTITY_DEFAULT_LOCAL_PHYSICS_FRONT_RIGHT_TOP);
 	ePhysicsMode	m_physicsMode = PHYSICS_MODE_WALKING;
 
-	float m_mass			= 1.0f;
+	bool	m_isOnGround	= false;
+	float	m_mass			= 1.0f;
 	Vector3 m_velocity		= Vector3::ZERO; 
 	Vector3 m_acceleration	= Vector3::ZERO;
 	Vector3 m_force			= Vector3::ZERO;
@@ -85,6 +92,15 @@ inline void Entity::AddForce(const Vector3& force)
 inline void Entity::AddImpulse(const Vector3& impulse)
 {
 	m_impulse += impulse;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the given acceleration to the net acceleration to be applied during the physics step
+//
+inline void	Entity::AddAcceleration(const Vector3& acceleration)
+{
+	m_acceleration += acceleration;
 }
 
 
@@ -121,4 +137,31 @@ inline bool Entity::IsMarkedForDelete() const
 Vector3 Entity::GetVelocity() const
 {
 	return m_velocity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the acceleration of the entity
+//
+inline Vector3 Entity::GetAcceleration() const
+{
+	return m_acceleration;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether this entity is flagged as standing on the ground
+//
+inline bool	Entity::IsOnGround() const
+{
+	return m_isOnGround;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the flag indicating whether this entity is resting on the ground this frame
+//
+inline void	Entity::SetIsOnGround(bool isOnGround)
+{
+	m_isOnGround = isOnGround;
 }

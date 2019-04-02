@@ -143,9 +143,11 @@ void World::ProcessInput()
 	}
 
 	// For testing physics
-	if (input->WasKeyJustPressed('I'))
+	if (input->WasKeyJustPressed('I') && m_entities[0]->IsOnGround())
 	{
-		m_entities[0]->AddImpulse(Vector3(0.f, 0.f, 10.f));
+		float x = GetRandomFloatInRange(0.f, 5.f);
+		float y = GetRandomFloatInRange(0.f, 5.f);
+		m_entities[0]->AddVelocity(Vector3(x, y, 9.8f));
 	}
 }
 
@@ -1642,12 +1644,21 @@ bool World::GetValidCorrectiveSuggestion(const AABB3& entityBounds, BlockLocator
 void World::ApplyCollisionCorrectionToEntity(Entity* entity, const Vector3& correction)
 {
 	entity->AddPositionOffset(correction);
-
-	// Zero out the velocity ???
 	Vector3 correctionDirection = correction.GetNormalized();
-	Vector3 velocityAlongCorrection = DotProduct(entity->GetVelocity(), correctionDirection) * correctionDirection;
 
+	// Zero out the velocity
+	Vector3 velocityAlongCorrection = DotProduct(entity->GetVelocity(), correctionDirection) * correctionDirection;
 	entity->AddVelocity(-1.f * velocityAlongCorrection);
+
+	// Zero out the acceleration
+	Vector3 accelerationAlongCorrection = DotProduct(entity->GetAcceleration(), correctionDirection) * correctionDirection;
+	entity->AddAcceleration(-1.f * accelerationAlongCorrection);
+
+	// Perform Ground Check
+	if (DotProduct(correctionDirection, Vector3::Z_AXIS) > 0.95f)
+	{
+		entity->SetIsOnGround(true);
+	}
 }
 
 

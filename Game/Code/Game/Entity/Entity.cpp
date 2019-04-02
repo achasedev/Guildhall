@@ -6,6 +6,7 @@
 /************************************************************************/
 #include "Game/Entity/Entity.hpp"
 #include "Game/Framework/Game.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 
 // Static constants
@@ -40,17 +41,33 @@ void Entity::ApplyPhysicsStep()
 	m_acceleration += accelerationFromImpulse;
 	m_impulse = Vector3::ZERO;
 
-	// Apply Gravity
-	if (m_physicsMode == PHYSICS_MODE_WALKING)
-	{
-		m_acceleration += (Vector3::MINUS_Z_AXIS * GRAVITY_ACCELERATION) * deltaSeconds;
-	}
-
 	// Apply Acceleration
 	m_velocity += m_acceleration * deltaSeconds;
 
+	// Apply Friction/Air Drag
+	float decelerationMagnitudePerSecond = ENTITY_GROUND_FRICTION_DECELERATION;
+	if (!m_isOnGround)
+	{
+		decelerationMagnitudePerSecond = ENTITY_AIR_DRAG_DECELERATION;
+	}
+
+	Vector3 decelerationDirection = -1.f * m_velocity;
+	float currentSpeed = decelerationDirection.NormalizeAndGetLength();
+
+	float decelerationMagnitudeThisFrame = ClampFloat(decelerationMagnitudePerSecond * deltaSeconds, 0.f, currentSpeed);
+	m_velocity += decelerationDirection * decelerationMagnitudeThisFrame;
+
+	// Apply Gravity
+	if (m_physicsMode == PHYSICS_MODE_WALKING)
+	{
+		m_velocity += (Vector3::MINUS_Z_AXIS * ENTITY_GRAVITY_ACCELERATION) * deltaSeconds;
+	}
+
 	// Apply Velocity
 	m_position += m_velocity * deltaSeconds;
+
+	// Reset Flags
+	m_isOnGround = false;
 }
 
 
