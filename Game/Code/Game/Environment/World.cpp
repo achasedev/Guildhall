@@ -40,9 +40,6 @@ const Vector3 World::WORLD_INDOOR_LIGHT_COLOR = Vector3(1.0f, 1.0f, 0.f); // Yel
 //
 World::World()
 {
-	Entity* testEntity = new Entity();
-
-	m_entities.push_back(testEntity);
 }
 
 
@@ -140,14 +137,6 @@ void World::ProcessInput()
 	if (input->WasKeyJustPressed('Y'))
 	{
 		m_useStepAndSampleRaycast = !m_useStepAndSampleRaycast;
-	}
-
-	// For testing physics
-	if (input->WasKeyJustPressed('I') && m_entities[0]->IsOnGround())
-	{
-		float x = GetRandomFloatInRange(0.f, 5.f);
-		float y = GetRandomFloatInRange(0.f, 5.f);
-		m_entities[0]->AddVelocity(Vector3(x, y, 9.8f));
 	}
 }
 
@@ -718,6 +707,16 @@ RaycastResult_t World::RaycastWithIntercepts(const Vector3& start, const Vector3
 	noHitResult.m_impactNormal = -1.0f * directionNormal;
 
 	return noHitResult;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Adds the entity to the world's list of entities
+//
+void World::AddEntity(Entity* entityToAdd)
+{
+	ASSERT_OR_DIE(entityToAdd != nullptr, "Null entity added to world");
+	m_entities.push_back(entityToAdd);
 }
 
 

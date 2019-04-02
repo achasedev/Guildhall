@@ -35,6 +35,7 @@ public:
 	// Accessors
 	AABB3			GetWorldPhysicsBounds() const;
 	inline bool		IsMarkedForDelete() const;
+	inline Vector3	GetPosition() const;
 	inline Vector3	GetVelocity() const;
 	inline Vector3	GetAcceleration() const;
 	inline bool		IsOnGround() const;
@@ -130,6 +131,14 @@ inline bool Entity::IsMarkedForDelete() const
 	return m_isMarkedForDelete;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Returns the world position of the entity
+//
+inline Vector3 Entity::GetPosition() const
+{
+	return m_position;
+}
 
 //-----------------------------------------------------------------------------------------------
 // Returns the velocity of the entity

@@ -17,6 +17,7 @@ class Clock;
 class World;
 class GameCamera;
 class Blackboard;
+class Player;
 
 class Game
 {
@@ -58,6 +59,8 @@ private:
 	World*		m_world = nullptr;
 	GameCamera*	m_gameCamera = nullptr;
 	Clock*		m_gameClock = nullptr;
+
+	Player*		m_player = nullptr;
 
 	static Game* s_instance;			// The singleton Game instance
 

@@ -4,6 +4,7 @@
 /* Date: March 24th, 2018
 /* Description: Game class for general gameplay management
 /************************************************************************/
+#include "Game/Entity/Player.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Environment/World.hpp"
 #include "Game/Framework/GameCommon.hpp"
@@ -42,9 +43,13 @@ Game::Game()
 
 	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 
+	// Player
+	m_player = new Player();
+
 	// World
 	m_world = new World();
-	
+	m_world->AddEntity(m_player);
+
 	// Create the block types and load the texture
 	BlockType::InitializeBuiltInBlockTypes();
 
@@ -98,6 +103,9 @@ Game::~Game()
 	delete m_world;
 	m_world = nullptr;
 
+	delete m_player;
+	m_player = nullptr;
+
 	delete m_gameCamera;
 	m_gameCamera = nullptr;
 }
@@ -145,7 +153,13 @@ void Game::ShutDown()
 void Game::ProcessInput()
 {
 	m_gameCamera->ProcessInput();
-	m_world->ProcessInput();
+
+	if (m_gameCamera->IsAttachedToEntity(m_player))
+	{
+		m_player->ProcessInput();
+	}
+
+	m_world->ProcessInput(); // Only debug commands
 }
 
 

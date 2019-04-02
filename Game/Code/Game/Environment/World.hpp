@@ -56,6 +56,8 @@ public:
 	RaycastResult_t RaycastWithStepAndSample(const Vector3& start, const Vector3& directionNormal, float maxDistance) const;
 	RaycastResult_t RaycastWithIntercepts(const Vector3& start, const Vector3& directionNormal, float maxDistance) const;
 
+	void			AddEntity(Entity* entityToAdd);
+
 
 private:
 	//-----Private Methods-----

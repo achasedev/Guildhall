@@ -29,6 +29,20 @@ public:
 	void AttachToEntity(Entity* entity, eCameraMode mode);
 	void Detach();
 
+	inline bool IsAttachedToEntity(Entity* entity);
+
+
+private:
+	//-----Private Methods-----
+
+	void ProcessInputThirdPerson();
+	void ProcessInputDetached();
+
+	void UpdateFirstPerson();
+	void UpdateThirdPerson();
+	void UpdateFixedAngle();
+	void UpdateDetached();
+
 
 private:
 	//-----Private Data-----
@@ -38,5 +52,8 @@ private:
 
 	eCameraMode m_cameraMode = CAMERA_MODE_DETACHED;
 	Entity* m_entityAttachedTo = nullptr;
+
+	// Statics
+	static const Vector3 CAMERA_FIXED_ANGLE_OFFSET;
 
 };
