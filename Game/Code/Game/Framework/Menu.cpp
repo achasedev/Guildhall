@@ -88,8 +88,9 @@ void Menu::ProcessInput()
 	bool keyPressedDown = input->WasKeyJustPressed(InputSystem::KEYBOARD_DOWN_ARROW);
 	bool contPressedDown = cont.WasStickJustPressed(XBOX_STICK_LEFT) && cont.GetCorrectedStickPosition(XBOX_STICK_LEFT).y < 0.f;
 	contPressedDown = contPressedDown || cont.WasButtonJustPressed(XBOX_BUTTON_DPAD_DOWN);
+	bool downPressed = keyPressedDown || contPressedDown;
 
-	if (keyPressedDown || contPressedDown)
+	if (downPressed)
 	{
 		// Check if we have an override for down first
 		if (m_downOption.callback != nullptr)
@@ -122,14 +123,18 @@ void Menu::ProcessInput()
 				Game::GetGameAudioSystem()->PlaySystemSound("Menu_cursor");
 			}
 		}
+
+		// Don't process any other input!
+		return;
 	}
 
 	// Up input
 	bool keyPressedUp = input->WasKeyJustPressed(InputSystem::KEYBOARD_UP_ARROW);
 	bool contPressedUp = cont.WasStickJustPressed(XBOX_STICK_LEFT) && cont.GetCorrectedStickPosition(XBOX_STICK_LEFT).y > 0.f;
 	contPressedUp = contPressedUp || cont.WasButtonJustPressed(XBOX_BUTTON_DPAD_UP);
+	bool upPressed = keyPressedUp || contPressedUp;
 
-	if (keyPressedUp || contPressedUp)
+	if (upPressed)
 	{
 		// Check for override
 		if (m_upOption.callback != nullptr)
@@ -162,26 +167,37 @@ void Menu::ProcessInput()
 				Game::GetGameAudioSystem()->PlaySystemSound("Menu_cursor");
 			}
 		}
+
+		// Don't process any other input!
+		return;
 	}
 
 	// Moving left
 	bool keyPressedLeft = input->WasKeyJustPressed(InputSystem::KEYBOARD_LEFT_ARROW);
 	bool contPressedLeft = cont.WasStickJustPressed(XBOX_STICK_LEFT) && cont.GetCorrectedStickPosition(XBOX_STICK_LEFT).x < 0.f;
 	contPressedLeft = contPressedLeft || cont.WasButtonJustPressed(XBOX_BUTTON_DPAD_LEFT);
+	bool leftPressed = keyPressedLeft || contPressedLeft;
 
-	if ((keyPressedLeft || contPressedLeft) && m_leftOption.callback != nullptr)
+	if (leftPressed && m_leftOption.callback != nullptr)
 	{
 		m_leftOption.callback(m_mainMenu, m_leftOption.args);
+
+		// Don't process any other input!
+		return;
 	}
 
 	// Moving right
 	bool keyPressedRight = input->WasKeyJustPressed(InputSystem::KEYBOARD_RIGHT_ARROW);
 	bool contPressedRight = cont.WasStickJustPressed(XBOX_STICK_LEFT) && cont.GetCorrectedStickPosition(XBOX_STICK_LEFT).x > 0.f;
 	contPressedRight = contPressedRight || cont.WasButtonJustPressed(XBOX_BUTTON_DPAD_RIGHT);
+	bool rightPressed = keyPressedRight || contPressedRight;
 
-	if ((keyPressedRight || contPressedRight) && m_rightOption.callback != nullptr)
+	if (rightPressed && m_rightOption.callback != nullptr)
 	{
 		m_rightOption.callback(m_mainMenu, m_rightOption.args);
+
+		// Don't process any other input!
+		return;
 	}
 
 	// Selection
