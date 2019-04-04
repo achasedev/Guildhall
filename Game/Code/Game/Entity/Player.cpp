@@ -37,7 +37,16 @@ void Player::ProcessInput()
 		inputDirection.y -= 1.0f;
 	}
 
+	if (inputDirection != Vector2::ZERO)
+	{
+		Vector3 moveDirection = Vector3(inputDirection.x, inputDirection.y, 0.f);
+		MoveSelf(moveDirection);
+	}
 
+	if (input->WasKeyJustPressed(' '))
+	{
+		Jump();
+	}
 }
 
 
@@ -49,6 +58,10 @@ void Player::Update()
 	Entity::Update();
 }
 
+#include "Engine/Core/Window.hpp"
+#include "Game/Framework/GameCamera.hpp"
+#include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
+#include "Engine/Core/Utility/StringUtils.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Render
@@ -56,4 +69,14 @@ void Player::Update()
 void Player::Render() const
 {
 	Entity::Render();
+
+	// Debug draws for camera
+	Window* window = Window::GetInstance();
+	AABB2 windowBounds = window->GetWindowBounds();
+
+	std::string text = Stringf("Position: (%.2f, %.2f, %.2f)\nVelocity: (%.2f, %.2f, %.2f)\nAcceleration: (%.2f, %.2f, %.2f)\nForce: (%.2f, %.2f, %.2f)\nImpulse: (%.2f, %.2f, %.2f)\nOnGround: %s",
+		m_position.x, m_position.y, m_position.z, m_velocity.x, m_velocity.y, m_velocity.z, m_acceleration.x, m_acceleration.y, m_acceleration.z, 
+		m_force.x, m_force.y, m_force.z, m_impulse.x, m_impulse.y, m_impulse.z, (m_isOnGround ? "true" : "false"));
+	
+	DebugRenderSystem::Draw2DText(text, windowBounds, 0.f, Rgba::DARK_GREEN, 20.f, Vector2(1.0f, 1.0f));
 }

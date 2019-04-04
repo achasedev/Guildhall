@@ -57,3 +57,12 @@ private:
 	static const Vector3 CAMERA_FIXED_ANGLE_OFFSET;
 
 };
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether this camera is attached to the given entity, in any mode
+//
+inline bool GameCamera::IsAttachedToEntity(Entity* entity)
+{
+	return (m_entityAttachedTo == entity);
+}

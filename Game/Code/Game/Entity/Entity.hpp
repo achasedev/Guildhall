@@ -32,6 +32,10 @@ public:
 	inline void		AddPositionOffset(const Vector3& offsetTranslation);
 	inline void		SetIsOnGround(bool isOnGround);
 
+	void			MoveSelf(const Vector3& directionToMove);
+	void			Jump();
+	void			ApplyFrictionOrAirDrag();
+
 	// Accessors
 	AABB3			GetWorldPhysicsBounds() const;
 	inline bool		IsMarkedForDelete() const;
@@ -41,7 +45,7 @@ public:
 	inline bool		IsOnGround() const;
 
 
-private:
+protected:
 	//-----Statics-----
 
 	static constexpr float ENTITY_DEFAULT_PHYSICS_LENGTH_X = 0.9f;
@@ -52,12 +56,15 @@ private:
 	static const Vector3 ENTITY_DEFAULT_LOCAL_PHYSICS_FRONT_RIGHT_TOP;
 
 	static constexpr float ENTITY_GRAVITY_ACCELERATION = 9.8f;
-	static constexpr float ENTITY_GROUND_FRICTION_DECELERATION = 20.0f;
+	static constexpr float ENTITY_GROUND_FRICTION_DECELERATION = 8.0f;
 	static constexpr float ENTITY_AIR_DRAG_DECELERATION = 1.f;
+	static constexpr float ENTITY_DEFAULT_MAX_MOVE_SPEED = 4.f;
+	static constexpr float ENTITY_DEFAULT_MOVE_ACCELERATION = 16.f;
+	static constexpr float ENTITY_DEFAULT_JUMP_HEIGHT = 1.5f;
 
 
-private:
-	//-----Private Member Data-----
+protected:
+	//-----Protected Member Data-----
 
 	float			m_ageSeconds = 0.f;
 	bool			m_isMarkedForDelete = false;
@@ -68,13 +75,16 @@ private:
 	AABB3			m_localPhysicsBounds = AABB3(ENTITY_DEFAULT_LOCAL_PHYSICS_BACK_LEFT_BOTTOM, ENTITY_DEFAULT_LOCAL_PHYSICS_FRONT_RIGHT_TOP);
 	ePhysicsMode	m_physicsMode = PHYSICS_MODE_WALKING;
 
-	bool	m_isOnGround	= false;
-	float	m_mass			= 1.0f;
-	Vector3 m_velocity		= Vector3::ZERO; 
-	Vector3 m_acceleration	= Vector3::ZERO;
-	Vector3 m_force			= Vector3::ZERO;
-	Vector3 m_impulse		= Vector3::ZERO;
-	
+	bool	m_isOnGround		= false;
+	float	m_mass				= 1.0f;
+	Vector3 m_velocity			= Vector3::ZERO; 
+	Vector3 m_acceleration		= Vector3::ZERO;
+	Vector3 m_force				= Vector3::ZERO;
+	Vector3 m_impulse			= Vector3::ZERO;
+	float	m_maxMoveSpeed		= ENTITY_DEFAULT_MAX_MOVE_SPEED;
+	float	m_moveAcceleration	= ENTITY_DEFAULT_MOVE_ACCELERATION;
+	float	m_jumpHeight		= ENTITY_DEFAULT_JUMP_HEIGHT;
+
 };
 
 

@@ -162,7 +162,7 @@ void GameCamera::UpdateFixedAngle()
 {
 	Vector3 entityPosition = m_entityAttachedTo->GetPosition();
 	Vector3 cameraPosition = entityPosition + CAMERA_FIXED_ANGLE_OFFSET;
-	LookAt(cameraPosition, entityPosition);
+	LookAt(cameraPosition, entityPosition, Vector3::Z_AXIS);
 }
 
 
