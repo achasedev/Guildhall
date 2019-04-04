@@ -36,9 +36,7 @@ void Entity::ApplyPhysicsStep()
 	ApplyFrictionOrAirDrag();
 
 	// Apply Force
-	ConsolePrintf("Friction Force: (%.4f, %.4f, %.4f)", m_force.x, m_force.y, m_force.z);
 	Vector3 accelerationFromForce = (m_force / m_mass);
-	m_acceleration += accelerationFromForce;
 	m_force = Vector3::ZERO;
 
 	// Apply Impulse
@@ -47,9 +45,7 @@ void Entity::ApplyPhysicsStep()
 	m_impulse = Vector3::ZERO;
 
 	// Apply Acceleration
-	m_velocity += m_acceleration * deltaSeconds;
-	m_acceleration = Vector3::ZERO;
-	
+	m_velocity += accelerationFromForce * deltaSeconds;
 
 	// Apply Gravity
 	if (m_physicsMode == PHYSICS_MODE_WALKING)
@@ -87,29 +83,30 @@ void Entity::Render() const
 // Calculates (and adds to the net force) the force that will accelerate the character in the given
 // direction. Does extra math to prevent the entity from moving faster than its move speed
 //
-void Entity::MoveSelf(const Vector3& directionToMove)
+void Entity::MoveSelfHorizontal(const Vector2& directionToMove)
 {
-	float currentSpeed = m_velocity.GetLength();
+	float currentXYSpeed = m_velocity.xy().GetLength();
 	float deltaSeconds = Game::GetDeltaTime();
 
-	Vector3 finalVelocityIfFullAccelerationApplied = (m_velocity + (m_moveAcceleration * deltaSeconds) * directionToMove);
+	Vector2 finalXYVelocityIfFullAccelerationApplied = (m_velocity.xy() + (m_moveAcceleration * deltaSeconds) * directionToMove);
 
-	Vector3 finalVelocityDirection = finalVelocityIfFullAccelerationApplied;
-	float speedIfFullAccelerationApplied = finalVelocityDirection.NormalizeAndGetLength();
-	float finalSpeed = speedIfFullAccelerationApplied;
+	Vector2 finalXYVelocityDirection = finalXYVelocityIfFullAccelerationApplied;
+	float XYSpeedIfFullAccelerationApplied = finalXYVelocityDirection.NormalizeAndGetLength();
+	float finalXYSpeed = XYSpeedIfFullAccelerationApplied;
 
 	// Clamp to avoid accelerating over the move speed
-	if (currentSpeed > m_maxMoveSpeed)
+	if (currentXYSpeed > m_maxXYMoveSpeed)
 	{
-		finalSpeed = ClampFloat(speedIfFullAccelerationApplied, 0.f, currentSpeed); // Don't go over, will maintain it without friction
+		finalXYSpeed = ClampFloat(XYSpeedIfFullAccelerationApplied, 0.f, currentXYSpeed); // Don't go over, will maintain it without friction
 	}
 	else
 	{
-		finalSpeed = ClampFloat(speedIfFullAccelerationApplied, 0.f, m_maxMoveSpeed); // Approach max speed
+		finalXYSpeed = ClampFloat(XYSpeedIfFullAccelerationApplied, 0.f, m_maxXYMoveSpeed); // Approach max speed
 	}
 
 	// Create the final velocity
-	Vector3 finalVelocity = finalVelocityDirection * finalSpeed;
+	Vector2 finalXYVelocity = finalXYVelocityDirection * finalXYSpeed;
+	Vector3 finalVelocity = Vector3(finalXYVelocity.x, finalXYVelocity.y, m_velocity.z);
 
 	// Determine the change in velocity
 	Vector3 deltaVelocity = finalVelocity - m_velocity;
@@ -134,9 +131,7 @@ void Entity::Jump()
 		return;
 	}
 
-	// y = y0 + vyt -1/2gt2
-
-	// 2.f * (jumpheight + g/8) = vy 
+	// 2.f * (jumpheight + g/8) = v0y 
 	float initialYVelocity = 2.f * (m_jumpHeight + ENTITY_GRAVITY_ACCELERATION * 0.125f);
 
 	float zImpulse = initialYVelocity * m_mass;
@@ -150,7 +145,7 @@ void Entity::Jump()
 void Entity::ApplyFrictionOrAirDrag()
 {
 	// Friction is a force - only apply it if we're moving
-	if (m_velocity.GetLengthSquared() > 0)
+	if (m_velocity.xy().GetLengthSquared() > 0)
 	{
 		// Different values of friction depending on ground or in air
 		float decelerationPerSecond = ENTITY_GROUND_FRICTION_DECELERATION;
@@ -162,10 +157,12 @@ void Entity::ApplyFrictionOrAirDrag()
 		float deltaSeconds = Game::GetDeltaTime();
 		float speedLostThisFrame = decelerationPerSecond * deltaSeconds;
 
-		float speed = m_velocity.GetLength();
+		float speed = m_velocity.xy().GetLength();
 		speedLostThisFrame = ClampFloat(speedLostThisFrame, 0.f, speed);
 		
 		Vector3 decelerationDirection = -1.0f * m_velocity.GetNormalized();
+		decelerationDirection.z = 0.f;
+
 		Vector3 finalDeceleration = decelerationDirection * (speedLostThisFrame / deltaSeconds);
 
 		Vector3 finalForce = finalDeceleration * m_mass;

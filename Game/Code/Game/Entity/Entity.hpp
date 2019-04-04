@@ -27,12 +27,11 @@ public:
 	// Mutators
 	inline void		AddForce(const Vector3& force);
 	inline void		AddImpulse(const Vector3& impulse);
-	inline void		AddAcceleration(const Vector3& acceleration);
 	inline void		AddVelocity(const Vector3& velocity);
 	inline void		AddPositionOffset(const Vector3& offsetTranslation);
 	inline void		SetIsOnGround(bool isOnGround);
 
-	void			MoveSelf(const Vector3& directionToMove);
+	void			MoveSelfHorizontal(const Vector2& directionToMove);
 	void			Jump();
 	void			ApplyFrictionOrAirDrag();
 
@@ -41,7 +40,6 @@ public:
 	inline bool		IsMarkedForDelete() const;
 	inline Vector3	GetPosition() const;
 	inline Vector3	GetVelocity() const;
-	inline Vector3	GetAcceleration() const;
 	inline bool		IsOnGround() const;
 
 
@@ -51,16 +49,17 @@ protected:
 	static constexpr float ENTITY_DEFAULT_PHYSICS_LENGTH_X = 0.9f;
 	static constexpr float ENTITY_DEFAULT_PHYSICS_WIDTH_Y = 0.9f;
 	static constexpr float ENTITY_DEFAULT_PHYSICS_HEIGHT_Z = 1.8f;
+	static constexpr float ENTITY_DEFAULT_EYE_HEIGHT = 1.65f;
 
 	static const Vector3 ENTITY_DEFAULT_LOCAL_PHYSICS_BACK_LEFT_BOTTOM;
 	static const Vector3 ENTITY_DEFAULT_LOCAL_PHYSICS_FRONT_RIGHT_TOP;
 
-	static constexpr float ENTITY_GRAVITY_ACCELERATION = 9.8f;
-	static constexpr float ENTITY_GROUND_FRICTION_DECELERATION = 8.0f;
+	static constexpr float ENTITY_GRAVITY_ACCELERATION = 15.f;
+	static constexpr float ENTITY_GROUND_FRICTION_DECELERATION = 16.0f;
 	static constexpr float ENTITY_AIR_DRAG_DECELERATION = 1.f;
-	static constexpr float ENTITY_DEFAULT_MAX_MOVE_SPEED = 4.f;
-	static constexpr float ENTITY_DEFAULT_MOVE_ACCELERATION = 16.f;
-	static constexpr float ENTITY_DEFAULT_JUMP_HEIGHT = 1.5f;
+	static constexpr float ENTITY_DEFAULT_MAX_XY_MOVE_SPEED = 4.f;
+	static constexpr float ENTITY_DEFAULT_MOVE_ACCELERATION = 40.f;
+	static constexpr float ENTITY_DEFAULT_JUMP_HEIGHT = 1.4f;
 
 
 protected:
@@ -78,10 +77,9 @@ protected:
 	bool	m_isOnGround		= false;
 	float	m_mass				= 1.0f;
 	Vector3 m_velocity			= Vector3::ZERO; 
-	Vector3 m_acceleration		= Vector3::ZERO;
 	Vector3 m_force				= Vector3::ZERO;
 	Vector3 m_impulse			= Vector3::ZERO;
-	float	m_maxMoveSpeed		= ENTITY_DEFAULT_MAX_MOVE_SPEED;
+	float	m_maxXYMoveSpeed	= ENTITY_DEFAULT_MAX_XY_MOVE_SPEED;
 	float	m_moveAcceleration	= ENTITY_DEFAULT_MOVE_ACCELERATION;
 	float	m_jumpHeight		= ENTITY_DEFAULT_JUMP_HEIGHT;
 
@@ -103,15 +101,6 @@ inline void Entity::AddForce(const Vector3& force)
 inline void Entity::AddImpulse(const Vector3& impulse)
 {
 	m_impulse += impulse;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Adds the given acceleration to the net acceleration to be applied during the physics step
-//
-inline void	Entity::AddAcceleration(const Vector3& acceleration)
-{
-	m_acceleration += acceleration;
 }
 
 
@@ -156,15 +145,6 @@ inline Vector3 Entity::GetPosition() const
 Vector3 Entity::GetVelocity() const
 {
 	return m_velocity;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Returns the acceleration of the entity
-//
-inline Vector3 Entity::GetAcceleration() const
-{
-	return m_acceleration;
 }
 
 

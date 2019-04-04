@@ -148,6 +148,8 @@ private:
 	uint8_t							m_rightClickBlockType = 5;
 	uint8_t							m_ctrlRightClickBlockType = 7;
 
+	Vector3							m_lastCorrection;
+
 	// Static constants
 	static constexpr int			SEA_LEVEL = 25;
 	static constexpr int			BASE_ELEVATION = 30;

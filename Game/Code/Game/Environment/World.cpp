@@ -26,6 +26,8 @@
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
+#include "Engine/Core/Window.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Static Members
@@ -259,6 +261,9 @@ void World::Render() const
 		renderer->Draw3DQuad(quadCenterPosition, quadDimensions, AABB2::UNIT_SQUARE_OFFCENTER, right, up, Rgba::WHITE, Vector2(0.5f), AssetDB::GetSharedMaterial("Default_Alpha"));
 		renderer->Draw3DQuad(quadCenterPosition, quadDimensions, AABB2::UNIT_SQUARE_OFFCENTER, right, up, Rgba::WHITE, Vector2(0.5f), xRayMaterial);
 	}
+
+	AABB2 bounds = Window::GetInstance()->GetWindowBounds();
+	DebugRenderSystem::Draw2DText(Stringf("Last Correction: %.4f, %.4f, %.4f)", m_lastCorrection.x, m_lastCorrection.y, m_lastCorrection.z), bounds, 0.f, Rgba::GREEN, 20.f, Vector2(0.f, 1.f));
 }
 
 
@@ -1475,6 +1480,11 @@ void World::CheckAndCorrectEntityChunkCollision(Entity* entity)
 
 				if (currLengthSquared < minCorrectionMagnitudeSquared)
 				{
+					if (currValidCorrectionSuggestion.GetLength() > 0.75f)
+					{
+						int x = 0; 
+						x = x;
+					}
 					minValidCorrection = currValidCorrectionSuggestion;
 					minCorrectionMagnitudeSquared = currLengthSquared;
 				}
@@ -1484,6 +1494,12 @@ void World::CheckAndCorrectEntityChunkCollision(Entity* entity)
 		// If no suggestion, we're done
 		if (!foundSomeSuggestion)
 		{
+			if (InputSystem::GetInstance()->WasKeyJustPressed('P'))
+			{
+				int x = 0;
+				x = x;
+			}
+
 			return;
 		}
 
@@ -1507,7 +1523,7 @@ void World::CheckAndCorrectEntityChunkCollision(Entity* entity)
 void World::GetAllBlocksThatBoundsOccupies(const AABB3& entityWorldBounds, std::vector<BlockLocator>& out_occupiedBlocks)
 {
 	IntVector3 minCoords = FloorPositionToIntegerCoords(entityWorldBounds.mins);
-	IntVector3 maxCoords = FloorPositionToIntegerCoords(entityWorldBounds.maxs);
+	IntVector3 maxCoords = FloorPositionToIntegerCoords(entityWorldBounds.maxs - Vector3(0.0001f));
 
 	for (int z = minCoords.z; z <= maxCoords.z; ++z)
 	{
@@ -1564,7 +1580,6 @@ bool World::GetValidCorrectiveSuggestion(const AABB3& entityBounds, BlockLocator
 
 	if (noValidMoves)
 	{
-		ConsoleErrorf("Entity is stuck with no valid moves!");
 		return false;
 	}
 
@@ -1622,16 +1637,20 @@ bool World::GetValidCorrectiveSuggestion(const AABB3& entityBounds, BlockLocator
 		}
 	}
 
-
 	// Take the min
 	float finalMagnitude = Min(eastSuggestionMagnitude, westSuggestionMagnitude, northSuggestionMagnitude, southSuggestionMagnitude, upSuggestionMagnitude, downSuggestionMagnitude);
 
-	if		(finalMagnitude == eastSuggestionMagnitude)		{ out_suggestion = Vector3::X_AXIS * finalMagnitude; }
-	else if (finalMagnitude == westSuggestionMagnitude)		{ out_suggestion = Vector3::MINUS_X_AXIS * finalMagnitude; }
-	else if (finalMagnitude == northSuggestionMagnitude)	{ out_suggestion = Vector3::Y_AXIS * finalMagnitude; }
-	else if (finalMagnitude == southSuggestionMagnitude)	{ out_suggestion = Vector3::MINUS_Y_AXIS * finalMagnitude; }
-	else if (finalMagnitude == upSuggestionMagnitude)		{ out_suggestion = Vector3::Z_AXIS * finalMagnitude; }
-	else													{ out_suggestion = Vector3::MINUS_Z_AXIS * finalMagnitude; }
+	if (finalMagnitude == 0.f)
+	{
+		return false;
+	}
+
+	if (finalMagnitude == eastSuggestionMagnitude) { out_suggestion = Vector3::X_AXIS * finalMagnitude; }
+	else if (finalMagnitude == westSuggestionMagnitude) { out_suggestion = Vector3::MINUS_X_AXIS * finalMagnitude;}
+	else if (finalMagnitude == northSuggestionMagnitude) { out_suggestion = Vector3::Y_AXIS * finalMagnitude; }
+	else if (finalMagnitude == southSuggestionMagnitude) { out_suggestion = Vector3::MINUS_Y_AXIS * finalMagnitude; }
+	else if (finalMagnitude == upSuggestionMagnitude) { out_suggestion = Vector3::Z_AXIS * finalMagnitude;  }
+	else { out_suggestion = Vector3::MINUS_Z_AXIS * finalMagnitude; }
 
 	return true;
 }
@@ -1642,16 +1661,14 @@ bool World::GetValidCorrectiveSuggestion(const AABB3& entityBounds, BlockLocator
 //
 void World::ApplyCollisionCorrectionToEntity(Entity* entity, const Vector3& correction)
 {
+	m_lastCorrection = correction;
+
 	entity->AddPositionOffset(correction);
 	Vector3 correctionDirection = correction.GetNormalized();
 
 	// Zero out the velocity
 	Vector3 velocityAlongCorrection = DotProduct(entity->GetVelocity(), correctionDirection) * correctionDirection;
 	entity->AddVelocity(-1.f * velocityAlongCorrection);
-
-	// Zero out the acceleration
-	Vector3 accelerationAlongCorrection = DotProduct(entity->GetAcceleration(), correctionDirection) * correctionDirection;
-	entity->AddAcceleration(-1.f * accelerationAlongCorrection);
 
 	// Perform Ground Check
 	if (DotProduct(correctionDirection, Vector3::Z_AXIS) > 0.95f)
