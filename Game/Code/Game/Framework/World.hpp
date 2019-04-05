@@ -81,6 +81,7 @@ public:
 	int					GetCurrentMaxHeightOfmap() const;
 	eTransitionEdge		GetDirectionToEnter() const;
 	float				GetCurrentGravityScale() const;
+	int					GetLiveParticleCount() const;
 
 	// Producers
 	IntVector3	GetCoordsForPosition(const Vector3& position) const;

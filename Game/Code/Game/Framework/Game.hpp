@@ -68,6 +68,8 @@ public:
 	static bool					DoesLeaderboardExist(const std::string& leaderboardName);
 	static CampaignManager*		GetCampaignManager();
 	static GameAudioSystem*		GetGameAudioSystem();
+	static bool					IsDebugEnabled();
+	static void					SetDebugMode(bool newMode);
 
 	static void					ResetScore();
 	static void					AddPointsToScore(int pointsToAdd);
@@ -94,6 +96,7 @@ private:
 	Game(const Game& copy) = delete;
 
 	void UpdateDisplayedScore();
+	void RenderDebugInfo() const;
 
 	void LoadLeaderboardsFromFile();
 	void WriteLeaderboardsToFile();
@@ -103,10 +106,12 @@ private:
 private:
 	//-----Private Data-----
 
-	bool			m_doneLoading = false;
-	GameState*		m_currentState = nullptr;
-	GameState*		m_transitionState = nullptr;
-	eGameStateState m_gameStateState = GAME_STATE_TRANSITIONING_IN;
+	bool				m_doneLoading = false;
+	GameState*			m_currentState = nullptr;
+	GameState*			m_transitionState = nullptr;
+	eGameStateState		m_gameStateState = GAME_STATE_TRANSITIONING_IN;
+
+	bool				m_debugEnabled = false;
 
 	Clock*				m_gameClock = nullptr;
 	World*				m_world = nullptr;

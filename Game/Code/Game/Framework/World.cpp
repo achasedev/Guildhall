@@ -630,6 +630,15 @@ float World::GetCurrentGravityScale() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the number of particles live in the world
+//
+int World::GetLiveParticleCount() const
+{
+	return (int)m_particles.size();
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the coordinate that contains the position (round to nearest int)
 //
 IntVector3 World::GetCoordsForPosition(const Vector3& position) const

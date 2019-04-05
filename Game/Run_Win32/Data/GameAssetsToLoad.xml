@@ -146,6 +146,7 @@
 		<EntityDefinition file="Data/EntityDefinitions/WeaponDefinitions.xml"/>
 		<EntityDefinition file="Data/EntityDefinitions/EnemyDefinitions.xml"/>
 		<EntityDefinition file="Data/EntityDefinitions/StaticDefinitions.xml"/>
+		<EntityDefinition file="Data/EntityDefinitions/ParticleDefinitions.xml"/>
 
 	</EntityDefinitions>
 
@@ -212,6 +213,8 @@
 		<Campaign file="Data/Campaigns/AIZoos/Tank.campaign"/>
 		<Campaign file="Data/Campaigns/AIZoos/UFO.campaign"/>
 		<Campaign file="Data/Campaigns/AIZoos/Walker.campaign"/>
+
+		<Campaign file="Data/Campaigns/Profiling/ManyDynamic.campaign"/>
 	</Campaigns>
 
 	<!-- END CAMPAIGNS -->

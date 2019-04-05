@@ -1,0 +1,9 @@
+<Campaign name="Many_Dynamic" music="Data/Audio/Music/Boss Battle #4 V1.wav" is_debug="true">
+
+	<Stage map="Forest0" enter="west">
+
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Walker" spawn_rate="20" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="200"/>
+
+	</Stage>
+
+</Campaign>

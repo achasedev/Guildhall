@@ -19,6 +19,7 @@
 #include "Game/GameStates/GameState_MainMenu.hpp"
 
 #include "Engine/Core/File.hpp"
+#include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/LogSystem.hpp"
 #include "Engine/Core/Time/Clock.hpp"
@@ -28,7 +29,6 @@
 #include "Engine/Rendering/Core/RenderScene.hpp"
 #include "Engine/Core/DeveloperConsole/Command.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
-
 
 /************************************************************************/
 /* Console Commands                                                     */
@@ -70,6 +70,27 @@ void Command_StartCampaign(Command& cmd)
 
 	StartCampaign(nullptr, campaignName);
 	ConsolePrintf(Rgba::GREEN, "Loaded campaign \"%s\"", campaignName.c_str());
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets whether the game is now in debug mode
+//
+void Command_ToggleDebug(Command& cmd)
+{
+	UNUSED(cmd);
+
+	bool toggledMode = !Game::IsDebugEnabled();
+	Game::SetDebugMode(toggledMode);
+
+	if (toggledMode)
+	{
+		ConsolePrintf(Rgba::GREEN, "Debug enabled");
+	}
+	else
+	{
+		ConsolePrintf(Rgba::GREEN, "Debug disabled");
+	}
 }
 
 
@@ -166,6 +187,39 @@ void Game::UpdateDisplayedScore()
 	{
 		m_displayedScore = ClampFloat(m_displayedScore + deltaScore, m_actualScore, 9999999.f);
 	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Draws debug information in screen space
+//
+void Game::RenderDebugInfo() const
+{
+	Renderer* renderer = Renderer::GetInstance();
+	renderer->SetCurrentCamera(renderer->GetUICamera());
+	AABB2 uibounds = renderer->GetUIBounds();
+
+	renderer->DrawTextInBox2D("Alpha v0.8", uibounds, Vector2::ZERO, 20.f, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), Rgba::GREEN);
+
+	const std::vector<Entity*>& entitiesInWorld = m_world->GetAllEntities();
+
+	int entityCounts[NUM_ENTITY_CLASSES] = {0,0,0,0,0,0,0,0,0};
+
+	int totalEntityCount = (int)entitiesInWorld.size();
+	for (int entityIndex = 0; entityIndex < totalEntityCount; ++entityIndex)
+	{
+		const Entity* currEntity = entitiesInWorld[entityIndex];
+		eEntityClass entityClass = currEntity->GetEntityDefinition()->m_entityClass;
+
+		entityCounts[entityClass]++;
+	}
+
+	int numParticles = m_world->GetLiveParticleCount();
+
+	std::string entityInfo = Stringf("Unassigned: %i\nStatics: %i\nAI: %i\nWeapons: %i\nProjectiles: %i\nItems: %i\nPlayers: %i\nParticles: %i\nCSV: %i\n",
+		entityCounts[0], entityCounts[1], entityCounts[2], entityCounts[3], numParticles, entityCounts[5], entityCounts[6], entityCounts[7], entityCounts[8]);
+
+	renderer->DrawTextInBox2D(entityInfo, uibounds, Vector2(0.f, 1.0f), 20.f, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), Rgba::GREEN);
 }
 
 
@@ -341,6 +395,7 @@ void Game::InitializeConsoleCommands()
 {
 	Command::Register("killall", "Kills all entities", Command_KillAll);
 	Command::Register("lc", "Loads the campaign given by name -n", Command_StartCampaign);
+	Command::Register("debug", "Toggles debug mode of the game", Command_ToggleDebug);
 }
 
 
@@ -472,7 +527,7 @@ void Game::Update()
 	UpdateDisplayedScore();
 }
 
-#include "Engine/Assets/AssetDB.hpp"
+
 //-----------------------------------------------------------------------------------------------
 // Draws to screen
 //
@@ -501,11 +556,10 @@ void Game::Render() const
 
 	m_voxelGrid->BuildMeshAndDraw();
 
-	Renderer* renderer = Renderer::GetInstance();
-	renderer->SetCurrentCamera(renderer->GetUICamera());
-	AABB2 uibounds = renderer->GetUIBounds();
-
-	renderer->DrawTextInBox2D("Alpha v0.8", uibounds, Vector2::ZERO, 20.f, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), Rgba::GREEN);
+	if (m_debugEnabled)
+	{
+		RenderDebugInfo();
+	}
 }
 
 
@@ -701,6 +755,25 @@ CampaignManager* Game::GetCampaignManager()
 GameAudioSystem* Game::GetGameAudioSystem()
 {
 	return s_instance->m_audioSystem;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns whether the game is currently set to be in debug (for some debug printing and features
+// other systems may display)
+//
+bool Game::IsDebugEnabled()
+{
+	return s_instance->m_debugEnabled;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets whether the game is in debug mode based on newMode
+//
+void Game::SetDebugMode(bool newMode)
+{
+	s_instance->m_debugEnabled = newMode;
 }
 
 
