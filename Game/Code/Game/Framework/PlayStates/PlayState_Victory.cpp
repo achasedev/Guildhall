@@ -8,6 +8,8 @@
 #include "Game/Framework/World.hpp"
 #include "Game/Framework/VoxelFont.hpp"
 #include "Game/Framework/GameAudioSystem.hpp"
+#include "Game/Framework/CampaignManager.hpp"
+#include "Game/Framework/CampaignDefinition.hpp"
 #include "Game/GameStates/GameState_MainMenu.hpp"
 #include "Game/Framework/PlayStates/PlayState_Victory.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -72,7 +74,11 @@ bool PlayState_Victory::Enter()
 {
 	if (m_transitionTimer.HasIntervalElapsed())
 	{
-		Game::UpdateLeaderboardWithCurrentScore();
+		if (Game::GetCampaignManager()->GetCurrentCampaignDefinition()->m_hasLeaderboards)
+		{
+			Game::UpdateLeaderboardWithCurrentScore();
+		}
+
 		Game::GetGameAudioSystem()->PlayBGM("Data/Audio/Music/Victory.wav");
 	}
 
@@ -146,10 +152,16 @@ void PlayState_Victory::Render() const
 	// Draw the leaderboard
 	IntVector3 drawPosition = IntVector3(128, 40, 160);
 
-	const Leaderboard& leaderboard = Game::GetLeaderboardForCurrentCampaign();
-	const ScoreBoard& scoreboard = leaderboard.m_scoreboards[Game::GetCurrentPlayerCount() - 1];
+	Leaderboard leaderboardToDisplay;
+	
+	if (Game::GetCampaignManager()->GetCurrentCampaignDefinition()->m_hasLeaderboards)
+	{
+		leaderboardToDisplay = Game::GetLeaderboardForCurrentCampaign();
+	}
 
-	Game::GetVoxelGrid()->DrawVoxelText(leaderboard.m_name, drawPosition, options);
+	const ScoreBoard& scoreboard = leaderboardToDisplay.m_scoreboards[Game::GetCurrentPlayerCount() - 1];
+
+	Game::GetVoxelGrid()->DrawVoxelText(leaderboardToDisplay.m_name, drawPosition, options);
 	drawPosition -= IntVector3(0, 0, 1) * (menuFont->GetGlyphDimensions().y + 5);
 
 	Game::GetVoxelGrid()->DrawVoxelText(scoreboard.m_name, drawPosition, options);

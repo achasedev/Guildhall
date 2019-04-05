@@ -94,9 +94,6 @@
     <ClCompile Include="Framework\PlayStates\PlayState_Victory.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
-    <ClCompile Include="Framework\PlayStates\PlayState_Defeat.cpp">
-      <Filter>Architecture</Filter>
-    </ClCompile>
     <ClCompile Include="Entity\AnimatedEntity.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
@@ -244,7 +241,6 @@
     <ClInclude Include="Framework\PlayStates\PlayState.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Rest.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Victory.hpp" />
-    <ClInclude Include="Framework\PlayStates\PlayState_Defeat.hpp" />
     <ClInclude Include="Entity\AnimatedEntity.hpp" />
     <ClInclude Include="Entity\Item.hpp" />
     <ClInclude Include="Framework\VoxelFont.hpp" />

@@ -15,7 +15,6 @@
 #include "Game/Framework/PlayStates/PlayState_Rest.hpp"
 #include "Game/Framework/PlayStates/PlayState_Victory.hpp"
 #include "Game/Framework/PlayStates/PlayState_Pause.hpp"
-#include "Game/Framework/PlayStates/PlayState_Defeat.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Time/Clock.hpp"
 

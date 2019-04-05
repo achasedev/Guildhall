@@ -36,6 +36,8 @@ public:
 	std::vector<CampaignStage*>	m_stages;
 
 	bool						m_hasCharacterSelect = false;
+	bool						m_hasLeaderboards = true;
+	bool						m_displayedOnMainMenu = true;
 	static std::map<std::string, const CampaignDefinition*>  s_campaignDefinitions;
 
 };

@@ -98,6 +98,15 @@ void CampaignDefinition::LoadCampaign(const std::string filePath)
 		newDef->m_hasCharacterSelect = true;
 	}
 
+	// Debug flags
+	bool isDebug = ParseXmlAttribute(*rootElement, "is_debug", false);
+
+	if (isDebug)
+	{
+		newDef->m_hasLeaderboards = false;
+		newDef->m_displayedOnMainMenu = false;
+	}
+
 	// Continue with the rest if it is specified
 	const XMLElement* stageElement = rootElement->FirstChildElement("Stage");
 	GUARANTEE_OR_DIE(stageElement != nullptr, Stringf("No stage elements specified in map %s", filePath.c_str()));

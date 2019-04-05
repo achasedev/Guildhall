@@ -73,6 +73,7 @@ public:
 	static void					AddPointsToScore(int pointsToAdd);
 	static void					UpdateLeaderboardWithCurrentScore();
 	static int					GetScore();
+	static int					GetLeaderboardCount();
 
 	static void					DrawPlayerHUD();
 	static void					DrawHeading(const std::string& headingText, const IntVector3& drawCoords, const Vector3& alignment);
@@ -98,7 +99,6 @@ private:
 	void WriteLeaderboardsToFile();
 
 	static void InitializeConsoleCommands();
-
 
 private:
 	//-----Private Data-----

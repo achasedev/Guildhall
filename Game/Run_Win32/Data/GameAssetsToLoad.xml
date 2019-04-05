@@ -203,7 +203,15 @@
 		<Campaign file="Data/Campaigns/Desert.campaign"/>
 		<Campaign file="Data/Campaigns/Moon.campaign"/>
 
+		<Campaign file="Data/Campaigns/AIZoos/AllAIZoo.campaign"/>
+		<Campaign file="Data/Campaigns/AIZoos/Bunny.campaign"/>
 		<Campaign file="Data/Campaigns/AIZoos/Hound.campaign"/>
+		<Campaign file="Data/Campaigns/AIZoos/Smasher.campaign"/>
+		<Campaign file="Data/Campaigns/AIZoos/Soldier.campaign"/>
+		<Campaign file="Data/Campaigns/AIZoos/Spider.campaign"/>
+		<Campaign file="Data/Campaigns/AIZoos/Tank.campaign"/>
+		<Campaign file="Data/Campaigns/AIZoos/UFO.campaign"/>
+		<Campaign file="Data/Campaigns/AIZoos/Walker.campaign"/>
 	</Campaigns>
 
 	<!-- END CAMPAIGNS -->

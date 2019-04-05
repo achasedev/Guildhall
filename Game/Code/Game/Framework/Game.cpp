@@ -183,8 +183,14 @@ void Game::LoadLeaderboardsFromFile()
 		// Therefore, this *should* be called only after game assets are loaded!
 		std::map<std::string, const CampaignDefinition*>::const_iterator itr = CampaignDefinition::s_campaignDefinitions.begin();
 
+		int count = 0;
 		for (itr; itr != CampaignDefinition::s_campaignDefinitions.end(); itr++)
 		{
+			if (!itr->second->m_hasLeaderboards)
+			{
+				continue;
+			}
+
 			std::string leaderboardName = itr->first;
 			Leaderboard leaderboard;
 			leaderboard.m_name = leaderboardName;
@@ -206,7 +212,10 @@ void Game::LoadLeaderboardsFromFile()
 			}
 
 			m_campaignLeaderboards.push_back(leaderboard);
+			count++;
 		}
+
+		ConsolePrintf(Rgba::GREEN, "Made %i leaderboards", count);
 	}
 	else
 	{
@@ -251,12 +260,17 @@ void Game::LoadLeaderboardsFromFile()
 
 		file.Close();
 
-		// Safety check - if there is a campaign that exists without a leaderboard, make an empty one
+		// Safety check - if there is a campaign that exists without a leaderboard that should have one, make an empty one
 		// Shouldn't happen, unless the user tampers with the leaderboard text file
 		std::map<std::string, const CampaignDefinition*>::const_iterator itr = CampaignDefinition::s_campaignDefinitions.begin();
 
 		for (itr; itr != CampaignDefinition::s_campaignDefinitions.end(); itr++)
 		{
+			if (!itr->second->m_hasLeaderboards)
+			{
+				continue;
+			}
+
 			std::string leaderboardName = itr->first;
 			
 			if (!DoesLeaderboardExist(leaderboardName))
@@ -744,6 +758,16 @@ void Game::UpdateLeaderboardWithCurrentScore()
 int Game::GetScore()
 {
 	return RoundToNearestInt(s_instance->m_actualScore);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the number of leaderboards in the game (i.e. the number of campaigns that have
+// leaderboards
+//
+int Game::GetLeaderboardCount()
+{
+	return (int) s_instance->m_campaignLeaderboards.size();
 }
 
 

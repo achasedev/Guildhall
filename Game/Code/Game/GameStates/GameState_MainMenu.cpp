@@ -270,7 +270,11 @@ void GameState_MainMenu::MoveToSubMenu(eSubMenu subMenu)
 		for (itr; itr != CampaignDefinition::s_campaignDefinitions.end(); itr++)
 		{
 			const CampaignDefinition* def = itr->second;
-			m_currentMenu->AddOption(def->m_name, true, StartCampaign, def->m_name);
+
+			if (def->m_displayedOnMainMenu)
+			{
+				m_currentMenu->AddOption(def->m_name, true, StartCampaign, def->m_name);
+			}
 		}
 		m_currentMenu->AddOption("Back", true, LoadSubMenu, "Main");
 		break;
@@ -293,9 +297,9 @@ void GameState_MainMenu::MoveToSubMenu(eSubMenu subMenu)
 		int leftPlayerCountIndex = (m_playerCountScoreboardIndexBeingDisplayed - 1 < 0 ? MAX_PLAYERS - 1 : m_playerCountScoreboardIndexBeingDisplayed - 1);
 		int rightPlayerCountIndex = (m_playerCountScoreboardIndexBeingDisplayed + 1 >= MAX_PLAYERS ? 0 : m_playerCountScoreboardIndexBeingDisplayed + 1);
 		
-		int numCampaigns = CampaignDefinition::GetCampaignCount();
-		int prevLeaderboardIndex = (m_leaderboardIndexBeingDisplayed - 1 < 0 ? numCampaigns - 1 : m_leaderboardIndexBeingDisplayed - 1);
-		int nextLeaderboardIndex = (m_leaderboardIndexBeingDisplayed + 1 >= numCampaigns ? 0 : m_leaderboardIndexBeingDisplayed + 1);
+		int numLeaderboards = Game::GetLeaderboardCount();
+		int prevLeaderboardIndex = (m_leaderboardIndexBeingDisplayed - 1 < 0 ? numLeaderboards - 1 : m_leaderboardIndexBeingDisplayed - 1);
+		int nextLeaderboardIndex = (m_leaderboardIndexBeingDisplayed + 1 >= numLeaderboards ? 0 : m_leaderboardIndexBeingDisplayed + 1);
 
 		m_currentMenu->SetLeftOption(LoadSubMenu, Stringf("Leaderboard %i %i", leftPlayerCountIndex, m_leaderboardIndexBeingDisplayed));
 		m_currentMenu->SetRightOption(LoadSubMenu, Stringf("Leaderboard %i %i", rightPlayerCountIndex, m_leaderboardIndexBeingDisplayed));

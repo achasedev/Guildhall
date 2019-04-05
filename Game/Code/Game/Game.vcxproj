@@ -328,7 +328,6 @@
     <ClCompile Include="Framework\Menu.cpp" />
     <ClCompile Include="Framework\PlayStates\PlayState.cpp" />
     <ClCompile Include="Framework\PlayStates\PlayState_ControllerConnect.cpp" />
-    <ClCompile Include="Framework\PlayStates\PlayState_Defeat.cpp" />
     <ClCompile Include="Framework\PlayStates\PlayState_Pause.cpp" />
     <ClCompile Include="Framework\PlayStates\PlayState_Rest.cpp" />
     <ClCompile Include="Framework\PlayStates\PlayState_Victory.cpp" />
@@ -395,7 +394,6 @@
     <ClInclude Include="Framework\Menu.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_ControllerConnect.hpp" />
-    <ClInclude Include="Framework\PlayStates\PlayState_Defeat.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Pause.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Rest.hpp" />
     <ClInclude Include="Framework\PlayStates\PlayState_Victory.hpp" />

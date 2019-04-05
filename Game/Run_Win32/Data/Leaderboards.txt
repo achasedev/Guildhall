@@ -1,6 +1,6 @@
 Desert
 1 Player
-500
+0
 0
 0
 0
@@ -25,7 +25,7 @@ Desert
 0
 Forest
 1 Player
-600
+0
 0
 0
 0
@@ -50,7 +50,7 @@ Forest
 0
 Moon
 1 Player
-35500
+0
 0
 0
 0
@@ -68,31 +68,6 @@ Moon
 0
 0
 4 Players
-0
-0
-0
-0
-0
-Hound Zoo
-
-800
-0
-0
-0
-0
-
-0
-0
-0
-0
-0
-
-0
-0
-0
-0
-0
-
 0
 0
 0

@@ -27,7 +27,7 @@ void Item::Update()
 {
 	World* world = Game::GetWorld();
 
-	if (world->IsEntityOnGround(this))
+	if (world->IsEntityOnGround(this) && world->GetMapHeightForEntity(this) > 0)
 	{
 		m_physicsEnabled = false;
 		m_basePosition = m_position;

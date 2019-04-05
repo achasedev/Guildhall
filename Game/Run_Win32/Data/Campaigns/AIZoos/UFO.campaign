@@ -1,4 +1,4 @@
-<Campaign name="UFO Zoo" music="Data/Audio/Music/Boss Battle #4 V1.wav" character_select_map="Forest0">
+<Campaign name="UFO Zoo" music="Data/Audio/Music/Boss Battle #4 V1.wav" is_debug="true">
 
 	<Stage map="Forest1" enter="west">
 
