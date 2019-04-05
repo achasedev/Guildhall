@@ -269,6 +269,45 @@ void World::DrawToGridWithOffset(const IntVector3& offset)
 
 
 //-----------------------------------------------------------------------------------------------
+// Updates the particles and applies physics, then cleans them up
+// Used separately from the main update loop for when the game is paused
+//
+void World::UpdateMoveAndCleanUpParticles()
+{
+	UpdateParticles();
+
+	int numParticles = (int)m_particles.size();
+
+	{
+		PROFILE_LOG_SCOPE("Physics Step: Particles");
+
+		for (int i = 0; i < numParticles; ++i)
+		{
+			if (!m_particles[i]->IsMarkedForDelete() && m_particles[i]->IsPhysicsEnabled())
+			{
+				m_particles[i]->GetPhysicsComponent()->ApplyPhysicsStep();
+			}
+		}
+	}
+
+	for (int i = numParticles - 1; i >= 0; --i)
+	{
+		if (m_particles[i]->IsMarkedForDelete())
+		{
+			delete m_particles[i];
+
+			if (i < (int)m_particles.size() - 1)
+			{
+				m_particles[i] = m_particles.back();
+			}
+
+			m_particles.pop_back();
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Spawns an entity of the given definition and places it in the world
 //
 Entity* World::SpawnEntity(const EntityDefinition* definition, const Vector2& mapPosition, float orientation)
@@ -443,9 +482,7 @@ void World::ParticalizeAllEntities()
 
 		if (dynamic_cast<Player*>(entity) == nullptr)
 		{
-			ParticalizeEntity(entity);
-			delete entity;
-			m_entities.erase(m_entities.begin() + entityIndex);
+			entity->OnDeath();
 		}
 	}
 }
@@ -651,8 +688,26 @@ void World::ParticalizeVoxelText(const std::string& text, const IntVector3& refe
 
 				IntVector3 finalCoords = startWorldCoord + worldOffset;
 				Vector3 finalPosition = Vector3(finalCoords) + Vector3(0.5f, 0.5f, 0.5f);
-				Vector3 velocity = Vector3(GetRandomFloatInRange(-1.f, 1.f), 1.f, GetRandomFloatInRange(-1.f, 1.f)) * 50.f;
+				Vector3 velocity = Vector3(GetRandomFloatInRange(-2.0f, 2.0f), 1.f, GetRandomFloatInRange(-2.0f, 2.0f)) * 50.f;
 				Rgba baseColor = options.font->GetColorForGlyphPixel(text[charIndex], IntVector2(xOffset, yOffset));
+
+				if (baseColor.a > 0)
+				{
+					int colorIndex = charIndex;
+					if (options.glyphColors.size() == 1)
+					{
+						colorIndex = 0;
+					}
+
+					if (options.colorFunction != nullptr)
+					{
+						baseColor = options.colorFunction(IntVector3(xOff, yOff, zOff), startWorldCoord + worldOffset, options.glyphColors[colorIndex], options.colorFunctionArgs);
+					}
+					else
+					{
+						baseColor = options.glyphColors[colorIndex];
+					}
+				}
 
 				Particle* particle = new Particle(baseColor, 1.0f, finalPosition, velocity, false);
 				AddParticle(particle);

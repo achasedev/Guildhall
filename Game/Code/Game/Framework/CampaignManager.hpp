@@ -35,11 +35,13 @@ public:
 	bool						IsCurrentStageFinished() const;
 	const CampaignStage*		GetCurrentStage() const;
 	const CampaignStage*		GetNextStage() const;
+	const CampaignStage*		GetFirstStage() const;
 	int							GetEnemyCountLeftInStage() const;
 	int							GetEntityCountSpawnedThisStageSoFar() const;
 	float						GetTimeIntoStage() const;
 	float						GetCurrentDifficultyScale() const;
 	const CampaignDefinition*	GetCurrentCampaignDefinition() const;
+	bool						ShouldRenderStageInfo() const;
 
 	// Mutators
 	void						StartNextStage();

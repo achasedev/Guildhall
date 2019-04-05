@@ -75,9 +75,9 @@ bool GameState_Playing::Enter()
 
 	CampaignManager* manager = Game::GetCampaignManager();
 	manager->Initialize(m_campaignBeingPlayed);
-	Game::GetWorld()->InititalizeForStage(manager->GetCurrentStage());
+	Game::GetWorld()->InititalizeForStage(manager->GetFirstStage());
 
-	// Add the players to the world
+	// Add the players to the world, should only ever be player 1
 	Player** players = Game::GetPlayers();
 	for (int i = 0; i < MAX_PLAYERS; ++i)
 	{
@@ -93,7 +93,18 @@ bool GameState_Playing::Enter()
 	// Start the music
 	Game::GetGameAudioSystem()->PlayBGM(m_campaignBeingPlayed->m_backgroundMusicTrack);
 
-	TransitionToPlayState(new PlayState_Rest());
+	// If we have a character select go to rest, otherwise go straight to stage
+	if (m_campaignBeingPlayed->m_hasCharacterSelect)
+	{
+		TransitionToPlayState(new PlayState_Rest());
+	}
+	else
+	{
+		TransitionToPlayState(new PlayState_Stage());
+		
+		// Need to give player 1 a random player definition
+		players[0]->ReinitializeWithDefinition(EntityDefinition::GetRandomPlayerDefinition());
+	}
 
 	return true;
 }
@@ -368,7 +379,7 @@ void GameState_Playing::Render() const
 		Game::DrawHeading("CHOOSE YOUR CHARACTER", IntVector3(128, 56, 252), Vector3(0.5f, 0.f, 0.f));
 	}
 
-	if (Game::GetCampaignManager()->GetCurrentStageNumber() > 0)
+	if (Game::GetCampaignManager()->ShouldRenderStageInfo())
 	{
 		Game::DrawEnemyCountRemaining();
 		Game::DrawStageNumber();

@@ -16,6 +16,7 @@
 #include "Game/Framework/GameAudioSystem.hpp"
 #include "Game/GameStates/GameState_Loading.hpp"
 #include "Game/Framework/CampaignDefinition.hpp"
+#include "Game/GameStates/GameState_MainMenu.hpp"
 
 #include "Engine/Core/File.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -28,6 +29,14 @@
 #include "Engine/Core/DeveloperConsole/Command.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
+
+/************************************************************************/
+/* Console Commands                                                     */
+/************************************************************************/
+
+//-----------------------------------------------------------------------------------------------
+// For killing all entities in the scene
+//
 void Command_KillAll(Command& cmd)
 {
 	UNUSED(cmd);
@@ -35,8 +44,43 @@ void Command_KillAll(Command& cmd)
 	Game::GetWorld()->ParticalizeAllEntities();
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// For starting a campaign at any point
+//
+void Command_StartCampaign(Command& cmd)
+{
+	std::string campaignName;
+	bool nameProvided = cmd.GetParam("n", campaignName);
+
+	if (!nameProvided)
+	{
+		ConsoleErrorf("Need to provide a name to load with -n");
+		return;
+	}
+
+	// Ensure it exists
+	const CampaignDefinition* campaign = CampaignDefinition::GetDefinitionByName(campaignName);
+
+	if (campaign == nullptr)
+	{
+		ConsoleErrorf("Campaign \"%s\" doesn't exist", campaignName.c_str());
+		return;
+	}
+
+	StartCampaign(nullptr, campaignName);
+	ConsolePrintf(Rgba::GREEN, "Loaded campaign \"%s\"", campaignName.c_str());
+}
+
+
+/************************************************************************/
+/* End Console Commands                                                 */
+/************************************************************************/
+
+
 // The singleton instance
 Game* Game::s_instance = nullptr;
+
 
 //-----------------------------------------------------------------------------------------------
 // Default constructor, initialize any game members here (private)
@@ -277,6 +321,16 @@ void Game::WriteLeaderboardsToFile()
 
 
 //-----------------------------------------------------------------------------------------------
+// Initializes all console commands use by the game
+//
+void Game::InitializeConsoleCommands()
+{
+	Command::Register("killall", "Kills all entities", Command_KillAll);
+	Command::Register("lc", "Loads the campaign given by name -n", Command_StartCampaign);
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Destructor - clean up any allocated members (private)
 //
 Game::~Game()
@@ -326,7 +380,7 @@ void Game::Initialize()
 	mouse.SetCursorMode(CURSORMODE_RELATIVE);
 
 	// Commands
-	Command::Register("killall", "Kills all entities", Command_KillAll);
+	InitializeConsoleCommands();
 }
 
 

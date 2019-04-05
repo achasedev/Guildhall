@@ -97,6 +97,8 @@ private:
 	void LoadLeaderboardsFromFile();
 	void WriteLeaderboardsToFile();
 
+	static void InitializeConsoleCommands();
+
 
 private:
 	//-----Private Data-----

@@ -67,3 +67,5 @@ private:
 	VoxelEmitter* m_emitters[2];
 
 };
+
+void StartCampaign(GameState_MainMenu* mainMenu, const std::string& campaignName);

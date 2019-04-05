@@ -85,15 +85,20 @@ void CampaignDefinition::LoadCampaign(const std::string filePath)
 
 	// Character Select Map
 	std::string mapName = ParseXmlAttribute(*rootElement, "character_select_map", "");
-	GUARANTEE_OR_DIE(!IsStringNullOrEmpty(mapName), Stringf("Campaign file %s has no character select map specified", filePath.c_str()));
 
-	const MapDefinition* characterSelectMap = MapDefinition::GetDefinitionByName(mapName);
-	GUARANTEE_OR_DIE(characterSelectMap != nullptr, Stringf("Campaign file %s cannot find map \"%s\" for the character select", filePath.c_str(), mapName.c_str()));
+	if (!IsStringNullOrEmpty(mapName))
+	{
+		const MapDefinition* characterSelectMap = MapDefinition::GetDefinitionByName(mapName);
+		GUARANTEE_OR_DIE(characterSelectMap != nullptr, Stringf("Campaign file %s cannot find map \"%s\" for the character select", filePath.c_str(), mapName.c_str()));
 
-	// Create the stages, starting with the character select
-	CampaignStage* selectStage = CreateCharacterSelectStage(characterSelectMap);
-	newDef->m_stages.push_back(selectStage);
+		// Create the stages, starting with the character select
+		CampaignStage* selectStage = CreateCharacterSelectStage(characterSelectMap);
+		newDef->m_stages.push_back(selectStage);
 
+		newDef->m_hasCharacterSelect = true;
+	}
+
+	// Continue with the rest if it is specified
 	const XMLElement* stageElement = rootElement->FirstChildElement("Stage");
 	GUARANTEE_OR_DIE(stageElement != nullptr, Stringf("No stage elements specified in map %s", filePath.c_str()));
 

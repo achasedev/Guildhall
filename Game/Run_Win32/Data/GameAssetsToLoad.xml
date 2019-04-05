@@ -202,6 +202,8 @@
 		<Campaign file="Data/Campaigns/Forest.campaign"/>
 		<Campaign file="Data/Campaigns/Desert.campaign"/>
 		<Campaign file="Data/Campaigns/Moon.campaign"/>
+
+		<Campaign file="Data/Campaigns/AIZoos/Hound.campaign"/>
 	</Campaigns>
 
 	<!-- END CAMPAIGNS -->

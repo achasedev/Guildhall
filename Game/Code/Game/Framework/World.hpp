@@ -63,6 +63,9 @@ public:
 	void DrawToGrid();
 	void DrawToGridWithOffset(const IntVector3& offset);
 
+	// For updating particles while paused
+	void UpdateMoveAndCleanUpParticles();
+
 	// Mutators
 	void	AddEntity(Entity* entity);
 	Entity* SpawnEntity(const EntityDefinition* definition, const Vector2& mapPosition, float orientation);

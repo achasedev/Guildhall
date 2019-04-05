@@ -108,6 +108,9 @@ bool PlayState_Pause::Enter()
 		return true;
 	}
 
+	// Keep updating particles
+	Game::GetWorld()->UpdateMoveAndCleanUpParticles();
+
 	return false;
 }
 
@@ -121,6 +124,9 @@ void PlayState_Pause::Update()
 	{
 		m_gameState->PopOverrideState();
 	}
+
+	// Keep updating particles
+	Game::GetWorld()->UpdateMoveAndCleanUpParticles();
 }
 
 
@@ -186,6 +192,9 @@ bool PlayState_Pause::Leave()
 		audio->PlaySystemSound("Pause_leave");
 		audio->SetBGMVolume(1.0f);
 	}
+
+	// Keep updating particles
+	Game::GetWorld()->UpdateMoveAndCleanUpParticles();
 
 	return finishedLeaving;
 }

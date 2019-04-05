@@ -50,6 +50,15 @@ void CampaignManager::Initialize(const CampaignDefinition* definition)
 
 	// We don't need to clone the spawn events for the first stage, as it should be the
 	// character select, which has none...and if it does ignore it
+
+	if (definition->m_hasCharacterSelect)
+	{
+		m_currStageIndex = 0; // So the rest state will load the next one at [1]
+	}
+	else
+	{
+		m_currStageIndex = -1; // So the stage start will increment to the current stage
+	}
 }
 
 
@@ -182,6 +191,15 @@ const CampaignStage* CampaignManager::GetNextStage() const
 
 
 //-----------------------------------------------------------------------------------------------
+// Returns the first stage of the campaign, used for initialization at start
+//
+const CampaignStage* CampaignManager::GetFirstStage() const
+{
+	return m_campaignDefinition->m_stages[0];
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns the number of enemies alive in the stage still + the number of enemies that still need
 // to be spawned in
 //
@@ -233,6 +251,22 @@ float CampaignManager::GetCurrentDifficultyScale() const
 const CampaignDefinition* CampaignManager::GetCurrentCampaignDefinition() const
 {
 	return m_campaignDefinition;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if the enemy count and stage number should be rendered
+//
+bool CampaignManager::ShouldRenderStageInfo() const
+{
+	bool inCharacterSelect = (m_campaignDefinition->m_hasCharacterSelect && m_currStageIndex == 0);
+
+	if (inCharacterSelect)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 
