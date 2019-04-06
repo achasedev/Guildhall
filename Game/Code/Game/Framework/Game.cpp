@@ -39,13 +39,12 @@ Game::Game()
 	m_gameCamera->SetColorTarget(renderer->GetDefaultColorTarget());
 	m_gameCamera->SetDepthTarget(renderer->GetDefaultDepthTarget());
 	m_gameCamera->SetProjectionPerspective(45.f, 0.1f, 1000.f);
-	//m_gameCamera->LookAt(Vector3(-32.f, -16.f, 48.f), Vector3::ZERO, Vector3::Z_AXIS);
 	
 	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 
 	// Player
 	m_player = new Player();
-	m_gameCamera->AttachToEntity(m_player, CAMERA_MODE_ATTACHED_FIXED_ANGLE);
+	m_gameCamera->AttachToEntity(m_player, CAMERA_MODE_ATTACHED_THIRD_PERSON);
 
 	// World
 	m_world = new World();

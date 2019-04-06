@@ -30,14 +30,18 @@ public:
 	void Detach();
 
 	inline bool IsAttachedToEntity(Entity* entity);
+	inline eCameraMode GetCameraMode() const;
 
 
 private:
 	//-----Private Methods-----
 
-	void ProcessInputThirdPerson();
 	void ProcessInputDetached();
+	void ProcessInputFirstPerson();
+	void ProcessInputFixedAngle();
+	void ProcessInputThirdPerson();
 
+	void CheckIfEntityStillValid();
 	void UpdateFirstPerson();
 	void UpdateThirdPerson();
 	void UpdateFixedAngle();
@@ -50,11 +54,16 @@ private:
 	Vector3 m_frameTranslation = Vector3::ZERO;
 	Vector3 m_frameRotation = Vector3::ZERO;
 
+	Vector3 m_orbitSphericalRotation = Vector3::ZERO;
+
 	eCameraMode m_cameraMode = CAMERA_MODE_DETACHED;
 	Entity* m_entityAttachedTo = nullptr;
+	float m_offsetMagnitude = (CAMERA_THIRD_PERSON_MAX_DISTANCE + CAMERA_THIRD_PERSON_MIN_DISTANCE) * 0.5f;
 
 	// Statics
-	static const Vector3 CAMERA_FIXED_ANGLE_OFFSET;
+	static const Vector3 CAMERA_FIXED_ANGLE_DIRECTION;
+	static constexpr float CAMERA_THIRD_PERSON_MIN_DISTANCE = 2.f;
+	static constexpr float CAMERA_THIRD_PERSON_MAX_DISTANCE = 10.f;
 
 };
 
@@ -65,4 +74,13 @@ private:
 inline bool GameCamera::IsAttachedToEntity(Entity* entity)
 {
 	return (m_entityAttachedTo == entity);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the current mode of the camera
+//
+inline eCameraMode GameCamera::GetCameraMode() const
+{
+	return m_cameraMode;
 }

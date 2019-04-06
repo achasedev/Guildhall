@@ -24,7 +24,6 @@ void Entity::Update()
 }
 
 
-#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 //-----------------------------------------------------------------------------------------------
 // Applies the net force/impulses/acceleration/velocity to the entity
 //

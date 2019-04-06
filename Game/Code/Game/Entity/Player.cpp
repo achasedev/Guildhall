@@ -5,14 +5,21 @@
 /* Description: Implementation of the player class
 /************************************************************************/
 #include "Game/Entity/Player.hpp"
+#include "Game/Framework/Game.hpp"
+#include "Game/Framework/GameCamera.hpp"
+#include "Game/Framework/GameCommon.hpp"
 #include "Engine/Input/InputSystem.hpp"
-
+#include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // Process Input
 //
 void Player::ProcessInput()
 {
+	eCameraMode currentCameraMode = Game::GetGameCamera()->GetCameraMode();
+	ASSERT_OR_DIE(Game::GetGameCamera()->IsAttachedToEntity(this), "Player processing input when not possessing a camera!");
+
+	// XY Movement
 	InputSystem* input = InputSystem::GetInstance();
 
 	Vector2 inputDirection = Vector2::ZERO;
@@ -39,17 +46,51 @@ void Player::ProcessInput()
 
 	if (inputDirection != Vector2::ZERO)
 	{
-		MoveSelfHorizontal(inputDirection.GetNormalized());
+		float inputOrientation = inputDirection.GetOrientationDegrees();
+		inputOrientation += m_xyOrientationDegrees;
+
+		MoveSelfHorizontal(Vector2::MakeDirectionAtDegrees(inputOrientation));
 	}
 
+	// Z Movement
 	if (input->WasKeyJustPressed(' '))
 	{
 		Jump();
 	}
 
-	if (input->WasKeyJustPressed('J'))
+	// Rotation - depends on the camera mode
+	bool shouldRotate = false;
+	switch (currentCameraMode)
 	{
-		m_position.z = 255.f;
+	case CAMERA_MODE_ATTACHED_FIRST_PERSON:
+	case CAMERA_MODE_ATTACHED_FIXED_ANGLE:
+		shouldRotate = true;
+		break;
+	case CAMERA_MODE_ATTACHED_THIRD_PERSON:
+	{
+		Mouse& mouse = InputSystem::GetMouse();
+		if (mouse.IsButtonPressed(MOUSEBUTTON_RIGHT))
+		{
+			// Snap rotation to what the camera is looking at
+			Vector2 cameraXYforward = Game::GetGameCamera()->GetIVector().xy();
+			m_xyOrientationDegrees = cameraXYforward.GetOrientationDegrees();
+
+			shouldRotate = true;
+		}
+	}
+		break;
+	default:
+		break;
+	}
+
+	if (shouldRotate)
+	{
+		Mouse& mouse = InputSystem::GetMouse();
+		IntVector2 delta = mouse.GetMouseDelta();
+		float deltaSeconds = Game::GetDeltaTime();
+
+		float deltaYaw = (float) -1.0f * delta.x * 0.12f * deltaSeconds * CAMERA_ROTATION_SPEED;
+		m_xyOrientationDegrees += deltaYaw;
 	}
 }
 

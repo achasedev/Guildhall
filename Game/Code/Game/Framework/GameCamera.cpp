@@ -13,7 +13,7 @@
 
 
 // Statics
-const Vector3 GameCamera::CAMERA_FIXED_ANGLE_OFFSET = Vector3(-10.f, 0.f, 10.f);
+const Vector3 GameCamera::CAMERA_FIXED_ANGLE_DIRECTION = Vector3(-0.651f, -0.651f, 0.3906f);
 
 
 //-----------------------------------------------------------------------------------------------
@@ -30,9 +30,11 @@ void GameCamera::ProcessInput()
 		ProcessInputDetached();
 		break;
 	case CAMERA_MODE_ATTACHED_FIXED_ANGLE:
+		ProcessInputFixedAngle();
+		break;
 	case CAMERA_MODE_ATTACHED_FIRST_PERSON:
+		ProcessInputFirstPerson();
 	default:
-		// Fixed angle and first person don't listen for input, camera just "copies" the entity in Update()
 		break;
 	}
 }
@@ -45,6 +47,8 @@ void GameCamera::ProcessInput()
 //
 void GameCamera::Update()
 {
+	CheckIfEntityStillValid();
+
 	switch (m_cameraMode)
 	{
 	case CAMERA_MODE_ATTACHED_FIRST_PERSON:
@@ -85,15 +89,6 @@ void GameCamera::Detach()
 {
 	m_entityAttachedTo = nullptr;
 	m_cameraMode = CAMERA_MODE_DETACHED;
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Checks for keyboard/mouse input used to move the camera around the entity it is attached to
-// Only determines the rotation to move to about the entity, UpdateThirdPerson determines the translation
-//
-void GameCamera::ProcessInputThirdPerson()
-{
 }
 
 
@@ -139,19 +134,114 @@ void GameCamera::ProcessInputDetached()
 
 
 //-----------------------------------------------------------------------------------------------
-// Updates the camera's transform to match that of the entity's that it is attached to
+// Checks for pitch rotations to allow the camera to look up and down
 //
-void GameCamera::UpdateFirstPerson()
+void GameCamera::ProcessInputFirstPerson()
 {
+	Mouse& mouse = InputSystem::GetMouse();
+
+	float deltaTime = Game::GetDeltaTime();
+	IntVector2 delta = mouse.GetMouseDelta();
+
+	float pitchOffset = (float)delta.y * 0.12f * deltaTime * CAMERA_ROTATION_SPEED;
+	m_frameRotation = Vector3(0.f, pitchOffset, 0.f);
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// Updates the camera's transform to look at the entity as an orbit camera, using the rotation
-// offset found in ProcessInputThirdPerson
+// Allows for zooming in and out while at a fixed angle to an entity
+//
+void GameCamera::ProcessInputFixedAngle()
+{
+	Mouse& mouse = InputSystem::GetMouse();
+	IntVector2 delta = mouse.GetMouseDelta();
+
+	float zoomDelta = mouse.GetMouseWheelDelta();
+	m_offsetMagnitude = ClampFloat(m_offsetMagnitude - zoomDelta, CAMERA_THIRD_PERSON_MIN_DISTANCE, CAMERA_THIRD_PERSON_MAX_DISTANCE);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks for input in rotating the camera around the entity as an orbit camera
+//
+void GameCamera::ProcessInputThirdPerson()
+{
+	float deltaSeconds = Game::GetDeltaTime();
+	Mouse& mouse = InputSystem::GetMouse();
+	IntVector2 delta = mouse.GetMouseDelta();
+
+	Vector2 rotationOffset = Vector2((float)delta.y, (float)delta.x) * 0.12f;
+	m_frameRotation = Vector3(0.f, -1.0f * rotationOffset.x * CAMERA_ROTATION_SPEED * deltaSeconds, rotationOffset.y * CAMERA_ROTATION_SPEED * deltaSeconds);
+
+	float zoomDelta = mouse.GetMouseWheelDelta();
+	m_offsetMagnitude = ClampFloat(m_offsetMagnitude - zoomDelta, CAMERA_THIRD_PERSON_MIN_DISTANCE, CAMERA_THIRD_PERSON_MAX_DISTANCE);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks if the entity the camera is attached to still exists, in case it was deleted
+//
+void GameCamera::CheckIfEntityStillValid()
+{
+	if (m_cameraMode != CAMERA_MODE_DETACHED && m_entityAttachedTo->IsMarkedForDelete())
+	{
+		m_entityAttachedTo = nullptr;
+		m_cameraMode = CAMERA_MODE_DETACHED;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Updates the camera's transform to match that of the entity's that it is attached to
+//
+void GameCamera::UpdateFirstPerson()
+{
+	// Set the position
+	Vector3 eyePosition = m_entityAttachedTo->GetEyeWorldPosition();
+	SetPosition(eyePosition);
+
+	// Apply the pitch from ProcessInput()
+	Vector3 cameraRotation = Rotate(m_frameRotation);
+
+	// Clamp to avoid going upside-down
+	cameraRotation.y = GetAngleBetweenMinusOneEightyAndOneEighty(cameraRotation.y);
+	cameraRotation.y = ClampFloat(cameraRotation.y, -85.f, 85.f);
+
+	// Make the XY rotation match the entity's
+	float yawOrientationDegrees = m_entityAttachedTo->GetXYOrientationDegrees();
+	cameraRotation.z = yawOrientationDegrees;
+	SetRotation(cameraRotation);
+
+	// Zero them out for next frame
+	m_frameRotation = Vector3::ZERO;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Updates the camera's transform to look at the entity from behind
 //
 void GameCamera::UpdateThirdPerson()
 {
+	// Get the "eye" transform of the entity and assign it to the camera
+	Vector3 entityCenterWorldPosition = m_entityAttachedTo->GetCenterWorldPosition();
+
+	m_orbitSphericalRotation += m_frameRotation;
+	m_orbitSphericalRotation.y = ClampFloat(m_orbitSphericalRotation.y, 10.f, 170.f);
+
+	float yawRotation = m_orbitSphericalRotation.z;
+	float pitchRotation = m_orbitSphericalRotation.y;
+	pitchRotation = ClampFloat(pitchRotation, 5.f, 175.f);
+
+	// Find the position of the camera in world coordinates
+	Vector3 cameraPosition;
+
+	cameraPosition.y = m_offsetMagnitude * CosDegrees(yawRotation) * SinDegrees(pitchRotation);
+	cameraPosition.x = m_offsetMagnitude * SinDegrees(yawRotation) * SinDegrees(pitchRotation);
+	cameraPosition.z = m_offsetMagnitude * CosDegrees(pitchRotation);
+
+	LookAt(cameraPosition + entityCenterWorldPosition, entityCenterWorldPosition, Vector3::Z_AXIS);
+
+	m_frameRotation = Vector3::ZERO;
 }
 
 
@@ -160,9 +250,9 @@ void GameCamera::UpdateThirdPerson()
 //
 void GameCamera::UpdateFixedAngle()
 {
-	Vector3 entityPosition = m_entityAttachedTo->GetPosition();
-	Vector3 cameraPosition = entityPosition + CAMERA_FIXED_ANGLE_OFFSET;
-	LookAt(cameraPosition, entityPosition, Vector3::Z_AXIS);
+	Vector3 entityCenterPosition = m_entityAttachedTo->GetCenterWorldPosition();
+	Vector3 cameraPosition = entityCenterPosition + CAMERA_FIXED_ANGLE_DIRECTION * m_offsetMagnitude;
+	LookAt(cameraPosition, entityCenterPosition, Vector3::Z_AXIS);
 }
 
 

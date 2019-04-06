@@ -6,6 +6,7 @@
 /************************************************************************/
 #pragma once
 #include "Engine/Math/AABB3.hpp"
+#include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector3.hpp"
 
 enum ePhysicsMode
@@ -39,8 +40,12 @@ public:
 	AABB3			GetWorldPhysicsBounds() const;
 	inline bool		IsMarkedForDelete() const;
 	inline Vector3	GetPosition() const;
+	inline float	GetXYOrientationDegrees() const;
 	inline Vector3	GetVelocity() const;
 	inline bool		IsOnGround() const;
+	inline Vector3	GetEyeWorldPosition() const;
+	inline Vector3	GetForwardVector() const;
+	inline Vector3	GetCenterWorldPosition() const;
 
 
 protected:
@@ -57,7 +62,7 @@ protected:
 	static constexpr float ENTITY_GRAVITY_ACCELERATION = 15.f;
 	static constexpr float ENTITY_GROUND_FRICTION_DECELERATION = 16.0f;
 	static constexpr float ENTITY_AIR_DRAG_DECELERATION = 1.f;
-	static constexpr float ENTITY_DEFAULT_MAX_XY_MOVE_SPEED = 4.f;
+	static constexpr float ENTITY_DEFAULT_MAX_XY_MOVE_SPEED = 5.f;
 	static constexpr float ENTITY_DEFAULT_MOVE_ACCELERATION = 40.f;
 	static constexpr float ENTITY_DEFAULT_JUMP_HEIGHT = 1.4f;
 
@@ -82,6 +87,7 @@ protected:
 	float	m_maxXYMoveSpeed	= ENTITY_DEFAULT_MAX_XY_MOVE_SPEED;
 	float	m_moveAcceleration	= ENTITY_DEFAULT_MOVE_ACCELERATION;
 	float	m_jumpHeight		= ENTITY_DEFAULT_JUMP_HEIGHT;
+	Vector3	m_eyeOffsetFromPosition = Vector3(0.f, 0.f, ENTITY_DEFAULT_EYE_HEIGHT);
 
 };
 
@@ -139,6 +145,16 @@ inline Vector3 Entity::GetPosition() const
 	return m_position;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Returns the XY orientation of the entity
+//
+inline float Entity::GetXYOrientationDegrees() const
+{
+	return m_xyOrientationDegrees;
+}
+
+
 //-----------------------------------------------------------------------------------------------
 // Returns the velocity of the entity
 //
@@ -163,4 +179,32 @@ inline bool	Entity::IsOnGround() const
 inline void	Entity::SetIsOnGround(bool isOnGround)
 {
 	m_isOnGround = isOnGround;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns where the entity's eyes are located in world space
+//
+inline Vector3 Entity::GetEyeWorldPosition() const
+{
+	return m_position + m_eyeOffsetFromPosition;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the entity's forward vector in the xy plane
+//
+inline Vector3 Entity::GetForwardVector() const
+{
+	Vector2 xyForward = Vector2::MakeDirectionAtDegrees(m_xyOrientationDegrees);
+	return Vector3(xyForward.x, xyForward.y, 0.f);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the position for the center (x,y and z) of the entity's collision box
+//
+inline Vector3 Entity::GetCenterWorldPosition() const
+{
+	return m_localPhysicsBounds.GetCenter() + m_position;
 }

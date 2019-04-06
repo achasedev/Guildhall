@@ -148,8 +148,6 @@ void World::ProcessInput()
 //
 void World::Update()
 {
-	Game::GetGameCamera()->Update();
-
 	CheckToActivateChunks();			// Create chunks within activation range
 	CheckToDeactivateChunks();			// Save and remove a chunk if outside deactivation range
 
@@ -163,6 +161,8 @@ void World::Update()
 	UpdateEntities();					// General update for all entities
 	ApplyPhysicsStep();					// Applies forces, impulses, accelerations, velocities
 	CheckForEntityChunkCollisions();	// Checks for collisions between entities and the world
+	
+	Game::GetGameCamera()->Update();
 	DeleteEntitiesMarkedForDelete();	// Removed entities marked for removal
 }
 
