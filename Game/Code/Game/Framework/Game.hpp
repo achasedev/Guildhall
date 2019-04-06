@@ -39,6 +39,7 @@ public:
 	static float				GetDeltaTime();
 	static World*				GetWorld();
 	static Blackboard*			GetGameConfigBlackboard();
+	static Player*				GetPlayer();
 
 
 private:

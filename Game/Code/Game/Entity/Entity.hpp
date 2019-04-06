@@ -8,6 +8,8 @@
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector3.hpp"
+#include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/Transform.hpp"
 
 enum ePhysicsMode
 {
@@ -27,6 +29,7 @@ public:
 	virtual void	Render() const;
 
 	// Mutators
+	inline void		SetPosition(const Vector3& newPosition);
 	inline void		AddForce(const Vector3& force);
 	inline void		AddImpulse(const Vector3& impulse);
 	inline void		AddVelocity(const Vector3& velocity);
@@ -45,11 +48,12 @@ public:
 	AABB3			GetWorldPhysicsBounds() const;
 	inline bool		IsMarkedForDelete() const;
 	inline Vector3	GetPosition() const;
-	inline float	GetXYOrientationDegrees() const;
+	inline float	GetYawOrientationDegrees() const;
+	inline float	GetPitchOrientationDegrees() const;
 	inline Vector3	GetVelocity() const;
 	inline bool		IsOnGround() const;
 	inline Vector3	GetEyeWorldPosition() const;
-	inline Vector3	GetForwardVector() const;
+	inline Vector3	GetForwardVector();
 	inline Vector3	GetCenterWorldPosition() const;
 	inline ePhysicsMode GetPhysicsMode() const;
 
@@ -80,8 +84,7 @@ protected:
 
 	float			m_ageSeconds = 0.f;
 	bool			m_isMarkedForDelete = false;
-	Vector3			m_position = Vector3(10.f, 10.f, 50.f);
-	float			m_xyOrientationDegrees = 0.f;
+	Transform		m_transform;
 
 	// Physics
 	AABB3			m_localPhysicsBounds = AABB3(ENTITY_DEFAULT_LOCAL_PHYSICS_BACK_LEFT_BOTTOM, ENTITY_DEFAULT_LOCAL_PHYSICS_FRONT_RIGHT_TOP);
@@ -100,6 +103,15 @@ protected:
 	Vector3	m_eyeOffsetFromPosition = Vector3(0.f, 0.f, ENTITY_DEFAULT_EYE_HEIGHT);
 
 };
+
+
+//-----------------------------------------------------------------------------------------------
+// Sets the entity's position
+//
+inline void	Entity::SetPosition(const Vector3& newPosition)
+{
+	m_transform.position = newPosition;
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -134,7 +146,7 @@ inline void	Entity::AddVelocity(const Vector3& velocity)
 //
 inline void	Entity::AddPositionOffset(const Vector3& offsetTranslation)
 {
-	m_position += offsetTranslation;
+	m_transform.position += offsetTranslation;
 }
 
 
@@ -152,16 +164,25 @@ inline bool Entity::IsMarkedForDelete() const
 //
 inline Vector3 Entity::GetPosition() const
 {
-	return m_position;
+	return m_transform.position;
 }
 
 
 //-----------------------------------------------------------------------------------------------
 // Returns the XY orientation of the entity
 //
-inline float Entity::GetXYOrientationDegrees() const
+inline float Entity::GetYawOrientationDegrees() const
 {
-	return m_xyOrientationDegrees;
+	return m_transform.rotation.z;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the Z orientation of the entity
+//
+inline float Entity::GetPitchOrientationDegrees() const
+{
+	return m_transform.rotation.y;
 }
 
 
@@ -206,17 +227,16 @@ inline void	Entity::SetPhysicsMode(ePhysicsMode newMode)
 //
 inline Vector3 Entity::GetEyeWorldPosition() const
 {
-	return m_position + m_eyeOffsetFromPosition;
+	return m_transform.position + m_eyeOffsetFromPosition;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// Returns the entity's forward vector in the xy plane
+// Returns the entity's forward vector
 //
-inline Vector3 Entity::GetForwardVector() const
+inline Vector3 Entity::GetForwardVector()
 {
-	Vector2 xyForward = Vector2::MakeDirectionAtDegrees(m_xyOrientationDegrees);
-	return Vector3(xyForward.x, xyForward.y, 0.f);
+	return m_transform.GetIVector();
 }
 
 
@@ -225,7 +245,7 @@ inline Vector3 Entity::GetForwardVector() const
 //
 inline Vector3 Entity::GetCenterWorldPosition() const
 {
-	return m_localPhysicsBounds.GetCenter() + m_position;
+	return m_localPhysicsBounds.GetCenter() + m_transform.position;
 }
 
 

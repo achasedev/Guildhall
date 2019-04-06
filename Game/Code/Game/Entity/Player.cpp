@@ -9,6 +9,7 @@
 #include "Game/Framework/GameCamera.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Engine/Core/Window.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Core/Utility/StringUtils.hpp"
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
@@ -51,7 +52,7 @@ void Player::ProcessInput()
 	if (inputDirection != Vector2::ZERO)
 	{
 		float inputOrientation = inputDirection.GetOrientationDegrees();
-		inputOrientation += m_xyOrientationDegrees;
+		inputOrientation += m_transform.rotation.z;
 
 		MoveSelfHorizontal(Vector2::MakeDirectionAtDegrees(inputOrientation));
 	}
@@ -93,8 +94,8 @@ void Player::ProcessInput()
 		if (mouse.IsButtonPressed(MOUSEBUTTON_RIGHT))
 		{
 			// Snap rotation to what the camera is looking at
-			Vector2 cameraXYforward = Game::GetGameCamera()->GetIVector().xy();
-			m_xyOrientationDegrees = cameraXYforward.GetOrientationDegrees();
+			Vector3 cameraRotation = Game::GetGameCamera()->GetRotation();
+			m_transform.rotation = cameraRotation;
 
 			shouldRotate = true;
 		}
@@ -110,8 +111,15 @@ void Player::ProcessInput()
 		IntVector2 delta = mouse.GetMouseDelta();
 		float deltaSeconds = Game::GetDeltaTime();
 
+		float deltaPitch = (float) delta.y * 0.12f * deltaSeconds * CAMERA_ROTATION_SPEED;
 		float deltaYaw = (float) -1.0f * delta.x * 0.12f * deltaSeconds * CAMERA_ROTATION_SPEED;
-		m_xyOrientationDegrees += deltaYaw;
+		
+		m_transform.rotation.z += deltaYaw;
+		m_transform.rotation.y = ClampFloat(m_transform.rotation.y + deltaPitch, -85.f, 85.f);
+
+		// Keep them between 0.f and 360.f
+		m_transform.rotation.y = GetAngleBetweenMinusOneEightyAndOneEighty(m_transform.rotation.y);
+		m_transform.rotation.z = GetAngleBetweenMinusOneEightyAndOneEighty(m_transform.rotation.z);
 	}
 }
 
@@ -158,9 +166,11 @@ void Player::Render() const
 	AABB2 windowBounds = window->GetWindowBounds();
 
 	std::string physicsModeText = GetPhysicsModeTextForMode(m_physicsMode);
+	Vector3 position = m_transform.position;
+	Vector3 rotation = m_transform.rotation;
 
-	std::string text = Stringf("Physics Mode: %s\nPosition: (%.2f, %.2f, %.2f)\nVelocity: (%.2f, %.2f, %.2f)\nForce: (%.2f, %.2f, %.2f)\nImpulse: (%.2f, %.2f, %.2f)\nOnGround: %s",
-		physicsModeText.c_str(), m_position.x, m_position.y, m_position.z, m_velocity.x, m_velocity.y, m_velocity.z,
+	std::string text = Stringf("Physics Mode: %s\nPosition: (%.2f, %.2f, %.2f)\nRotation: (%.2f, %.2f, %.2f)\nVelocity: (%.2f, %.2f, %.2f)\nForce: (%.2f, %.2f, %.2f)\nImpulse: (%.2f, %.2f, %.2f)\nOnGround: %s",
+		physicsModeText.c_str(), position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, m_velocity.x, m_velocity.y, m_velocity.z,
 		m_force.x, m_force.y, m_force.z, m_impulse.x, m_impulse.y, m_impulse.z, (m_isOnGround ? "true" : "false"));
 	
 	DebugRenderSystem::Draw2DText(text, windowBounds, 0.f, Rgba::DARK_GREEN, 20.f, Vector2(1.0f, 1.0f));

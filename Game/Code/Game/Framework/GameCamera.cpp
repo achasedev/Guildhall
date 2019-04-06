@@ -33,7 +33,6 @@ void GameCamera::ProcessInput()
 		ProcessInputFixedAngle();
 		break;
 	case CAMERA_MODE_ATTACHED_FIRST_PERSON:
-		ProcessInputFirstPerson();
 	default:
 		break;
 	}
@@ -134,21 +133,6 @@ void GameCamera::ProcessInputDetached()
 
 
 //-----------------------------------------------------------------------------------------------
-// Checks for pitch rotations to allow the camera to look up and down
-//
-void GameCamera::ProcessInputFirstPerson()
-{
-	Mouse& mouse = InputSystem::GetMouse();
-
-	float deltaTime = Game::GetDeltaTime();
-	IntVector2 delta = mouse.GetMouseDelta();
-
-	float pitchOffset = (float)delta.y * 0.12f * deltaTime * CAMERA_ROTATION_SPEED;
-	m_frameRotation = Vector3(0.f, pitchOffset, 0.f);
-}
-
-
-//-----------------------------------------------------------------------------------------------
 // Allows for zooming in and out while at a fixed angle to an entity
 //
 void GameCamera::ProcessInputFixedAngle()
@@ -168,10 +152,13 @@ void GameCamera::ProcessInputThirdPerson()
 {
 	float deltaSeconds = Game::GetDeltaTime();
 	Mouse& mouse = InputSystem::GetMouse();
-	IntVector2 delta = mouse.GetMouseDelta();
 
-	Vector2 rotationOffset = Vector2((float)delta.y, (float)delta.x) * 0.12f;
-	m_frameRotation = Vector3(0.f, -1.0f * rotationOffset.x * CAMERA_ROTATION_SPEED * deltaSeconds, rotationOffset.y * CAMERA_ROTATION_SPEED * deltaSeconds);
+	if (!mouse.IsButtonPressed(MOUSEBUTTON_RIGHT))
+	{
+		IntVector2 delta = mouse.GetMouseDelta();
+		Vector2 rotationOffset = Vector2((float)delta.y, (float)delta.x) * 0.12f;
+		m_frameRotation = Vector3(0.f, -1.0f * rotationOffset.x * CAMERA_ROTATION_SPEED * deltaSeconds, rotationOffset.y * CAMERA_ROTATION_SPEED * deltaSeconds);
+	}
 
 	float zoomDelta = mouse.GetMouseWheelDelta();
 	m_offsetMagnitude = ClampFloat(m_offsetMagnitude - zoomDelta, CAMERA_THIRD_PERSON_MIN_DISTANCE, CAMERA_THIRD_PERSON_MAX_DISTANCE);
@@ -200,16 +187,15 @@ void GameCamera::UpdateFirstPerson()
 	Vector3 eyePosition = m_entityAttachedTo->GetEyeWorldPosition();
 	SetPosition(eyePosition);
 
-	// Apply the pitch from ProcessInput()
-	Vector3 cameraRotation = Rotate(m_frameRotation);
-
-	// Clamp to avoid going upside-down
-	cameraRotation.y = GetAngleBetweenMinusOneEightyAndOneEighty(cameraRotation.y);
-	cameraRotation.y = ClampFloat(cameraRotation.y, -85.f, 85.f);
+	Vector3 cameraRotation = Vector3::ZERO;
 
 	// Make the XY rotation match the entity's
-	float yawOrientationDegrees = m_entityAttachedTo->GetXYOrientationDegrees();
+	float yawOrientationDegrees = m_entityAttachedTo->GetYawOrientationDegrees();
+	float pitchOrientationDegrees = m_entityAttachedTo->GetPitchOrientationDegrees();
+
+	cameraRotation.y = pitchOrientationDegrees;
 	cameraRotation.z = yawOrientationDegrees;
+
 	SetRotation(cameraRotation);
 
 	// Zero them out for next frame
@@ -223,25 +209,57 @@ void GameCamera::UpdateFirstPerson()
 void GameCamera::UpdateThirdPerson()
 {
 	// Get the "eye" transform of the entity and assign it to the camera
-	Vector3 entityCenterWorldPosition = m_entityAttachedTo->GetCenterWorldPosition();
+	Vector3 entityEyePosition = m_entityAttachedTo->GetEyeWorldPosition();
 
-	m_orbitSphericalRotation += m_frameRotation;
-	m_orbitSphericalRotation.y = ClampFloat(m_orbitSphericalRotation.y, 10.f, 170.f);
+	// Update the rotation either:
+	//  1. If the right button was pressed, we snap to the entity and do no rotation ourselves
+	//  2. If the right button was not pressed, we rotate ourselves
 
-	float yawRotation = m_orbitSphericalRotation.z;
-	float pitchRotation = m_orbitSphericalRotation.y;
-	pitchRotation = ClampFloat(pitchRotation, 5.f, 175.f);
+	Mouse& mouse = InputSystem::GetMouse();
+	if (!mouse.IsButtonPressed(MOUSEBUTTON_RIGHT))
+	{
+		// Update the spherical rotation to avoid snapping
+		if (mouse.WasButtonJustReleased(MOUSEBUTTON_RIGHT))
+		{
+			Vector3 entityForward = m_entityAttachedTo->GetForwardVector();
+			Vector3 c = -1.0f * entityForward;
 
-	// Find the position of the camera in world coordinates
-	Vector3 cameraPosition;
+			float theta = Atan2Degrees(c.x / c.y);
+			float phi = ACosDegrees(c.z / c.GetLength());
 
-	cameraPosition.y = m_offsetMagnitude * CosDegrees(yawRotation) * SinDegrees(pitchRotation);
-	cameraPosition.x = m_offsetMagnitude * SinDegrees(yawRotation) * SinDegrees(pitchRotation);
-	cameraPosition.z = m_offsetMagnitude * CosDegrees(pitchRotation);
+			if (GetRotation().z > 0.f)
+			{
+				theta += 180.f;
+			}
 
-	LookAt(cameraPosition + entityCenterWorldPosition, entityCenterWorldPosition, Vector3::Z_AXIS);
+			m_orbitSphericalRotation.y = GetAngleBetweenZeroThreeSixty(phi);
+			m_orbitSphericalRotation.z = GetAngleBetweenZeroThreeSixty(theta);
+		}
 
-	m_frameRotation = Vector3::ZERO;
+		m_orbitSphericalRotation += m_frameRotation;
+		m_orbitSphericalRotation.y = ClampFloat(m_orbitSphericalRotation.y, 10.f, 170.f);
+
+		float yawRotation = m_orbitSphericalRotation.z;
+		float pitchRotation = m_orbitSphericalRotation.y;
+
+		// Find the position of the camera in world coordinates
+		Vector3 cameraOffset;
+
+		cameraOffset.y = m_offsetMagnitude * CosDegrees(yawRotation) * SinDegrees(pitchRotation);
+		cameraOffset.x = m_offsetMagnitude * SinDegrees(yawRotation) * SinDegrees(pitchRotation);
+		cameraOffset.z = m_offsetMagnitude * CosDegrees(pitchRotation);
+
+		LookAt(cameraOffset + entityEyePosition, entityEyePosition, Vector3::Z_AXIS);
+
+		m_frameRotation = Vector3::ZERO;
+	}
+	else
+	{
+		Vector3 entityForward = m_entityAttachedTo->GetForwardVector();
+
+		Vector3 cameraOffset = -1.0f * entityForward * m_offsetMagnitude;
+		LookAt(entityEyePosition + cameraOffset, entityEyePosition, Vector3::Z_AXIS);
+	}
 }
 
 

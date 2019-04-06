@@ -44,6 +44,7 @@ Game::Game()
 
 	// Player
 	m_player = new Player();
+	m_player->SetPosition(Vector3(10.f, 10.f, 50.f));
 	m_gameCamera->AttachToEntity(m_player, CAMERA_MODE_ATTACHED_THIRD_PERSON);
 
 	// World
@@ -347,6 +348,15 @@ World* Game::GetWorld()
 Blackboard* Game::GetGameConfigBlackboard()
 {
 	return s_instance->m_gameConfigBlackboard;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the player character object
+//
+Player* Game::GetPlayer()
+{
+	return s_instance->m_player;
 }
 
 

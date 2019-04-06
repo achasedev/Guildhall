@@ -6,6 +6,8 @@
 /************************************************************************/
 #include "Game/Entity/Entity.hpp"
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/GameCamera.hpp"
+#include "Engine/Assets/AssetDB.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
 
@@ -57,7 +59,7 @@ void Entity::ApplyPhysicsStep()
 	}
 
 	// Apply Velocity
-	m_position += m_velocity * deltaSeconds;
+	m_transform.position += m_velocity * deltaSeconds;
 
 	// Reset Flags
 	m_isOnGround = false;
@@ -69,16 +71,29 @@ void Entity::ApplyPhysicsStep()
 //
 void Entity::Render() const
 {
-	Renderer* renderer = Renderer::GetInstance();
+	// Don't render if we're possessed by the camera and in first person
+	GameCamera* camera = Game::GetGameCamera();
+	if (camera->IsAttachedToEntity(this) && camera->GetCameraMode() == CAMERA_MODE_ATTACHED_FIRST_PERSON)
+	{
+		return;
+	}
 
+	Renderer* renderer = Renderer::GetInstance();
 	renderer->SetGLLineWidth(2.0f);
 	
-	AABB3 worldBounds = m_localPhysicsBounds.GetTranslated(m_position);
+	AABB3 worldBounds = m_localPhysicsBounds.GetTranslated(m_transform.position);
 	Vector3 absoluteCenter = worldBounds.GetCenter();
 	Vector3 dimensions = worldBounds.GetDimensions();
 
 	renderer->DrawWireCube(absoluteCenter, dimensions, Rgba::PURPLE);
+
+	// Draw a point for the local origin
+	renderer->DrawPoint(m_transform.position, Rgba::PURPLE, m_localPhysicsBounds.GetDimensions().x * 0.25f);
 	renderer->SetGLLineWidth(1.0f);
+
+	// Draw the velocity line
+	renderer->Draw3DLine(m_transform.position, Rgba::YELLOW, m_transform.position + m_velocity, Rgba::YELLOW, 2.0f, AssetDB::GetSharedMaterial("Default_Opaque"));
+	renderer->Draw3DLine(m_transform.position, Rgba::YELLOW, m_transform.position + m_velocity, Rgba::YELLOW, 2.0f, AssetDB::GetSharedMaterial("X_Ray"));
 }
 
 
@@ -246,5 +261,5 @@ void Entity::ApplyVerticalAirDrag()
 //
 AABB3 Entity::GetWorldPhysicsBounds() const
 {
-	return m_localPhysicsBounds.GetTranslated(m_position);
+	return m_localPhysicsBounds.GetTranslated(m_transform.position);
 }

@@ -4,6 +4,7 @@
 /* Date: February 9th 2019
 /* Description: Implementation of the World class
 /************************************************************************/
+#include "Game/Entity/Player.hpp"
 #include "Game/Entity/Entity.hpp"
 #include "Game/Framework/Game.hpp"
 #include "Game/Environment/World.hpp"
@@ -25,7 +26,6 @@
 #include "Engine/Core/Utility/ErrorWarningAssert.hpp"
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
-
 #include "Engine/Core/Window.hpp"
 
 
@@ -156,12 +156,13 @@ void World::Update()
 	CheckToBuildChunkMesh();			// Build a mesh if one needs to be rebuilt
 
 	UpdateChunks();						// General Update for chunks
-	UpdateRaycast();					// Update for debug raycast
 
 	UpdateEntities();					// General update for all entities
 	ApplyPhysicsStep();					// Applies forces, impulses, accelerations, velocities
 	CheckForEntityChunkCollisions();	// Checks for collisions between entities and the world
 	
+	UpdateRaycast();					// Update for debug raycast
+
 	Game::GetGameCamera()->Update();
 	DeleteEntitiesMarkedForDelete();	// Removed entities marked for removal
 }
@@ -215,52 +216,7 @@ void World::Render() const
 
 	RenderChunks();
 	RenderEntities();
-
-	Material* xRayMaterial = AssetDB::GetSharedMaterial("X_Ray");
-
-	if (m_raycastDetached)
-	{
-		if (m_lastRaycastResult.DidImpact())
-		{
-			renderer->Draw3DLine(m_lastRaycastResult.m_startPosition, Rgba::RED, m_lastRaycastResult.m_impactPosition, Rgba::RED, 5.f);
-			renderer->Draw3DLine(m_lastRaycastResult.m_impactPosition, Rgba::RED, m_lastRaycastResult.m_endPosition, Rgba::RED, 2.f);
-			renderer->Draw3DLine(m_lastRaycastResult.m_impactPosition, Rgba::RED, m_lastRaycastResult.m_endPosition, Rgba::RED, 2.f, xRayMaterial);
-
-			renderer->DrawPoint(m_lastRaycastResult.m_impactPosition, Rgba::RED, 0.1f);
-			renderer->DrawPoint(m_lastRaycastResult.m_impactPosition, Rgba::RED, 0.1f, xRayMaterial);
-		}
-		else
-		{
-			renderer->Draw3DLine(m_lastRaycastResult.m_startPosition, Rgba::GREEN, m_lastRaycastResult.m_endPosition, Rgba::GREEN, 2.f);
-		}
-	}
-
-	// Push a wire cube around the block if there was a hit
-	if (m_lastRaycastResult.DidImpact() && m_lastRaycastResult.m_impactDistance > 2.0f) // Only draw if more than one block away to avoid blocking vision
-	{
-		float offSetMagnitude = 0.01f;
-		Vector3 blockCenterPosition = m_lastRaycastResult.m_impactBlock.GetBlockCenterWorldPosition();
-
-		renderer->SetGLLineWidth(2.0f);
-		renderer->DrawWireCube(blockCenterPosition, Vector3::ONES + Vector3(offSetMagnitude), Rgba::PURPLE);
-		renderer->SetGLLineWidth(1.0f);
-
-		Vector3 quadCenterPosition = blockCenterPosition + (0.5f + offSetMagnitude) * m_lastRaycastResult.m_impactNormal;
-		Vector2 quadDimensions = Vector2(1.0f);
-
-		Vector3 referenceRight = Vector3(-m_lastRaycastResult.m_impactNormal.y, m_lastRaycastResult.m_impactNormal.x, 0.f);
-		if (referenceRight == Vector3::ZERO)
-		{
-			referenceRight = Vector3::MINUS_Y_AXIS;
-		}
-
-		Vector3 normal = m_lastRaycastResult.m_impactNormal;
-		Vector3 up = CrossProduct(normal, referenceRight);
-		Vector3 right = CrossProduct(up, normal);
-
-		renderer->Draw3DQuad(quadCenterPosition, quadDimensions, AABB2::UNIT_SQUARE_OFFCENTER, right, up, Rgba::WHITE, Vector2(0.5f), AssetDB::GetSharedMaterial("Default_Alpha"));
-		renderer->Draw3DQuad(quadCenterPosition, quadDimensions, AABB2::UNIT_SQUARE_OFFCENTER, right, up, Rgba::WHITE, Vector2(0.5f), xRayMaterial);
-	}
+	RenderRaycast();
 
 	AABB2 bounds = Window::GetInstance()->GetWindowBounds();
 	DebugRenderSystem::Draw2DText(Stringf("Last Correction: %.4f, %.4f, %.4f)", m_lastCorrection.x, m_lastCorrection.y, m_lastCorrection.z), bounds, 0.f, Rgba::GREEN, 20.f, Vector2(0.f, 1.f));
@@ -1369,13 +1325,12 @@ void World::UpdateChunks()
 //
 void World::UpdateRaycast()
 {
-	GameCamera* camera = Game::GetGameCamera();
-
 	// Update the raycast start if it isn't detached
 	if (!m_raycastDetached)
 	{
-		m_raycastReferencePosition = camera->GetPosition();
-		m_raycastForward = camera->GetCameraMatrix().GetIVector().xyz();
+		Player* player = Game::GetPlayer();
+		m_raycastReferencePosition = player->GetEyeWorldPosition();
+		m_raycastForward = player->GetForwardVector();
 	}
 
 	// Raycast on the current selected method
@@ -1705,6 +1660,60 @@ void World::RenderEntities() const
 		ASSERT_OR_DIE(!currEntity->IsMarkedForDelete(), "Marked entity made it to render");
 
 		currEntity->Render();
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Renders the raycast from the player's eyes
+//
+void World::RenderRaycast() const
+{
+	Renderer* renderer = Renderer::GetInstance();
+	Material* xRayMaterial = AssetDB::GetSharedMaterial("X_Ray");
+
+	if (Game::GetGameCamera()->GetCameraMode() != CAMERA_MODE_ATTACHED_FIRST_PERSON || m_raycastDetached)
+	{
+		if (m_lastRaycastResult.DidImpact())
+		{
+			renderer->Draw3DLine(m_lastRaycastResult.m_startPosition, Rgba::RED, m_lastRaycastResult.m_impactPosition, Rgba::RED, 5.f);
+			renderer->Draw3DLine(m_lastRaycastResult.m_impactPosition, Rgba::RED, m_lastRaycastResult.m_endPosition, Rgba::RED, 2.f);
+			renderer->Draw3DLine(m_lastRaycastResult.m_impactPosition, Rgba::RED, m_lastRaycastResult.m_endPosition, Rgba::RED, 2.f, xRayMaterial);
+
+			renderer->DrawPoint(m_lastRaycastResult.m_impactPosition, Rgba::RED, 0.1f);
+			renderer->DrawPoint(m_lastRaycastResult.m_impactPosition, Rgba::RED, 0.1f, xRayMaterial);
+		}
+		else
+		{
+			renderer->Draw3DLine(m_lastRaycastResult.m_startPosition, Rgba::GREEN, m_lastRaycastResult.m_endPosition, Rgba::GREEN, 2.f);
+		}
+	}
+
+	// Push a wire cube around the block if there was a hit
+	if (m_lastRaycastResult.DidImpact()) // Only draw if more than one block away to avoid blocking vision
+	{
+		float offSetMagnitude = 0.01f;
+		Vector3 blockCenterPosition = m_lastRaycastResult.m_impactBlock.GetBlockCenterWorldPosition();
+
+		renderer->SetGLLineWidth(2.0f);
+		renderer->DrawWireCube(blockCenterPosition, Vector3::ONES + Vector3(offSetMagnitude), Rgba::PURPLE);
+		renderer->SetGLLineWidth(1.0f);
+
+		Vector3 quadCenterPosition = blockCenterPosition + (0.5f + offSetMagnitude) * m_lastRaycastResult.m_impactNormal;
+		Vector2 quadDimensions = Vector2(1.0f);
+
+		Vector3 referenceRight = Vector3(-m_lastRaycastResult.m_impactNormal.y, m_lastRaycastResult.m_impactNormal.x, 0.f);
+		if (referenceRight == Vector3::ZERO)
+		{
+			referenceRight = Vector3::MINUS_Y_AXIS;
+		}
+
+		Vector3 normal = m_lastRaycastResult.m_impactNormal;
+		Vector3 up = CrossProduct(normal, referenceRight);
+		Vector3 right = CrossProduct(up, normal);
+
+		renderer->Draw3DQuad(quadCenterPosition, quadDimensions, AABB2::UNIT_SQUARE_OFFCENTER, right, up, Rgba::WHITE, Vector2(0.5f), AssetDB::GetSharedMaterial("Default_Alpha"));
+		renderer->Draw3DQuad(quadCenterPosition, quadDimensions, AABB2::UNIT_SQUARE_OFFCENTER, right, up, Rgba::WHITE, Vector2(0.5f), xRayMaterial);
 	}
 }
 

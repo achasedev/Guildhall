@@ -29,7 +29,7 @@ public:
 	void AttachToEntity(Entity* entity, eCameraMode mode);
 	void Detach();
 
-	inline bool IsAttachedToEntity(Entity* entity);
+	inline bool IsAttachedToEntity(const Entity* entity);
 	inline eCameraMode GetCameraMode() const;
 
 
@@ -37,7 +37,6 @@ private:
 	//-----Private Methods-----
 
 	void ProcessInputDetached();
-	void ProcessInputFirstPerson();
 	void ProcessInputFixedAngle();
 	void ProcessInputThirdPerson();
 
@@ -71,7 +70,7 @@ private:
 //-----------------------------------------------------------------------------------------------
 // Returns whether this camera is attached to the given entity, in any mode
 //
-inline bool GameCamera::IsAttachedToEntity(Entity* entity)
+inline bool GameCamera::IsAttachedToEntity(const Entity* entity)
 {
 	return (m_entityAttachedTo == entity);
 }

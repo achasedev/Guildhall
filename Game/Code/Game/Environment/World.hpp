@@ -114,7 +114,7 @@ private:
 	// Render
 	void			RenderChunks() const;
 	void			RenderEntities() const;
-
+	void			RenderRaycast() const;
 	// Misc
 	void			DeleteEntitiesMarkedForDelete();
 
@@ -140,7 +140,7 @@ private:
 
 	// Debugging
 	bool							m_raycastDetached = false;
-	bool							m_useStepAndSampleRaycast = true;
+	bool							m_useStepAndSampleRaycast = false;
 	Vector3							m_raycastReferencePosition; // Will be camera position when not detached
 	Vector3							m_raycastForward;			// Will be the camera forward when not detached
 	RaycastResult_t					m_lastRaycastResult;
