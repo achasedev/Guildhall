@@ -197,7 +197,7 @@ void World::CheckForEntityChunkCollisions()
 	{
 		Entity* currEntity = m_entities[entityIndex];
 
-		if (!currEntity->IsMarkedForDelete())
+		if (!currEntity->IsMarkedForDelete() && currEntity->GetPhysicsMode() != PHYSICS_MODE_NO_CLIP)
 		{
 			CheckAndCorrectEntityChunkCollision(currEntity);
 		}

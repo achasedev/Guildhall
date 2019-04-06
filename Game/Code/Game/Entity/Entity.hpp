@@ -13,7 +13,8 @@ enum ePhysicsMode
 {
 	PHYSICS_MODE_WALKING,
 	PHYSICS_MODE_FLYING,
-	PHYSICS_MODE_NO_CLIP
+	PHYSICS_MODE_NO_CLIP,
+	NUM_PHYSICS_MODES
 };
 
 class Entity
@@ -31,10 +32,14 @@ public:
 	inline void		AddVelocity(const Vector3& velocity);
 	inline void		AddPositionOffset(const Vector3& offsetTranslation);
 	inline void		SetIsOnGround(bool isOnGround);
+	inline void		SetPhysicsMode(ePhysicsMode newMode);
 
 	void			MoveSelfHorizontal(const Vector2& directionToMove);
+	void			MoveSelfVertical(const float directionToMove);
+
 	void			Jump();
-	void			ApplyFrictionOrAirDrag();
+	void			ApplyHorizontalFrictionOrAirDrag();
+	void			ApplyVerticalAirDrag();
 
 	// Accessors
 	AABB3			GetWorldPhysicsBounds() const;
@@ -46,13 +51,14 @@ public:
 	inline Vector3	GetEyeWorldPosition() const;
 	inline Vector3	GetForwardVector() const;
 	inline Vector3	GetCenterWorldPosition() const;
+	inline ePhysicsMode GetPhysicsMode() const;
 
 
 protected:
 	//-----Statics-----
 
-	static constexpr float ENTITY_DEFAULT_PHYSICS_LENGTH_X = 0.9f;
-	static constexpr float ENTITY_DEFAULT_PHYSICS_WIDTH_Y = 0.9f;
+	static constexpr float ENTITY_DEFAULT_PHYSICS_LENGTH_X = 0.6f;
+	static constexpr float ENTITY_DEFAULT_PHYSICS_WIDTH_Y = 0.6f;
 	static constexpr float ENTITY_DEFAULT_PHYSICS_HEIGHT_Z = 1.8f;
 	static constexpr float ENTITY_DEFAULT_EYE_HEIGHT = 1.65f;
 
@@ -61,8 +67,10 @@ protected:
 
 	static constexpr float ENTITY_GRAVITY_ACCELERATION = 15.f;
 	static constexpr float ENTITY_GROUND_FRICTION_DECELERATION = 16.0f;
-	static constexpr float ENTITY_AIR_DRAG_DECELERATION = 1.f;
-	static constexpr float ENTITY_DEFAULT_MAX_XY_MOVE_SPEED = 5.f;
+	static constexpr float ENTITY_AIR_DRAG_DECELERATION = 12.f;
+	static constexpr float ENTITY_DEFAULT_MAX_Z_MOVE_SPEED = 10.f;
+	static constexpr float ENTITY_DEFAULT_MAX_XY_WALK_SPEED = 5.f;
+	static constexpr float ENTITY_DEFAULT_MAX_XY_FLY_SPEED = 10.f;
 	static constexpr float ENTITY_DEFAULT_MOVE_ACCELERATION = 40.f;
 	static constexpr float ENTITY_DEFAULT_JUMP_HEIGHT = 1.4f;
 
@@ -84,7 +92,9 @@ protected:
 	Vector3 m_velocity			= Vector3::ZERO; 
 	Vector3 m_force				= Vector3::ZERO;
 	Vector3 m_impulse			= Vector3::ZERO;
-	float	m_maxXYMoveSpeed	= ENTITY_DEFAULT_MAX_XY_MOVE_SPEED;
+	float	m_maxXYWalkSpeed	= ENTITY_DEFAULT_MAX_XY_WALK_SPEED;
+	float	m_maxXYFlySpeed		= ENTITY_DEFAULT_MAX_XY_FLY_SPEED;
+	float	m_maxZMoveSpeed		= ENTITY_DEFAULT_MAX_Z_MOVE_SPEED;
 	float	m_moveAcceleration	= ENTITY_DEFAULT_MOVE_ACCELERATION;
 	float	m_jumpHeight		= ENTITY_DEFAULT_JUMP_HEIGHT;
 	Vector3	m_eyeOffsetFromPosition = Vector3(0.f, 0.f, ENTITY_DEFAULT_EYE_HEIGHT);
@@ -183,6 +193,15 @@ inline void	Entity::SetIsOnGround(bool isOnGround)
 
 
 //-----------------------------------------------------------------------------------------------
+// Sets the physics mode of the entity
+//
+inline void	Entity::SetPhysicsMode(ePhysicsMode newMode)
+{
+	m_physicsMode = newMode;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Returns where the entity's eyes are located in world space
 //
 inline Vector3 Entity::GetEyeWorldPosition() const
@@ -207,4 +226,13 @@ inline Vector3 Entity::GetForwardVector() const
 inline Vector3 Entity::GetCenterWorldPosition() const
 {
 	return m_localPhysicsBounds.GetCenter() + m_position;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the current physics mode of the entity
+//
+inline ePhysicsMode Entity::GetPhysicsMode() const
+{
+	return m_physicsMode;
 }

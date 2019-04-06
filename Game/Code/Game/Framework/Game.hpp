@@ -51,6 +51,8 @@ private:
 	void PopulateGameConfigBlackboard();
 	void LoadAndInitializeAssets();
 
+	void ProcessDebugInput();
+
 
 private:
 	//-----Private Data-----

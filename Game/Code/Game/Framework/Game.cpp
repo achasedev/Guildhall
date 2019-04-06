@@ -96,6 +96,50 @@ void Game::LoadAndInitializeAssets()
 
 
 //-----------------------------------------------------------------------------------------------
+// Checks for any input related to debug features
+//
+void Game::ProcessDebugInput()
+{
+	InputSystem* input = InputSystem::GetInstance();
+
+	// Physics mode of player
+	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_F3))
+	{
+		ePhysicsMode physicsMode = m_player->GetPhysicsMode();
+		int nextPhysicsMode = physicsMode + 1;
+
+		if (nextPhysicsMode == NUM_PHYSICS_MODES)
+		{
+			nextPhysicsMode = 0;
+		}
+
+		m_player->SetPhysicsMode((ePhysicsMode)nextPhysicsMode);
+	}
+
+	// Camera mode
+	if (input->WasKeyJustPressed(InputSystem::KEYBOARD_F2))
+	{
+		eCameraMode cameraMode = m_gameCamera->GetCameraMode();
+		int nextCameraMode = cameraMode + 1;
+
+		if (nextCameraMode == NUM_CAMERA_MODES)
+		{
+			nextCameraMode = 0;
+		}
+
+		if (nextCameraMode == CAMERA_MODE_DETACHED)
+		{
+			m_gameCamera->Detach();
+		}
+		else
+		{
+			m_gameCamera->AttachToEntity(m_player, (eCameraMode)nextCameraMode);
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Destructor - clean up any allocated members (private)
 //
 Game::~Game()
@@ -152,6 +196,8 @@ void Game::ShutDown()
 //
 void Game::ProcessInput()
 {
+	ProcessDebugInput();
+
 	m_gameCamera->ProcessInput();
 
 	if (m_gameCamera->IsAttachedToEntity(m_player))
@@ -159,7 +205,7 @@ void Game::ProcessInput()
 		m_player->ProcessInput();
 	}
 
-	m_world->ProcessInput(); // Only debug commands
+	m_world->ProcessInput(); // More debug commands
 }
 
 
@@ -173,6 +219,31 @@ void Game::Update()
 }
 
 
+
+//---C FUNCTION----------------------------------------------------------------------------------
+// Returns the camera mode as a string for printing
+//
+std::string GetCameraModeTextForMode(eCameraMode mode)
+{
+	switch (mode)
+	{
+	case CAMERA_MODE_ATTACHED_FIRST_PERSON:
+		return "[F2] FIRST PERSON";
+		break;
+	case CAMERA_MODE_ATTACHED_THIRD_PERSON:
+		return "[F2] THIRD PERSON";
+		break;
+	case CAMERA_MODE_ATTACHED_FIXED_ANGLE:
+		return "[F2] FIXED ANGLE";
+		break;
+	case CAMERA_MODE_DETACHED:
+		return "[F2] DETACHED";
+		break;
+	default:
+		return "YOU SHOULDN'T BE HERE!";
+		break;
+	}
+}
 
 //-----------------------------------------------------------------------------------------------
 // Draws to screen
@@ -192,8 +263,10 @@ void Game::Render() const
 	Vector3 rotation = m_gameCamera->GetRotation();
 	IntVector2 chunkContainingCamera = m_world->GetChunkCoordsForChunkThatContainsPosition(position);
 	
-	std::string text = Stringf("Camera Pos : (%.2f, %.2f, %.2f)\nCamera Rot : (%.2f, %.2f, %.2f)\nChunk Containing : (%i, %i)\nActivation Range: %.2f\nActive Chunks: %i",
-		position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, chunkContainingCamera.x, chunkContainingCamera.y,
+	std::string cameraMode = GetCameraModeTextForMode(m_gameCamera->GetCameraMode());
+
+	std::string text = Stringf("Camera Mode: %s\nCamera Pos : (%.2f, %.2f, %.2f)\nCamera Rot : (%.2f, %.2f, %.2f)\nChunk Containing : (%i, %i)\nActivation Range: %.2f\nActive Chunks: %i",
+		cameraMode.c_str(), position.x, position.y, position.z, rotation.x, rotation.y, rotation.z, chunkContainingCamera.x, chunkContainingCamera.y,
 		m_gameConfigBlackboard->GetValue("activation_range", DEFAULT_CHUNK_ACTIVATION_RANGE), m_world->GetActiveChunkCount());
 
 	DebugRenderSystem::Draw2DText(text, windowBounds, 0.f, Rgba::DARK_GREEN, 20.f);

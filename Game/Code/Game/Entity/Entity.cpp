@@ -32,7 +32,11 @@ void Entity::ApplyPhysicsStep()
 	float deltaSeconds = Game::GetDeltaTime();
 
 	// Apply Friction/Air Drag
-	ApplyFrictionOrAirDrag();
+	ApplyHorizontalFrictionOrAirDrag();
+	if (m_physicsMode != PHYSICS_MODE_WALKING)
+	{
+		ApplyVerticalAirDrag();
+	}
 
 	// Apply Force
 	Vector3 accelerationFromForce = (m_force / m_mass);
@@ -93,14 +97,16 @@ void Entity::MoveSelfHorizontal(const Vector2& directionToMove)
 	float XYSpeedIfFullAccelerationApplied = finalXYVelocityDirection.NormalizeAndGetLength();
 	float finalXYSpeed = XYSpeedIfFullAccelerationApplied;
 
+	float maxXYMoveSpeed = (m_physicsMode == PHYSICS_MODE_WALKING ? m_maxXYWalkSpeed : m_maxXYFlySpeed);
+
 	// Clamp to avoid accelerating over the move speed
-	if (currentXYSpeed > m_maxXYMoveSpeed)
+	if (currentXYSpeed > maxXYMoveSpeed)
 	{
 		finalXYSpeed = ClampFloat(XYSpeedIfFullAccelerationApplied, 0.f, currentXYSpeed); // Don't go over, will maintain it without friction
 	}
 	else
 	{
-		finalXYSpeed = ClampFloat(XYSpeedIfFullAccelerationApplied, 0.f, m_maxXYMoveSpeed); // Approach max speed
+		finalXYSpeed = ClampFloat(XYSpeedIfFullAccelerationApplied, 0.f, maxXYMoveSpeed); // Approach max speed
 	}
 
 	// Create the final velocity
@@ -116,6 +122,45 @@ void Entity::MoveSelfHorizontal(const Vector2& directionToMove)
 
 	// Apply it!
 	AddForce(force);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Moves the entity up or down using a force
+// *NOT* to be used for jumping - only for flying
+//
+void Entity::MoveSelfVertical(const float directionToMove)
+{
+	float currentZSpeed = AbsoluteValue(m_velocity.z);
+	float deltaSeconds = Game::GetDeltaTime();
+
+	float zVelocityIfFullAccelerationApplied = (m_velocity.z + (m_moveAcceleration * deltaSeconds) * directionToMove);
+	float finalResultingDirection = (zVelocityIfFullAccelerationApplied > 0.f ? 1.0f : -1.0f);
+	float zSpeedIfFullAccelerationApplied = AbsoluteValue(zVelocityIfFullAccelerationApplied);
+	float finalZSpeed = zSpeedIfFullAccelerationApplied;
+
+	// Clamp to avoid accelerating over the move speed
+	if (zSpeedIfFullAccelerationApplied > m_maxZMoveSpeed)
+	{
+		finalZSpeed = ClampFloat(zSpeedIfFullAccelerationApplied, 0.f, currentZSpeed); // Don't go over, will maintain it without friction
+	}
+	else
+	{
+		finalZSpeed = ClampFloat(zSpeedIfFullAccelerationApplied, 0.f, m_maxZMoveSpeed); // Approach max speed
+	}
+
+	// Create the final velocity
+	float finalZVelocity = finalZSpeed * finalResultingDirection;
+
+	// Determine the change in velocity
+	float deltaZVelocity = finalZVelocity - m_velocity.z;
+
+	// Find the force necessary to cause this delta
+	float zAcceleration = deltaZVelocity / deltaSeconds;
+	float zForce = zAcceleration * m_mass;
+
+	// Apply it!
+	AddForce(Vector3(0.f, 0.f, zForce));
 }
 
 
@@ -141,10 +186,10 @@ void Entity::Jump()
 //-----------------------------------------------------------------------------------------------
 // Applies friction/Air drag based on the entity's state
 //
-void Entity::ApplyFrictionOrAirDrag()
+void Entity::ApplyHorizontalFrictionOrAirDrag()
 {
 	// Friction is a force - only apply it if we're moving
-	if (m_velocity.xy().GetLengthSquared() > 0)
+	if (m_velocity.xy().GetLengthSquared() > 0.f)
 	{
 		// Different values of friction depending on ground or in air
 		float decelerationPerSecond = ENTITY_GROUND_FRICTION_DECELERATION;
@@ -167,6 +212,31 @@ void Entity::ApplyFrictionOrAirDrag()
 		Vector3 finalForce = finalDeceleration * m_mass;
 
 		AddForce(finalForce);
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Applies air drag in the z directions
+// Should only be used with flying/no clip for a softer stop
+//
+void Entity::ApplyVerticalAirDrag()
+{
+	// Friction is a force - only apply it if we're moving
+	if (m_velocity.z != 0.f)
+	{
+		float deltaSeconds = Game::GetDeltaTime();
+		float zSpeedLostThisFrame = ENTITY_AIR_DRAG_DECELERATION * deltaSeconds;
+
+		float zSpeed = AbsoluteValue(m_velocity.z);
+		zSpeedLostThisFrame = ClampFloat(zSpeedLostThisFrame, 0.f, zSpeed);
+
+		float zDecelerationDirection = (m_velocity.z > 0.f ? -1.f : 1.f);
+
+		float finalZDeceleration = zDecelerationDirection * (zSpeedLostThisFrame / deltaSeconds);
+		float finalZForce = finalZDeceleration * m_mass;
+
+		AddForce(Vector3(0.f, 0.f, finalZForce));
 	}
 }
 
