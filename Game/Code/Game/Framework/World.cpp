@@ -194,11 +194,6 @@ void World::CleanUp()
 //
 void World::Update()
 {
-	if (InputSystem::GetInstance()->WasKeyJustPressed('I'))
-	{
-		m_drawCollisions = !m_drawCollisions;
-	}
-
 	{
 		PROFILE_LOG_SCOPE("Update Simulation");
 		// "Thinking" and other general updating (animation)
@@ -658,6 +653,17 @@ bool World::IsEntityOnGround(const Entity* entity) const
 	}
 
 	return (entity->GetPosition().y <= GetMapHeightForEntity(entity));
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Toggles the flag indicating whether collisions should be drawn over regular visuals
+// Returns the new value of the flag
+//
+bool World::ToggleCollisionRendering()
+{
+	m_drawCollisions = !m_drawCollisions;
+	return m_drawCollisions;
 }
 
 

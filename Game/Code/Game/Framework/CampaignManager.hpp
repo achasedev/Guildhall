@@ -61,6 +61,7 @@ private:
 	Clock							m_spawnClock;
 	Stopwatch						m_stageTimer;
 	Stopwatch						m_spawnTick;
+	int								m_maxLiveSpawnCount = 100;
 
 	std::vector<EntitySpawnEvent*>	m_currentSpawnEvents;
 

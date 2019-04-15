@@ -1,5 +1,7 @@
 #include "Game/Framework/CampaignManager.hpp"
 #include "Game/Entity/EntitySpawnEvent_Default.hpp"
+#include "Engine/Core/EngineCommon.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 // Constructor from XML
@@ -22,8 +24,10 @@ void EntitySpawnEvent_Default::Update()
 //-----------------------------------------------------------------------------------------------
 // Spawns an entity on the map immediately at a random location
 //
-int EntitySpawnEvent_Default::RunSpawn()
+int EntitySpawnEvent_Default::RunSpawn(int maxAmountAllowedToSpawn)
 {
+	UNUSED(maxAmountAllowedToSpawn);
+
 	Vector3 position = Vector3(128.f, 20.f, 128.f);
 	float orientation = 90.f;
 

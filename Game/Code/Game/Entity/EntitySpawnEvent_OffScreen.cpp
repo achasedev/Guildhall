@@ -51,9 +51,9 @@ void EntitySpawnEvent_OffScreen::Update()
 //-----------------------------------------------------------------------------------------------
 // Render
 //
-int EntitySpawnEvent_OffScreen::RunSpawn()
+int EntitySpawnEvent_OffScreen::RunSpawn(int maxAmountAllowedToSpawn)
 {
-	int countToSpawn = MinInt(m_spawnRate, GetEntityCountLeftToSpawn());
+	int countToSpawn = Min(m_spawnRate, GetEntityCountLeftToSpawn(), maxAmountAllowedToSpawn);
 
 	for (int spawnNumber = 0; spawnNumber < countToSpawn; ++spawnNumber)
 	{

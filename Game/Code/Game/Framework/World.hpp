@@ -74,7 +74,7 @@ public:
 	void	ApplyExplosion(const IntVector3& coord, eEntityTeam team, int damage = 0, float radius = 0.f, float impulseMagnitude = 0.f, Entity* hitEntity = nullptr);
 	void	AddVoxelToMap(const IntVector3& coord, const Rgba& color);
 	void	DestroyPartOfMap(const IntVector3& coord, float radius = 0.f, float particleFlyAwaySpeed = 0.f, int maxYRadius = DEFAULT_MAX_Y_EXPLOSION_RADIUS);
-
+	
 	// Accessors
 	IntVector3			GetDimensions() const;
 	int					GetGroundElevationAtCoord(const IntVector2& coord) const;
@@ -88,6 +88,7 @@ public:
 	bool		IsEntityOnGround(const Entity* entity) const;
 	
 	// Utility
+	bool						ToggleCollisionRendering();
 	void						ParticalizeVoxelText(const std::string& text, const IntVector3& referenceStart, const VoxelFontDraw_t& options);
 	void						ParticalizeEntity(Entity* entity);
 	void						ParticalizeAllEntities();

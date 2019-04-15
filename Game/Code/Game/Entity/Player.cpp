@@ -142,29 +142,17 @@ void Player::ProcessGameplayInput()
 		Decelerate();
 	}
 
-	// Test adding a force
-	if (controller.WasButtonJustPressed(XBOX_BUTTON_X))
-	{
-		m_physicsComponent->AddForce(Vector3(leftStick.x, 0.f, leftStick.y) * -1000.f);
-	}
-
-	// Test shooting
+	// Shooting
 	bool triggerJustPulled = controller.WasTriggerJustPulled(XBOX_TRIGGER_RIGHT);
 	if (triggerJustPulled || (controller.GetTriggerValue(XBOX_TRIGGER_RIGHT) > 0.5f && m_currWeapon->IsFullAuto()))
 	{
 		Shoot();
 	}
 
-	// Test Jumping
+	// Jumping
 	if (controller.WasButtonJustPressed(XBOX_BUTTON_A))
 	{
 		Jump();
-	}
-
-	// Test damage
-	if (controller.WasButtonJustPressed(XBOX_BUTTON_Y))
-	{
-		TakeDamage(1);
 	}
 }
 
@@ -175,6 +163,18 @@ void Player::ProcessGameplayInput()
 void Player::Update()
 {
 	AnimatedEntity::Update();
+
+	// For visualizing invincibility
+	if (!m_invincibilityTimer.HasIntervalElapsed())
+	{
+		float timeLeftOnInvince = m_invincibilityTimer.GetElapsedTime();
+		float t = timeLeftOnInvince - (float)((int)timeLeftOnInvince);
+
+		if (t <= 0.25f || (t > 0.5f && t <= 0.75f))
+		{
+			SetColorOverride(Rgba::YELLOW);
+		}
+	}
 }
 
 
@@ -268,6 +268,8 @@ void Player::Respawn()
 	
 	m_physicsComponent->StopAllMovement();
 	m_respawnTimer.Reset();
+
+	SetInvincibilityTimer(PLAYER_INVINCIBILITY_DURATION_ON_RESPAWN);
 
 	OnSpawn();
 }

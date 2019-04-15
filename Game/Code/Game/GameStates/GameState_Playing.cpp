@@ -254,12 +254,6 @@ void GameState_Playing::ProcessInput()
 	{
 		m_transitionState->ProcessInput();
 	}
-	
-
-	if (InputSystem::GetInstance()->WasKeyJustPressed('L'))
-	{
-		Game::GetWorld()->ParticalizeAllEntities();
-	}
 }
 
 

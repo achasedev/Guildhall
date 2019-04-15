@@ -89,8 +89,9 @@ void EntitySpawnEvent_Meteor::Update()
 //-----------------------------------------------------------------------------------------------
 // Not used - this event spawns inside of its update
 //
-int EntitySpawnEvent_Meteor::RunSpawn()
+int EntitySpawnEvent_Meteor::RunSpawn(int maxAmountAllowedToSpawn)
 {
+	UNUSED(maxAmountAllowedToSpawn);
 	return 0;
 }
 

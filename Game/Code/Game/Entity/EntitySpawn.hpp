@@ -72,7 +72,7 @@ public:
 	//-----Public Methods
 
 	virtual void				Update() = 0;
-	virtual int					RunSpawn() = 0;
+	virtual int					RunSpawn(int maxAmountAllowedToSpawn) = 0;
 	virtual EntitySpawnEvent*	Clone(CampaignManager* manager) const = 0;
 
 	// Helper functions during spawning

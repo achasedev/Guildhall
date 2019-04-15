@@ -15,7 +15,7 @@ public:
 	EntitySpawnEvent_OffScreen(const XMLElement& element);
 
 	virtual void				Update() override;
-	virtual int					RunSpawn() override;
+	virtual int					RunSpawn(int maxAmountAllowedToSpawn) override;
 	virtual EntitySpawnEvent*	Clone(CampaignManager* manager) const override;
 
 

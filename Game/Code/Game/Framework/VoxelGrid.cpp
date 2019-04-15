@@ -200,6 +200,7 @@ void VoxelGrid::DrawEntity(const Entity* entity, const IntVector3& offset, Voxel
 
 		options.castsShadows = false;
 		options.receivesShadows = false;
+		options.hasColorOverride = false;
 		DrawVoxelSprite(indicatorSprite, indicatorPosition, 0.f, options);
 		
 		// Hack to draw player aim reticle

@@ -67,6 +67,7 @@ private:
 	static constexpr float	RESPAWN_INTERVAL = 5.0f;
 	static constexpr float	SCREENSHAKE_ADDED_ON_DEATH = 1.5f;
 	static constexpr float	PLAYER_INVINCIBILITY_DURATION_FROM_HIT = 1.0f;
+	static constexpr float	PLAYER_INVINCIBILITY_DURATION_ON_RESPAWN = 5.0f;
 	static constexpr float	MAX_AIM_RETICLE_DISTANCE = 10.f;
 	static constexpr float	AIM_RETICLE_MOVE_SPEED = 100.f;
 

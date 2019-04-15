@@ -94,6 +94,70 @@ void Command_ToggleDebug(Command& cmd)
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Gives all players the weapon specified in the command parameters
+//
+void Command_GivePlayersWeapon(Command& cmd)
+{
+	std::string weaponName;
+	bool specified = cmd.GetParam("n", weaponName);
+
+	if (!specified)
+	{
+		ConsoleErrorf("Specify a weapon name by the -n flag");
+		return;
+	}
+
+	const EntityDefinition* defintion = EntityDefinition::GetDefinition(weaponName);
+
+	if (defintion == nullptr || defintion->m_entityClass != ENTITY_CLASS_WEAPON)
+	{
+		ConsoleErrorf("Weapon \"%s\" doesn't exist", weaponName.c_str());
+		return;
+	}
+
+	Player** players = Game::GetPlayers();
+	bool gaveWeaponToAtLeastOnePlayer = false;
+
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		Player* currPlayer = players[i];
+		if (currPlayer != nullptr)
+		{
+			Weapon* weapon = new Weapon(defintion);
+			currPlayer->EquipWeapon(weapon);
+
+			ConsolePrintf(Rgba::GREEN, "Equipped \"%s\" to player %i", weaponName.c_str(), i + 1);
+			gaveWeaponToAtLeastOnePlayer = true;
+		}
+	}
+
+	if (!gaveWeaponToAtLeastOnePlayer)
+	{
+		ConsoleWarningf("No active players to give weapons to");
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Toggles world collision rendering
+//
+void Command_ToggleCollisionRendering(Command& cmd)
+{
+	UNUSED(cmd);
+
+	bool drawingCollisions = Game::GetWorld()->ToggleCollisionRendering();
+
+	if (drawingCollisions)
+	{
+		ConsolePrintf(Rgba::GREEN, "Collision rendering enabled");
+	}
+	else
+	{
+		ConsolePrintf(Rgba::GREEN, "Collision rendering disabled");
+	}
+}
+
 /************************************************************************/
 /* End Console Commands                                                 */
 /************************************************************************/
@@ -396,6 +460,8 @@ void Game::InitializeConsoleCommands()
 	Command::Register("killall", "Kills all entities", Command_KillAll);
 	Command::Register("lc", "Loads the campaign given by name -n", Command_StartCampaign);
 	Command::Register("debug", "Toggles debug mode of the game", Command_ToggleDebug);
+	Command::Register("give", "Gives all players the weapon given by -n", Command_GivePlayersWeapon);
+	Command::Register("tc", "Toggles collision rendering", Command_ToggleCollisionRendering);
 }
 
 
@@ -1138,6 +1204,25 @@ void Game::RescaleDifficultyBasedOnCurrentPlayerCount()
 	}
 
 	s_instance->m_campaignManager->RescaleToNewDifficulty(newDifficultyScale);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns true if all active players are respawning; used for pausing spawning
+//
+bool Game::AreAllActivePlayersDead()
+{
+	Player** players = s_instance->m_players;
+
+	for (int i = 0; i < MAX_PLAYERS; ++i)
+	{
+		if (players[i] != nullptr && !players[i]->IsRespawning())
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 

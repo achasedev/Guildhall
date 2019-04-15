@@ -67,9 +67,9 @@ void EntitySpawnEvent_FromGround::Update()
 //-----------------------------------------------------------------------------------------------
 // Spawns the correct number of entities and adds them to the rising entity list
 //
-int EntitySpawnEvent_FromGround::RunSpawn()
+int EntitySpawnEvent_FromGround::RunSpawn(int maxAmountAllowedToSpawn)
 {
-	int countToSpawn = MinInt(m_spawnRate, GetEntityCountLeftToSpawn());
+	int countToSpawn = Min(m_spawnRate, GetEntityCountLeftToSpawn(), maxAmountAllowedToSpawn);
 
 	for (int spawnNumber = 0; spawnNumber < countToSpawn; ++spawnNumber)
 	{

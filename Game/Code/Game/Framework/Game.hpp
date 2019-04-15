@@ -86,6 +86,7 @@ public:
 
 	static bool					AreAllPlayersInitialized();
 	static void					RescaleDifficultyBasedOnCurrentPlayerCount();
+	static bool					AreAllActivePlayersDead();
 
 
 private:

@@ -91,6 +91,8 @@ void CampaignManager::CleanUp()
 //
 void CampaignManager::Update()
 {
+	bool allPlayersDead = Game::AreAllActivePlayersDead();
+
 	// Check for spawn tick
 	bool spawnTicked = (m_spawnTick.DecrementByIntervalAll() > 0);
 
@@ -106,10 +108,15 @@ void CampaignManager::Update()
 		{
 			allEventsFinished = false;
 
-			if (spawnTicked && currEvent->IsReadyForNextSpawn())
+			if (spawnTicked && currEvent->IsReadyForNextSpawn() && !allPlayersDead)
 			{
-				int enemiesSpawned = currEvent->RunSpawn();
-				m_totalSpawnedThisStage += enemiesSpawned;
+				int maxToSpawnThisTick = m_maxLiveSpawnCount - GetCurrentLiveEnemyCount();
+
+				if (maxToSpawnThisTick > 0)
+				{
+					int enemiesSpawned = currEvent->RunSpawn(maxToSpawnThisTick);
+					m_totalSpawnedThisStage += enemiesSpawned;
+				}
 			}
 		}
 	}
