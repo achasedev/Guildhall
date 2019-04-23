@@ -1,5 +1,6 @@
 <Map name="Forest6" terrain_type="Grass">
 
-		<Spawn definition="Tree3" count="10~20" spawn_start="20, 20" spawn_range="216, 216" overlap_type="all" orientation="-1.0"/>
+		<Spawn definition="Tree3" count="10~15" spawn_start="20, 20" spawn_range="216, 216" overlap_type="all" orientation="-1.0"/>
+		<Spawn definition="Rock1" count="3~5" spawn_start="20, 20" spawn_range="216, 216" overlap_type="all" orientation="-1.0"/>
 
 </Map>

@@ -1190,13 +1190,13 @@ void Game::RescaleDifficultyBasedOnCurrentPlayerCount()
 		newDifficultyScale = 1.f;
 		break;
 	case 2: 
-		newDifficultyScale = 2.f;
+		newDifficultyScale = 1.5f;
 		break;
 	case 3:
-		newDifficultyScale = 3.f;
+		newDifficultyScale = 2.2f;
 		break;
 	case 4:
-		newDifficultyScale = 4.f;
+		newDifficultyScale = 3.0f;
 		break;
 	default:
 		ERROR_AND_DIE("Bad player count");

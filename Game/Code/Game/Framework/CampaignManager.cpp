@@ -24,7 +24,7 @@ CampaignManager::CampaignManager()
 	, m_stageTimer(Stopwatch(&m_spawnClock))
 	, m_spawnTick(Stopwatch(&m_spawnClock))
 {
-	m_spawnTick.SetInterval(1.0f);
+	m_spawnTick.SetInterval(2.0f);
 }
 
 
@@ -68,7 +68,7 @@ void CampaignManager::Initialize(const CampaignDefinition* definition)
 void CampaignManager::CleanUp()
 {
 	// Basic state
-	m_spawnTick.SetInterval(1.0f);
+	m_spawnTick.SetInterval(2.0f);
 	m_currStageFinished = false;
 	m_currStageIndex = 0;
 	m_totalSpawnedThisStage = 0;

@@ -1,6 +1,6 @@
 <Map name="Forest8" terrain_type="Grass">
 
-	<Spawn definition="Tree3" count="40~60" spawn_start="40, 40" spawn_range="176, 176" overlap_type="none" orientation="-1.0"/>
-	<Spawn definition="Tree4" count="40~60" spawn_start="40, 40" spawn_range="176, 176" overlap_type="none" orientation="-1.0"/>
+	<Spawn definition="Tree3" count="20~30" spawn_start="0, 0" spawn_range="255, 255" overlap_type="all" orientation="-1.0"/>
+	<Spawn definition="Tree4" count="20~30" spawn_start="0, 0" spawn_range="255, 255" overlap_type="all" orientation="-1.0"/>
 
 </Map>

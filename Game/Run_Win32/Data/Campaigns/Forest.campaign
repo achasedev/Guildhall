@@ -1,124 +1,82 @@
 <Campaign name="Forest" music="Data/Audio/Music/Boss Battle #4 V1.wav" character_select_map="Forest0">
 
 	
-<Stage map="Forest1" enter="west">
-
-		<!-- <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="64, 64" spawn_maxs="192, 192" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="0.5" total_to_spawn="5"/> Here total_to_spawn is the entities from one meteor, NOT the number of meteors!-->
-
-		<!-- <SpawnEvent type="off_screen" entity="Walker" spawn_direction="north" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="0.5" total_to_spawn="5"/> -->
-
-		<!-- <SpawnEvent type="default" entity="Walker" spawn_mins="64, 64" spawn_maxs="192, 192" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="0.5" total_to_spawn="5"/> -->
-
-		<!-- <SpawnEvent type="from_ground" spawn_mins="64, 64" spawn_maxs="192, 192" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="0.5" total_to_spawn="5"/> -->
-
-		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>
-
+	<Stage map="Forest1" enter="west">
+		<SpawnEvent type="off_screen" spawn_direction="east" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>
 	</Stage> 
 
 	<Stage map="Forest2" enter="west">
-		<SpawnEvent type="off_screen" spawn_direction="north" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>
-		<SpawnEvent type="off_screen" spawn_direction="east" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="20"/>
+		<SpawnEvent type="off_screen" spawn_direction="east" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="20"/>
 	</Stage>
 
 	<Stage map="Forest3" enter="north">
-		<SpawnEvent type="off_screen" spawn_direction="west" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>
-		<SpawnEvent type="off_screen" spawn_direction="east" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>	
-
-		<SpawnEvent type="off_screen" spawn_direction="north" entity="Tank" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="3"/>
-		<SpawnEvent type="off_screen" spawn_direction="north" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="20"/>
+		<SpawnEvent type="off_screen" spawn_direction="west" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="20"/>
+		<SpawnEvent type="off_screen" spawn_direction="east" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="20"/>	
+		<SpawnEvent type="off_screen" spawn_direction="south" entity="Tank" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="5.0" total_to_spawn="3"/>
 	</Stage>
 
 	<Stage map="Forest4" enter="north">
-		<SpawnEvent type="off_screen" spawn_direction="south" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="20"/>
-		<SpawnEvent type="off_screen" spawn_direction="west" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="20"/>
-		<SpawnEvent type="off_screen" spawn_direction="south" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="11.0" total_to_spawn="20"/>
-		<SpawnEvent type="off_screen" spawn_direction="west" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="11.0" total_to_spawn="20"/>
-
-		<SpawnEvent type="off_screen" spawn_direction="north" entity="Tank" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="5"/>
-		<SpawnEvent type="off_screen" spawn_direction="east" entity="Tank" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="5"/>
+		<SpawnEvent type="off_screen" spawn_direction="west" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="20"/>
+		<SpawnEvent type="off_screen" spawn_direction="south" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="10"/>
+		<SpawnEvent type="off_screen" spawn_direction="east" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="20"/>
+		<SpawnEvent type="off_screen" spawn_direction="south" entity="Tank" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="5"/>
 	</Stage>
 
 
 	<Stage map="Forest5" enter="west">
-		<SpawnEvent type="off_screen" spawn_direction="north" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>
-		<SpawnEvent type="off_screen" spawn_direction="south" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>
-
-		<SpawnEvent type="off_screen" spawn_direction="east" entity="Tank" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="3"/>
-		<SpawnEvent type="off_screen" spawn_direction="west" entity="Tank" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="3"/>
-
-		<SpawnEvent type="off_screen" spawn_direction="east" entity="Bunny" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="25.0" total_to_spawn="3"/>
-		<SpawnEvent type="off_screen" spawn_direction="west" entity="Bunny" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="25.0" total_to_spawn="3"/>
-
-		<SpawnEvent type="from_ground" spawn_mins="0, 40" spawn_maxs="255, 215" entity="Walker" spawn_rate="10" spawn_count_delay="0" spawn_time_delay="35.0" total_to_spawn="50"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Walker" spawn_rate="4" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>
+		<SpawnEvent type="off_screen" spawn_direction="south" entity="Walker" spawn_rate="4" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Tank" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="3"/>
+		<SpawnEvent type="off_screen" spawn_direction="south" entity="Tank" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="3"/>
+		<SpawnEvent type="off_screen" spawn_direction="east" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="11.0" total_to_spawn="30"/>
+		<SpawnEvent type="off_screen" spawn_direction="west" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="11.0" total_to_spawn="30"/>
 	</Stage>
 
 
 	<Stage map="Forest6" enter="west">
-
-		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="255, 215" entity="Hound" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="10"/>
-		<SpawnEvent type="off_screen" spawn_direction="north" entity="Bunny" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="12"/>
-
-		<SpawnEvent type="off_screen" spawn_direction="north" entity="Hound" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="15.0" total_to_spawn="4"/>
-		<SpawnEvent type="off_screen" spawn_direction="south" entity="Hound" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="15.0" total_to_spawn="4"/>
-		<SpawnEvent type="off_screen" spawn_direction="east" entity="Hound" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="15.0" total_to_spawn="4"/>
-		<SpawnEvent type="off_screen" spawn_direction="west" entity="Hound" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="15.0" total_to_spawn="4"/>
-
-		<SpawnEvent type="off_screen" spawn_direction="north" entity="Bunny" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="15.0" total_to_spawn="4"/>
-		<SpawnEvent type="off_screen" spawn_direction="south" entity="Bunny" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="15.0" total_to_spawn="4"/>
-		<SpawnEvent type="off_screen" spawn_direction="east" entity="Bunny" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="15.0" total_to_spawn="4"/>
-		<SpawnEvent type="off_screen" spawn_direction="west" entity="Bunny" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="15.0" total_to_spawn="4"/>
-
-	</Stage>
-
-	<Stage map="Forest6" enter="north">
-
-		<SpawnEvent type="off_screen" spawn_direction="north" entity="Spider" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="15"/>
-		<SpawnEvent type="off_screen" spawn_direction="south" entity="Spider" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="15"/>
-		<SpawnEvent type="off_screen" spawn_direction="east" entity="Spider" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="15"/>
-		<SpawnEvent type="off_screen" spawn_direction="west" entity="Spider" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="15"/>
-
-		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="255, 215" entity="Spider" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="15.0" total_to_spawn="50"/>
-
+		<SpawnEvent type="off_screen" spawn_direction="east" entity="Hound" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="6"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Hound" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="16.0" total_to_spawn="3"/>
+		<SpawnEvent type="off_screen" spawn_direction="south" entity="Hound" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="16.0" total_to_spawn="3"/>
 	</Stage>
 
 	<Stage map="Forest7" enter="west">
-		<SpawnEvent type="off_screen" spawn_direction="east" entity="Walker" spawn_rate="10" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="50"/>
-		<SpawnEvent type="off_screen" spawn_direction="south" entity="Walker" spawn_rate="10" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="50"/>
-		<SpawnEvent type="off_screen" spawn_direction="east" entity="Tank" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="5"/>
-		<SpawnEvent type="off_screen" spawn_direction="south" entity="Tank" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="5"/>
-
-		<SpawnEvent type="off_screen" spawn_direction="east" entity="Hound" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="25.0" total_to_spawn="3"/>
-		<SpawnEvent type="off_screen" spawn_direction="west" entity="Spider" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="25.0" total_to_spawn="15"/>
+		<SpawnEvent type="off_screen" spawn_direction="east" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="40"/>
+		<SpawnEvent type="off_screen" spawn_direction="south" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="40"/>
+		<SpawnEvent type="off_screen" spawn_direction="east" entity="Tank" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="5"/>
+		<SpawnEvent type="off_screen" spawn_direction="south" entity="Tank" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="5"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Hound" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="5"/>
 	</Stage>
 
-	<Stage map="Forest8" enter="north">
-
-		<SpawnEvent type="from_ground" spawn_mins="80, 80" spawn_maxs="176, 176" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="100"/>
-		<SpawnEvent type="from_ground" spawn_mins="80, 80" spawn_maxs="176, 176" entity="Spider" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>
-		<SpawnEvent type="from_ground" spawn_mins="80, 80" spawn_maxs="176, 176" entity="Tank" spawn_rate="1" spawn_count_delay="130" spawn_time_delay="0.0" total_to_spawn="10"/>
-
+	<Stage map="Forest8" enter="south">
+		<SpawnEvent type="off_screen" spawn_direction="south" entity="Bunny" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="10"/>
+		<SpawnEvent type="off_screen" spawn_direction="east" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="11.0" total_to_spawn="40"/>
+		<SpawnEvent type="off_screen" spawn_direction="west" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="11.0" total_to_spawn="40"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Bunny" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="10"/>
 	</Stage>
 
-	<Stage map="Forest9" enter="west">
-
-		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="150"/>
-		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Tank" spawn_rate="1" spawn_count_delay="150" spawn_time_delay="0.0" total_to_spawn="10"/>
-		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Spider" spawn_rate="3" spawn_count_delay="150" spawn_time_delay="0.0" total_to_spawn="50"/>
-
+	<Stage map="Forest9" enter="east">
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="50"/>
+		<SpawnEvent type="off_screen" spawn_direction="west" entity="Walker" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="50"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Tank" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="6.0" total_to_spawn="5"/>
+		<SpawnEvent type="off_screen" spawn_direction="west" entity="Tank" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="6.0" total_to_spawn="5"/>
+		<SpawnEvent type="off_screen" spawn_direction="west" entity="Hound" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="10"/>
+		<SpawnEvent type="off_screen" spawn_direction="east" entity="Bunny" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="11.0" total_to_spawn="20"/>
 	</Stage>
 
 	<Stage map="Forest10" enter="north">
-
-		<SpawnEvent type="off_screen" spawn_direction="south" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="60"/>
-		<SpawnEvent type="off_screen" spawn_direction="east" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="60"/>
-		<SpawnEvent type="off_screen" spawn_direction="west" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="60"/>
-
-		<SpawnEvent type="from_ground" spawn_mins="40, 40" spawn_maxs="215, 215" entity="Tank" spawn_rate="5" spawn_count_delay="180" spawn_time_delay="1.0" total_to_spawn="5"/>
-		<SpawnEvent type="off_screen" spawn_direction="north" entity="Bunny" spawn_rate="5" spawn_count_delay="180" spawn_time_delay="1.0" total_to_spawn="20"/>
-
-		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" spawn_rate="25" spawn_count_delay="180" spawn_time_delay="1.0" total_to_spawn="50"/>
-		<SpawnEvent type="from_ground" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Hound" spawn_rate="5" spawn_count_delay="0" spawn_time_delay="45.0" total_to_spawn="10"/>
-
+		<SpawnEvent type="off_screen" spawn_direction="south" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>
+		<SpawnEvent type="off_screen" spawn_direction="east" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>
+		<SpawnEvent type="off_screen" spawn_direction="west" entity="Walker" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>
+		<SpawnEvent type="off_screen" spawn_direction="south" entity="Tank" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="3"/>
+		<SpawnEvent type="off_screen" spawn_direction="east" entity="Tank" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="3"/>
+		<SpawnEvent type="off_screen" spawn_direction="west" entity="Tank" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="3"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Bunny" spawn_rate="3" spawn_count_delay="0" spawn_time_delay="16.0" total_to_spawn="15"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Hound" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="16.0" total_to_spawn="10"/>
+		<SpawnEvent type="off_screen" spawn_direction="south" entity="Walker" spawn_rate="3" spawn_count_delay="124" spawn_time_delay="1.0" total_to_spawn="30"/>
+		<SpawnEvent type="off_screen" spawn_direction="east" entity="Walker" spawn_rate="3" spawn_count_delay="124" spawn_time_delay="1.0" total_to_spawn="30"/>
+		<SpawnEvent type="off_screen" spawn_direction="west" entity="Walker" spawn_rate="3" spawn_count_delay="124" spawn_time_delay="1.0" total_to_spawn="30"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Walker" spawn_rate="3" spawn_count_delay="124" spawn_time_delay="1.0" total_to_spawn="30"/>
 	</Stage>
 
 

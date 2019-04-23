@@ -1,7 +1,7 @@
 <Map name="Forest10" terrain_type="Grass">
 
-	<Spawn definition="Tree3" count="20~30" spawn_start="0, 0" spawn_range="40, 255" overlap_type="none" orientation="-1.0"/>
-	<Spawn definition="Tree3" count="20~30" spawn_start="0, 0" spawn_range="255, 40" overlap_type="none" orientation="-1.0"/>
-	<Spawn definition="Tree3" count="20~30" spawn_start="215, 0" spawn_range="40, 255" overlap_type="none" orientation="-1.0"/>
+	<Spawn definition="Tree3" count="8~12" spawn_start="0, 0" spawn_range="40, 255" overlap_type="all" orientation="-1.0"/>
+	<Spawn definition="Tree3" count="8~12" spawn_start="0, 0" spawn_range="255, 40" overlap_type="all" orientation="-1.0"/>
+	<Spawn definition="Tree3" count="8~12" spawn_start="215, 0" spawn_range="40, 255" overlap_type="all" orientation="-1.0"/>
 
 </Map>
