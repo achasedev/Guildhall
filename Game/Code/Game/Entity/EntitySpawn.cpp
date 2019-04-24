@@ -126,7 +126,7 @@ bool EntitySpawnEvent::IsEventTrackingThisEntity(AIEntity* entity)
 void EntitySpawnEvent::RescaleToNewDifficulty(float existingDifficultyScale, float newDifficultyScale)
 {
 	m_totalToSpawn		= Ceiling(((float)m_totalToSpawn)		/ existingDifficultyScale * newDifficultyScale);
-	m_spawnRate			= Ceiling(((float)m_spawnRate)			/ existingDifficultyScale * newDifficultyScale);
+	//m_spawnRate			= Ceiling(((float)m_spawnRate)			/ existingDifficultyScale * newDifficultyScale);
 	m_spawnCountDelay	= Ceiling(((float)m_spawnCountDelay)	/ existingDifficultyScale * newDifficultyScale);
 }
 

@@ -281,7 +281,7 @@ void Game::RenderDebugInfo() const
 	int numParticles = m_world->GetLiveParticleCount();
 
 	std::string entityInfo = Stringf("Unassigned: %i\nStatics: %i\nAI: %i\nWeapons: %i\nProjectiles: %i\nItems: %i\nPlayers: %i\nParticles: %i\nCSV: %i\n",
-		entityCounts[0], entityCounts[1], entityCounts[2], entityCounts[3], numParticles, entityCounts[5], entityCounts[6], entityCounts[7], entityCounts[8]);
+		entityCounts[0], entityCounts[1], entityCounts[2], entityCounts[3], entityCounts[4], entityCounts[5], entityCounts[6], numParticles, entityCounts[8]);
 
 	renderer->DrawTextInBox2D(entityInfo, uibounds, Vector2(0.f, 1.0f), 20.f, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), Rgba::GREEN);
 }
