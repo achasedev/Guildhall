@@ -33,7 +33,7 @@
 		<Audio on_death="Data\Audio\SFX\dog\dog-snarl.flac"/>
 	</EntityDefinition>
 
-	<EntityDefinition name="Soldier" initial_health="5" loot_table="Soldier">
+	<EntityDefinition name="Soldier" initial_health="1" loot_table="Soldier">
 		<Movement max_acceleration="2000.0" max_speed="20.0" 
 			max_deceleration="100.0" jump_impulse="10.0"/>
 		<Visuals animation_set="Soldier" default_sprite="Soldier_idle_0"/>

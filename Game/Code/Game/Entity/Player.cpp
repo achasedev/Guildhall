@@ -234,6 +234,9 @@ void Player::OnSpawn()
 	}
 
 	Game::GetGameAudioSystem()->PlaySystemSound("Player_respawn");
+
+	// Also give the player full health
+	m_health = m_definition->m_initialHealth;
 }
 
 
