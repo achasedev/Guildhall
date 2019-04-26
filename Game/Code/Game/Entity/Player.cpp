@@ -143,14 +143,16 @@ void Player::ProcessGameplayInput()
 	}
 
 	// Shooting
-	bool triggerJustPulled = controller.WasTriggerJustPulled(XBOX_TRIGGER_RIGHT);
-	if (triggerJustPulled || (controller.GetTriggerValue(XBOX_TRIGGER_RIGHT) > 0.5f && m_currWeapon->IsFullAuto()))
+	bool triggerJustPulled = controller.WasTriggerJustPulled(XBOX_TRIGGER_RIGHT) || controller.WasTriggerJustPulled(XBOX_TRIGGER_LEFT);
+	bool fullAutoFired = controller.GetTriggerValue(XBOX_TRIGGER_RIGHT) > 0.5f || controller.GetTriggerValue(XBOX_TRIGGER_LEFT) > 0.5f;
+	if (triggerJustPulled || (fullAutoFired && m_currWeapon->IsFullAuto()))
 	{
 		Shoot();
 	}
 
 	// Jumping
-	if (controller.WasButtonJustPressed(XBOX_BUTTON_A))
+	if (controller.WasButtonJustPressed(XBOX_BUTTON_A)
+		|| controller.WasButtonJustPressed(XBOX_BUTTON_LB) || controller.WasButtonJustPressed(XBOX_BUTTON_RB))
 	{
 		Jump();
 	}
