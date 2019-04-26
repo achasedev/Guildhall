@@ -1,47 +1,117 @@
 <Campaign name="Moon" music="Data/Audio/Music/Boss Battle #1 V1.wav" character_select_map="Moon0">
 
-	<Stage map="Moon1" enter="south">
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="5"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="3.0" total_to_spawn="5"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="4.0" total_to_spawn="5"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="5.0" total_to_spawn="5"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="6.0" total_to_spawn="5"/>
+	<Stage map="Moon1" enter="north">
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 128" entity="Walker" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 128" entity="Walker" spawn_count_delay="0" spawn_time_delay="4.0" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 128" entity="Walker" spawn_count_delay="0" spawn_time_delay="6.0" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 128" entity="Walker" spawn_count_delay="0" spawn_time_delay="8.0" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 128" entity="Walker" spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="5"/>	
+    </Stage> 
+
+	<Stage map="Moon1" enter="east">
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="128, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="10"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="128, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="4.0" total_to_spawn="10"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="128, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="6.0" total_to_spawn="10"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="128, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="8.0" total_to_spawn="10"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="128, 255" entity="Tank"   spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="5"/>	
+	</Stage> 
+
+	<Stage map="Moon2" enter="south">
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 128" spawn_maxs="255, 255" entity="Walker" 	spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 128" spawn_maxs="255, 255" entity="Walker" 	spawn_count_delay="0" spawn_time_delay="3.5" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 128" spawn_maxs="255, 255" entity="Walker" 	spawn_count_delay="0" spawn_time_delay="5.0" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 128" spawn_maxs="255, 255" entity="Tank" 	spawn_count_delay="0" spawn_time_delay="6.5" total_to_spawn="2"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0"   spawn_maxs="255, 255" entity="Walker" 	spawn_count_delay="0" spawn_time_delay="8.0" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0"   spawn_maxs="255, 255" entity="Walker" 	spawn_count_delay="0" spawn_time_delay="9.5" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0"   spawn_maxs="255, 255" entity="Walker" 	spawn_count_delay="0" spawn_time_delay="11.0" total_to_spawn="15"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0"   spawn_maxs="255, 255" entity="Tank" 	spawn_count_delay="0" spawn_time_delay="12.5" total_to_spawn="2"/>	
 	</Stage> 
 
 	<Stage map="Moon2" enter="east">
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Tank" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="1"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Tank" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="3.0" total_to_spawn="1"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Tank" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="4.0" total_to_spawn="1"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Tank" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="5.0" total_to_spawn="1"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Tank" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="6.0" total_to_spawn="1"/>	
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" 	spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" 	spawn_count_delay="0" spawn_time_delay="3.5" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" 	spawn_count_delay="0" spawn_time_delay="5.0" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Tank" 	    spawn_count_delay="0" spawn_time_delay="6.5" total_to_spawn="2"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" 	spawn_count_delay="0" spawn_time_delay="8.0" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" 	spawn_count_delay="0" spawn_time_delay="9.5" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" 	spawn_count_delay="0" spawn_time_delay="11.0" total_to_spawn="15"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Tank" 	    spawn_count_delay="0" spawn_time_delay="12.5" total_to_spawn="2"/>	
 	</Stage> 
 
 	<Stage map="Moon3" enter="north">
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Spider" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="30"/>	
+		<SpawnEvent type="off_screen" spawn_direction="west" entity="Smasher" spawn_count_delay="0" spawn_time_delay="2.0"  total_to_spawn="1"/>	
+		<SpawnEvent type="off_screen" spawn_direction="west" entity="Smasher" spawn_count_delay="0" spawn_time_delay="7.0"  total_to_spawn="1"/>	
+		<SpawnEvent type="off_screen" spawn_direction="west" entity="Smasher" spawn_count_delay="0" spawn_time_delay="12.0" total_to_spawn="1"/>	
+		<SpawnEvent type="off_screen" spawn_direction="west" entity="Smasher" spawn_count_delay="0" spawn_time_delay="17.0" total_to_spawn="1"/>	
+		<SpawnEvent type="off_screen" spawn_direction="west" entity="Smasher" spawn_count_delay="0" spawn_time_delay="22.0" total_to_spawn="1"/>	
 	</Stage> 
 
-	<Stage map="Moon4" enter="west">
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="3"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="3.0" total_to_spawn="3"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="4.0" total_to_spawn="3"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="5.0" total_to_spawn="3"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="6.0" total_to_spawn="3"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="7.0" total_to_spawn="3"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="8.0" total_to_spawn="3"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="9.0" total_to_spawn="3"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="3"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="11.0" total_to_spawn="3"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="12.0" total_to_spawn="3"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="13.0" total_to_spawn="3"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="14.0" total_to_spawn="3"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="15.0" total_to_spawn="3"/>
-		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="256, 256" entity="Walker" spawn_rate="2" spawn_count_delay="0" spawn_time_delay="16.0" total_to_spawn="3"/>
+	<Stage map="Moon3" enter="east">
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Smasher" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="1"/>
+		<SpawnEvent type="off_screen" spawn_direction="east"  entity="Smasher" spawn_count_delay="0" spawn_time_delay="7.0" total_to_spawn="1"/>
+		<SpawnEvent type="off_screen" spawn_direction="west"  entity="Smasher" spawn_count_delay="0" spawn_time_delay="12.0" total_to_spawn="1"/>
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="10"/>		
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="4.0" total_to_spawn="10"/>		
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Tank" spawn_count_delay="0"   spawn_time_delay="6.0" total_to_spawn="3"/>
+	</Stage> 
+
+	<Stage map="Moon4" enter="south">
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Smasher" spawn_count_delay="0" spawn_time_delay="2.0"  total_to_spawn="1"/>
+		<SpawnEvent type="off_screen" spawn_direction="east"  entity="Smasher" spawn_count_delay="0" spawn_time_delay="7.0"  total_to_spawn="1"/>
+		<SpawnEvent type="off_screen" spawn_direction="west"  entity="Smasher" spawn_count_delay="0" spawn_time_delay="12.0" total_to_spawn="1"/>
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="2.0"   total_to_spawn="10"/>		
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="4.0"   total_to_spawn="10"/>		
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="6.0"   total_to_spawn="10"/>		
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="8.0"   total_to_spawn="10"/>		
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="10.0"  total_to_spawn="10"/>		
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Tank" spawn_count_delay="0"   spawn_time_delay="12.0"  total_to_spawn="3"/>
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Tank" spawn_count_delay="0"   spawn_time_delay="14.0"  total_to_spawn="3"/>		
+	</Stage> 
+
+	<Stage map="Moon4" enter="south">
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="UFO" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="1"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="UFO" spawn_count_delay="0" spawn_time_delay="7.0" total_to_spawn="1"/>
 	</Stage> 
 
 	<Stage map="Moon5" enter="west">
-		<SpawnEvent type="off_screen" spawn_direction="north" spawn_mins="0, 192" spawn_maxs="256, 256" entity="UFO" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="1.0" total_to_spawn="1"/>
-		<SpawnEvent type="off_screen" spawn_direction="north" spawn_mins="0, 192" spawn_maxs="256, 256" entity="UFO" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="11.0" total_to_spawn="1"/>
-		<SpawnEvent type="off_screen" spawn_direction="north" spawn_mins="0, 192" spawn_maxs="256, 256" entity="UFO" spawn_rate="1" spawn_count_delay="0" spawn_time_delay="21.0" total_to_spawn="1"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="UFO" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="1"/>
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="4.0" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="6.0" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="8.0" total_to_spawn="5"/>	
+        <SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Tank"   spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="5"/>	
+	</Stage> 
+
+	<Stage map="Moon5" enter="north">
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 64" entity="Walker" spawn_count_delay="0" spawn_time_delay="2.0" total_to_spawn="5"/>	
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 64" entity="Walker" spawn_count_delay="0" spawn_time_delay="3.0" total_to_spawn="5"/>	
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 64" entity="Walker" spawn_count_delay="0" spawn_time_delay="4.0" total_to_spawn="5"/>	
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 64" entity="Walker" spawn_count_delay="0" spawn_time_delay="5.0" total_to_spawn="5"/>	
+
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="64, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="6.0" total_to_spawn="5"/>	
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="64, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="7.0" total_to_spawn="5"/>	
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="64, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="8.0" total_to_spawn="5"/>	
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="64, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="9.0" total_to_spawn="5"/>	
+
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="192, 0" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="10.0" total_to_spawn="5"/>	
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="192, 0" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="11.0" total_to_spawn="5"/>	
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="192, 0" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="12.0" total_to_spawn="5"/>	
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="192, 0" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="13.0" total_to_spawn="5"/>
+
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 192" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="14.0" total_to_spawn="5"/>	
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 192" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="15.0" total_to_spawn="5"/>	
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 192" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="16.0" total_to_spawn="5"/>	
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 192" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="17.0" total_to_spawn="5"/>	
+
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="UFO" spawn_count_delay="0" spawn_time_delay="20.0" total_to_spawn="1"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="UFO" spawn_count_delay="0" spawn_time_delay="27.0" total_to_spawn="1"/>
+
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Smasher" spawn_count_delay="0" spawn_time_delay="22.5" total_to_spawn="1"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Smasher" spawn_count_delay="0" spawn_time_delay="27.5" total_to_spawn="1"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Smasher" spawn_count_delay="0" spawn_time_delay="32.5" total_to_spawn="1"/>
+		<SpawnEvent type="off_screen" spawn_direction="north" entity="Smasher" spawn_count_delay="0" spawn_time_delay="37.5" total_to_spawn="1"/>
+
+		<SpawnEvent type="meteor" meteor_entity="Meteor" spawn_mins="0, 0" spawn_maxs="255, 255" entity="Walker" spawn_count_delay="0" spawn_time_delay="45.0" total_to_spawn="50"/>
 	</Stage> 
 
 </Campaign>
