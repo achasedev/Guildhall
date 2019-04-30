@@ -263,7 +263,7 @@ void Game::RenderDebugInfo() const
 	renderer->SetCurrentCamera(renderer->GetUICamera());
 	AABB2 uibounds = renderer->GetUIBounds();
 
-	renderer->DrawTextInBox2D("Alpha v0.8", uibounds, Vector2::ZERO, 20.f, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), Rgba::GREEN);
+	renderer->DrawTextInBox2D("Version 1.0 - Thesis Release", uibounds, Vector2::ZERO, 20.f, TEXT_DRAW_OVERRUN, AssetDB::GetBitmapFont("Data/Images/Fonts/ConsoleFont.png"), Rgba::GREEN);
 
 	const std::vector<Entity*>& entitiesInWorld = m_world->GetAllEntities();
 
