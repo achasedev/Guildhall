@@ -45,6 +45,7 @@ private:
 	Game(const Game& copy) = delete;
 
 	void ProcessEventSystemInput();
+	void ProcessJobSystemInput();
 
 	static bool EventSystemStaticCallback(NamedProperties& args);
 	bool		EventSystemObjectMethodCallback(NamedProperties& args);
@@ -67,6 +68,12 @@ public:
 	Stopwatch m_eventFiredTimer;
 
 	std::string m_eventResultsText;
+
+	// Job System Testing
+	int m_totalCreatedJobs = 0;
+	int m_numJobsFinished = 0;
+
+	std::vector<std::string> m_workerThreadIDs;
 
 
 private:

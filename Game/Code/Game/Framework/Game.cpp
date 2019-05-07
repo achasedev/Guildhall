@@ -5,6 +5,7 @@
 /* Description: Game class for general gameplay management
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/CountJob.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Engine/Core/Window.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -127,17 +128,74 @@ void Game::ProcessEventSystemInput()
 
 
 //-----------------------------------------------------------------------------------------------
+// Checks for input for testing the job system
+//
+void Game::ProcessJobSystemInput()
+{
+	InputSystem* input = InputSystem::GetInstance();
+
+	if (input->WasKeyJustPressed('B'))
+	{
+		std::string nextID = Stringf("Thread%i", m_workerThreadIDs.size());
+		m_workerThreadIDs.push_back(nextID);
+
+		JobSystem::GetInstance()->CreateWorkerThread(nextID.c_str(), WORKER_FLAGS_ALL_BUT_DISK);
+	}
+
+	if (input->WasKeyJustPressed('V'))
+	{
+		if (m_workerThreadIDs.size() > 0)
+		{
+			std::string idToRemove = m_workerThreadIDs[m_workerThreadIDs.size() - 1];
+			m_workerThreadIDs.pop_back();
+
+			JobSystem::GetInstance()->DestroyWorkerThread(idToRemove.c_str());
+		}
+	}
+
+	// No pushing more jobs until the previous are done >.>
+	if (m_numJobsFinished < m_totalCreatedJobs)
+	{
+		return;
+	}
+
+
+	if (input->WasKeyJustPressed('N'))
+	{
+		// Push a bunch of jobs to the job system
+		for (int i = 0; i < 1000; i++)
+		{
+			CountJob* countJob = new CountJob();
+			QueueJob(countJob);
+		}
+	}
+
+	if (input->WasKeyJustPressed('M'))
+	{
+		// Run a bunch of jobs right now on the main thread
+		for (int i = 0; i < 1000; i++)
+		{
+			CountJob* countJob = new CountJob();
+
+			countJob->Execute();
+			countJob->Finalize();
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Static event for testing
 //
 bool Game::EventSystemStaticCallback(NamedProperties& args)
 {
 	if (s_instance->m_staticFunctionShouldConsume)
 	{
-		s_instance->m_eventResultsText += "STATIC: Fired AND Consumed\n";
+		s_instance->m_eventResultsText += "    -STATIC: Fired AND Consumed\n";
 	}
 	else
 	{
-		s_instance->m_eventResultsText += "STATIC: Fired (Did NOT consume)\n";
+		s_instance->m_eventResultsText += "    -STATIC: Fired (Did NOT consume)\n";
 	}
 
 	return s_instance->m_staticFunctionShouldConsume;
@@ -151,11 +209,11 @@ bool Game::EventSystemObjectMethodCallback(NamedProperties& args)
 {
 	if (m_objectMethodShouldConsume)
 	{
-		m_eventResultsText += "OBJECT METHOD: Fired AND Consumed\n";
+		m_eventResultsText += "    -OBJECT METHOD: Fired AND Consumed\n";
 	}
 	else
 	{
-		m_eventResultsText += "OBJECT METHOD: Fired (Did NOT consume)\n";
+		m_eventResultsText += "    -OBJECT METHOD: Fired (Did NOT consume)\n";
 	}
 
 	return m_objectMethodShouldConsume;
@@ -261,6 +319,7 @@ void Game::ProcessInput()
 	m_gameCamera->SetRotation(cameraRotation);
 
 	ProcessEventSystemInput();
+	ProcessJobSystemInput();
 }
 
 
@@ -275,6 +334,8 @@ void Game::Update()
 		m_eventResultsText.clear();
 		m_eventFiredTimer.Reset();
 	}
+
+	JobSystem::GetInstance()->FinalizeAllFinishedJobsOfType(5); // Finalize the count jobs
 }
 
 
@@ -288,7 +349,7 @@ void Game::Render() const
 	AABB2 bounds = window->GetWindowBounds();
 
 	// Event system rendering
-	std::string subscribeText = Stringf("Subscriptions (Not Necessarily fired in this order):\nStatic Function Subscribed [U]: %s | Consume Event[J]: %s\nObject Method Subscribed[I]: %s | Consume Event[K]: %s\nC Function Subscribed[O]: %s | Consume Event[L]: %s\n\n\n",
+	std::string subscribeText = Stringf("-----EventSystem-----\nSubscriptions (Not Necessarily fired in this order):\n    -Static Function Subscribed [U]: %s | Consume Event[J]: %s\n    -Object Method Subscribed[I]: %s | Consume Event[K]: %s\n    -C Function Subscribed[O]: %s | Consume Event[L]: %s\n\n\n",
 		(m_staticFunctionSubscribed ? "YES" : "NO"), (m_staticFunctionShouldConsume ? "YES" : "NO"), (m_objectMethodSubscribed ? "YES" : "NO"), (m_objectMethodShouldConsume ? "YES" : "NO"), 
 		(m_cFunctionSubscribed ? "YES" : "NO"), (m_cFunctionShouldConsume ? "YES" : "NO"));
 
@@ -305,8 +366,12 @@ void Game::Render() const
 		results = "Next Event Ready! Press 'Y' to fire.";
 	}
 
-	DebugRenderSystem::Draw2DText(results, bounds, 0.f, Rgba::CYAN, 20.f, Vector2(0.f, 1.0f));
+	bounds.maxs.y -= 100.f;
+	DebugRenderSystem::Draw2DText(results, bounds, 0.f, Rgba::CYAN, 20.f, Vector2(0.f, 0.f));
 
+	// Job System render
+	std::string stateText = Stringf("-----JobSystem-----\nJobs used for testing each count to 1,000,000 then return\nStatus: %s\nJobs Completed: %i of %i\nWorker Thread Count [V,B]: %i", (m_numJobsFinished < m_totalCreatedJobs ? "Pending Job Completion - Please Wait" : "IDLE\nPress:\n    N - Create 1000 jobs for worker threads\n    M - Create 1000 jobs on main thread only (WILL STALL)"), m_numJobsFinished, m_totalCreatedJobs, m_workerThreadIDs.size());
+	DebugRenderSystem::Draw2DText(stateText, bounds, 0.f, Rgba::PURPLE, 20.f, Vector2(0.0f, 1.0f));
 }
 
 
@@ -355,11 +420,11 @@ bool EventSystemCCallback(NamedProperties& args)
 
 	if (game->m_cFunctionShouldConsume)
 	{
-		game->m_eventResultsText += "C Function: Fired AND Consumed\n";
+		game->m_eventResultsText += "    -C Function: Fired AND Consumed\n";
 	}
 	else
 	{
-		game->m_eventResultsText += "C Function: Fired (Did NOT consume)\n";
+		game->m_eventResultsText += "    -C Function: Fired (Did NOT consume)\n";
 	}
 
 	return game->m_cFunctionShouldConsume;
