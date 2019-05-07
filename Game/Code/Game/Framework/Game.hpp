@@ -46,6 +46,7 @@ private:
 
 	void ProcessEventSystemInput();
 	void ProcessJobSystemInput();
+	void RunNamedPropertiesTest();
 
 	static bool EventSystemStaticCallback(NamedProperties& args);
 	bool		EventSystemObjectMethodCallback(NamedProperties& args);

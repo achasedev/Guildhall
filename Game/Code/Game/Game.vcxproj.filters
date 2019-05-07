@@ -28,6 +28,9 @@
     <ClCompile Include="Framework\CountJob.cpp">
       <Filter>Architecture</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\Entity.cpp">
+      <Filter>Architecture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.hpp">
@@ -43,5 +46,6 @@
       <Filter>Architecture</Filter>
     </ClInclude>
     <ClInclude Include="Framework\CountJob.hpp" />
+    <ClInclude Include="Framework\Entity.hpp" />
   </ItemGroup>
 </Project>

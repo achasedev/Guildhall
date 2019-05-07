@@ -5,6 +5,7 @@
 /* Description: Game class for general gameplay management
 /************************************************************************/
 #include "Game/Framework/Game.hpp"
+#include "Game/Framework/Entity.hpp"
 #include "Game/Framework/CountJob.hpp"
 #include "Game/Framework/GameCommon.hpp"
 #include "Engine/Core/Window.hpp"
@@ -15,7 +16,10 @@
 #include "Engine/Rendering/Core/Renderer.hpp"
 #include "Engine/Core/JobSystem/JobSystem.hpp"
 #include "Engine/Core/EventSystem/EventSystem.hpp"
+#include "Engine/DataStructures/NamedProperties.hpp"
+#include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
+
 
 // The singleton instance
 Game* Game::s_instance = nullptr;
@@ -39,11 +43,19 @@ Game::Game()
 
 	DebugRenderSystem::SetWorldCamera(m_gameCamera);
 
-	// Event System testing
+	// Setup initial subscribers for EventSystem testing
 	EventSystem* eventSystem = EventSystem::GetInstance();
 	eventSystem->SubscribeEventCallbackFunction("Test", Game::EventSystemStaticCallback);
 	eventSystem->SubscribeEventCallbackObjectMethod("Test", &Game::EventSystemObjectMethodCallback, *this);
 	eventSystem->SubscribeEventCallbackFunction("Test", EventSystemCCallback);
+
+	// Setup one thread for JobSystem Testing
+	std::string nextID = Stringf("Thread%i", m_workerThreadIDs.size());
+	m_workerThreadIDs.push_back(nextID);
+	JobSystem::GetInstance()->CreateWorkerThread(nextID.c_str(), WORKER_FLAGS_ALL_BUT_DISK);
+
+	// Test named properties now, will ASSERT_AND_DIE if any fail
+	RunNamedPropertiesTest();
 }
 
 
@@ -185,10 +197,67 @@ void Game::ProcessJobSystemInput()
 
 
 //-----------------------------------------------------------------------------------------------
+// Runs various Sets and Gets on a named properties to verify it works
+//
+void Game::RunNamedPropertiesTest()
+{
+	NamedProperties props;
+
+	// Should be able to set any of these types
+	props.Set("FirstName", "Andrew");
+	props.Set("LastName", std::string("Chase"));
+	props.Set("Age", 99);
+	props.Set("Weight", 2019.0f);
+	props.Set("IsCool", true);
+	
+	// Custom Game type
+	Entity* myEntity = new Entity();;
+	props.Set("MyEntity", myEntity);
+
+	// Named properties as a property, Get() and Set()
+	NamedProperties propsOfProps;
+	propsOfProps.Set("SubProps", props);
+	propsOfProps = propsOfProps.Get("SubProps", props);
+
+	// Getting all values
+	// Assert that we get what we set, not the default
+	ASSERT_OR_DIE(props.Get("FirstName", "NotAndrew")				== "Andrew",					"Get failed to return the right value");
+	ASSERT_OR_DIE(props.Get("LastName", std::string("NotChase"))	== std::string("Chase"),		"Get failed to return the right value");
+	ASSERT_OR_DIE(props.Get("Age", 14)								== 99,							"Get failed to return the right value");
+	ASSERT_OR_DIE(props.Get("Weight", 6.0f)							== 2019.0f,						"Get failed to return the right value");
+	ASSERT_OR_DIE(props.Get("IsCool", false)						== true,						"Get failed to return the right value");
+
+	// Get values that don't exist, ensuring we get defaults
+	ASSERT_OR_DIE(props.Get("AConstChar", "NotAndrew")				== "NotAndrew",					"Get failed to return the right value");
+	ASSERT_OR_DIE(props.Get("AString", std::string("NotChase"))		== std::string("NotChase"),		"Get failed to return the right value");
+	ASSERT_OR_DIE(props.Get("AnInt", 14)							== 14,							"Get failed to return the right value");
+	ASSERT_OR_DIE(props.Get("AFloat", 6.0f)							== 6.0f,						"Get failed to return the right value");
+	ASSERT_OR_DIE(props.Get("ABool", false)							== false,						"Get failed to return the right value");
+
+	// Change a value and ensure we get the changed value
+	props.Set("FirstName", "MrDrProfessorAndrew");
+	ASSERT_OR_DIE(props.Get("FirstName", "Andrew")					== "MrDrProfessorAndrew",		"Get failed to return the right value");
+
+	// Change a value to a different type and ensure it returns our set value, not a default
+	props.Set("Weight", false);
+	ASSERT_OR_DIE(props.Get("Weight", true)							== false,						"Get failed to return the right value");
+
+	// Getting Strings vs. Getting const char*
+	std::string firstNameWithStringDefault		= props.Get("FirstName", std::string("AFirstName"));
+	std::string firstNameWithConstCharDefault	= props.Get("FirstName", "AFirstName");
+
+	// If we get here, no asserts failed (and the template code compiled), so it works :D
+	ConsolePrintf(Rgba::GREEN, "NamedProperties tests passed!");
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Static event for testing
 //
 bool Game::EventSystemStaticCallback(NamedProperties& args)
 {
+	UNUSED(args);
+
 	if (s_instance->m_staticFunctionShouldConsume)
 	{
 		s_instance->m_eventResultsText += "    -STATIC: Fired AND Consumed\n";
@@ -207,6 +276,8 @@ bool Game::EventSystemStaticCallback(NamedProperties& args)
 //
 bool Game::EventSystemObjectMethodCallback(NamedProperties& args)
 {
+	UNUSED(args);
+
 	if (m_objectMethodShouldConsume)
 	{
 		m_eventResultsText += "    -OBJECT METHOD: Fired AND Consumed\n";
@@ -349,9 +420,9 @@ void Game::Render() const
 	AABB2 bounds = window->GetWindowBounds();
 
 	// Event system rendering
-	std::string subscribeText = Stringf("-----EventSystem-----\nSubscriptions (Not Necessarily fired in this order):\n    -Static Function Subscribed [U]: %s | Consume Event[J]: %s\n    -Object Method Subscribed[I]: %s | Consume Event[K]: %s\n    -C Function Subscribed[O]: %s | Consume Event[L]: %s\n\n\n",
-		(m_staticFunctionSubscribed ? "YES" : "NO"), (m_staticFunctionShouldConsume ? "YES" : "NO"), (m_objectMethodSubscribed ? "YES" : "NO"), (m_objectMethodShouldConsume ? "YES" : "NO"), 
-		(m_cFunctionSubscribed ? "YES" : "NO"), (m_cFunctionShouldConsume ? "YES" : "NO"));
+	std::string subscribeText = Stringf("-----EventSystem-----\nSubscriptions (Not Necessarily fired in this order):\n    -Static Function Subscribed %-*s[U]: %s | Consume Event[J]: %s\n    -Object Method Subscribed %-*s[I]: %s | Consume Event[K]: %s\n    -C Function Subscribed %-*s[O]: %s | Consume Event[L]: %s\n\n\n",
+		4, "", (m_staticFunctionSubscribed ? "YES" : "NO"), (m_staticFunctionShouldConsume ? "YES" : "NO"), 6, "", (m_objectMethodSubscribed ? "YES" : "NO"), (m_objectMethodShouldConsume ? "YES" : "NO"), 
+		9, "", (m_cFunctionSubscribed ? "YES" : "NO"), (m_cFunctionShouldConsume ? "YES" : "NO"));
 
 	DebugRenderSystem::Draw2DText(subscribeText, bounds, 0.f, Rgba::DARK_GREEN, 20.f);
 
@@ -416,6 +487,7 @@ Game* Game::GetInstance()
 //
 bool EventSystemCCallback(NamedProperties& args)
 {
+	UNUSED(args);
 	Game* game = Game::GetInstance();
 
 	if (game->m_cFunctionShouldConsume)

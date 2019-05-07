@@ -288,6 +288,7 @@
   <ItemGroup>
     <ClCompile Include="Framework\App.cpp" />
     <ClCompile Include="Framework\CountJob.cpp" />
+    <ClCompile Include="Framework\Entity.cpp" />
     <ClCompile Include="Framework\GameCommon.cpp" />
     <ClCompile Include="Framework\Main_Win32.cpp" />
     <ClCompile Include="Framework\Game.cpp" />
@@ -296,6 +297,7 @@
     <ClInclude Include="Framework\App.hpp" />
     <ClInclude Include="Framework\CountJob.hpp" />
     <ClInclude Include="Framework\EngineBuildPreferences.hpp" />
+    <ClInclude Include="Framework\Entity.hpp" />
     <ClInclude Include="Framework\Game.hpp" />
     <ClInclude Include="Framework\GameCommon.hpp" />
   </ItemGroup>
