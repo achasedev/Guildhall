@@ -15,6 +15,7 @@
 
 class Clock;
 class Camera;
+class NamedProperties;
 
 class Game
 {
@@ -43,6 +44,30 @@ private:
 	~Game();
 	Game(const Game& copy) = delete;
 
+	void ProcessEventSystemInput();
+
+	static bool EventSystemStaticCallback(NamedProperties& args);
+	bool		EventSystemObjectMethodCallback(NamedProperties& args);
+
+
+public:
+	//-----Public Data-----
+
+	// For testing EventSystem
+	bool m_cFunctionSubscribed = true;
+	bool m_cFunctionShouldConsume = false;
+	bool m_staticFunctionSubscribed = true;
+	bool m_staticFunctionShouldConsume = false;
+	bool m_objectMethodSubscribed = true;
+	bool m_objectMethodShouldConsume = false;
+	static constexpr float EVENT_FIRED_DURATION = 3.0f; // Seconds
+
+	bool m_eventJustFired = false;
+
+	Stopwatch m_eventFiredTimer;
+
+	std::string m_eventResultsText;
+
 
 private:
 	//-----Private Data-----
@@ -53,3 +78,6 @@ private:
 	static Game* s_instance;			// The singleton Game instance
 
 };
+
+// C Function Event Callback
+bool EventSystemCCallback(NamedProperties& args);

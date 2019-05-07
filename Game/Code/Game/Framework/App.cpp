@@ -17,7 +17,9 @@
 #include "Engine/Core/Time/Profiler.hpp"
 #include "Engine/Core/Utility/Blackboard.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
+#include "Engine/Core/JobSystem/JobSystem.hpp"
 #include "Engine/Rendering/Core/RenderScene.hpp"
+#include "Engine/Core/EventSystem/EventSystem.hpp"
 #include "Engine/Core/DeveloperConsole/Command.hpp"
 #include "Engine/Core/DeveloperConsole/DevConsole.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
@@ -73,6 +75,9 @@ App::~App()
 	Profiler::Shutdown();
 	LogSystem::Shutdown();
 
+	JobSystem::Shutdown();
+	EventSystem::Shutdown();
+
 	delete g_gameConfigBlackboard;
 	g_gameConfigBlackboard = nullptr;
 }
@@ -93,6 +98,8 @@ void App::Initialize()
 		//s_instance->SetupGameConfigBlackboard();
 		s_instance->RegisterAppCommands();
 
+		EventSystem::Initialize();
+		JobSystem::Initialize();
 
 		// Construct the Engine Systems
 		AssetDB::CreateBuiltInAssets();

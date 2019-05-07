@@ -12,6 +12,8 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Rendering/Core/Camera.hpp"
 #include "Engine/Rendering/Core/Renderer.hpp"
+#include "Engine/Core/JobSystem/JobSystem.hpp"
+#include "Engine/Core/EventSystem/EventSystem.hpp"
 #include "Engine/Rendering/DebugRendering/DebugRenderSystem.hpp"
 
 // The singleton instance
@@ -35,6 +37,128 @@ Game::Game()
 	m_gameCamera->LookAt(Vector3(10.f, 10.f, 10.f), Vector3::ZERO, Vector3::Z_AXIS);
 
 	DebugRenderSystem::SetWorldCamera(m_gameCamera);
+
+	// Event System testing
+	EventSystem* eventSystem = EventSystem::GetInstance();
+	eventSystem->SubscribeEventCallbackFunction("Test", Game::EventSystemStaticCallback);
+	eventSystem->SubscribeEventCallbackObjectMethod("Test", &Game::EventSystemObjectMethodCallback, *this);
+	eventSystem->SubscribeEventCallbackFunction("Test", EventSystemCCallback);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Checks for input that toggles event subscriber state
+//
+void Game::ProcessEventSystemInput()
+{
+	if (!m_eventFiredTimer.HasIntervalElapsed())
+	{
+		return;
+	}
+
+	InputSystem* input = InputSystem::GetInstance();
+	EventSystem* eventSystem = EventSystem::GetInstance();
+
+	// For testing the event system
+	if (input->WasKeyJustPressed('Y'))
+	{
+		m_eventFiredTimer.SetInterval(Game::EVENT_FIRED_DURATION);
+		FireEvent("Test");
+	}
+
+	if (input->WasKeyJustPressed('U'))
+	{
+		m_staticFunctionSubscribed = !m_staticFunctionSubscribed;
+
+		if (m_staticFunctionSubscribed)
+		{
+			eventSystem->SubscribeEventCallbackFunction("Test", Game::EventSystemStaticCallback);
+		}
+		else
+		{
+			eventSystem->UnsubscribeEventCallbackFunction("Test", Game::EventSystemStaticCallback);
+		}
+	}
+
+	if (input->WasKeyJustPressed('I'))
+	{
+		m_objectMethodSubscribed = !m_objectMethodSubscribed;
+
+		if (m_objectMethodSubscribed)
+		{
+			eventSystem->SubscribeEventCallbackObjectMethod("Test", &Game::EventSystemObjectMethodCallback, *this);
+		}
+		else
+		{
+			eventSystem->UnsubscribeEventCallbackObjectMethod("Test", &Game::EventSystemObjectMethodCallback, *this);
+		}
+	}
+
+	if (input->WasKeyJustPressed('O'))
+	{
+		m_cFunctionSubscribed = !m_cFunctionSubscribed;
+
+		if (m_cFunctionSubscribed)
+		{
+			eventSystem->SubscribeEventCallbackFunction("Test", EventSystemCCallback);
+		}
+		else
+		{
+			eventSystem->UnsubscribeEventCallbackFunction("Test", EventSystemCCallback);
+		}
+	}
+
+	// Toggling consumption
+	if (input->WasKeyJustPressed('J'))
+	{
+		m_staticFunctionShouldConsume = !m_staticFunctionShouldConsume;
+	}
+
+	if (input->WasKeyJustPressed('K'))
+	{
+		m_objectMethodShouldConsume = !m_objectMethodShouldConsume;
+	}
+
+	if (input->WasKeyJustPressed('L'))
+	{
+		m_cFunctionShouldConsume = !m_cFunctionShouldConsume;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Static event for testing
+//
+bool Game::EventSystemStaticCallback(NamedProperties& args)
+{
+	if (s_instance->m_staticFunctionShouldConsume)
+	{
+		s_instance->m_eventResultsText += "STATIC: Fired AND Consumed\n";
+	}
+	else
+	{
+		s_instance->m_eventResultsText += "STATIC: Fired (Did NOT consume)\n";
+	}
+
+	return s_instance->m_staticFunctionShouldConsume;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Object Method callback for testing
+//
+bool Game::EventSystemObjectMethodCallback(NamedProperties& args)
+{
+	if (m_objectMethodShouldConsume)
+	{
+		m_eventResultsText += "OBJECT METHOD: Fired AND Consumed\n";
+	}
+	else
+	{
+		m_eventResultsText += "OBJECT METHOD: Fired (Did NOT consume)\n";
+	}
+
+	return m_objectMethodShouldConsume;
 }
 
 
@@ -135,6 +259,8 @@ void Game::ProcessInput()
 
 	cameraRotation.y = ClampFloat(cameraRotation.y, -85.f, 85.f);
 	m_gameCamera->SetRotation(cameraRotation);
+
+	ProcessEventSystemInput();
 }
 
 
@@ -144,6 +270,11 @@ void Game::ProcessInput()
 //
 void Game::Update()
 {
+	if (m_eventFiredTimer.HasIntervalElapsed())
+	{
+		m_eventResultsText.clear();
+		m_eventFiredTimer.Reset();
+	}
 }
 
 
@@ -155,14 +286,27 @@ void Game::Render() const
 {
 	Window* window = Window::GetInstance();
 	AABB2 bounds = window->GetWindowBounds();
+
+	// Event system rendering
+	std::string subscribeText = Stringf("Subscriptions (Not Necessarily fired in this order):\nStatic Function Subscribed [U]: %s | Consume Event[J]: %s\nObject Method Subscribed[I]: %s | Consume Event[K]: %s\nC Function Subscribed[O]: %s | Consume Event[L]: %s\n\n\n",
+		(m_staticFunctionSubscribed ? "YES" : "NO"), (m_staticFunctionShouldConsume ? "YES" : "NO"), (m_objectMethodSubscribed ? "YES" : "NO"), (m_objectMethodShouldConsume ? "YES" : "NO"), 
+		(m_cFunctionSubscribed ? "YES" : "NO"), (m_cFunctionShouldConsume ? "YES" : "NO"));
+
+	DebugRenderSystem::Draw2DText(subscribeText, bounds, 0.f, Rgba::DARK_GREEN, 20.f);
+
+	std::string results;
 	
-	Vector3 position = m_gameCamera->GetPosition();
-	Vector3 rotation = m_gameCamera->GetRotation();
+	if (!m_eventFiredTimer.HasIntervalElapsed())
+	{
+		results = Stringf("EventFired!\n\n%s\n\n(For testing, I added this 3 second pause before you can fire again\nfor readability of results)", m_eventResultsText.c_str());
+	}
+	else
+	{
+		results = "Next Event Ready! Press 'Y' to fire.";
+	}
 
-	std::string text = Stringf("Camera Pos : (%.2f, %.2f, %.2f)\nCamera Rot : (%.2f, %.2f, %.2f)",
-		position.x, position.y, position.z, rotation.x, rotation.y, rotation.z);
+	DebugRenderSystem::Draw2DText(results, bounds, 0.f, Rgba::CYAN, 20.f, Vector2(0.f, 1.0f));
 
-	DebugRenderSystem::Draw2DText(text, bounds, 0.f, Rgba::DARK_GREEN, 20.f);
 }
 
 
@@ -199,4 +343,24 @@ float Game::GetDeltaTime()
 Game* Game::GetInstance()
 {
 	return s_instance;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// C Function event for testing
+//
+bool EventSystemCCallback(NamedProperties& args)
+{
+	Game* game = Game::GetInstance();
+
+	if (game->m_cFunctionShouldConsume)
+	{
+		game->m_eventResultsText += "C Function: Fired AND Consumed\n";
+	}
+	else
+	{
+		game->m_eventResultsText += "C Function: Fired (Did NOT consume)\n";
+	}
+
+	return game->m_cFunctionShouldConsume;
 }
